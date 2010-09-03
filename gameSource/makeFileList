@@ -10,22 +10,6 @@ APP_NAME = gameApp
 
 LAYER_SOURCE = \
 game.cpp \
-landscape.cpp \
-seaBottom.cpp \
-seaRocks.cpp \
-doublePair.cpp \
-drawUtils.cpp \
-seaLighting.cpp \
-lighting.cpp \
-tgaUtils.cpp \
-digitalDisplay.cpp \
-hoseReel.cpp \
-depth.cpp \
-battery.cpp \
-shipLight.cpp \
-bubbles.cpp \
-airSupply.cpp \
-bubbleEmitters.cpp \
 
 
 
