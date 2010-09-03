@@ -30,6 +30,9 @@
 #include "minorGems/game/gameGraphics.h"
 
 
+#include "drawUtils.h"
+
+
 // globals
 
 
@@ -114,6 +117,8 @@ char lightingOn = true;
 
 
 
+float lastMouseX, lastMouseY;
+
 
 void drawFrame() {
 
@@ -128,13 +133,28 @@ void drawFrame() {
                   mBackgroundColor->b,
                   mBackgroundColor->a );
     */
+
+    setDrawColor( 1, 0, 0, 1 );
+    
+    doublePair p = { lastMouseX, lastMouseY };
+    
+    drawSquare( p, 0.125 );
+    
     }
 
 
 
-void pointerMove( float inX, float inY ) {}
+void pointerMove( float inX, float inY ) {
+    lastMouseX = inX;
+    lastMouseY = inY;
+    }
+
 void pointerDown( float inX, float inY ) {}
-void pointerDrag( float inX, float inY ) {}
+void pointerDrag( float inX, float inY ) {
+    lastMouseX = inX;
+    lastMouseY = inY;
+    }
+
 void pointerUp( float inX, float inY ) {}
 
 
