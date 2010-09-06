@@ -97,6 +97,11 @@ double blackOutRate = 0.004;
 
 
 
+const char *getWindowTitle() {
+    return "Game 10";
+    }
+
+
 
 void initFrameDrawer( int inWidth, int inHeight ) {
 
@@ -104,6 +109,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     setViewSize( viewWidth );
 
     viewHeightFraction = inHeight / (double)inWidth;
+
+    //setCursorVisible( false );
     }
 
 void freeFrameDrawer() {
@@ -140,6 +147,9 @@ void drawFrame() {
     
     drawSquare( p, 0.125 );
     
+    p.x = viewCenterX;
+    p.y = viewCenterY;
+    drawSquare( p, 0.125 );
     }
 
 
