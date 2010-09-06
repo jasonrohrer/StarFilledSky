@@ -19,6 +19,9 @@ class Level {
         void drawLevel( doublePair inViewCenter );
         
 
+        char isWall( doublePair inPos );
+        
+
     protected:
         
 

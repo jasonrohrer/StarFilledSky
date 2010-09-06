@@ -73,6 +73,10 @@ double viewHeightFraction;
 
 double velocityX = 0;
 double velocityY = 0;
+
+double moveSpeed = 0.25;
+
+
 double dragX = 0;
 double accelY = 0;
 double dragY = 0;
@@ -145,7 +149,17 @@ void drawFrame() {
                   mBackgroundColor->b,
                   mBackgroundColor->a );
     */
+
+    doublePair newViewPos = viewCenter;
     
+    newViewPos.x += velocityX;
+    newViewPos.y += velocityY;
+    
+
+    if( !currentLevel->isWall( newViewPos ) ) {
+        viewCenter = newViewPos;
+        }
+        
     
     currentLevel->drawLevel( viewCenter );
 
@@ -201,12 +215,16 @@ void specialKeyDown( int inKey ) {
 
     switch( inKey ) {
         case MG_KEY_UP:
+            velocityY = moveSpeed;
             break;
         case MG_KEY_DOWN:
+            velocityY = -moveSpeed;
             break;
         case MG_KEY_RIGHT:
+            velocityX = moveSpeed;
             break;
         case MG_KEY_LEFT:
+            velocityX = -moveSpeed;
             break;
         }
 
@@ -217,12 +235,16 @@ void specialKeyDown( int inKey ) {
 void specialKeyUp( int inKey ) {
     switch( inKey ) {
         case MG_KEY_UP:
+            velocityY = 0;
             break;
         case MG_KEY_DOWN:
+            velocityY = 0;
             break;
         case MG_KEY_RIGHT:
+            velocityX = 0;
             break;
         case MG_KEY_LEFT:
+            velocityX = 0;
             break;
         }
 

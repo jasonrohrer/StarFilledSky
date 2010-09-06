@@ -114,3 +114,22 @@ void Level::drawLevel( doublePair inViewCenter ) {
         }
     }
 
+
+
+char Level::isWall( doublePair inPos ) {
+    int x = (int)( inPos.x );
+    int y = (int)( inPos.y );
+    
+    x += MAX_LEVEL_W/2;
+    y += MAX_LEVEL_H/2;
+    
+    if( x < 0 || x >= MAX_LEVEL_W ||
+        y < 0 || y >= MAX_LEVEL_H ) {
+        // out of bounds
+        return false;
+        }
+    
+        
+    return ( mWallFlags[y][x] == 2 );
+    }
+
