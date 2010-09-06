@@ -30,7 +30,9 @@
 #include "minorGems/game/gameGraphics.h"
 
 
+
 #include "drawUtils.h"
+#include "Level.h"
 
 
 // globals
@@ -60,11 +62,10 @@ double globalRandomSeed = 0;
 
 
 // position of view in world
-double viewCenterX = -100;
-double viewCenterY = 0;
+doublePair viewCenter = {0, 0};
 
 // world with of one view
-double viewWidth = 10;
+double viewWidth = 20;
 
 // fraction of viewWidth visible vertically (aspect ratio)
 double viewHeightFraction;
@@ -101,16 +102,20 @@ const char *getWindowTitle() {
     return "Game 10";
     }
 
+Level *currentLevel;
+
 
 
 void initFrameDrawer( int inWidth, int inHeight ) {
 
-    setViewCenterPosition( viewCenterX, viewCenterY );
+    setViewCenterPosition( viewCenter.x, viewCenter.y );
     setViewSize( viewWidth );
 
     viewHeightFraction = inHeight / (double)inWidth;
 
-    //setCursorVisible( false );
+    setCursorVisible( false );
+
+    currentLevel = new Level();
     }
 
 void freeFrameDrawer() {
@@ -140,6 +145,9 @@ void drawFrame() {
                   mBackgroundColor->b,
                   mBackgroundColor->a );
     */
+    
+    
+    currentLevel->drawLevel( viewCenter );
 
     setDrawColor( 1, 0, 0, 1 );
     
@@ -147,8 +155,7 @@ void drawFrame() {
     
     drawSquare( p, 0.125 );
     
-    p.x = viewCenterX;
-    p.y = viewCenterY;
+    p = viewCenter;
     drawSquare( p, 0.125 );
     }
 
