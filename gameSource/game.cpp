@@ -77,28 +77,14 @@ double velocityY = 0;
 double moveSpeed = 0.25;
 
 
-double dragX = 0;
-double accelY = 0;
-double dragY = 0;
-
-double thrustX = 0;
-
-double thrustValue = 16;
-
-char attached = true;
-
-// barge is heavier, thrust and drag don't affect it as much
-double bargeMassFactor = 50;
-
-double shipMassFactor = 10;
-
-
 CustomRandomSource randSource;
 
 
+char shooting = false;
+int stepsTilNextBullet = 0;
+int stepsBetweenBullets = 5;
+double bulletSpeed = 0.5;
 
-double blackOutProgress = 0.0;
-double blackOutRate = 0.004;
 
 
 
@@ -169,12 +155,20 @@ void drawFrame() {
     
     currentLevel->drawLevel( viewCenter );
 
-    setDrawColor( 1, 0, 0, 1 );
+    // reticle
+    setDrawColor( 0, 1, 0, 0.5 );
     
     doublePair p = { lastMouseX, lastMouseY };
     
     drawSquare( p, 0.125 );
+
+    setDrawColor( 0, 0, 0, 0.5 );
+
+    drawSquare( p, 0.025 );
+
     
+    // player
+    setDrawColor( 1, 0, 0, 1 );
     p = viewCenter;
     drawSquare( p, 0.125 );
 
@@ -187,7 +181,9 @@ void drawFrame() {
 
 
 
-        doublePair newViewPos = viewCenter;
+
+
+    doublePair newViewPos = viewCenter;
     
     newViewPos.x += velocityX;
     newViewPos.y += velocityY;
@@ -249,6 +245,36 @@ void drawFrame() {
     viewCenter = newViewPos;
     setViewCenterPosition( viewCenter.x, viewCenter.y );
 
+    if( shooting ) {
+        if( stepsTilNextBullet == 0 ) {
+            // fire bullet
+
+            doublePair mousePos = { lastMouseX, lastMouseY };
+            double mouseDist = distance( mousePos, viewCenter );
+            doublePair bulletVelocity = sub( mousePos, viewCenter );
+            
+            // normalize
+            bulletVelocity.x /= mouseDist;
+            bulletVelocity.y /= mouseDist;
+            
+            // set speed
+            bulletVelocity.x *= bulletSpeed;
+            bulletVelocity.y *= bulletSpeed;
+            
+            
+            currentLevel->addBullet( viewCenter, bulletVelocity, true );
+            
+
+            stepsTilNextBullet = stepsBetweenBullets;
+            }
+        }
+    
+    // always decrement, even when mouse not held down
+    if( stepsTilNextBullet > 0 ) {
+        stepsTilNextBullet --;
+        }
+
+
     
     }
 
@@ -259,13 +285,20 @@ void pointerMove( float inX, float inY ) {
     lastMouseY = inY;
     }
 
-void pointerDown( float inX, float inY ) {}
+void pointerDown( float inX, float inY ) {
+    shooting = true;
+    }
+
+
 void pointerDrag( float inX, float inY ) {
     lastMouseX = inX;
     lastMouseY = inY;
     }
 
-void pointerUp( float inX, float inY ) {}
+void pointerUp( float inX, float inY ) {
+    shooting = false;
+    // keep old step counter going for next mouse press
+    }
 
 
 

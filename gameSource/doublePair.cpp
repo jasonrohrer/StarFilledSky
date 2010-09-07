@@ -10,6 +10,14 @@ doublePair add( doublePair inP, double inV ) {
     }
 
 
+doublePair add( doublePair inA, doublePair inB ) {
+    inA.x += inB.x;
+    inA.y += inB.y;
+    
+    return inA;
+    }
+
+
 doublePair sub( doublePair inA, doublePair inB ) {
     inA.x -= inB.x;
     inA.y -= inB.y;

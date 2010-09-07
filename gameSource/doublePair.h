@@ -10,6 +10,8 @@ typedef struct doublePair {
 
 doublePair add( doublePair inP, double inV );
 
+doublePair add( doublePair inA, doublePair inB );
+
 doublePair sub( doublePair inA, doublePair inB );
 
 

@@ -91,6 +91,20 @@ Level::~Level() {
         
 void Level::drawLevel( doublePair inViewCenter ) {
 
+    // step bullets
+    for( int i=0; i<mBullets.size(); i++ ) {
+        
+        Bullet *b = mBullets.getElement( i );
+        
+        b->position = add( b->position, b->velocity );
+        if( isWall( b->position ) ) {
+            // bullet done
+            mBullets.deleteElement( i );
+            i--;
+            }
+        }
+    
+
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
             
@@ -114,6 +128,26 @@ void Level::drawLevel( doublePair inViewCenter ) {
             
             }
         }
+
+    // draw bullets
+    for( int i=0; i<mBullets.size(); i++ ) {
+        
+        Bullet *b = mBullets.getElement( i );
+
+        // border
+        setDrawColor( 0, 0, 0, 1 );
+        drawSquare( b->position, 0.1 );
+
+        // fill
+        if( b->playerFlag ) {
+            setDrawColor( 0, 1, 0, 1 );
+            }
+        else {
+            setDrawColor( 1, 0, 0, 1 );
+            }
+        drawSquare( b->position, 0.05 );
+        }
+    
     }
 
 
@@ -134,4 +168,15 @@ char Level::isWall( doublePair inPos ) {
         
     return ( mWallFlags[y][x] == 2 );
     }
+
+
+
+void Level::addBullet( doublePair inPosition,
+                       doublePair inVelocity, char inPlayerBullet ) {
+    
+    Bullet b = { inPosition, inVelocity, inPlayerBullet };
+    mBullets.push_back( b );
+    }
+
+    
 

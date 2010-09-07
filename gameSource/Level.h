@@ -1,8 +1,17 @@
 #include "doublePair.h"
-
+#include "minorGems/util/SimpleVector.h"
 
 #define MAX_LEVEL_W  400
 #define MAX_LEVEL_H  400
+
+
+typedef struct Bullet {
+        doublePair position;
+        doublePair velocity;
+        char playerFlag;
+    } Bullet;
+
+
 
 
 class Level {
@@ -21,13 +30,17 @@ class Level {
 
         char isWall( doublePair inPos );
         
+        void addBullet( doublePair inPosition,
+                        doublePair inVelocity, char inPlayerBullet );
+
 
     protected:
         
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
         
-        
+        SimpleVector<Bullet> mBullets;
+
     };
 
         
