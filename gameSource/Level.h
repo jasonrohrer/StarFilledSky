@@ -12,6 +12,13 @@ typedef struct Bullet {
     } Bullet;
 
 
+typedef struct Enemy {
+        doublePair position;
+        doublePair velocity;
+    } Enemy;
+
+
+
 
 
 class Level {
@@ -30,6 +37,11 @@ class Level {
 
         char isWall( doublePair inPos );
         
+        
+        doublePair stopMoveWithWall( doublePair inStart,
+                                     doublePair inMoveDelta );
+        
+
         void addBullet( doublePair inPosition,
                         doublePair inVelocity, char inPlayerBullet );
 

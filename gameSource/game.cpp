@@ -180,60 +180,10 @@ void drawFrame() {
         }
 
 
-
-
-
-    doublePair newViewPos = viewCenter;
+    doublePair velocity = { velocityX, velocityY };
     
-    newViewPos.x += velocityX;
-    newViewPos.y += velocityY;
-
-
-    if( currentLevel->isWall( newViewPos ) ) {
-        doublePair xMoveAlone = viewCenter;
-        xMoveAlone.x += velocityX;
-        
-        if( !currentLevel->isWall( xMoveAlone ) ) {
-            
-            // push y as close as possible to nearest wall
-            
-            int intY = (int)rint( xMoveAlone.y );
-            if( velocityY > 0 ) {
-                xMoveAlone.y = intY + 0.45;
-                }
-            else {
-                xMoveAlone.y = intY - 0.45;
-                }
-            
-            newViewPos = xMoveAlone;
-            }
-        else {
-            // try y move alone
-            doublePair yMoveAlone = viewCenter;
-            yMoveAlone.y += velocityY;
-        
-            if( !currentLevel->isWall( yMoveAlone ) ) {
-                
-                // push x as close as possible to nearest wall
-            
-                int intX = (int)rint( yMoveAlone.x );
-                if( velocityX > 0 ) {
-                    yMoveAlone.x = intX + 0.45;
-                    }
-                else {
-                    yMoveAlone.x = intX - 0.45;
-                    }
-
-
-                newViewPos = yMoveAlone;
-                }
-            else {
-                // both hit
-                newViewPos = viewCenter;
-                }
-            }
-        }
-    
+    doublePair newViewPos = currentLevel->stopMoveWithWall( viewCenter,
+                                                            velocity );
     
     doublePair viewDelta = sub( newViewPos, viewCenter );
     

@@ -171,6 +171,69 @@ char Level::isWall( doublePair inPos ) {
 
 
 
+doublePair Level::stopMoveWithWall( doublePair inStart,
+                                    doublePair inMoveDelta ) {
+
+    doublePair newPos = inStart;
+    
+    double velocityX = inMoveDelta.x;
+    double velocityY = inMoveDelta.y;
+    
+    newPos.x += velocityX;
+    newPos.y += velocityY;
+
+
+    if( isWall( newPos ) ) {
+        doublePair xMoveAlone = inStart;
+        xMoveAlone.x += velocityX;
+        
+        if( !isWall( xMoveAlone ) ) {
+            
+            // push y as close as possible to nearest wall
+            
+            int intY = (int)rint( xMoveAlone.y );
+            if( velocityY > 0 ) {
+                xMoveAlone.y = intY + 0.45;
+                }
+            else {
+                xMoveAlone.y = intY - 0.45;
+                }
+            
+            newPos = xMoveAlone;
+            }
+        else {
+            // try y move alone
+            doublePair yMoveAlone = inStart;
+            yMoveAlone.y += velocityY;
+        
+            if( !isWall( yMoveAlone ) ) {
+                
+                // push x as close as possible to nearest wall
+            
+                int intX = (int)rint( yMoveAlone.x );
+                if( velocityX > 0 ) {
+                    yMoveAlone.x = intX + 0.45;
+                    }
+                else {
+                    yMoveAlone.x = intX - 0.45;
+                    }
+
+
+                newPos = yMoveAlone;
+                }
+            else {
+                // both hit
+                newPos = inStart;
+                }
+            }
+        }
+
+    return newPos;
+    }
+
+        
+
+
 void Level::addBullet( doublePair inPosition,
                        doublePair inVelocity, char inPlayerBullet ) {
     
