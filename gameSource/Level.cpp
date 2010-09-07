@@ -4,6 +4,8 @@
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 
+#include <math.h>
+
 extern CustomRandomSource randSource;
 
 
@@ -94,8 +96,8 @@ void Level::drawLevel( doublePair inViewCenter ) {
             
 
             if( mWallFlags[y][x] != 0 ) {
-                doublePair spot = { x - MAX_LEVEL_W/2 - inViewCenter.x,
-                                    y - MAX_LEVEL_H/2 - inViewCenter.y };
+                doublePair spot = { x - MAX_LEVEL_W/2,
+                                    y - MAX_LEVEL_H/2 };
                 
                 
                 if( mWallFlags[y][x] == 1 ) {
@@ -117,8 +119,8 @@ void Level::drawLevel( doublePair inViewCenter ) {
 
 
 char Level::isWall( doublePair inPos ) {
-    int x = (int)( inPos.x );
-    int y = (int)( inPos.y );
+    int x = (int)( rint( inPos.x ) );
+    int y = (int)( rint( inPos.y ) );
     
     x += MAX_LEVEL_W/2;
     y += MAX_LEVEL_H/2;

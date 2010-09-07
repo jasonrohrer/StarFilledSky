@@ -135,6 +135,8 @@ char lightingOn = true;
 
 float lastMouseX, lastMouseY;
 
+SimpleVector<doublePair> hitWallSpots;
+
 
 void drawFrame() {
 
@@ -150,15 +152,19 @@ void drawFrame() {
                   mBackgroundColor->a );
     */
 
-    doublePair newViewPos = viewCenter;
-    
-    newViewPos.x += velocityX;
-    newViewPos.y += velocityY;
-    
+      
+    /*
 
     if( !currentLevel->isWall( newViewPos ) ) {
         viewCenter = newViewPos;
+        setViewCenterPosition( viewCenter.x, viewCenter.y );
         }
+    else {
+        hitWallSpots.push_back( newViewPos );
+        printf( "hit at %f,%f\n", newViewPos.x, newViewPos.y );
+        
+        }
+    */
         
     
     currentLevel->drawLevel( viewCenter );
@@ -171,6 +177,79 @@ void drawFrame() {
     
     p = viewCenter;
     drawSquare( p, 0.125 );
+
+    setDrawColor( 0, 1, 0, 0.5 );
+    
+    for( int i=0; i<hitWallSpots.size(); i++ ) {
+        p = *( hitWallSpots.getElement( i ) );
+        //drawSquare( p, 0.06 );
+        }
+
+
+
+        doublePair newViewPos = viewCenter;
+    
+    newViewPos.x += velocityX;
+    newViewPos.y += velocityY;
+
+
+    if( currentLevel->isWall( newViewPos ) ) {
+        doublePair xMoveAlone = viewCenter;
+        xMoveAlone.x += velocityX;
+        
+        if( !currentLevel->isWall( xMoveAlone ) ) {
+            
+            // push y as close as possible to nearest wall
+            
+            int intY = (int)rint( xMoveAlone.y );
+            if( velocityY > 0 ) {
+                xMoveAlone.y = intY + 0.45;
+                }
+            else {
+                xMoveAlone.y = intY - 0.45;
+                }
+            
+            newViewPos = xMoveAlone;
+            }
+        else {
+            // try y move alone
+            doublePair yMoveAlone = viewCenter;
+            yMoveAlone.y += velocityY;
+        
+            if( !currentLevel->isWall( yMoveAlone ) ) {
+                
+                // push x as close as possible to nearest wall
+            
+                int intX = (int)rint( yMoveAlone.x );
+                if( velocityX > 0 ) {
+                    yMoveAlone.x = intX + 0.45;
+                    }
+                else {
+                    yMoveAlone.x = intX - 0.45;
+                    }
+
+
+                newViewPos = yMoveAlone;
+                }
+            else {
+                // both hit
+                newViewPos = viewCenter;
+                }
+            }
+        }
+    
+    
+    doublePair viewDelta = sub( newViewPos, viewCenter );
+    
+    // move mouse with screen
+    lastMouseX += viewDelta.x;
+    lastMouseY += viewDelta.y;
+    
+
+    viewCenter = newViewPos;
+    setViewCenterPosition( viewCenter.x, viewCenter.y );
+
+    
     }
 
 
