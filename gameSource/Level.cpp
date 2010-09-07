@@ -80,6 +80,33 @@ Level::Level() {
                 }
             }
         }
+
+
+    // place enemies in random floor spots
+
+    for( y=0; y<MAX_LEVEL_H; y++ ) {
+        for( x=0; x<MAX_LEVEL_W; x++ ) {
+            if( mWallFlags[y][x] == 1 ) {    
+                // floor
+                
+                // small chance of enemy
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 97 ) {
+                    // hit
+
+                    doublePair spot = { x - MAX_LEVEL_W/2,
+                                        y - MAX_LEVEL_H/2 };
+
+                    doublePair v = { 0, 0 };
+                    doublePair a = { 0, 0 };
+                    
+                    Enemy e = { spot, v, a, 10, 0 };
+                    
+                    mEnemies.push_back( e );
+                    }
+                }
+            
+            }
+        }
     }
 
 
@@ -97,11 +124,34 @@ void Level::drawLevel( doublePair inViewCenter ) {
         Bullet *b = mBullets.getElement( i );
         
         b->position = add( b->position, b->velocity );
+        
+        char hit = false;
+        
         if( isWall( b->position ) ) {
+            hit = true;
+                        }
+        else {
+            // check if hit enemy
+            char hit = false;
+            
+            for( int j=0; j<mEnemies.size() && !hit; j++ ) {
+                Enemy *e = mEnemies.getElement( j );
+                
+                if( distance( e->position, b->position ) < 0.2 ) {
+                    hit = true;
+                    mEnemies.deleteElement( j );
+                    }
+                }
+            }
+
+
+        if( hit ) {
             // bullet done
             mBullets.deleteElement( i );
             i--;
             }
+        
+        
         }
     
 
@@ -146,6 +196,15 @@ void Level::drawLevel( doublePair inViewCenter ) {
             setDrawColor( 1, 0, 0, 1 );
             }
         drawSquare( b->position, 0.05 );
+        }
+
+
+    // draw enemies
+    for( int i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        
+        setDrawColor( 0, 0, 0, 1 );
+        drawSquare( e->position, 0.25 );
         }
     
     }

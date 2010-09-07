@@ -15,6 +15,9 @@ typedef struct Bullet {
 typedef struct Enemy {
         doublePair position;
         doublePair velocity;
+        doublePair accel;
+        int stepsBetweenBullets;
+        int stepsTilNextBullet;
     } Enemy;
 
 
@@ -52,6 +55,9 @@ class Level {
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
         
         SimpleVector<Bullet> mBullets;
+
+        SimpleVector<Enemy> mEnemies;
+        
 
     };
 
