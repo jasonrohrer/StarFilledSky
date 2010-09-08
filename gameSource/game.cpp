@@ -70,6 +70,11 @@ double viewWidth = 20;
 // fraction of viewWidth visible vertically (aspect ratio)
 double viewHeightFraction;
 
+int screenW, screenH;
+
+float mouseSpeed;
+
+
 
 double velocityX = 0;
 double velocityY = 0;
@@ -97,17 +102,26 @@ Level *currentLevel;
 
 
 void initFrameDrawer( int inWidth, int inHeight ) {
+    screenW = inWidth;
+    screenH = inHeight;
+    
 
     setViewCenterPosition( viewCenter.x, viewCenter.y );
     setViewSize( viewWidth );
 
     viewHeightFraction = inHeight / (double)inWidth;
 
+    
+    mouseSpeed = viewWidth / inWidth;
+    
     //setCursorVisible( false );
     grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
+    
+    int x,y;
+    warpMouseToCenter( &x, &y );
     
     
     currentLevel = new Level();
@@ -126,7 +140,6 @@ char lightingOn = true;
 char haveFirstScreenMouse = false;
 float lastScreenMouseX, lastScreenMouseY;
 
-float mouseSpeed = 0.075;
 
 
 float lastMouseX = 0;
@@ -257,6 +270,18 @@ static void mouseMove( float inX, float inY ) {
         lastMouseX += mouseSpeed * deltaX;
         lastMouseY -= mouseSpeed * deltaY;
         
+        }
+    
+    if( lastScreenMouseX < 1 || lastScreenMouseX > screenW - 2
+        ||
+        lastScreenMouseY < 1 || lastScreenMouseY > screenH - 2 ) {
+    
+        // hit edge
+        int x, y;
+        warpMouseToCenter( &x, &y );
+        
+        lastScreenMouseX = x;
+        lastScreenMouseY = y;
         }
     
     }
