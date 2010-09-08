@@ -103,8 +103,13 @@ void initFrameDrawer( int inWidth, int inHeight ) {
 
     viewHeightFraction = inHeight / (double)inWidth;
 
-    setCursorVisible( false );
-
+    //setCursorVisible( false );
+    grabInput( true );
+    
+    // raw screen coordinates
+    setMouseReportingMode( false );
+    
+    
     currentLevel = new Level();
     }
 
@@ -118,8 +123,14 @@ int numRadii = 100;
 char lightingOn = true;
 
 
+char haveFirstScreenMouse = false;
+float lastScreenMouseX, lastScreenMouseY;
 
-float lastMouseX, lastMouseY;
+float mouseSpeed = 0.075;
+
+
+float lastMouseX = 0;
+float lastMouseY = 0;
 
 SimpleVector<doublePair> hitWallSpots;
 
@@ -188,8 +199,8 @@ void drawFrame() {
     doublePair viewDelta = sub( newViewPos, viewCenter );
     
     // move mouse with screen
-    lastMouseX += viewDelta.x;
-    lastMouseY += viewDelta.y;
+    //lastMouseX += viewDelta.x;
+    //lastMouseY += viewDelta.y;
     
 
     viewCenter = newViewPos;
@@ -229,23 +240,45 @@ void drawFrame() {
     }
 
 
+static void mouseMove( float inX, float inY ) {
+    if( ! haveFirstScreenMouse ) {
+        lastScreenMouseX = inX;
+        lastScreenMouseY = inY;
+        haveFirstScreenMouse = true;
+        }
+    else {
+        float deltaX = inX - lastScreenMouseX;
+        float deltaY = inY - lastScreenMouseY;
+        
+        lastScreenMouseX = inX;
+        lastScreenMouseY = inY;
+
+
+        lastMouseX += mouseSpeed * deltaX;
+        lastMouseY -= mouseSpeed * deltaY;
+        
+        }
+    
+    }
+
+
 
 void pointerMove( float inX, float inY ) {
-    lastMouseX = inX;
-    lastMouseY = inY;
+    mouseMove( inX, inY );
     }
 
 void pointerDown( float inX, float inY ) {
+    mouseMove( inX, inY );
     shooting = true;
     }
 
 
 void pointerDrag( float inX, float inY ) {
-    lastMouseX = inX;
-    lastMouseY = inY;
+    mouseMove( inX, inY );
     }
 
 void pointerUp( float inX, float inY ) {
+    mouseMove( inX, inY );
     shooting = false;
     // keep old step counter going for next mouse press
     }
