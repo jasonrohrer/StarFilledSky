@@ -114,7 +114,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     mouseSpeed = viewWidth / inWidth;
     
-    //setCursorVisible( false );
+    setCursorVisible( false );
     grabInput( true );
     
     // raw screen coordinates
@@ -146,6 +146,30 @@ float lastMouseX = 0;
 float lastMouseY = 0;
 
 SimpleVector<doublePair> hitWallSpots;
+
+
+
+static void confineMouseOnScreen() {
+    double halfViewWidth = viewWidth / 2;
+    
+    if( lastMouseX > viewCenter.x + halfViewWidth ) {
+        lastMouseX = viewCenter.x + halfViewWidth;
+        }
+    else if( lastMouseX < viewCenter.x - halfViewWidth ) {
+        lastMouseX = viewCenter.x - halfViewWidth;
+        }
+
+    double halfViewHeight = ( viewWidth * viewHeightFraction ) / 2;
+    
+    if( lastMouseY > viewCenter.y + halfViewHeight ) {
+        lastMouseY = viewCenter.y + halfViewHeight;
+        }
+    else if( lastMouseY < viewCenter.y - halfViewHeight ) {
+        lastMouseY = viewCenter.y - halfViewHeight;
+        }
+
+    }
+
 
 
 void drawFrame() {
@@ -214,10 +238,17 @@ void drawFrame() {
     // move mouse with screen
     //lastMouseX += viewDelta.x;
     //lastMouseY += viewDelta.y;
+
+    
+    
     
 
     viewCenter = newViewPos;
     setViewCenterPosition( viewCenter.x, viewCenter.y );
+
+    if( viewDelta.x != 0 || viewDelta.y != 0 ) {
+        confineMouseOnScreen();
+        }
 
     if( shooting ) {
         if( stepsTilNextBullet == 0 ) {
@@ -270,6 +301,8 @@ static void mouseMove( float inX, float inY ) {
         lastMouseX += mouseSpeed * deltaX;
         lastMouseY -= mouseSpeed * deltaY;
         
+
+        confineMouseOnScreen();
         }
     
     if( lastScreenMouseX < 1 || lastScreenMouseX > screenW - 2
