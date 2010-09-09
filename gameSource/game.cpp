@@ -106,6 +106,16 @@ Level *currentLevel;
 SimpleVector<Level *> levelRiseStack;
 
 
+typedef struct LevelPositionInfo {
+        doublePair viewCenter;
+        doublePair lastScreenViewCenter;
+        double lastMouseX;
+        double lastMouseY;
+    } LevelPositionInfo;
+
+SimpleVector<LevelPositionInfo> levelRisePositionInfoStack;
+
+
 
 
 void initFrameDrawer( int inWidth, int inHeight ) {
@@ -142,6 +152,7 @@ void freeFrameDrawer() {
         delete *( levelRiseStack.getElement( i ) );
         }
     levelRiseStack.deleteAll();    
+    levelRisePositionInfoStack.deleteAll();
     }
 
 
@@ -335,7 +346,11 @@ void drawFrame() {
         if( currentLevel->isEnemy( mousePos ) ) {
             
             levelRiseStack.push_back( currentLevel );
-            
+            LevelPositionInfo info = 
+                { viewCenter, lastScreenViewCenter, lastMouseX, lastMouseY };
+            levelRisePositionInfoStack.push_back( info );
+                                
+
             currentLevel = new Level();
             viewCenter.x = 0;
             viewCenter.y = 0;
@@ -348,7 +363,40 @@ void drawFrame() {
         
         }
     
+    if( currentLevel->isRiseSpot( viewCenter ) ) {
+        
+        if( levelRiseStack.size() == 0 ) {
+            // push one on to rise into
+            levelRiseStack.push_back( new Level() );
+            
+            LevelPositionInfo info = 
+                { {0,0}, {0,0}, 0, 0 };
+            levelRisePositionInfoStack.push_back( info );
+            }
+        
+        // rise up to last level on stack
+        Level *nextUp = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        
+        levelRiseStack.deleteElement( levelRiseStack.size() - 1 );
+        
+        LevelPositionInfo nextUpPos =
+            *( levelRisePositionInfoStack.getElement( 
+                   levelRisePositionInfoStack.size() - 1 ) );
+        levelRisePositionInfoStack.deleteElement( 
+            levelRisePositionInfoStack.size() - 1 );
 
+        delete currentLevel;
+        
+        currentLevel = nextUp;
+        viewCenter = nextUpPos.viewCenter;
+        lastScreenViewCenter = nextUpPos.lastScreenViewCenter;
+        lastMouseX = nextUpPos.lastMouseX;
+        lastMouseY = nextUpPos.lastMouseY;
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
+        }
+    
     
     }
 

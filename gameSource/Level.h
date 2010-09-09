@@ -42,6 +42,8 @@ class Level {
         
         char isEnemy( doublePair inPos );
         
+        char isRiseSpot( doublePair inPos );
+        
         
         doublePair stopMoveWithWall( doublePair inStart,
                                      doublePair inMoveDelta );
@@ -59,6 +61,8 @@ class Level {
         SimpleVector<Bullet> mBullets;
 
         SimpleVector<Enemy> mEnemies;
+        
+        doublePair mRisePosition;
         
 
     };

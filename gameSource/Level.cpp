@@ -112,6 +112,21 @@ Level::Level() {
             
             }
         }
+    
+    // place rise marker in random floor spot
+    char placed = false;
+
+    while( !placed ) {
+        int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
+        int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+        
+        if( mWallFlags[y][x] == 1 ) {
+            placed = true;
+            mRisePosition.x = x;
+            mRisePosition.y = y;
+            }
+        }
+    
     }
 
 
@@ -220,7 +235,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
         }
     
     
-
+    // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
             
@@ -245,6 +260,14 @@ void Level::drawLevel( doublePair inViewCenter ) {
             }
         }
 
+
+    // draw rise marker
+    setDrawColor( 1, 1, 0, 1 ); 
+    doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
+                            mRisePosition.y - MAX_LEVEL_H/2 };
+    drawSquare( riseSpot, 0.5 );
+    
+
     // draw bullets
     for( i=0; i<mBullets.size(); i++ ) {
         
@@ -263,6 +286,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
             }
         drawSquare( b->position, 0.05 );
         }
+
 
 
     // draw enemies
@@ -293,6 +317,25 @@ char Level::isWall( doublePair inPos ) {
         
     return ( mWallFlags[y][x] == 2 );
     }
+
+
+char Level::isRiseSpot( doublePair inPos ) {
+    int x = (int)( rint( inPos.x ) );
+    int y = (int)( rint( inPos.y ) );
+    
+    x += MAX_LEVEL_W/2;
+    y += MAX_LEVEL_H/2;
+    
+    if( x < 0 || x >= MAX_LEVEL_W ||
+        y < 0 || y >= MAX_LEVEL_H ) {
+        // out of bounds
+        return false;
+        }
+    
+        
+    return ( mRisePosition.x == x && mRisePosition.y == y );
+    }
+
 
 
 
