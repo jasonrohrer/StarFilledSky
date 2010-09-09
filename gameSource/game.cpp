@@ -115,7 +115,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -345,17 +345,106 @@ void pointerUp( float inX, float inY ) {
 
 
 
+static char movementKeysDown[4] = { false, false, false, false };
+static char lastMovementKeysDown[4] = { false, false, false, false };
+
+static void movementKeyChange() {
+    
+    // new presses
+    if( movementKeysDown[0] && ! lastMovementKeysDown[0] ) {
+        velocityY = moveSpeed;
+        }
+    else if( movementKeysDown[1] && ! lastMovementKeysDown[1] ) {
+        velocityY = -moveSpeed;
+        }
+    // releases?
+    else if( movementKeysDown[0] && ! movementKeysDown[1] ) {
+        velocityY = moveSpeed;
+        }
+    else if( movementKeysDown[1] && ! movementKeysDown[0] ) {
+        velocityY = -moveSpeed;
+        }
+    else if( ! movementKeysDown[0] && ! movementKeysDown[1] ) {
+        velocityY = 0;
+        }
+    
+
+    // new presses
+    if( movementKeysDown[2] && ! lastMovementKeysDown[2] ) {
+        velocityX = moveSpeed;
+        }
+    else if( movementKeysDown[3] && ! lastMovementKeysDown[3] ) {
+        velocityX = -moveSpeed;
+        }
+    // releases?
+    else if( movementKeysDown[2] && ! movementKeysDown[3] ) {
+        velocityX = moveSpeed;
+        }
+    else if( movementKeysDown[3] && ! movementKeysDown[2] ) {
+        velocityX = -moveSpeed;
+        }
+    else if( ! movementKeysDown[2] && ! movementKeysDown[3] ) {
+        velocityX = 0;
+        }
+
+
+    memcpy( lastMovementKeysDown, movementKeysDown, 4 );
+    }
 
 
 
 
 
 void keyDown( unsigned char inASCII ) {
-
+    switch( inASCII ) {
+        case 'w':
+        case 'W':
+            movementKeysDown[0] = true;
+            movementKeyChange();
+            break;
+        case 's':
+        case 'S':
+            movementKeysDown[1] = true;
+            movementKeyChange();
+            break;
+        case 'd':
+        case 'D':
+            movementKeysDown[2] = true;
+            movementKeyChange();
+            break;
+        case 'a':
+        case 'A':
+            movementKeysDown[3] = true;
+            movementKeyChange();
+            break;
+        }
     }
 
 
-void keyUp( unsigned char inASCII ) {}
+void keyUp( unsigned char inASCII ) {
+    switch( inASCII ) {
+        case 'w':
+        case 'W':
+            movementKeysDown[0] = false;
+            movementKeyChange();
+            break;
+        case 's':
+        case 'S':
+            movementKeysDown[1] = false;
+            movementKeyChange();
+            break;
+        case 'd':
+        case 'D':
+            movementKeysDown[2] = false;
+            movementKeyChange();
+            break;
+        case 'a':
+        case 'A':
+            movementKeysDown[3] = false;
+            movementKeyChange();
+            break;
+        }
+    }
 
 
 
@@ -368,16 +457,20 @@ void specialKeyDown( int inKey ) {
 
     switch( inKey ) {
         case MG_KEY_UP:
-            velocityY = moveSpeed;
+            movementKeysDown[0] = true;
+            movementKeyChange();
             break;
         case MG_KEY_DOWN:
-            velocityY = -moveSpeed;
+            movementKeysDown[1] = true;
+            movementKeyChange();
             break;
         case MG_KEY_RIGHT:
-            velocityX = moveSpeed;
+            movementKeysDown[2] = true;
+            movementKeyChange();
             break;
         case MG_KEY_LEFT:
-            velocityX = -moveSpeed;
+            movementKeysDown[3] = true;
+            movementKeyChange();
             break;
         }
 
@@ -388,16 +481,20 @@ void specialKeyDown( int inKey ) {
 void specialKeyUp( int inKey ) {
     switch( inKey ) {
         case MG_KEY_UP:
-            velocityY = 0;
+            movementKeysDown[0] = false;
+            movementKeyChange();
             break;
         case MG_KEY_DOWN:
-            velocityY = 0;
+            movementKeysDown[1] = false;
+            movementKeyChange();
             break;
         case MG_KEY_RIGHT:
-            velocityX = 0;
+            movementKeysDown[2] = false;
+            movementKeyChange();
             break;
         case MG_KEY_LEFT:
-            velocityX = 0;
+            movementKeysDown[3] = false;
+            movementKeyChange();
             break;
         }
 
