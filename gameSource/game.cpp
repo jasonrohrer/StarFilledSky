@@ -63,6 +63,8 @@ double globalRandomSeed = 0;
 
 // position of view in world
 doublePair viewCenter = {0, 0};
+doublePair lastScreenViewCenter = viewCenter;
+
 
 // world with of one view
 double viewWidth = 20;
@@ -114,7 +116,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     mouseSpeed = viewWidth / inWidth;
     
-    setCursorVisible( false );
+    //setCursorVisible( false );
     grabInput( true );
     
     // raw screen coordinates
@@ -235,17 +237,50 @@ void drawFrame() {
     
     doublePair viewDelta = sub( newViewPos, viewCenter );
     
-    // move mouse with screen
-    //lastMouseX += viewDelta.x;
-    //lastMouseY += viewDelta.y;
-
+    
     
     
     
 
     viewCenter = newViewPos;
-    setViewCenterPosition( viewCenter.x, viewCenter.y );
 
+    double screenCenterDistanceFromPlayer = 
+        distance( viewCenter, lastScreenViewCenter );
+    double minDistanceToMoveScreen = 
+        0.2 * ( viewWidth * viewHeightFraction ) / 2;
+
+    // stop move screen whenever player is inside the center square
+    if( screenCenterDistanceFromPlayer > 
+        minDistanceToMoveScreen ) {
+
+        doublePair screenMoveDelta = sub( viewCenter, lastScreenViewCenter );
+        
+        // set correction speed based on how far off we are from VERY CENTER
+        // since we stop moving when player inside center box, this eliminates
+        // jerky micro-movements.
+        double correctionSpeed = 
+            0.005 * 
+            pow(
+                (screenCenterDistanceFromPlayer - 0),
+                2 );
+        
+        screenMoveDelta.x *= correctionSpeed;
+        screenMoveDelta.y *= correctionSpeed;
+        
+
+        lastScreenViewCenter = add( lastScreenViewCenter, screenMoveDelta );
+        
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
+
+        if( ! shooting ) {
+            // move mouse with screen
+            lastMouseX += screenMoveDelta.x;
+            lastMouseY += screenMoveDelta.y;
+            }
+        }
+
+    
     if( viewDelta.x != 0 || viewDelta.y != 0 ) {
         confineMouseOnScreen();
         }
