@@ -9,7 +9,8 @@
 extern CustomRandomSource randSource;
 
 
-double maxEnemySpeed = 0.20;
+double maxEnemySpeed = 0.10;
+double enemyBulletSpeed = 0.2;
 
 
 Level::Level() {
@@ -102,7 +103,8 @@ Level::Level() {
                     doublePair v = { 0, 0 };
                     doublePair a = { 0, 0 };
                     
-                    Enemy e = { spot, v, a, 10, 0 };
+                    Enemy e = { spot, v, a, 20, 
+                                randSource.getRandomBoundedInt( 0, 10 ) };
                     
                     mEnemies.push_back( e );
                     }
@@ -134,7 +136,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
         if( isWall( b->position ) ) {
             hit = true;
                         }
-        else {
+        else if( b->playerFlag ) {
             // check if hit enemy
             char hit = false;
             
@@ -189,6 +191,32 @@ void Level::drawLevel( doublePair inViewCenter ) {
         // random adjustment to acceleration
         e->accel.x = randSource.getRandomBoundedDouble( -0.05, 0.05 );
         e->accel.y = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+
+        
+        if( e->stepsTilNextBullet == 0 ) {
+            // fire bullet
+
+            double playerDist = distance( inViewCenter, e->position );
+            doublePair bulletVelocity = sub( inViewCenter, e->position );
+            
+            // normalize
+            bulletVelocity.x /= playerDist;
+            bulletVelocity.y /= playerDist;
+            
+            // set speed
+            bulletVelocity.x *= enemyBulletSpeed;
+            bulletVelocity.y *= enemyBulletSpeed;
+            
+            
+            addBullet( e->position, bulletVelocity, false );
+            
+
+            e->stepsTilNextBullet = e->stepsBetweenBullets;
+            }
+        else {
+            e->stepsTilNextBullet --;
+            }
+        
         }
     
     
