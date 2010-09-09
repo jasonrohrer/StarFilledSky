@@ -99,14 +99,22 @@ Level::Level() {
 
                     doublePair spot = { x - MAX_LEVEL_W/2,
                                         y - MAX_LEVEL_H/2 };
+                    
+                    // keep enemies away from player starting spot (fair)
 
-                    doublePair v = { 0, 0 };
-                    doublePair a = { 0, 0 };
+                    doublePair playerSpot = {0,0};
                     
-                    Enemy e = { spot, v, a, 20, 
-                                randSource.getRandomBoundedInt( 0, 10 ) };
+                    if( distance( spot, playerSpot ) > 20 ) {
                     
-                    mEnemies.push_back( e );
+                        doublePair v = { 0, 0 };
+                        doublePair a = { 0, 0 };
+                        
+                        Enemy e = { spot, v, a, 20, 
+                                    randSource.getRandomBoundedInt( 0, 10 ) };
+                        
+                        mEnemies.push_back( e );
+                        }
+                    
                     }
                 }
             
