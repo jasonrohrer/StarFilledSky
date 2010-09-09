@@ -9,6 +9,9 @@
 extern CustomRandomSource randSource;
 
 
+double maxEnemySpeed = 0.20;
+
+
 Level::Level() {
     
     int x;
@@ -117,9 +120,10 @@ Level::~Level() {
 
         
 void Level::drawLevel( doublePair inViewCenter ) {
-
+    int i;
+    
     // step bullets
-    for( int i=0; i<mBullets.size(); i++ ) {
+    for( i=0; i<mBullets.size(); i++ ) {
         
         Bullet *b = mBullets.getElement( i );
         
@@ -153,6 +157,40 @@ void Level::drawLevel( doublePair inViewCenter ) {
         
         
         }
+
+    // step enemies
+    for( i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+    
+        doublePair oldPos = e->position;
+        e->position = stopMoveWithWall( e->position,
+                                        e->velocity );
+        
+        // get actual velocity, taking wall collision into account
+        e->velocity = sub( e->position, oldPos );
+        
+        e->velocity = add( e->velocity, e->accel );
+
+        if( e->velocity.x > maxEnemySpeed ) {
+            e->velocity.x = maxEnemySpeed;
+            }
+        else if( e->velocity.x < -maxEnemySpeed ) {
+            e->velocity.x = -maxEnemySpeed;
+            }
+
+        if( e->velocity.y > maxEnemySpeed ) {
+            e->velocity.y = maxEnemySpeed;
+            }
+        else if( e->velocity.y < -maxEnemySpeed ) {
+            e->velocity.y = -maxEnemySpeed;
+            }
+        
+        
+        // random adjustment to acceleration
+        e->accel.x = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+        e->accel.y = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+        }
+    
     
 
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
@@ -180,7 +218,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
         }
 
     // draw bullets
-    for( int i=0; i<mBullets.size(); i++ ) {
+    for( i=0; i<mBullets.size(); i++ ) {
         
         Bullet *b = mBullets.getElement( i );
 
@@ -200,7 +238,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
 
 
     // draw enemies
-    for( int i=0; i<mEnemies.size(); i++ ) {
+    for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         
         setDrawColor( 0, 0, 0, 1 );
