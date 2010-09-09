@@ -93,6 +93,8 @@ int stepsBetweenBullets = 5;
 double bulletSpeed = 0.5;
 
 
+char entering = false;
+
 
 
 const char *getWindowTitle() {
@@ -100,6 +102,9 @@ const char *getWindowTitle() {
     }
 
 Level *currentLevel;
+
+SimpleVector<Level *> levelRiseStack;
+
 
 
 
@@ -129,14 +134,17 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     currentLevel = new Level();
     }
 
+
 void freeFrameDrawer() {
+    delete currentLevel;
+    
+    for( int i=0; i<levelRiseStack.size(); i++ ) {
+        delete *( levelRiseStack.getElement( i ) );
+        }
+    levelRiseStack.deleteAll();    
     }
 
 
-int numRadii = 100;
-
-
-char lightingOn = true;
 
 
 char haveFirstScreenMouse = false;
@@ -193,7 +201,12 @@ void drawFrame() {
     currentLevel->drawLevel( viewCenter );
 
     // reticle
-    setDrawColor( 0, 1, 0, 0.5 );
+    if( entering ) {
+        setDrawColor( 1, 1, 1, 1 );
+        }
+    else {
+        setDrawColor( 0, 1, 0, 0.5 );
+        }
     
     doublePair mousePos = { lastMouseX, lastMouseY };
     
@@ -315,6 +328,26 @@ void drawFrame() {
         stepsTilNextBullet --;
         }
 
+
+    if( entering ) {
+        doublePair mousePos = { lastMouseX, lastMouseY };
+
+        if( currentLevel->isEnemy( mousePos ) ) {
+            
+            levelRiseStack.push_back( currentLevel );
+            
+            currentLevel = new Level();
+            viewCenter.x = 0;
+            viewCenter.y = 0;
+            lastMouseX = 0;
+            lastMouseY = 0;
+            lastScreenViewCenter.x = 0;
+            lastScreenViewCenter.y = 0;
+            setViewCenterPosition( 0, 0 );
+            }
+        
+        }
+    
 
     
     }
@@ -453,6 +486,9 @@ void keyDown( unsigned char inASCII ) {
             movementKeysDown[3] = true;
             movementKeyChange();
             break;
+        case ' ':
+            entering = true;
+            break;
         }
     }
 
@@ -478,6 +514,9 @@ void keyUp( unsigned char inASCII ) {
         case 'A':
             movementKeysDown[3] = false;
             movementKeyChange();
+            break;
+        case ' ':
+            entering = false;
             break;
         }
     }

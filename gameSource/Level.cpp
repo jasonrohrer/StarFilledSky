@@ -296,6 +296,19 @@ char Level::isWall( doublePair inPos ) {
 
 
 
+char Level::isEnemy( doublePair inPos ) {
+    for( int j=0; j<mEnemies.size(); j++ ) {
+        Enemy *e = mEnemies.getElement( j );
+        
+        if( distance( e->position, inPos ) < 0.4 ) {
+            return true;
+            }
+        }
+    return false;
+    }
+
+
+
 doublePair Level::stopMoveWithWall( doublePair inStart,
                                     doublePair inMoveDelta ) {
 

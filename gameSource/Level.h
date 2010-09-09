@@ -40,6 +40,8 @@ class Level {
 
         char isWall( doublePair inPos );
         
+        char isEnemy( doublePair inPos );
+        
         
         doublePair stopMoveWithWall( doublePair inStart,
                                      doublePair inMoveDelta );
