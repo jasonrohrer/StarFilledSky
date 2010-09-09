@@ -147,7 +147,6 @@ float lastScreenMouseX, lastScreenMouseY;
 float lastMouseX = 0;
 float lastMouseY = 0;
 
-SimpleVector<doublePair> hitWallSpots;
 
 
 
@@ -189,18 +188,6 @@ void drawFrame() {
     */
 
       
-    /*
-
-    if( !currentLevel->isWall( newViewPos ) ) {
-        viewCenter = newViewPos;
-        setViewCenterPosition( viewCenter.x, viewCenter.y );
-        }
-    else {
-        hitWallSpots.push_back( newViewPos );
-        printf( "hit at %f,%f\n", newViewPos.x, newViewPos.y );
-        
-        }
-    */
         
     
     currentLevel->drawLevel( viewCenter );
@@ -208,27 +195,22 @@ void drawFrame() {
     // reticle
     setDrawColor( 0, 1, 0, 0.5 );
     
-    doublePair p = { lastMouseX, lastMouseY };
+    doublePair mousePos = { lastMouseX, lastMouseY };
     
-    drawSquare( p, 0.125 );
+    drawSquare( mousePos, 0.125 );
 
     setDrawColor( 0, 0, 0, 0.5 );
 
-    drawSquare( p, 0.025 );
+    drawSquare( mousePos, 0.025 );
 
     
     // player
     setDrawColor( 1, 0, 0, 1 );
-    p = viewCenter;
-    drawSquare( p, 0.125 );
+    drawSquare( viewCenter, 0.125 );
 
     setDrawColor( 0, 1, 0, 0.5 );
     
-    for( int i=0; i<hitWallSpots.size(); i++ ) {
-        p = *( hitWallSpots.getElement( i ) );
-        //drawSquare( p, 0.06 );
-        }
-
+    
 
     doublePair velocity = { velocityX, velocityY };
     
@@ -255,8 +237,15 @@ void drawFrame() {
 
     viewCenter = newViewPos;
 
+    
+    // halfway between player and reticle
+    doublePair posToCenterOnScreen = add( viewCenter, mousePos );
+    posToCenterOnScreen.x /= 2;
+    posToCenterOnScreen.y /= 2;
+    
+
     double screenCenterDistanceFromPlayer = 
-        distance( viewCenter, lastScreenViewCenter );
+        distance( posToCenterOnScreen, lastScreenViewCenter );
     double minDistanceToMoveScreen = 
         0.2 * ( viewWidth * viewHeightFraction ) / 2;
 
@@ -264,7 +253,8 @@ void drawFrame() {
     if( screenCenterDistanceFromPlayer > 
         minDistanceToMoveScreen ) {
 
-        doublePair screenMoveDelta = sub( viewCenter, lastScreenViewCenter );
+        doublePair screenMoveDelta = sub( posToCenterOnScreen, 
+                                          lastScreenViewCenter );
         
         // set correction speed based on how far off we are from VERY CENTER
         // since we stop moving when player inside center box, this eliminates
