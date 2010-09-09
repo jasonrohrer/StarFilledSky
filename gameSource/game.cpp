@@ -116,7 +116,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     mouseSpeed = viewWidth / inWidth;
     
-    //setCursorVisible( false );
+    setCursorVisible( false );
     grabInput( true );
     
     // raw screen coordinates

@@ -30,7 +30,7 @@ Level::Level() {
     // fill in floor first
 
     // random walk
-    for( int i=0; i<1000; i++ ) {
+    for( int i=0; i<4000; i++ ) {
         mWallFlags[y][x] = 1;
 
         // move only in x or y, not both
