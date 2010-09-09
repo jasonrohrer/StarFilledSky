@@ -232,6 +232,17 @@ void drawFrame() {
 
     doublePair velocity = { velocityX, velocityY };
     
+    if( velocityX != 0 && velocityY != 0 ) {
+        // diagonal... slow it down so it's not faster than H or V move
+        
+        double componentVelocity = sqrt( (moveSpeed * moveSpeed)/2 );
+        
+        velocity.x = velocity.x / moveSpeed * componentVelocity;
+        velocity.y = velocity.y / moveSpeed * componentVelocity;
+        }
+    
+
+
     doublePair newViewPos = currentLevel->stopMoveWithWall( viewCenter,
                                                             velocity );
     
