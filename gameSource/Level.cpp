@@ -137,7 +137,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
             for( int j=0; j<mEnemies.size() && !hit; j++ ) {
                 Enemy *e = mEnemies.getElement( j );
                 
-                if( distance( e->position, b->position ) < 0.2 ) {
+                if( distance( e->position, b->position ) < 0.4 ) {
                     hit = true;
                     mEnemies.deleteElement( j );
                     }
