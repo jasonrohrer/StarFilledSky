@@ -154,20 +154,20 @@ SimpleVector<doublePair> hitWallSpots;
 static void confineMouseOnScreen() {
     double halfViewWidth = viewWidth / 2;
     
-    if( lastMouseX > viewCenter.x + halfViewWidth ) {
-        lastMouseX = viewCenter.x + halfViewWidth;
+    if( lastMouseX > lastScreenViewCenter.x + halfViewWidth ) {
+        lastMouseX = lastScreenViewCenter.x + halfViewWidth;
         }
-    else if( lastMouseX < viewCenter.x - halfViewWidth ) {
-        lastMouseX = viewCenter.x - halfViewWidth;
+    else if( lastMouseX < lastScreenViewCenter.x - halfViewWidth ) {
+        lastMouseX = lastScreenViewCenter.x - halfViewWidth;
         }
 
     double halfViewHeight = ( viewWidth * viewHeightFraction ) / 2;
     
-    if( lastMouseY > viewCenter.y + halfViewHeight ) {
-        lastMouseY = viewCenter.y + halfViewHeight;
+    if( lastMouseY > lastScreenViewCenter.y + halfViewHeight ) {
+        lastMouseY = lastScreenViewCenter.y + halfViewHeight;
         }
-    else if( lastMouseY < viewCenter.y - halfViewHeight ) {
-        lastMouseY = viewCenter.y - halfViewHeight;
+    else if( lastMouseY < lastScreenViewCenter.y - halfViewHeight ) {
+        lastMouseY = lastScreenViewCenter.y - halfViewHeight;
         }
 
     }
