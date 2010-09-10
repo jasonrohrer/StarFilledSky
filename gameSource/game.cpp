@@ -109,11 +109,21 @@ SimpleVector<Level *> levelRiseStack;
 typedef struct LevelPositionInfo {
         doublePair viewCenter;
         doublePair lastScreenViewCenter;
+        doublePair entryPosition;
         double lastMouseX;
         double lastMouseY;
     } LevelPositionInfo;
 
 SimpleVector<LevelPositionInfo> levelRisePositionInfoStack;
+
+
+// for zooming into new level
+Level *lastLevel = NULL;
+LevelPositionInfo lastLevelPosition;
+
+double zoomProgress = 0;
+double zoomSpeed = 0.005;
+
 
 
 
@@ -206,10 +216,58 @@ void drawFrame() {
                   mBackgroundColor->a );
     */
 
-      
+
+    char stencilDrawn = false;
+    
+    if( lastLevel != NULL ) {
         
+        double zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
+
+        double viewSize = viewWidth / zoomFactor;
+
+        setViewSize( viewSize );
+
+        
+        // move toward entry point as we zoom in
+        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 51 );
+        doublePair center = lastLevelPosition.lastScreenViewCenter;
+        
+        center.x *= ( 1 - moveFraction );
+        center.y *= ( 1 - moveFraction );
+        
+        center.x += moveFraction * lastLevelPosition.entryPosition.x;
+        center.y += moveFraction * lastLevelPosition.entryPosition.y;
+        
+        
+        
+        setViewCenterPosition( center.x, center.y );
+    
+        stencilDrawn = true;
+        lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
+        lastLevel->drawLevel( center );
+        
+        zoomProgress += zoomSpeed;
+        
+        if( zoomProgress >= 1 ) {
+            lastLevel = NULL;
+            }
+
+        // now draw current level
+        setViewSize( viewWidth );
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
+        }
+    
+    setDrawColor( 0, 0, 1, 1 );
+    
+    drawSquare( lastScreenViewCenter, viewWidth );
+
+    if( stencilDrawn ) {
+        setViewSize( 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) ) );
+        }
     
     currentLevel->drawLevel( viewCenter );
+    
 
     // reticle
     if( entering ) {
@@ -235,6 +293,12 @@ void drawFrame() {
     setDrawColor( 0, 1, 0, 0.5 );
     
     
+    if( stencilDrawn ) {
+        stopStencil();
+        }
+    
+
+
 
     doublePair velocity = { velocityX, velocityY };
     
@@ -343,13 +407,22 @@ void drawFrame() {
     if( entering ) {
         doublePair mousePos = { lastMouseX, lastMouseY };
 
-        if( currentLevel->isEnemy( mousePos ) ) {
+        int enemyIndex;
+        if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
             levelRiseStack.push_back( currentLevel );
+            // enemy is entry position
             LevelPositionInfo info = 
-                { viewCenter, lastScreenViewCenter, lastMouseX, lastMouseY };
+                { viewCenter, lastScreenViewCenter, 
+                  currentLevel->getEnemyCenter( enemyIndex ),
+                  lastMouseX, lastMouseY };
             levelRisePositionInfoStack.push_back( info );
-                                
+
+            lastLevel = currentLevel;
+            lastLevel->freezeLevel( true );
+
+            lastLevelPosition = info;
+            zoomProgress = 0;
 
             currentLevel = new Level();
             viewCenter.x = 0;
@@ -370,7 +443,7 @@ void drawFrame() {
             levelRiseStack.push_back( new Level() );
             
             LevelPositionInfo info = 
-                { {0,0}, {0,0}, 0, 0 };
+                { {0,0}, {0,0}, {0,0}, 0, 0 };
             levelRisePositionInfoStack.push_back( info );
             }
         
@@ -389,6 +462,7 @@ void drawFrame() {
         delete currentLevel;
         
         currentLevel = nextUp;
+        currentLevel->freezeLevel( false );
         viewCenter = nextUpPos.viewCenter;
         lastScreenViewCenter = nextUpPos.lastScreenViewCenter;
         lastMouseX = nextUpPos.lastMouseX;
@@ -396,8 +470,6 @@ void drawFrame() {
         setViewCenterPosition( lastScreenViewCenter.x, 
                                lastScreenViewCenter.y );
         }
-    
-    
     }
 
 

@@ -35,14 +35,28 @@ class Level {
         ~Level();
 
         
+        // must be called before each invokation of drawLevel to have effect
+        
+        // position of item that should be drawn as a transparent window
+        // on the next call to drawLevel
+        void setItemWindowPosition( doublePair inPosition );
+        
+
         void drawLevel( doublePair inViewCenter );
         
 
         char isWall( doublePair inPos );
         
-        char isEnemy( doublePair inPos );
+        char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         
         char isRiseSpot( doublePair inPos );
+        
+
+        doublePair getEnemyCenter( int inEnemyIndex );
+        
+
+        // freeze level step updates during drawLevel
+        void freezeLevel( char inFrozen );
         
         
         doublePair stopMoveWithWall( doublePair inStart,
@@ -55,6 +69,9 @@ class Level {
 
     protected:
         
+        
+        void step( doublePair inViewCenter );
+        
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
         
@@ -64,7 +81,12 @@ class Level {
         
         doublePair mRisePosition;
         
+        char mFrozen;
+        
 
+        char mWindowSet;
+        int mWindowItemIndex;
+        
     };
 
         

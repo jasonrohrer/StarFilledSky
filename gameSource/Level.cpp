@@ -14,6 +14,9 @@ double enemyBulletSpeed = 0.2;
 
 
 Level::Level() {
+
+    mFrozen = false;
+    mWindowSet = false;
     
     int x;
     int y;
@@ -143,8 +146,19 @@ Level::~Level() {
     }
 
 
-        
-void Level::drawLevel( doublePair inViewCenter ) {
+void Level::setItemWindowPosition( doublePair inPosition ) {
+    int index;
+    char found = isEnemy( inPosition, &index );
+    
+    if( found ) {
+        mWindowSet = true;
+        mWindowItemIndex = index;
+        }
+    }
+
+
+
+void Level::step( doublePair inViewCenter ) {
     int i;
     
     // step bullets
@@ -241,7 +255,17 @@ void Level::drawLevel( doublePair inViewCenter ) {
             }
         
         }
+    }
+
+
+        
+void Level::drawLevel( doublePair inViewCenter ) {
     
+    if( !mFrozen ) {
+        step( inViewCenter );
+        }
+    
+    int i;
     
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
@@ -305,6 +329,15 @@ void Level::drawLevel( doublePair inViewCenter ) {
         drawSquare( e->position, 0.25 );
         }
     
+
+    if( mWindowSet ) {
+        startAddingToStencil( false );
+        Enemy *e = mEnemies.getElement( mWindowItemIndex );
+        drawSquare( e->position, 0.2 );
+    
+        startDrawingThroughStencil();
+        }
+    
     }
 
 
@@ -346,17 +379,35 @@ char Level::isRiseSpot( doublePair inPos ) {
 
 
 
+doublePair Level::getEnemyCenter( int inEnemyIndex ) {
+    Enemy *e = mEnemies.getElement( inEnemyIndex );
+    return e->position;
+    }
 
-char Level::isEnemy( doublePair inPos ) {
+
+
+
+char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
     for( int j=0; j<mEnemies.size(); j++ ) {
         Enemy *e = mEnemies.getElement( j );
         
         if( distance( e->position, inPos ) < 0.4 ) {
+
+            if( outEnemyIndex != NULL ) {
+                *outEnemyIndex = j;
+                }
             return true;
             }
         }
     return false;
     }
+
+
+
+void Level::freezeLevel( char inFrozen ) {
+    mFrozen = inFrozen;
+    }
+
 
 
 
