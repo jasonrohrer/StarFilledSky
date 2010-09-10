@@ -122,7 +122,7 @@ Level *lastLevel = NULL;
 LevelPositionInfo lastLevelPosition;
 
 double zoomProgress = 0;
-double zoomSpeed = 0.005;
+double zoomSpeed = 0.02;
 
 
 
@@ -245,25 +245,47 @@ void drawFrame() {
         stencilDrawn = true;
         lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
         lastLevel->drawLevel( center );
+
+        // now draw current level
+        setViewSize( viewWidth );
+
+        center = sub( lastLevelPosition.entryPosition,
+                      lastLevelPosition.lastScreenViewCenter );
+        
+        center.x *= 1 - moveFraction;
+        center.y *= 1 - moveFraction;
+        center.x *= -1;
+        center.y *= -1;
+        center.x *= 51;
+        center.y *= 51;
+        
+        center = add( center, lastScreenViewCenter );
+        /*
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
+        */
+        setViewCenterPosition( center.x, 
+                               center.y );
+
+        setDrawColor( 0, 0, 1, 1 );
+    
+        drawSquare( center, viewWidth );
+        }
+    else {
+        setDrawColor( 0, 0, 1, 1 );
+    
+        drawSquare( lastScreenViewCenter, viewWidth );
+        }
+    
+
+    if( stencilDrawn ) {
+        setViewSize( 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) ) );
         
         zoomProgress += zoomSpeed;
         
         if( zoomProgress >= 1 ) {
             lastLevel = NULL;
             }
-
-        // now draw current level
-        setViewSize( viewWidth );
-        setViewCenterPosition( lastScreenViewCenter.x, 
-                               lastScreenViewCenter.y );
-        }
-    
-    setDrawColor( 0, 0, 1, 1 );
-    
-    drawSquare( lastScreenViewCenter, viewWidth );
-
-    if( stencilDrawn ) {
-        setViewSize( 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) ) );
         }
     
     currentLevel->drawLevel( viewCenter );
