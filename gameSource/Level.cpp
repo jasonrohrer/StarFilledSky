@@ -336,7 +336,6 @@ void Level::drawLevel( doublePair inViewCenter ) {
         drawSquare( e->position, 0.2 );
     
         startDrawingThroughStencil();
-        printf( "Stencil drawing\n " );
         }
     
     }

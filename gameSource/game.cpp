@@ -145,7 +145,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    //grabInput( true );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -289,13 +289,19 @@ void drawFrame() {
     
 
     if( stencilDrawn ) {
-        setViewSize( 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) ) );
+        double viewSize = 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) );
+        printf( "%f = Current view size\n", viewSize );
+        
+        setViewSize( viewSize );
         
         zoomProgress += zoomSpeed * zoomDirection;
         
         if( zoomProgress >= 1 && zoomDirection == 1) {
             lastLevel = NULL;
             // go with current level
+            setViewSize( viewWidth );
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
