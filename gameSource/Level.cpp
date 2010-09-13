@@ -342,6 +342,17 @@ void Level::drawLevel( doublePair inViewCenter ) {
 
 
 
+void Level::drawWindowShade( double inFade ) {
+    if( mWindowSet ) {
+        Enemy *e = mEnemies.getElement( mWindowItemIndex );
+        setDrawColor( 0, 0, 0, inFade );
+        drawSquare( e->position, 0.25 );
+        }
+    }
+
+
+
+
 char Level::isWall( doublePair inPos ) {
     int x = (int)( rint( inPos.x ) );
     int y = (int)( rint( inPos.y ) );

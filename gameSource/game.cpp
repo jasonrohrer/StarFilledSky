@@ -120,6 +120,9 @@ SimpleVector<LevelPositionInfo> levelRisePositionInfoStack;
 // for zooming into new level
 Level *lastLevel = NULL;
 LevelPositionInfo lastLevelPosition;
+doublePair lastLevelCurrentViewCenter;
+double lastLevelCurrentViewSize;
+
 
 double zoomProgress = 0;
 double zoomSpeed = 0.02;
@@ -226,7 +229,7 @@ void drawFrame() {
         double viewSize = viewWidth / zoomFactor;
 
         setViewSize( viewSize );
-
+        lastLevelCurrentViewSize = viewSize;
         
         // move toward entry point as we zoom in
         double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 51 );
@@ -242,9 +245,16 @@ void drawFrame() {
         
         setViewCenterPosition( center.x, center.y );
     
+        setDrawColor( 0, 0, 1, 1 );
+    
+        drawSquare( center, viewSize );
+
         stencilDrawn = true;
         lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
         lastLevel->drawLevel( center );
+        
+        lastLevelCurrentViewCenter = center;
+        
 
         // now draw current level
         setViewSize( viewWidth );
@@ -317,6 +327,13 @@ void drawFrame() {
     
     if( stencilDrawn ) {
         stopStencil();
+        
+        if( lastLevel != NULL ) {
+            setViewSize( lastLevelCurrentViewSize );
+            setViewCenterPosition( lastLevelCurrentViewCenter.x,
+                                   lastLevelCurrentViewCenter.y );
+            lastLevel->drawWindowShade( 1 - zoomProgress );
+            }
         }
     
 

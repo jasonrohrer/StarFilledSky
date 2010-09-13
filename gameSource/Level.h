@@ -39,8 +39,14 @@ class Level {
         
         // position of item that should be drawn as a transparent window
         // on the next call to drawLevel
+        // this will be set up as a pass-through stencil that will filter
+        // all drawing after drawLevel until stopStencil is called
         void setItemWindowPosition( doublePair inPosition );
         
+        // after drawing through stencil, call this to draw item body shade 
+        // on top.
+        void drawWindowShade( double inFade );
+
 
         void drawLevel( doublePair inViewCenter );
         
