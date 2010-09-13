@@ -336,6 +336,7 @@ void Level::drawLevel( doublePair inViewCenter ) {
         drawSquare( e->position, 0.2 );
     
         startDrawingThroughStencil();
+        printf( "Stencil drawing\n " );
         }
     
     }
@@ -349,6 +350,13 @@ void Level::drawWindowShade( double inFade ) {
         drawSquare( e->position, 0.25 );
         }
     }
+
+
+
+void Level::forgetItemWindow() {
+    mWindowSet = false;
+    }
+
 
 
 

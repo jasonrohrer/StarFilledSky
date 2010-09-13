@@ -126,7 +126,7 @@ double lastLevelCurrentViewSize;
 
 double zoomProgress = 0;
 double zoomSpeed = 0.02;
-
+double zoomDirection = 1;
 
 
 
@@ -145,7 +145,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -249,9 +249,9 @@ void drawFrame() {
     
         drawSquare( center, viewSize );
 
-        stencilDrawn = true;
         lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
         lastLevel->drawLevel( center );
+        stencilDrawn = true;
         
         lastLevelCurrentViewCenter = center;
         
@@ -291,11 +291,32 @@ void drawFrame() {
     if( stencilDrawn ) {
         setViewSize( 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) ) );
         
-        zoomProgress += zoomSpeed;
+        zoomProgress += zoomSpeed * zoomDirection;
         
-        if( zoomProgress >= 1 ) {
+        if( zoomProgress >= 1 && zoomDirection == 1) {
             lastLevel = NULL;
+            // go with current level
             }
+        else if( zoomProgress <= 0 && zoomDirection == -1 ) {
+            
+            // done with current level
+            delete currentLevel;
+            
+            currentLevel = lastLevel;
+            currentLevel->freezeLevel( false );
+            currentLevel->forgetItemWindow();
+            viewCenter = lastLevelPosition.viewCenter;
+            lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
+            lastMouseX = lastLevelPosition.lastMouseX;
+            lastMouseY = lastLevelPosition.lastMouseY;
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
+            
+            lastLevel = NULL;
+
+            setViewSize( viewWidth );
+            }
+        
         }
     
     currentLevel->drawLevel( viewCenter );
@@ -462,7 +483,8 @@ void drawFrame() {
 
             lastLevelPosition = info;
             zoomProgress = 0;
-
+            zoomDirection = 1;
+            
             currentLevel = new Level();
             viewCenter.x = 0;
             viewCenter.y = 0;
@@ -475,7 +497,7 @@ void drawFrame() {
         
         }
     
-    if( currentLevel->isRiseSpot( viewCenter ) ) {
+    if( currentLevel->isRiseSpot( viewCenter ) && lastLevel == NULL ) {
         
         if( levelRiseStack.size() == 0 ) {
             // push one on to rise into
@@ -487,27 +509,20 @@ void drawFrame() {
             }
         
         // rise up to last level on stack
-        Level *nextUp = 
+        lastLevel = 
             *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
         
         levelRiseStack.deleteElement( levelRiseStack.size() - 1 );
         
-        LevelPositionInfo nextUpPos =
+        lastLevelPosition =
             *( levelRisePositionInfoStack.getElement( 
                    levelRisePositionInfoStack.size() - 1 ) );
         levelRisePositionInfoStack.deleteElement( 
             levelRisePositionInfoStack.size() - 1 );
-
-        delete currentLevel;
         
-        currentLevel = nextUp;
-        currentLevel->freezeLevel( false );
-        viewCenter = nextUpPos.viewCenter;
-        lastScreenViewCenter = nextUpPos.lastScreenViewCenter;
-        lastMouseX = nextUpPos.lastMouseX;
-        lastMouseY = nextUpPos.lastMouseY;
-        setViewCenterPosition( lastScreenViewCenter.x, 
-                               lastScreenViewCenter.y );
+        lastLevel->freezeLevel( true );
+        zoomProgress = 1;
+        zoomDirection = -1;
         }
     }
 

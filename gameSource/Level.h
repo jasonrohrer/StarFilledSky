@@ -47,6 +47,8 @@ class Level {
         // on top.
         void drawWindowShade( double inFade );
 
+        void forgetItemWindow();
+
 
         void drawLevel( doublePair inViewCenter );
         
