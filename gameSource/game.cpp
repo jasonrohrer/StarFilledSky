@@ -62,8 +62,8 @@ double globalRandomSeed = 0;
 
 
 // position of view in world
-doublePair viewCenter = {0, 0};
-doublePair lastScreenViewCenter = viewCenter;
+doublePair playerPos = {0, 0};
+doublePair lastScreenViewCenter = playerPos;
 
 
 // world with of one view
@@ -107,7 +107,7 @@ SimpleVector<Level *> levelRiseStack;
 
 
 typedef struct LevelPositionInfo {
-        doublePair viewCenter;
+        doublePair playerPos;
         doublePair lastScreenViewCenter;
         doublePair entryPosition;
         double lastMouseX;
@@ -136,7 +136,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     screenH = inHeight;
     
 
-    setViewCenterPosition( viewCenter.x, viewCenter.y );
+    setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
     setViewSize( viewWidth );
 
     viewHeightFraction = inHeight / (double)inWidth;
@@ -256,7 +256,7 @@ void drawFrame() {
         drawSquare( center, viewSize );
 
         lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
-        lastLevel->drawLevel( center );
+        lastLevel->drawLevel();
         stencilDrawn = true;
         
         lastLevelCurrentViewCenter = center;
@@ -301,9 +301,9 @@ void drawFrame() {
     
     doublePair mousePos = { lastMouseX, lastMouseY };
     currentLevel->setMousePos( mousePos );
-    currentLevel->setPlayerPos( viewCenter );
+    currentLevel->setPlayerPos( playerPos );
     currentLevel->setEnteringMouse( entering );
-    currentLevel->drawLevel( viewCenter );
+    currentLevel->drawLevel();
 
 
     if( stencilDrawn ) {
@@ -337,7 +337,7 @@ void drawFrame() {
             currentLevel = lastLevel;
             currentLevel->freezeLevel( false );
             currentLevel->forgetItemWindow();
-            viewCenter = lastLevelPosition.viewCenter;
+            playerPos = lastLevelPosition.playerPos;
             lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
             lastMouseX = lastLevelPosition.lastMouseX;
             lastMouseY = lastLevelPosition.lastMouseY;
@@ -373,21 +373,21 @@ void drawFrame() {
     
 
 
-    doublePair newViewPos = currentLevel->stopMoveWithWall( viewCenter,
+    doublePair newPlayerPos = currentLevel->stopMoveWithWall( playerPos,
                                                             velocity );
     
-    doublePair viewDelta = sub( newViewPos, viewCenter );
+    doublePair viewDelta = sub( newPlayerPos, playerPos );
     
     
     
     
     
 
-    viewCenter = newViewPos;
+    playerPos = newPlayerPos;
 
     
     // halfway between player and reticle
-    doublePair posToCenterOnScreen = add( viewCenter, mousePos );
+    doublePair posToCenterOnScreen = add( playerPos, mousePos );
     posToCenterOnScreen.x /= 2;
     posToCenterOnScreen.y /= 2;
     
@@ -397,7 +397,7 @@ void drawFrame() {
     double minDistanceToMoveScreen = 
         0.2 * ( viewWidth * viewHeightFraction ) / 2;
 
-    // stop move screen whenever player is inside the center square
+    // stop move screen whenever position to center is inside the center square
     if( screenCenterDistanceFromPlayer > 
         minDistanceToMoveScreen ) {
 
@@ -439,8 +439,8 @@ void drawFrame() {
             // fire bullet
 
             doublePair mousePos = { lastMouseX, lastMouseY };
-            double mouseDist = distance( mousePos, viewCenter );
-            doublePair bulletVelocity = sub( mousePos, viewCenter );
+            double mouseDist = distance( mousePos, playerPos );
+            doublePair bulletVelocity = sub( mousePos, playerPos );
             
             // normalize
             bulletVelocity.x /= mouseDist;
@@ -451,7 +451,7 @@ void drawFrame() {
             bulletVelocity.y *= bulletSpeed;
             
             
-            currentLevel->addBullet( viewCenter, bulletVelocity, true );
+            currentLevel->addBullet( playerPos, bulletVelocity, true );
             
 
             stepsTilNextBullet = stepsBetweenBullets;
@@ -473,7 +473,7 @@ void drawFrame() {
             levelRiseStack.push_back( currentLevel );
             // enemy is entry position
             LevelPositionInfo info = 
-                { viewCenter, lastScreenViewCenter, 
+                { playerPos, lastScreenViewCenter, 
                   currentLevel->getEnemyCenter( enemyIndex ),
                   lastMouseX, lastMouseY };
             levelRisePositionInfoStack.push_back( info );
@@ -486,8 +486,8 @@ void drawFrame() {
             zoomDirection = 1;
             
             currentLevel = new Level();
-            viewCenter.x = 0;
-            viewCenter.y = 0;
+            playerPos.x = 0;
+            playerPos.y = 0;
             lastMouseX = 0;
             lastMouseY = 0;
             lastScreenViewCenter.x = 0;
@@ -497,7 +497,7 @@ void drawFrame() {
         
         }
     
-    if( currentLevel->isRiseSpot( viewCenter ) && lastLevel == NULL ) {
+    if( currentLevel->isRiseSpot( playerPos ) && lastLevel == NULL ) {
         
         if( levelRiseStack.size() == 0 ) {
             // push one on to rise into

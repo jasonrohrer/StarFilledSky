@@ -182,7 +182,7 @@ void Level::setItemWindowPosition( doublePair inPosition ) {
 
 
 
-void Level::step( doublePair inViewCenter ) {
+void Level::step() {
     int i;
     
     // step bullets
@@ -257,8 +257,8 @@ void Level::step( doublePair inViewCenter ) {
         if( e->stepsTilNextBullet == 0 ) {
             // fire bullet
 
-            double playerDist = distance( inViewCenter, e->position );
-            doublePair bulletVelocity = sub( inViewCenter, e->position );
+            double playerDist = distance( mPlayerPos, e->position );
+            doublePair bulletVelocity = sub( mPlayerPos, e->position );
             
             // normalize
             bulletVelocity.x /= playerDist;
@@ -283,10 +283,10 @@ void Level::step( doublePair inViewCenter ) {
 
 
         
-void Level::drawLevel( doublePair inViewCenter ) {
+void Level::drawLevel() {
     
     if( !mFrozen ) {
-        step( inViewCenter );
+        step();
         }
     
     int i;

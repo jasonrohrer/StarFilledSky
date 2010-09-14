@@ -57,7 +57,7 @@ class Level {
         void forgetItemWindow();
 
 
-        void drawLevel( doublePair inViewCenter );
+        void drawLevel();
         
 
         char isWall( doublePair inPos );
@@ -85,7 +85,7 @@ class Level {
     protected:
         
         
-        void step( doublePair inViewCenter );
+        void step();
         
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
