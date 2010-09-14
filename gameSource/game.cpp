@@ -263,7 +263,7 @@ void drawFrame() {
         
 
         // now draw current level
-        setViewSize( viewWidth );
+        
 
         center = sub( lastLevelPosition.entryPosition,
                       lastLevelPosition.lastScreenViewCenter );
@@ -285,25 +285,48 @@ void drawFrame() {
 
         setDrawColor( 0, 0, 1, 1 );
     
+        setViewSize( viewWidth );
         drawSquare( center, viewWidth );
+
+
+        viewSize = 51 * viewWidth / zoomFactor;        
+        setViewSize( viewSize );
         }
     else {
         setDrawColor( 0, 0, 1, 1 );
     
         drawSquare( lastScreenViewCenter, viewWidth );
         }
+
     
+    doublePair mousePos = { lastMouseX, lastMouseY };
+    currentLevel->setMousePos( mousePos );
+    currentLevel->setPlayerPos( viewCenter );
+    currentLevel->setEnteringMouse( entering );
+    currentLevel->drawLevel( viewCenter );
+
 
     if( stencilDrawn ) {
-        double viewSize = 51 * viewWidth / zoomFactor;
+        stopStencil();
         
-        setViewSize( viewSize );
-        
+        if( lastLevel != NULL ) {
+            setViewSize( lastLevelCurrentViewSize );
+            setViewCenterPosition( lastLevelCurrentViewCenter.x,
+                                   lastLevelCurrentViewCenter.y );
+            lastLevel->drawWindowShade( 1 - zoomProgress );
+            }
+
+
+        // step zoom and check for zoom end
+
         zoomProgress += zoomSpeed * zoomDirection;
         
         if( zoomProgress >= 1 && zoomDirection == 1) {
             lastLevel = NULL;
             // go with current level
+            setViewSize( viewWidth );
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
@@ -319,33 +342,20 @@ void drawFrame() {
             lastMouseX = lastLevelPosition.lastMouseX;
             lastMouseY = lastLevelPosition.lastMouseY;
             
+            mousePos.x = lastMouseX;
+            mousePos.y = lastMouseY;
+            
+
             lastLevel = NULL;
-            }
         
-        }
-    else {
-        setViewSize( viewWidth );
-        setViewCenterPosition( lastScreenViewCenter.x, 
-                               lastScreenViewCenter.y );
+            setViewSize( viewWidth );
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
+            }    
         }
     
-    doublePair mousePos = { lastMouseX, lastMouseY };
-    currentLevel->setMousePos( mousePos );
-    currentLevel->setPlayerPos( viewCenter );
-    currentLevel->setEnteringMouse( entering );
-    currentLevel->drawLevel( viewCenter );
 
     
-    if( stencilDrawn ) {
-        stopStencil();
-        
-        if( lastLevel != NULL ) {
-            setViewSize( lastLevelCurrentViewSize );
-            setViewCenterPosition( lastLevelCurrentViewCenter.x,
-                                   lastLevelCurrentViewCenter.y );
-            lastLevel->drawWindowShade( 1 - zoomProgress );
-            }
-        }
     
 
 
