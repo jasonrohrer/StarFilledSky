@@ -307,7 +307,7 @@ void drawFrame() {
 
 
     if( stencilDrawn ) {
-        stopStencil();
+        
         
         if( lastLevel != NULL ) {
             setViewSize( lastLevelCurrentViewSize );
@@ -315,7 +315,7 @@ void drawFrame() {
                                    lastLevelCurrentViewCenter.y );
             lastLevel->drawWindowShade( 1 - zoomProgress );
             }
-
+        stopStencil();
 
         // step zoom and check for zoom end
 

@@ -354,7 +354,22 @@ void Level::drawLevel() {
         }
     
     
+
+
+
+    if( mWindowSet ) {
+        startAddingToStencil( false, true );
+        Enemy *e = mEnemies.getElement( mWindowItemIndex );
+        drawSquare( e->position, 0.2 );
+    
+        
+        // draw player and mouse on top of stenciled area
+        startAddingToStencil( true, false );
+        }
+
+
     // draw player and mouse
+
 
     // reticle
     if( mEnteringMouse ) {
@@ -373,19 +388,16 @@ void Level::drawLevel() {
     
     // player
     setDrawColor( 1, 0, 0, 1 );
-    drawSquare( mPlayerPos, 0.125 );
+    drawSquare( mPlayerPos, 0.25 );
 
     setDrawColor( 0, 1, 0, 0.5 );
 
 
 
     if( mWindowSet ) {
-        startAddingToStencil( false );
-        Enemy *e = mEnemies.getElement( mWindowItemIndex );
-        drawSquare( e->position, 0.2 );
-    
         startDrawingThroughStencil();
         }
+    
     
     }
 
@@ -395,7 +407,7 @@ void Level::drawWindowShade( double inFade ) {
     if( mWindowSet ) {
         Enemy *e = mEnemies.getElement( mWindowItemIndex );
         setDrawColor( 0, 0, 0, inFade );
-        drawSquare( e->position, 0.25 );
+        drawSquare( e->position, 0.2 );
         }
     }
 
