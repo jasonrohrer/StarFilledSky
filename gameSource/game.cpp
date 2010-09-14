@@ -222,9 +222,15 @@ void drawFrame() {
 
     char stencilDrawn = false;
     
+    double zoomFactor = 1;
+
     if( lastLevel != NULL ) {
+        //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
+        zoomFactor = 
+            (sin( (zoomProgress * 2 - 1) * M_PI/2 ) * 0.5 + 0.5 ) 
+            * 50 + 1;
         
-        double zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
+        
 
         double viewSize = viewWidth / zoomFactor;
 
@@ -289,7 +295,7 @@ void drawFrame() {
     
 
     if( stencilDrawn ) {
-        double viewSize = 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) );
+        double viewSize = 51 * viewWidth / zoomFactor;
         
         setViewSize( viewSize );
         
