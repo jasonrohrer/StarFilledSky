@@ -290,7 +290,6 @@ void drawFrame() {
 
     if( stencilDrawn ) {
         double viewSize = 51 * viewWidth / ( 1 + 50 * pow( zoomProgress, 2 ) );
-        printf( "%f = Current view size\n", viewSize );
         
         setViewSize( viewSize );
         
@@ -325,32 +324,12 @@ void drawFrame() {
         
         }
     
-    currentLevel->drawLevel( viewCenter );
-    
-
-    // reticle
-    if( entering ) {
-        setDrawColor( 1, 1, 1, 1 );
-        }
-    else {
-        setDrawColor( 0, 1, 0, 0.5 );
-        }
-    
     doublePair mousePos = { lastMouseX, lastMouseY };
-    
-    drawSquare( mousePos, 0.125 );
+    currentLevel->setMousePos( mousePos );
+    currentLevel->setPlayerPos( viewCenter );
+    currentLevel->setEnteringMouse( entering );
+    currentLevel->drawLevel( viewCenter );
 
-    setDrawColor( 0, 0, 0, 0.5 );
-
-    drawSquare( mousePos, 0.025 );
-
-    
-    // player
-    setDrawColor( 1, 0, 0, 1 );
-    drawSquare( viewCenter, 0.125 );
-
-    setDrawColor( 0, 1, 0, 0.5 );
-    
     
     if( stencilDrawn ) {
         stopStencil();

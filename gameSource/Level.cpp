@@ -18,6 +18,13 @@ Level::Level() {
     mFrozen = false;
     mWindowSet = false;
     
+    mMousePos.x = 0;
+    mMousePos.y = 0;
+    mPlayerPos.x = 0;
+    mPlayerPos.y = 0;
+    mEnteringMouse = false;
+    
+
     int x;
     int y;
     
@@ -144,6 +151,23 @@ Level::Level() {
 
 Level::~Level() {
     }
+
+
+
+void Level::setPlayerPos( doublePair inPos ) {
+    mPlayerPos = inPos;
+    }
+
+
+void Level::setMousePos( doublePair inPos ) {
+    mMousePos = inPos;
+    }
+
+void Level::setEnteringMouse( char inEntering ) {
+    mEnteringMouse = inEntering;
+    }
+
+
 
 
 void Level::setItemWindowPosition( doublePair inPosition ) {
@@ -329,6 +353,31 @@ void Level::drawLevel( doublePair inViewCenter ) {
         drawSquare( e->position, 0.25 );
         }
     
+    
+    // draw player and mouse
+
+    // reticle
+    if( mEnteringMouse ) {
+        setDrawColor( 1, 1, 1, 1 );
+        }
+    else {
+        setDrawColor( 0, 1, 0, 0.5 );
+        }
+    
+    drawSquare( mMousePos, 0.125 );
+
+    setDrawColor( 0, 0, 0, 0.5 );
+
+    drawSquare( mMousePos, 0.025 );
+
+    
+    // player
+    setDrawColor( 1, 0, 0, 1 );
+    drawSquare( mPlayerPos, 0.125 );
+
+    setDrawColor( 0, 1, 0, 0.5 );
+
+
 
     if( mWindowSet ) {
         startAddingToStencil( false );

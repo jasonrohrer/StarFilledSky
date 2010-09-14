@@ -35,6 +35,13 @@ class Level {
         ~Level();
 
         
+        void setPlayerPos( doublePair inPos );
+        void setMousePos( doublePair inPos );
+        
+        void setEnteringMouse( char inEntering );
+        
+
+
         // must be called before each invokation of drawLevel to have effect
         
         // position of item that should be drawn as a transparent window
@@ -95,6 +102,10 @@ class Level {
         char mWindowSet;
         int mWindowItemIndex;
         
+
+        doublePair mMousePos;
+        char mEnteringMouse;
+        doublePair mPlayerPos;
     };
 
         
