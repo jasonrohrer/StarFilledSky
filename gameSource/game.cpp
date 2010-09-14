@@ -298,15 +298,13 @@ void drawFrame() {
         if( zoomProgress >= 1 && zoomDirection == 1) {
             lastLevel = NULL;
             // go with current level
-            setViewSize( viewWidth );
-            setViewCenterPosition( lastScreenViewCenter.x, 
-                                   lastScreenViewCenter.y );
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
             // done with current level
             delete currentLevel;
             
+            // switch to last level (zooming out)
             currentLevel = lastLevel;
             currentLevel->freezeLevel( false );
             currentLevel->forgetItemWindow();
@@ -314,14 +312,15 @@ void drawFrame() {
             lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
             lastMouseX = lastLevelPosition.lastMouseX;
             lastMouseY = lastLevelPosition.lastMouseY;
-            setViewCenterPosition( lastScreenViewCenter.x, 
-                                   lastScreenViewCenter.y );
             
             lastLevel = NULL;
-
-            setViewSize( viewWidth );
             }
         
+        }
+    else {
+        setViewSize( viewWidth );
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
         }
     
     doublePair mousePos = { lastMouseX, lastMouseY };
