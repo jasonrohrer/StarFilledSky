@@ -282,6 +282,30 @@ void Level::step() {
     }
 
 
+
+void Level::drawPlayerAndMouse( double inFade ) {
+    
+    // reticle
+    if( mEnteringMouse ) {
+        setDrawColor( 1, 1, 1, 1 * inFade );
+        }
+    else {
+        setDrawColor( 0, 1, 0, 0.5 * inFade );
+        }
+    
+    drawSquare( mMousePos, 0.125 );
+
+    setDrawColor( 0, 0, 0, 0.5 * inFade );
+
+    drawSquare( mMousePos, 0.025 );
+
+    
+    // player
+    setDrawColor( 1, 0, 0, inFade );
+    drawSquare( mPlayerPos, 0.25 );
+    }
+
+
         
 void Level::drawLevel() {
     
@@ -369,28 +393,11 @@ void Level::drawLevel() {
 
 
     // draw player and mouse
-
-
-    // reticle
-    if( mEnteringMouse ) {
-        setDrawColor( 1, 1, 1, 1 );
-        }
-    else {
-        setDrawColor( 0, 1, 0, 0.5 );
+    
+    if( !mWindowSet ) {
+        drawPlayerAndMouse( 1 );
         }
     
-    drawSquare( mMousePos, 0.125 );
-
-    setDrawColor( 0, 0, 0, 0.5 );
-
-    drawSquare( mMousePos, 0.025 );
-
-    
-    // player
-    setDrawColor( 1, 0, 0, 1 );
-    drawSquare( mPlayerPos, 0.25 );
-
-    setDrawColor( 0, 1, 0, 0.5 );
 
 
 
@@ -405,9 +412,13 @@ void Level::drawLevel() {
 
 void Level::drawWindowShade( double inFade ) {
     if( mWindowSet ) {
+        stopStencil();
+                
         Enemy *e = mEnemies.getElement( mWindowItemIndex );
         setDrawColor( 0, 0, 0, inFade );
         drawSquare( e->position, 0.2 );
+
+        drawPlayerAndMouse( inFade );
         }
     }
 

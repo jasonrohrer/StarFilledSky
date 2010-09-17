@@ -87,6 +87,8 @@ class Level {
         
         void step();
         
+        void drawPlayerAndMouse( double inFade );
+        
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
         
