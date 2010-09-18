@@ -22,6 +22,13 @@ typedef struct Enemy {
 
 
 
+typedef struct WindowPosition {
+        int index;
+        char isPlayer;
+    } WindowPosition;
+
+
+
 
 
 class Level {
@@ -63,6 +70,7 @@ class Level {
         char isWall( doublePair inPos );
         
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
+        char isPlayer( doublePair inPos  );
         
         char isRiseSpot( doublePair inPos );
         
@@ -87,7 +95,8 @@ class Level {
         
         void step();
         
-        void drawPlayerAndMouse( double inFade );
+        void drawPlayer( double inFade );
+        void drawMouse( double inFade );
         
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
@@ -102,7 +111,7 @@ class Level {
         
 
         char mWindowSet;
-        int mWindowItemIndex;
+        WindowPosition mWindowPosition;
         
 
         doublePair mMousePos;

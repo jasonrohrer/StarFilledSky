@@ -176,7 +176,12 @@ void Level::setItemWindowPosition( doublePair inPosition ) {
     
     if( found ) {
         mWindowSet = true;
-        mWindowItemIndex = index;
+        mWindowPosition.index = index;
+        mWindowPosition.isPlayer = false;
+        }
+    else if( isPlayer( inPosition ) ) {
+        mWindowSet = true;
+        mWindowPosition.isPlayer = true;
         }
     }
 
@@ -283,8 +288,7 @@ void Level::step() {
 
 
 
-void Level::drawPlayerAndMouse( double inFade ) {
-    
+void Level::drawMouse( double inFade ) {
     // reticle
     if( mEnteringMouse ) {
         setDrawColor( 1, 1, 1, 1 * inFade );
@@ -298,8 +302,11 @@ void Level::drawPlayerAndMouse( double inFade ) {
     setDrawColor( 0, 0, 0, 0.5 * inFade );
 
     drawSquare( mMousePos, 0.025 );
+    }
 
-    
+
+
+void Level::drawPlayer( double inFade ) {
     // player
     setDrawColor( 1, 0, 0, inFade );
     drawSquare( mPlayerPos, 0.25 );
@@ -381,21 +388,27 @@ void Level::drawLevel() {
 
 
 
-    if( mWindowSet ) {
+    if( mWindowSet && ! mWindowPosition.isPlayer ) {
         startAddingToStencil( false, true );
-        Enemy *e = mEnemies.getElement( mWindowItemIndex );
+        Enemy *e = mEnemies.getElement( mWindowPosition.index );
         drawSquare( e->position, 0.2 );
-    
-        
-        // draw player and mouse on top of stenciled area
-        startAddingToStencil( true, false );
         }
+    else if( mWindowSet && mWindowPosition.isPlayer ) {
+        drawMouse( 1 );
+        drawPlayer( 1 );
+        
+        // player is window for zoom
+        startAddingToStencil( false, true );
+        drawSquare( mPlayerPos, 0.2 );
+        }
+    
 
 
     // draw player and mouse
     
     if( !mWindowSet ) {
-        drawPlayerAndMouse( 1 );
+        drawMouse( 1 );
+        drawPlayer( 1 );
         }
     
 
@@ -413,12 +426,20 @@ void Level::drawLevel() {
 void Level::drawWindowShade( double inFade ) {
     if( mWindowSet ) {
         stopStencil();
-                
-        Enemy *e = mEnemies.getElement( mWindowItemIndex );
-        setDrawColor( 0, 0, 0, inFade );
-        drawSquare( e->position, 0.2 );
+        
+        if( mWindowPosition.isPlayer ) {
+            setDrawColor( 1, 0, 0, inFade );
+            drawSquare( mPlayerPos, 0.2 );
+            }
+        else {    
+            Enemy *e = mEnemies.getElement( mWindowPosition.index );
+            setDrawColor( 0, 0, 0, inFade );
+            drawSquare( e->position, 0.2 );
 
-        drawPlayerAndMouse( inFade );
+            drawMouse( inFade );
+            drawPlayer( inFade );
+            }
+        
         }
     }
 
@@ -490,6 +511,12 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
             }
         }
     return false;
+    }
+
+
+
+char Level::isPlayer( doublePair inPos ) {
+    return ( distance( mPlayerPos, inPos ) < 0.4 );
     }
 
 

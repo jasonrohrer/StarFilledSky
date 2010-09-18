@@ -463,17 +463,30 @@ void drawFrame() {
         }
 
 
-    if( entering ) {
+    if( entering && lastLevel == NULL ) {
         doublePair mousePos = { lastMouseX, lastMouseY };
 
         int enemyIndex;
+        doublePair enteringPos;
+        char rising = false;
+        
         if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
+            enteringPos = currentLevel->getEnemyCenter( enemyIndex );
+            rising = true;
+            }
+        else if( currentLevel->isPlayer( mousePos ) ) {
+            enteringPos = playerPos;
+            rising = true;
+            }
+        
+
+        if( rising ) {
             levelRiseStack.push_back( currentLevel );
             // enemy is entry position
             LevelPositionInfo info = 
                 { playerPos, lastScreenViewCenter, 
-                  currentLevel->getEnemyCenter( enemyIndex ),
+                  enteringPos,
                   lastMouseX, lastMouseY };
             levelRisePositionInfoStack.push_back( info );
 
