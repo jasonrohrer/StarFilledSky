@@ -1,4 +1,4 @@
-#include "doublePair.h"
+#include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
 
 #define MAX_LEVEL_W  400

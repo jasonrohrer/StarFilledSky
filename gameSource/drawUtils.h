@@ -1,4 +1,4 @@
-#include "doublePair.h"
+#include "minorGems/game/doublePair.h"
 #include "minorGems/graphics/Color.h"
 
 

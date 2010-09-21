@@ -10,7 +10,6 @@ APP_NAME = gameApp
 
 LAYER_SOURCE = \
 game.cpp \
-doublePair.cpp \
 drawUtils.cpp \
 Level.cpp
 
@@ -51,3 +50,4 @@ NEEDED_MINOR_GEMS_OBJECTS = \
  ${PRINT_UTILS_O} \
  ${GAME_SDL_O} \
  ${GAME_GRAPHICS_GL_O} \
+ ${DOUBLE_PAIR_O}
