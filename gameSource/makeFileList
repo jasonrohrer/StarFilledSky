@@ -17,7 +17,7 @@ fixedSpriteBank.cpp
 
 GAME_GRAPHICS = \
 graphics/font_8_16.tga \
-graphics/riseMarker.tga 
+graphics/riseMarker.tga
 
 
 

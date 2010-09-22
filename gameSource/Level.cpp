@@ -360,7 +360,6 @@ void Level::drawLevel() {
     drawSprite( riseMarker, riseSpot );
     
 
-
     // draw bullets
     for( i=0; i<mBullets.size(); i++ ) {
         

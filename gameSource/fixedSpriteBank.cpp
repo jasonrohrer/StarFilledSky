@@ -22,6 +22,7 @@ void freeSpriteBank() {
 
 
 void drawSprite( spriteID inID, doublePair inCenter ) {    
-    drawSprite( spriteBank[ inID ], inCenter );
+    drawSprite( spriteBank[ inID ], inCenter, 1.0/16 );
+    
     }
 
