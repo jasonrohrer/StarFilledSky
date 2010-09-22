@@ -1,5 +1,6 @@
 #include "Level.h"
 #include "drawUtils.h"
+#include "fixedSpriteBank.h"
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/util/random/CustomRandomSource.h"
@@ -349,11 +350,16 @@ void Level::drawLevel() {
 
 
     // draw rise marker
-    setDrawColor( 1, 1, 0, 1 ); 
     doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
                             mRisePosition.y - MAX_LEVEL_H/2 };
+    /*
+    setDrawColor( 1, 1, 0, 1 ); 
     drawSquare( riseSpot, 0.5 );
+    */
+    setDrawColor( 1, 1, 1, 1 );
+    drawSprite( riseMarker, riseSpot );
     
+
 
     // draw bullets
     for( i=0; i<mBullets.size(); i++ ) {

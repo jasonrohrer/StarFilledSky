@@ -11,12 +11,13 @@ APP_NAME = gameApp
 LAYER_SOURCE = \
 game.cpp \
 drawUtils.cpp \
-Level.cpp
-
+Level.cpp \
+fixedSpriteBank.cpp
 
 
 GAME_GRAPHICS = \
-graphics/font_8_16.tga
+graphics/font_8_16.tga \
+graphics/riseMarker.tga 
 
 
 

@@ -33,6 +33,8 @@
 
 #include "drawUtils.h"
 #include "Level.h"
+#include "fixedSpriteBank.h"
+
 
 
 // globals
@@ -154,6 +156,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     warpMouseToCenter( &x, &y );
     
     
+    initSpriteBank();
+
     currentLevel = new Level();
     }
 
@@ -161,6 +165,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
 void freeFrameDrawer() {
     delete currentLevel;
     
+    freeSpriteBank();
+
     for( int i=0; i<levelRiseStack.size(); i++ ) {
         delete *( levelRiseStack.getElement( i ) );
         }
