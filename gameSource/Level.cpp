@@ -309,8 +309,9 @@ void Level::drawMouse( double inFade ) {
 
 void Level::drawPlayer( double inFade ) {
     // player
-    setDrawColor( 1, 0, 0, inFade );
-    drawSquare( mPlayerPos, 0.25 );
+    //setDrawColor( 1, 0, 0, inFade );
+    //drawSquare( mPlayerPos, 0.25 );
+    mPlayerSprite.draw( mPlayerPos, inFade );
     }
 
 
@@ -404,7 +405,8 @@ void Level::drawLevel() {
         
         // player is window for zoom
         startAddingToStencil( false, true );
-        drawSquare( mPlayerPos, 0.2 );
+        //drawSquare( mPlayerPos, 0.2 );
+        mPlayerSprite.drawCenter( mPlayerPos );
         }
     
 
@@ -433,8 +435,9 @@ void Level::drawWindowShade( double inFade ) {
         stopStencil();
         
         if( mWindowPosition.isPlayer ) {
-            setDrawColor( 1, 0, 0, inFade );
-            drawSquare( mPlayerPos, 0.2 );
+            //setDrawColor( 1, 0, 0, inFade );
+            //drawSquare( mPlayerPos, 0.2 );
+            mPlayerSprite.drawCenter( mPlayerPos, inFade );
             }
         else {    
             Enemy *e = mEnemies.getElement( mWindowPosition.index );
@@ -507,7 +510,7 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
     for( int j=0; j<mEnemies.size(); j++ ) {
         Enemy *e = mEnemies.getElement( j );
         
-        if( distance( e->position, inPos ) < 0.4 ) {
+        if( distance( e->position, inPos ) < 0.5 ) {
 
             if( outEnemyIndex != NULL ) {
                 *outEnemyIndex = j;
@@ -521,7 +524,7 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
 
 
 char Level::isPlayer( doublePair inPos ) {
-    return ( distance( mPlayerPos, inPos ) < 0.4 );
+    return ( distance( mPlayerPos, inPos ) < 0.5 );
     }
 
 

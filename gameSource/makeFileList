@@ -12,7 +12,9 @@ LAYER_SOURCE = \
 game.cpp \
 drawUtils.cpp \
 Level.cpp \
-fixedSpriteBank.cpp
+fixedSpriteBank.cpp \
+BorderSprite.cpp \
+PlayerSprite.cpp
 
 
 GAME_GRAPHICS = \

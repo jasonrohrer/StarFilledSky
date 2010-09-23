@@ -1,6 +1,10 @@
 #include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
 
+
+#include "PlayerSprite.h"
+
+
 #define MAX_LEVEL_W  400
 #define MAX_LEVEL_H  400
 
@@ -117,6 +121,9 @@ class Level {
         doublePair mMousePos;
         char mEnteringMouse;
         doublePair mPlayerPos;
+
+
+        PlayerSprite mPlayerSprite;
     };
 
         

@@ -147,7 +147,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -234,7 +234,7 @@ void drawFrame() {
         //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
         zoomFactor = 
             (sin( (zoomProgress * 2 - 1) * M_PI/2 ) * 0.5 + 0.5 ) 
-            * 50 + 1;
+            * 70 + 1;
         
         
 
@@ -244,7 +244,7 @@ void drawFrame() {
         lastLevelCurrentViewSize = viewSize;
         
         // move toward entry point as we zoom in
-        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 51 );
+        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 71 );
         doublePair center = lastLevelPosition.lastScreenViewCenter;
         
         center.x *= ( 1 - moveFraction );
@@ -278,8 +278,8 @@ void drawFrame() {
         center.y *= 1 - moveFraction;
         center.x *= -1;
         center.y *= -1;
-        center.x *= 51;
-        center.y *= 51;
+        center.x *= 71;
+        center.y *= 71;
         
         center = add( center, lastScreenViewCenter );
         /*
@@ -295,7 +295,7 @@ void drawFrame() {
         drawSquare( center, viewWidth );
 
 
-        viewSize = 51 * viewWidth / zoomFactor;        
+        viewSize = 71 * viewWidth / zoomFactor;        
         setViewSize( viewSize );
         }
     else {
