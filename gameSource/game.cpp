@@ -257,7 +257,7 @@ void drawFrame() {
         
         setViewCenterPosition( center.x, center.y );
     
-        setDrawColor( 0, 0, 1, 1 );
+        setDrawColor( 0, 0, 0, 1 );
     
         drawSquare( center, viewSize );
 
@@ -289,7 +289,7 @@ void drawFrame() {
         setViewCenterPosition( center.x, 
                                center.y );
 
-        setDrawColor( 0, 0, 1, 1 );
+        setDrawColor( 0, 0, 0, 1 );
     
         setViewSize( viewWidth );
         drawSquare( center, viewWidth );
@@ -299,7 +299,7 @@ void drawFrame() {
         setViewSize( viewSize );
         }
     else {
-        setDrawColor( 0, 0, 1, 1 );
+        setDrawColor( 0, 0, 0, 1 );
     
         drawSquare( lastScreenViewCenter, viewWidth );
         }
