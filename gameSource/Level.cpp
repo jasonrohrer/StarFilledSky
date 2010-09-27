@@ -555,13 +555,14 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
         if( !isWall( xMoveAlone ) ) {
             
             // push y as close as possible to nearest wall
-            
+            // closest fraction of whole pixels without going into wall
+
             int intY = (int)rint( xMoveAlone.y );
             if( velocityY > 0 ) {
-                xMoveAlone.y = intY + 0.45;
+                xMoveAlone.y = intY + 0.375;
                 }
             else {
-                xMoveAlone.y = intY - 0.45;
+                xMoveAlone.y = intY - 0.375;
                 }
             
             newPos = xMoveAlone;
@@ -577,10 +578,10 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
             
                 int intX = (int)rint( yMoveAlone.x );
                 if( velocityX > 0 ) {
-                    yMoveAlone.x = intX + 0.45;
+                    yMoveAlone.x = intX + 0.375;
                     }
                 else {
-                    yMoveAlone.x = intX - 0.45;
+                    yMoveAlone.x = intX - 0.375;
                     }
 
 

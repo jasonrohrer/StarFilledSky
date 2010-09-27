@@ -370,8 +370,12 @@ void drawFrame() {
     if( velocityX != 0 && velocityY != 0 ) {
         // diagonal... slow it down so it's not faster than H or V move
         
-        double componentVelocity = sqrt( (moveSpeed * moveSpeed)/2 );
+        // this creates aliasing glitches in player position
+        //double componentVelocity = sqrt( (moveSpeed * moveSpeed)/2 );
         
+        // use closest fraction of 16 pixels:  3/16
+        double componentVelocity = 0.1875;
+
         velocity.x = velocity.x / moveSpeed * componentVelocity;
         velocity.y = velocity.y / moveSpeed * componentVelocity;
         }
@@ -379,12 +383,12 @@ void drawFrame() {
 
 
     doublePair newPlayerPos = currentLevel->stopMoveWithWall( playerPos,
-                                                            velocity );
+                                                              velocity );
     
     doublePair viewDelta = sub( newPlayerPos, playerPos );
     
     
-    
+    printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
     
     
 
