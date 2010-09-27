@@ -147,7 +147,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    //grabInput( true );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -388,17 +388,20 @@ void drawFrame() {
     doublePair viewDelta = sub( newPlayerPos, playerPos );
     
     
-    printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
+    //printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
     
     
 
     playerPos = newPlayerPos;
 
     
-    // halfway between player and reticle
+    // between player and reticle, closer to player (to keep player on screen)
     doublePair posToCenterOnScreen = add( playerPos, mousePos );
-    posToCenterOnScreen.x /= 2;
-    posToCenterOnScreen.y /= 2;
+    // more weight to player pos
+    posToCenterOnScreen = add( playerPos, posToCenterOnScreen );
+        
+    posToCenterOnScreen.x /= 3;
+    posToCenterOnScreen.y /= 3;
     
 
     double screenCenterDistanceFromPlayer = 
