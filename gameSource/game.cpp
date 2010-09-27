@@ -86,7 +86,7 @@ double velocityY = 0;
 double moveSpeed = 0.25;
 
 
-CustomRandomSource randSource;
+CustomRandomSource randSource(1);
 
 
 char shooting = false;
@@ -147,7 +147,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );

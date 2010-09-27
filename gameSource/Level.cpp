@@ -95,6 +95,38 @@ Level::Level() {
                 }
             }
         }
+    
+
+    // now compute which walls should have edges, again using safe loop bounds
+    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
+        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
+            
+            if( mWallFlags[y][x] == 2 ) {
+                // wall here
+
+                char flag = 0;
+                if( mWallFlags[y + 1][x] == 1 ) {
+                    flag |= 0x01;
+                    }
+                if( mWallFlags[y][x+1] == 1 ) {
+                    flag |= 0x02;
+                    }
+                if( mWallFlags[y - 1][x] == 1 ) {
+                    flag |= 0x04;
+                    }
+                if( mWallFlags[y][x-1] == 1 ) {
+                    flag |= 0x08;
+                    }
+
+                mWallEdgeFlags[y][x] = flag;                
+                }
+            else {
+                // no wall, no edges
+                mWallEdgeFlags[y][x] = 0;
+                }
+            }
+        }
+    
 
 
     // place enemies in random floor spots
@@ -346,8 +378,13 @@ void Level::drawLevel() {
                     }
                 
                 
+                // draw edges too
+                if( mWallEdgeFlags[y][x] != 0 ) {
+                    mTileSet.drawWallEdges( spot, mWallEdgeFlags[y][x] );
+                    }
+                
+
                 }
-            
             }
         }
 

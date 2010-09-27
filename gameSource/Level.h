@@ -105,7 +105,8 @@ class Level {
         
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
-        
+        char mWallEdgeFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+
         SimpleVector<Bullet> mBullets;
 
         SimpleVector<Enemy> mEnemies;
