@@ -337,13 +337,15 @@ void Level::drawLevel() {
                 if( mWallFlags[y][x] == 1 ) {
                     // draw floor        
                     setDrawColor( 0.5, 0.5, 0.5, 1 );                    
+                    drawSquare( spot, 0.5 );
                     }
                 else if( mWallFlags[y][x] == 2 ) {
                     // wall
-                    setDrawColor( 0.25, 0.25, 0.25, 1 );
+                    //setDrawColor( 0.25, 0.25, 0.25, 1 );
+                    mTileSet.drawWall( spot );
                     }
                 
-                drawSquare( spot, 0.5 );
+                
                 }
             
             }

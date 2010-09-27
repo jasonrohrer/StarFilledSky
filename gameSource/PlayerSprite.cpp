@@ -37,9 +37,9 @@ PlayerSprite::PlayerSprite() {
 
             channels[chanWithColor2][pixIndex] = randSource.getRandomDouble();
 
-            int chanWithColor3 = randSource.getRandomBoundedInt( 0, 2 );
+            //int chanWithColor3 = randSource.getRandomBoundedInt( 0, 2 );
 
-            channels[chanWithColor3][pixIndex] = randSource.getRandomDouble();
+            //channels[chanWithColor3][pixIndex] = randSource.getRandomDouble();
             }
         for( int x=8; x<16; x++ ) {
             for( int i=0; i<3; i++ ) {

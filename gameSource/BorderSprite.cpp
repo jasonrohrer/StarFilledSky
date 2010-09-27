@@ -28,7 +28,7 @@ void BorderSprite::drawBorder( doublePair inPosition, double inFade ) {
 
 
 void BorderSprite::drawCenter( doublePair inPosition, double inFade ) {
-    setDrawColor( 1, 0, 1, inFade );
+    setDrawColor( 1, 1, 1, inFade );
     drawSprite( mCenterSprite, inPosition, scaleFactor );
     }
 
