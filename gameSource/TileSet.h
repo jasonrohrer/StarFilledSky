@@ -2,13 +2,21 @@
 #include "minorGems/game/gameGraphics.h"
 
 
+#define NUM_TILE_PATTERNS 16
+
 class TileSet {
 
     public:
 
+
+        // NEXT:  pass allowed color set into constructor 
         TileSet();
         
         ~TileSet();
+
+        // called before each batch of walls
+        void startDrawingWalls();
+        
 
         void drawWall( doublePair inPosition );
 
@@ -26,10 +34,12 @@ class TileSet {
 
     protected:
         
+        //SpriteHandle mWall[ NUM_TILE_PATTERNS ];
         SpriteHandle mWall;
         
         SpriteHandle mWallEdges[4];
 
+        //SpriteHandle mFloor[ NUM_TILE_PATTERNS ];
         SpriteHandle mFloor;
         
 
