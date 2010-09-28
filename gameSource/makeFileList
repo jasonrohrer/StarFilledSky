@@ -15,7 +15,8 @@ Level.cpp \
 fixedSpriteBank.cpp \
 BorderSprite.cpp \
 PlayerSprite.cpp \
-TileSet.cpp
+TileSet.cpp \
+ColorScheme.cpp
 
 
 GAME_GRAPHICS = \

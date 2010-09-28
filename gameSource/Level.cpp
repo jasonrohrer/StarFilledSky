@@ -356,6 +356,8 @@ void Level::drawLevel() {
     
     int i;
     
+    mTileSet.startDrawingWalls();
+
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
@@ -377,12 +379,12 @@ void Level::drawLevel() {
                     mTileSet.drawWall( spot );
                     }
                 
-                
+                /*
                 // draw edges too
                 if( mWallEdgeFlags[y][x] != 0 ) {
                     mTileSet.drawWallEdges( spot, mWallEdgeFlags[y][x] );
                     }
-                
+                */
 
                 }
             }

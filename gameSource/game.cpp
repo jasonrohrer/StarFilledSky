@@ -86,7 +86,8 @@ double velocityY = 0;
 double moveSpeed = 0.25;
 
 
-CustomRandomSource randSource(1);
+unsigned int randSeed = 1285702441;//time( NULL );
+CustomRandomSource randSource(randSeed);
 
 
 char shooting = false;
@@ -136,6 +137,8 @@ double zoomDirection = 1;
 void initFrameDrawer( int inWidth, int inHeight ) {
     screenW = inWidth;
     screenH = inHeight;
+    
+    printf( "Rand seed = %d\n", randSeed );
     
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );

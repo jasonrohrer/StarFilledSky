@@ -1,6 +1,8 @@
 #include "minorGems/game/doublePair.h"
 #include "minorGems/game/gameGraphics.h"
 
+#include "ColorScheme.h"
+
 
 #define NUM_TILE_PATTERNS 16
 
@@ -34,13 +36,18 @@ class TileSet {
 
     protected:
         
-        //SpriteHandle mWall[ NUM_TILE_PATTERNS ];
-        SpriteHandle mWall;
+        int mNextTileToDraw;
+
+        SpriteHandle makeWallTile( ColorScheme inColors );
+        
+
+        SpriteHandle mWall[ NUM_TILE_PATTERNS ];
+        //SpriteHandle mWall;
         
         SpriteHandle mWallEdges[4];
 
-        //SpriteHandle mFloor[ NUM_TILE_PATTERNS ];
-        SpriteHandle mFloor;
+        SpriteHandle mFloor[ NUM_TILE_PATTERNS ];
+        //SpriteHandle mFloor;
         
 
     };

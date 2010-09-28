@@ -8,7 +8,8 @@
 extern CustomRandomSource randSource;
 
 
-TileSet::TileSet() {
+
+SpriteHandle TileSet::makeWallTile( ColorScheme inColors ) {
     Image wallImage( 16, 16, 4, true );
     
     double *channels[4];
@@ -19,11 +20,19 @@ TileSet::TileSet() {
     
 
     
-    // asymmetrical, black border
+    // asymmetrical, first secondary color border
+    Color secondaryCenter = inColors.secondary.elements[0];
+    for( int p=0; p<16*16; p++ ) {
+        channels[0][p] = secondaryCenter.r;
+        channels[1][p] = secondaryCenter.g;
+        channels[2][p] = secondaryCenter.b;
+        }
+
     for( int y=1; y<15; y++ ) {
         for( int x=1; x<15; x++ ) {
             int pixIndex = y * 16 + x;
-            
+
+            /*
             // only one chan with color, full saturation
             for( int i=0; i<3; i++ ) {
                 channels[i][ pixIndex ] = 0;
@@ -41,6 +50,16 @@ TileSet::TileSet() {
             //int chanWithColor3 = randSource.getRandomBoundedInt( 0, 2 );
 
             //channels[chanWithColor3][pixIndex] = randSource.getRandomDouble();
+            */
+
+            // walls are primary
+            Color c = 
+                inColors.primary.elements[ 
+                    randSource.getRandomBoundedInt( 0, 2 ) ];
+            
+            channels[0][ pixIndex ] = c.r;
+            channels[1][ pixIndex ] = c.g;
+            channels[2][ pixIndex ] = c.b;
             }
         }
     
@@ -70,8 +89,19 @@ TileSet::TileSet() {
         channels[3][p] = 1;
         }
 
-    mWall = fillSprite( &wallImage );
+    return fillSprite( &wallImage );
+    }
 
+
+
+TileSet::TileSet() {
+
+    ColorScheme colors;
+
+    for( int i=0; i<NUM_TILE_PATTERNS; i++ ) {
+        mWall[i] = makeWallTile( colors );
+        }
+    
 
     /*
     // corners trans
@@ -82,6 +112,16 @@ TileSet::TileSet() {
     */
 
     // edges
+
+    Image wallImage( 16, 16, 4, true );
+    
+    double *channels[4];
+    
+    for( int i=0; i<4; i++ ) {
+        channels[i] = wallImage.getChannel( i );
+        }
+
+
     // full square trans
     for( int p=0; p<16*16; p++ ) {
         channels[3][p] = 0;
@@ -175,11 +215,19 @@ TileSet::TileSet() {
 TileSet::~TileSet() {
     }
 
+
+void TileSet::startDrawingWalls() {
+    mNextTileToDraw = 0;
+    }
+
+
 static double scaleFactor = 1.0 / 16;
 
 void TileSet::drawWall( doublePair inPosition ) {
     setDrawColor( 1, 1, 1, 1 );
-    drawSprite( mWall, inPosition, scaleFactor );
+    drawSprite( mWall[ mNextTileToDraw ], inPosition, scaleFactor );
+    
+    mNextTileToDraw = ( mNextTileToDraw + 1 ) % NUM_TILE_PATTERNS;
     }
 
 
