@@ -1,3 +1,7 @@
+#ifndef COLOR_SCHEME_INCLUDED
+#define COLOR_SCHEME_INCLUDED
+
+
 #include "minorGems/graphics/Color.h"
 
 
@@ -20,3 +24,5 @@ class ColorScheme {
         
     };
 
+
+#endif

@@ -4,6 +4,7 @@
 
 #include "PlayerSprite.h"
 #include "TileSet.h"
+#include "ColorScheme.h"
 
 
 #define MAX_LEVEL_W  400
@@ -128,6 +129,8 @@ class Level {
         PlayerSprite mPlayerSprite;
 
         TileSet mTileSet;
+        ColorScheme mColors;
+        
     };
 
         

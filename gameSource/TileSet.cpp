@@ -28,8 +28,8 @@ SpriteHandle TileSet::makeWallTile( ColorScheme inColors ) {
         channels[2][p] = secondaryCenter.b;
         }
 
-    for( int y=1; y<15; y++ ) {
-        for( int x=1; x<15; x++ ) {
+    for( int y=0; y<16; y++ ) {
+        for( int x=0; x<16; x++ ) {
             int pixIndex = y * 16 + x;
 
             /*
@@ -127,12 +127,15 @@ TileSet::TileSet() {
         channels[3][p] = 0;
         }
 
+    /*
     // pick edge color
     double edgeColor[3] = 
         { randSource.getRandomDouble(),
           randSource.getRandomDouble(),
           randSource.getRandomDouble() };
-            
+    */      
+    Color edgeColor = colors.primary.elements[2];
+
     // first fill in color for all edges
     for( int x=0; x<16; x++ ) {
         

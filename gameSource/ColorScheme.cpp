@@ -22,19 +22,27 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
     if( leftHue < 0 ) {
         leftHue += 1;
         }
+
+
+    float leftValue = inValue * 1.5;
+    if( leftValue > 1 ) {
+        leftValue = 1;
+        }
     
     c.elements[1] = *( Color::makeColorFromHSV( leftHue,
                                                 inSaturation,
-                                                inValue ) );
+                                                leftValue ) );
     
     float rightHue = inCenterHue + offsetFromCenter;
     if( rightHue > 1 ) {
         rightHue -= 1;
         }
+
+    float rightValue = inValue * 0.5;
     
     c.elements[2] = *( Color::makeColorFromHSV( rightHue,
                                                 inSaturation,
-                                                inValue ) );
+                                                rightValue ) );
 
     
     return c;
@@ -72,9 +80,13 @@ ColorScheme::ColorScheme() {
         }
     
     // secondaries are less saturated
-    float secondarySaturation = randSource.getRandomBoundedDouble( 0.5, 0.85 );
-    
+    float secondarySaturation = randSource.getRandomBoundedDouble( 0.25, 
+                                                                   0.35 );
+
+    // brighter
+    float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.85 );
+
     secondary = makeColorSet( secondaryCenterHue, secondarySaturation,
-                              primaryValue );
+                              secondaryValue );
     }
 

@@ -358,6 +358,9 @@ void Level::drawLevel() {
     
     mTileSet.startDrawingWalls();
 
+    int wallColorIndex = 0;
+    int floorColorIndex = 0;
+
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
@@ -370,13 +373,25 @@ void Level::drawLevel() {
                 
                 if( mWallFlags[y][x] == 1 ) {
                     // draw floor        
-                    setDrawColor( 0.5, 0.5, 0.5, 1 );                    
+                    //setDrawColor( 0.5, 0.5, 0.5, 1 );                    
+                    setDrawColor( 
+                        mColors.secondary.elements[floorColorIndex].r,
+                        mColors.secondary.elements[floorColorIndex].g,
+                        mColors.secondary.elements[floorColorIndex].b, 1 );
+                    floorColorIndex = (floorColorIndex + 1) % 3;
                     drawSquare( spot, 0.5 );
                     }
                 else if( mWallFlags[y][x] == 2 ) {
                     // wall
                     //setDrawColor( 0.25, 0.25, 0.25, 1 );
-                    mTileSet.drawWall( spot );
+                    
+                    setDrawColor( 
+                        mColors.primary.elements[wallColorIndex].r,
+                        mColors.primary.elements[wallColorIndex].g,
+                        mColors.primary.elements[wallColorIndex].b, 1 );
+                    wallColorIndex = (wallColorIndex + 1) % 3;
+                    //mTileSet.drawWall( spot );
+                    drawSquare( spot, 0.5 );
                     }
                 
                 /*
