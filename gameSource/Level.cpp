@@ -17,6 +17,7 @@ double enemyBulletSpeed = 0.2;
 Level::Level() {
 
     mFrozen = false;
+    mDrawFloorEdges = true;
     mWindowSet = false;
     
     mMousePos.x = 0;
@@ -450,22 +451,24 @@ void Level::drawLevel() {
         }
 
     
-    
-    // draw floor edges
-    Color c = mColors.primary.elements[3];
-    setDrawColor( c.r,
-                  c.g,
-                  c.b, 1 );
-
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
-
-            if( mFloorEdgeFlags[y][x] != 0 ) {
-                drawSquare( mGridWorldSpots[y][x], 0.5625 );
+    if( mDrawFloorEdges ) {
+        
+        // draw floor edges
+        Color c = mColors.primary.elements[3];
+        setDrawColor( c.r,
+                      c.g,
+                      c.b, 1 );
+        
+        for( int y=0; y<MAX_LEVEL_H; y++ ) {
+            for( int x=0; x<MAX_LEVEL_W; x++ ) {
+                
+                if( mFloorEdgeFlags[y][x] != 0 ) {
+                    drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                    }
                 }
             }
         }
-
+    
     // draw floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
@@ -729,6 +732,10 @@ void Level::freezeLevel( char inFrozen ) {
     mFrozen = inFrozen;
     }
 
+
+void Level::drawFloorEdges( char inDraw ) {
+    mDrawFloorEdges = inDraw;
+    }
 
 
 

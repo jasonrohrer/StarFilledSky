@@ -335,6 +335,8 @@ void drawFrame() {
             setViewSize( viewWidth );
             setViewCenterPosition( lastScreenViewCenter.x, 
                                    lastScreenViewCenter.y );
+            
+            currentLevel->drawFloorEdges( true );
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
@@ -521,6 +523,7 @@ void drawFrame() {
             lastScreenViewCenter.x = 0;
             lastScreenViewCenter.y = 0;
             setViewCenterPosition( 0, 0 );
+            currentLevel->drawFloorEdges( false );
             }
         
         }
@@ -551,6 +554,7 @@ void drawFrame() {
         lastLevel->freezeLevel( true );
         zoomProgress = 1;
         zoomDirection = -1;
+        currentLevel->drawFloorEdges( false );
         }
     }
 

@@ -87,6 +87,9 @@ class Level {
         // freeze level step updates during drawLevel
         void freezeLevel( char inFrozen );
         
+
+        void drawFloorEdges( char inDraw );
+        
         
         doublePair stopMoveWithWall( doublePair inStart,
                                      doublePair inMoveDelta );
@@ -121,6 +124,8 @@ class Level {
         doublePair mRisePosition;
         
         char mFrozen;
+        
+        char mDrawFloorEdges;
         
 
         char mWindowSet;
