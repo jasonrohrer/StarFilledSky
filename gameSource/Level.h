@@ -10,6 +10,10 @@
 #define MAX_LEVEL_W  400
 #define MAX_LEVEL_H  400
 
+#define MAX_FLOOR_SQUARES 1000
+// 1000 max floor squares, plus max of 2 wall tiles per floor square, plus 6
+// (worst case)
+#define MAX_LEVEL_SQUARES 3006
 
 typedef struct Bullet {
         doublePair position;
@@ -108,11 +112,19 @@ class Level {
         void drawMouse( double inFade );
         
 
+        // need these for quick wall collision detection
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
-        char mFloorEdgeFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+
+        // save ram, because grid is a sparse matrix
+        // map each grid space to an index
+        short mSquareIndices[MAX_LEVEL_H][MAX_LEVEL_W];
         
-        Color mGridColors[MAX_LEVEL_H][MAX_LEVEL_W];
+        char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
         
+        Color mGridColors[MAX_LEVEL_SQUARES];
+        
+
+        // static to save RAM
         // maps each grid spot to world coordinates
         static char sGridWorldSpotsComputed;
         static doublePair sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];

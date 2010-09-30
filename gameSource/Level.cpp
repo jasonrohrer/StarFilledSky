@@ -40,6 +40,7 @@ Level::Level() {
     for( y=0; y<MAX_LEVEL_H; y++ ) {
         for( x=0; x<MAX_LEVEL_W; x++ ) {
             mWallFlags[y][x] = 0;
+            mSquareIndices[y][x] = -1;
             }
         }
     
@@ -53,11 +54,24 @@ Level::Level() {
     int floorColorIndex = 0;
 
 
+    int numFilledSquares = 0;
+    
+    int numFloorSquares = 0;
+    
     // random walk with buffer from grid edge
-    for( int i=0; i<4000; i++ ) {
+    // limit in number of random steps taken (for time) or
+    // number of floor squares generated
+    for( int i=0; i<4000 && numFloorSquares < MAX_FLOOR_SQUARES; i++ ) {
+        if( mWallFlags[y][x] != 1 ) {
+            numFloorSquares++;
+
+            mSquareIndices[y][x] = numFilledSquares;
+            numFilledSquares++;
+            }
+        
         mWallFlags[y][x] = 1;
         
-        mGridColors[y][x] = 
+        mGridColors[mSquareIndices[y][x]] = 
             mColors.secondary.elements[floorColorIndex];
         floorColorIndex = (floorColorIndex + 1) % 3;
 
@@ -83,9 +97,15 @@ Level::Level() {
             }    
         }
 
+    
+
+
     // now walls around floor
     // set loop boundaries so it's safe to check neighbors
     int wallColorIndex = 0;
+
+    int numWallSquares = 0;
+    
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
          
@@ -105,17 +125,24 @@ Level::Level() {
 
                 if( floorNeighbor ) {
                     mWallFlags[y][x] = 2;
-                    mGridColors[y][x] = 
+
+                    mSquareIndices[y][x] = numFilledSquares;
+                    numFilledSquares++;
+
+                    mGridColors[mSquareIndices[y][x]] = 
                         mColors.primary.elements[wallColorIndex];
                     wallColorIndex = (wallColorIndex + 1) % 3;
-
+                    
+                    numWallSquares ++;
                     }
                 }
             }
         }
     
     
-    Color mGridColorsBlurred[MAX_LEVEL_H][MAX_LEVEL_W];
+    
+
+    Color mGridColorsBlurred[MAX_LEVEL_SQUARES];
 
     // blur all grid colors
     
@@ -136,7 +163,8 @@ Level::Level() {
                     
                         if( mWallFlags[ y + dy ][ x + dx ] == thisWallFlag ) {
                             
-                            Color *c = &( mGridColors[ y + dy ][ x + dx ] );
+                            Color *c = 
+                                &( mGridColors[ mSquareIndices[y+dy][x+dx] ] );
                             
                             cSums[0] += c->r;
                             cSums[1] += c->g;
@@ -148,7 +176,8 @@ Level::Level() {
                     }
                 
                 for( int i=0; i<3; i++ ) {
-                    mGridColorsBlurred[y][x][i] = cSums[i] / numInSum;
+                    mGridColorsBlurred[ mSquareIndices[y][x] ][i] = 
+                        cSums[i] / numInSum;
                     }
                 
                 }
@@ -158,8 +187,10 @@ Level::Level() {
     // copy over
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
-
-            mGridColors[y][x] = mGridColorsBlurred[y][x];
+            
+            int squareIndex = mSquareIndices[y][x];
+            
+            mGridColors[ squareIndex ] = mGridColorsBlurred[ squareIndex ];
             }
         }
     
@@ -185,11 +216,11 @@ Level::Level() {
                     flag |= 0x08;
                     }
 
-                mFloorEdgeFlags[y][x] = flag;                
+                mFloorEdgeFlags[mSquareIndices[y][x]] = flag;                
                 }
             else {
                 // no floor, no edges
-                mFloorEdgeFlags[y][x] = 0;
+                mFloorEdgeFlags[mSquareIndices[y][x]] = 0;
                 }
             }
         }
@@ -479,7 +510,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             if( mWallFlags[y][x] == 2 ) {
                 
-                Color *c = &( mGridColors[y][x] );
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
                                 
                 setDrawColor( c->r,
                               c->g,
@@ -504,7 +535,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
-                    if( mFloorEdgeFlags[y][x] != 0 ) {
+                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
                         drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
@@ -518,7 +549,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
-                    if( mFloorEdgeFlags[y][x] != 0 ) {
+                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
                         drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
@@ -546,7 +577,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             
             if( mWallFlags[y][x] == 1 ) {
-                Color *c = &( mGridColors[y][x] );
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
                                 
                 setDrawColor( c->r,
                               c->g,
@@ -598,7 +629,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     drawSquare( spot, 0.5 );
                     }
                 */
-                Color *c = &( mGridColors[y][x] );
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
                 
                 setDrawColor( c->r,
                               c->g,
