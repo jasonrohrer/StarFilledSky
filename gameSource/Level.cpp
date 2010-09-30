@@ -43,10 +43,16 @@ Level::Level() {
     
 
     // fill in floor first
+    int floorColorIndex = 0;
 
-    // random walk
+
+    // random walk with buffer from grid edge
     for( int i=0; i<4000; i++ ) {
         mWallFlags[y][x] = 1;
+        
+        mGridColors[y][x] = 
+            mColors.secondary.elements[floorColorIndex];
+        floorColorIndex = (floorColorIndex + 1) % 3;
 
         // move only in x or y, not both
         if( randSource.getRandomBoolean() ) {
@@ -72,6 +78,7 @@ Level::Level() {
 
     // now walls around floor
     // set loop boundaries so it's safe to check neighbors
+    int wallColorIndex = 0;
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
          
@@ -91,6 +98,10 @@ Level::Level() {
 
                 if( floorNeighbor ) {
                     mWallFlags[y][x] = 2;
+                    mGridColors[y][x] = 
+                        mColors.primary.elements[wallColorIndex];
+                    wallColorIndex = (wallColorIndex + 1) % 3;
+
                     }
                 }
             }
@@ -358,8 +369,6 @@ void Level::drawLevel() {
     
     mTileSet.startDrawingWalls();
 
-    int wallColorIndex = 0;
-    int floorColorIndex = 0;
 
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
@@ -371,9 +380,11 @@ void Level::drawLevel() {
                                     y - MAX_LEVEL_H/2 };
                 
                 
+                /*
                 if( mWallFlags[y][x] == 1 ) {
                     // draw floor        
                     //setDrawColor( 0.5, 0.5, 0.5, 1 );                    
+                    
                     setDrawColor( 
                         mColors.secondary.elements[floorColorIndex].r,
                         mColors.secondary.elements[floorColorIndex].g,
@@ -393,6 +404,14 @@ void Level::drawLevel() {
                     //mTileSet.drawWall( spot );
                     drawSquare( spot, 0.5 );
                     }
+                */
+                Color *c = &( mGridColors[y][x] );
+                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+                
+                drawSquare( spot, 0.5 );
                 
                 /*
                 // draw edges too
