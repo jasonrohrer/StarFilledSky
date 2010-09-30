@@ -18,6 +18,8 @@ Level::Level() {
 
     mFrozen = false;
     mDrawFloorEdges = true;
+    mEdgeFadeIn = 1.0f;
+    
     mWindowSet = false;
     
     mMousePos.x = 0;
@@ -452,21 +454,54 @@ void Level::drawLevel() {
 
     
     if( mDrawFloorEdges ) {
-        
-        // draw floor edges
         Color c = mColors.primary.elements[3];
         setDrawColor( c.r,
                       c.g,
                       c.b, 1 );
         
-        for( int y=0; y<MAX_LEVEL_H; y++ ) {
-            for( int x=0; x<MAX_LEVEL_W; x++ ) {
-                
-                if( mFloorEdgeFlags[y][x] != 0 ) {
-                    drawSquare( mGridWorldSpots[y][x], 0.5625 );
+        if( mEdgeFadeIn >= 1 ) {
+            
+            // draw floor edges
+            
+            for( int y=0; y<MAX_LEVEL_H; y++ ) {
+                for( int x=0; x<MAX_LEVEL_W; x++ ) {
+                    
+                    if( mFloorEdgeFlags[y][x] != 0 ) {
+                        drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                        }
                     }
                 }
             }
+        else {
+            //printf( "Drawing faded edge %f\n", mEdgeFadeIn );
+            
+            // use stencil to draw transparent floor edge w/out overlap 
+            // artifacts
+        
+            startAddingToStencil( false, true );
+            for( int y=0; y<MAX_LEVEL_H; y++ ) {
+                for( int x=0; x<MAX_LEVEL_W; x++ ) {
+                    
+                    if( mFloorEdgeFlags[y][x] != 0 ) {
+                        drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                        }
+                    }
+                }
+            startDrawingThroughStencil();
+            
+            setDrawColor( c.r,
+                          c.g,
+                          c.b, mEdgeFadeIn );
+
+            drawSquare( mGridWorldSpots[ MAX_LEVEL_H / 2 ][ MAX_LEVEL_W / 2 ],
+                        MAX_LEVEL_W / 2 );
+            
+            
+            mEdgeFadeIn += 0.01;
+            
+            stopStencil();
+            }
+        
         }
     
     // draw floor
@@ -734,6 +769,11 @@ void Level::freezeLevel( char inFrozen ) {
 
 
 void Level::drawFloorEdges( char inDraw ) {
+    if( inDraw && !mDrawFloorEdges ) {
+        // start fade-in
+        mEdgeFadeIn = 0;
+        }
+    
     mDrawFloorEdges = inDraw;
     }
 

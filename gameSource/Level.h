@@ -126,6 +126,7 @@ class Level {
         char mFrozen;
         
         char mDrawFloorEdges;
+        float mEdgeFadeIn;
         
 
         char mWindowSet;
