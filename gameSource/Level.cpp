@@ -161,28 +161,28 @@ Level::Level() {
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
             
-            if( mWallFlags[y][x] == 2 ) {
-                // wall here
+            if( mWallFlags[y][x] == 1 ) {
+                // floor here
 
                 char flag = 0;
-                if( mWallFlags[y + 1][x] != 2 ) {
+                if( mWallFlags[y + 1][x] != 1 ) {
                     flag |= 0x01;
                     }
-                if( mWallFlags[y][x+1] != 2 ) {
+                if( mWallFlags[y][x+1] != 1 ) {
                     flag |= 0x02;
                     }
-                if( mWallFlags[y - 1][x] != 2 ) {
+                if( mWallFlags[y - 1][x] != 1 ) {
                     flag |= 0x04;
                     }
-                if( mWallFlags[y][x-1] != 2 ) {
+                if( mWallFlags[y][x-1] != 1 ) {
                     flag |= 0x08;
                     }
 
-                mWallEdgeFlags[y][x] = flag;                
+                mFloorEdgeFlags[y][x] = flag;                
                 }
             else {
-                // no wall, no edges
-                mWallEdgeFlags[y][x] = 0;
+                // no floor, no edges
+                mFloorEdgeFlags[y][x] = 0;
                 }
             }
         }
@@ -428,6 +428,44 @@ void Level::drawLevel() {
 
     
     
+    
+
+
+    // draw walls
+    for( int y=0; y<MAX_LEVEL_H; y++ ) {
+        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            
+            
+            if( mWallFlags[y][x] == 2 ) {
+                
+                Color *c = &( mGridColors[y][x] );
+                                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+                
+                drawSquare( mGridWorldSpots[y][x], 0.5 );
+                }
+            }
+        }
+
+    
+    
+    // draw floor edges
+    Color c = mColors.primary.elements[2];
+    setDrawColor( c.r,
+                  c.g,
+                  c.b, 1 );
+
+    for( int y=0; y<MAX_LEVEL_H; y++ ) {
+        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+
+            if( mFloorEdgeFlags[y][x] != 0 ) {
+                drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                }
+            }
+        }
+
     // draw floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
@@ -447,42 +485,6 @@ void Level::drawLevel() {
     
 
     
-    
-    // draw wall edges
-    Color c = mColors.primary.elements[2];
-    setDrawColor( c.r,
-                  c.g,
-                  c.b, 1 );
-
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
-            
-            
-            if( mWallEdgeFlags[y][x] != 0 ) {
-                drawSquare( mGridWorldSpots[y][x], 0.5625 );
-                }
-            }
-        }
-    
-
-    
-    // draw walls
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
-            
-            
-            if( mWallFlags[y][x] == 2 ) {
-                
-                Color *c = &( mGridColors[y][x] );
-                                
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-                
-                drawSquare( mGridWorldSpots[y][x], 0.5 );
-                }
-            }
-        }
     
 
     if( false ) {

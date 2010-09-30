@@ -106,7 +106,7 @@ class Level {
         
 
         char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
-        char mWallEdgeFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+        char mFloorEdgeFlags[MAX_LEVEL_H][MAX_LEVEL_W];
         
         Color mGridColors[MAX_LEVEL_H][MAX_LEVEL_W];
         
