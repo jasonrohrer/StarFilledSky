@@ -452,7 +452,7 @@ void Level::drawLevel() {
     
     
     // draw floor edges
-    Color c = mColors.primary.elements[2];
+    Color c = mColors.primary.elements[3];
     setDrawColor( c.r,
                   c.g,
                   c.b, 1 );

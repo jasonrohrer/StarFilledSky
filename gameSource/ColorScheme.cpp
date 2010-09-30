@@ -44,6 +44,13 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
                                                 inSaturation,
                                                 rightValue ) );
 
+    // edge
+    float edgeValue = inValue * 0.35;
+
+    c.elements[3] = *( Color::makeColorFromHSV( rightHue,
+                                                inSaturation,
+                                                edgeValue ) );
+
     
     return c;
     }

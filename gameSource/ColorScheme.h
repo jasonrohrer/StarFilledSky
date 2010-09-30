@@ -7,7 +7,8 @@
 
 typedef struct colorSet {
 
-        Color elements[3];
+        // 4th is darker edge color
+        Color elements[4];
 
     } colorSet;
 
