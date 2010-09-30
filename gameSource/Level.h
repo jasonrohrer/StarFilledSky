@@ -7,8 +7,8 @@
 #include "ColorScheme.h"
 
 
-#define MAX_LEVEL_W  200
-#define MAX_LEVEL_H  200
+#define MAX_LEVEL_W  400
+#define MAX_LEVEL_H  400
 
 
 typedef struct Bullet {

@@ -473,8 +473,6 @@ void Level::drawLevel() {
                 }
             }
         else {
-            //printf( "Drawing faded edge %f\n", mEdgeFadeIn );
-            
             // use stencil to draw transparent floor edge w/out overlap 
             // artifacts
         
