@@ -15,9 +15,16 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
 
     colorSet c;
     
-    c.elements[0] = *( Color::makeColorFromHSV( inCenterHue,
-                                                inSaturation,
-                                                inValue ) );
+    Color *newColor;
+    
+    newColor = Color::makeColorFromHSV( inCenterHue,
+                                        inSaturation,
+                                        inValue );
+    c.elements[0] = *( newColor );
+
+    delete newColor;
+    
+
     float leftHue = inCenterHue - offsetFromCenter;
     if( leftHue < 0 ) {
         leftHue += 1;
@@ -29,9 +36,12 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
         leftValue = 1;
         }
     
-    c.elements[1] = *( Color::makeColorFromHSV( leftHue,
-                                                inSaturation,
-                                                leftValue ) );
+    
+    newColor = Color::makeColorFromHSV( leftHue,
+                                        inSaturation,
+                                        leftValue );
+    c.elements[1] = *( newColor );
+    delete newColor;
     
     float rightHue = inCenterHue + offsetFromCenter;
     if( rightHue > 1 ) {
@@ -40,17 +50,22 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
 
     float rightValue = inValue * 0.5;
     
-    c.elements[2] = *( Color::makeColorFromHSV( rightHue,
-                                                inSaturation,
-                                                rightValue ) );
-
+    newColor = Color::makeColorFromHSV( rightHue,
+                                        inSaturation,
+                                        rightValue );
+    
+    c.elements[2] = *( newColor );
+    delete newColor;
+    
     // edge
     float edgeValue = inValue * 0.35;
 
-    c.elements[3] = *( Color::makeColorFromHSV( rightHue,
-                                                inSaturation,
-                                                edgeValue ) );
-
+    newColor = Color::makeColorFromHSV( rightHue,
+                                        inSaturation,
+                                        edgeValue );
+    
+    c.elements[3] = *( newColor );
+    delete newColor;
     
     return c;
     }
