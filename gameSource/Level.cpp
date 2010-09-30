@@ -107,6 +107,55 @@ Level::Level() {
             }
         }
     
+    
+    Color mGridColorsBlurred[MAX_LEVEL_H][MAX_LEVEL_W];
+
+    // blur all grid colors
+    
+    #define R  1
+
+    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
+        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
+            char thisWallFlag = mWallFlags[y][x];
+            
+            if( thisWallFlag != 0 ) {
+                
+                float cSums[3] = { 0, 0, 0 };
+                
+                int numInSum = 0;
+                
+                for( int dy = -R; dy <= R; dy++ ) {
+                    for( int dx = -R; dx <= R; dx++ ) {
+                    
+                        if( mWallFlags[ y + dy ][ x + dx ] == thisWallFlag ) {
+                            
+                            Color *c = &( mGridColors[ y + dy ][ x + dx ] );
+                            
+                            cSums[0] += c->r;
+                            cSums[1] += c->g;
+                            cSums[2] += c->b;
+                            
+                            numInSum ++;
+                            }
+                        }
+                    }
+                
+                for( int i=0; i<3; i++ ) {
+                    mGridColorsBlurred[y][x][i] = cSums[i] / numInSum;
+                    }
+                
+                }
+            }
+        }
+
+    // copy over
+    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
+        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
+
+            mGridColors[y][x] = mGridColorsBlurred[y][x];
+            }
+        }
+    
 
     // now compute which walls should have edges, again using safe loop bounds
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
@@ -369,6 +418,8 @@ void Level::drawLevel() {
     
     mTileSet.startDrawingWalls();
 
+    
+
 
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
@@ -412,6 +463,7 @@ void Level::drawLevel() {
                               c->b, 1 );
                 
                 drawSquare( spot, 0.5 );
+                
                 
                 /*
                 // draw edges too
