@@ -7,8 +7,8 @@
 #include "ColorScheme.h"
 
 
-#define MAX_LEVEL_W  400
-#define MAX_LEVEL_H  400
+#define MAX_LEVEL_W  200
+#define MAX_LEVEL_H  200
 
 
 typedef struct Bullet {
@@ -110,6 +110,9 @@ class Level {
         
         Color mGridColors[MAX_LEVEL_H][MAX_LEVEL_W];
         
+        // maps each grid spot to world coordinates
+        doublePair mGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
+
 
         SimpleVector<Bullet> mBullets;
 

@@ -165,16 +165,16 @@ Level::Level() {
                 // wall here
 
                 char flag = 0;
-                if( mWallFlags[y + 1][x] == 1 ) {
+                if( mWallFlags[y + 1][x] != 2 ) {
                     flag |= 0x01;
                     }
-                if( mWallFlags[y][x+1] == 1 ) {
+                if( mWallFlags[y][x+1] != 2 ) {
                     flag |= 0x02;
                     }
-                if( mWallFlags[y - 1][x] == 1 ) {
+                if( mWallFlags[y - 1][x] != 2 ) {
                     flag |= 0x04;
                     }
-                if( mWallFlags[y][x-1] == 1 ) {
+                if( mWallFlags[y][x-1] != 2 ) {
                     flag |= 0x08;
                     }
 
@@ -188,6 +188,15 @@ Level::Level() {
         }
     
 
+    // precompute to-world coord mapping
+    for( y=0; y<MAX_LEVEL_H; y++ ) {
+        for( x=0; x<MAX_LEVEL_W; x++ ) {
+
+            mGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
+            mGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
+            }
+        }
+    
 
     // place enemies in random floor spots
 
@@ -200,8 +209,7 @@ Level::Level() {
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 97 ) {
                     // hit
 
-                    doublePair spot = { x - MAX_LEVEL_W/2,
-                                        y - MAX_LEVEL_H/2 };
+                    doublePair spot = mGridWorldSpots[y][x];
                     
                     // keep enemies away from player starting spot (fair)
 
@@ -419,8 +427,66 @@ void Level::drawLevel() {
     mTileSet.startDrawingWalls();
 
     
+    
+    // draw floor
+    for( int y=0; y<MAX_LEVEL_H; y++ ) {
+        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            
+            
+            if( mWallFlags[y][x] == 1 ) {
+                Color *c = &( mGridColors[y][x] );
+                                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+                
+                drawSquare( mGridWorldSpots[y][x], 0.5 );
+                }
+            }
+        }
+    
 
+    
+    
+    // draw wall edges
+    Color c = mColors.primary.elements[2];
+    setDrawColor( c.r,
+                  c.g,
+                  c.b, 1 );
 
+    for( int y=0; y<MAX_LEVEL_H; y++ ) {
+        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            
+            
+            if( mWallEdgeFlags[y][x] != 0 ) {
+                drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                }
+            }
+        }
+    
+
+    
+    // draw walls
+    for( int y=0; y<MAX_LEVEL_H; y++ ) {
+        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            
+            
+            if( mWallFlags[y][x] == 2 ) {
+                
+                Color *c = &( mGridColors[y][x] );
+                                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+                
+                drawSquare( mGridWorldSpots[y][x], 0.5 );
+                }
+            }
+        }
+    
+
+    if( false ) {
+        
     // draw walls and floor
     for( int y=0; y<MAX_LEVEL_H; y++ ) {
         for( int x=0; x<MAX_LEVEL_W; x++ ) {
@@ -475,7 +541,8 @@ void Level::drawLevel() {
                 }
             }
         }
-
+        }
+    
 
     // draw rise marker
     doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
