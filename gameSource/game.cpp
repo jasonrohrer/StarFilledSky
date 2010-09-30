@@ -232,7 +232,8 @@ void drawFrame() {
     char stencilDrawn = false;
     
     double zoomFactor = 1;
-
+    double viewSize = viewWidth;
+    
     if( lastLevel != NULL ) {
         //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
         zoomFactor = 
@@ -241,7 +242,7 @@ void drawFrame() {
         
         
 
-        double viewSize = viewWidth / zoomFactor;
+        viewSize = viewWidth / zoomFactor;
 
         setViewSize( viewSize );
         lastLevelCurrentViewSize = viewSize;
@@ -265,7 +266,7 @@ void drawFrame() {
         drawSquare( center, viewSize );
 
         lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
-        lastLevel->drawLevel();
+        lastLevel->drawLevel( center, viewSize );
         stencilDrawn = true;
         
         lastLevelCurrentViewCenter = center;
@@ -312,7 +313,7 @@ void drawFrame() {
     currentLevel->setMousePos( mousePos );
     currentLevel->setPlayerPos( playerPos );
     currentLevel->setEnteringMouse( entering );
-    currentLevel->drawLevel();
+    currentLevel->drawLevel( lastScreenViewCenter, viewSize );
 
 
     if( stencilDrawn ) {

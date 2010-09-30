@@ -70,7 +70,7 @@ class Level {
         void forgetItemWindow();
 
 
-        void drawLevel();
+        void drawLevel( doublePair inViewCenter, double inViewSize );
         
 
         char isWall( doublePair inPos );

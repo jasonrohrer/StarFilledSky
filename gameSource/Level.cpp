@@ -18,7 +18,7 @@ Level::Level() {
 
     mFrozen = false;
     mDrawFloorEdges = true;
-    mEdgeFadeIn = 1.0f;
+    mEdgeFadeIn = 0.0f;
     
     mWindowSet = false;
     
@@ -419,7 +419,7 @@ void Level::drawPlayer( double inFade ) {
 
 
         
-void Level::drawLevel() {
+void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     if( !mFrozen ) {
         step();
@@ -429,14 +429,43 @@ void Level::drawLevel() {
     
     mTileSet.startDrawingWalls();
 
+
+
+    // opt:  don't draw whole grid, just visible part
     
+    int yVisStart = (int)( inViewCenter.y - inViewSize / 2 + MAX_LEVEL_H / 2 );
+    int yVisEnd = (int)( inViewCenter.y + inViewSize / 2 + MAX_LEVEL_H / 2 );
     
+    // bit extra
+    yVisStart --;
+    yVisEnd ++;
+
+    if( yVisStart < 0 ) {
+        yVisStart = 0;
+        }
+    if( yVisEnd >= MAX_LEVEL_H ) {
+        yVisEnd = MAX_LEVEL_H - 1;
+        }
+
+    int xVisStart = (int)( inViewCenter.x - inViewSize / 2 + MAX_LEVEL_W / 2 );
+    int xVisEnd = (int)( inViewCenter.x + inViewSize / 2 + MAX_LEVEL_W / 2 );
+    
+    // bit extra
+    xVisStart --;
+    xVisEnd ++;
+
+    if( xVisStart < 0 ) {
+        xVisStart = 0;
+        }
+    if( xVisEnd >= MAX_LEVEL_W ) {
+        xVisEnd = MAX_LEVEL_W - 1;
+        }
     
 
 
     // draw walls
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
             
             
             if( mWallFlags[y][x] == 2 ) {
@@ -463,8 +492,8 @@ void Level::drawLevel() {
             
             // draw floor edges
             
-            for( int y=0; y<MAX_LEVEL_H; y++ ) {
-                for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
                     if( mFloorEdgeFlags[y][x] != 0 ) {
                         drawSquare( mGridWorldSpots[y][x], 0.5625 );
@@ -477,8 +506,8 @@ void Level::drawLevel() {
             // artifacts
         
             startAddingToStencil( false, true );
-            for( int y=0; y<MAX_LEVEL_H; y++ ) {
-                for( int x=0; x<MAX_LEVEL_W; x++ ) {
+            for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
                     if( mFloorEdgeFlags[y][x] != 0 ) {
                         drawSquare( mGridWorldSpots[y][x], 0.5625 );
@@ -503,8 +532,8 @@ void Level::drawLevel() {
         }
     
     // draw floor
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
             
             
             if( mWallFlags[y][x] == 1 ) {
