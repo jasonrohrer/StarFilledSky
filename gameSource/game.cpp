@@ -310,6 +310,7 @@ void drawFrame() {
 
     
     doublePair mousePos = { lastMouseX, lastMouseY };
+
     currentLevel->setMousePos( mousePos );
     currentLevel->setPlayerPos( playerPos );
     currentLevel->setEnteringMouse( entering );
@@ -433,10 +434,22 @@ void drawFrame() {
         
         screenMoveDelta.x *= correctionSpeed;
         screenMoveDelta.y *= correctionSpeed;
+
+        /*
+          // not actually seeing any round-off errors.
+          // hold off on doing this for now
         
+        // round to closest 1/32 (16 pixels per world square, double size)
+        screenMoveDelta.y *= 32;
+        screenMoveDelta.y = round( screenMoveDelta.y ) / 32;
+        screenMoveDelta.x *= 32;
+        screenMoveDelta.x = round( screenMoveDelta.x ) / 32;
+        */
 
         lastScreenViewCenter = add( lastScreenViewCenter, screenMoveDelta );
         
+        
+
         setViewCenterPosition( lastScreenViewCenter.x, 
                                lastScreenViewCenter.y );
 
@@ -444,6 +457,9 @@ void drawFrame() {
             // move mouse with screen
             lastMouseX += screenMoveDelta.x;
             lastMouseY += screenMoveDelta.y;
+
+            mousePos.x = lastMouseX;
+            mousePos.y = lastMouseY;
             }
         }
 
@@ -451,6 +467,13 @@ void drawFrame() {
     if( viewDelta.x != 0 || viewDelta.y != 0 ) {
         confineMouseOnScreen();
         }
+
+
+    // set latest again here, in case level frozen due to following tests
+    currentLevel->setMousePos( mousePos );
+    currentLevel->setPlayerPos( playerPos );
+    currentLevel->setEnteringMouse( entering );
+
 
     if( shooting ) {
         if( stepsTilNextBullet == 0 ) {
@@ -487,20 +510,20 @@ void drawFrame() {
 
         int enemyIndex;
         doublePair enteringPos;
-        char rising = false;
+        char enteringHit = false;
         
         if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
             enteringPos = currentLevel->getEnemyCenter( enemyIndex );
-            rising = true;
+            enteringHit = true;
             }
         else if( currentLevel->isPlayer( mousePos ) ) {
             enteringPos = playerPos;
-            rising = true;
+            enteringHit = true;
             }
         
 
-        if( rising ) {
+        if( enteringHit ) {
             levelRiseStack.push_back( currentLevel );
             // enemy is entry position
             LevelPositionInfo info = 
