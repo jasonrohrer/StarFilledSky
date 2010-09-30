@@ -7,6 +7,10 @@
 
 #include <math.h>
 
+
+char Level::sGridWorldSpotsComputed;
+doublePair Level::sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
+
 extern CustomRandomSource randSource;
 
 
@@ -191,14 +195,19 @@ Level::Level() {
         }
     
 
-    // precompute to-world coord mapping
-    for( y=0; y<MAX_LEVEL_H; y++ ) {
-        for( x=0; x<MAX_LEVEL_W; x++ ) {
-
-            mGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
-            mGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
+    if( !sGridWorldSpotsComputed ) {
+        
+        // precompute to-world coord mapping
+        for( y=0; y<MAX_LEVEL_H; y++ ) {
+            for( x=0; x<MAX_LEVEL_W; x++ ) {
+                
+                sGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
+                sGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
+                }
             }
+        sGridWorldSpotsComputed = true;
         }
+    
     
 
     // place enemies in random floor spots
@@ -212,7 +221,7 @@ Level::Level() {
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 97 ) {
                     // hit
 
-                    doublePair spot = mGridWorldSpots[y][x];
+                    doublePair spot = sGridWorldSpots[y][x];
                     
                     // keep enemies away from player starting spot (fair)
 
@@ -427,7 +436,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     int i;
     
-    mTileSet.startDrawingWalls();
+    //mTileSet.startDrawingWalls();
 
 
 
@@ -476,7 +485,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                               c->g,
                               c->b, 1 );
                 
-                drawSquare( mGridWorldSpots[y][x], 0.5 );
+                drawSquare( sGridWorldSpots[y][x], 0.5 );
                 }
             }
         }
@@ -496,7 +505,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
                     if( mFloorEdgeFlags[y][x] != 0 ) {
-                        drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
                 }
@@ -510,7 +519,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
                     
                     if( mFloorEdgeFlags[y][x] != 0 ) {
-                        drawSquare( mGridWorldSpots[y][x], 0.5625 );
+                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
                 }
@@ -520,7 +529,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                           c.g,
                           c.b, mEdgeFadeIn );
 
-            drawSquare( mGridWorldSpots[ MAX_LEVEL_H / 2 ][ MAX_LEVEL_W / 2 ],
+            drawSquare( sGridWorldSpots[ MAX_LEVEL_H / 2 ][ MAX_LEVEL_W / 2 ],
                         MAX_LEVEL_W / 2 );
             
             
@@ -543,7 +552,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                               c->g,
                               c->b, 1 );
                 
-                drawSquare( mGridWorldSpots[y][x], 0.5 );
+                drawSquare( sGridWorldSpots[y][x], 0.5 );
                 }
             }
         }

@@ -114,7 +114,8 @@ class Level {
         Color mGridColors[MAX_LEVEL_H][MAX_LEVEL_W];
         
         // maps each grid spot to world coordinates
-        doublePair mGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
+        static char sGridWorldSpotsComputed;
+        static doublePair sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
 
 
         SimpleVector<Bullet> mBullets;
@@ -140,7 +141,7 @@ class Level {
 
         PlayerSprite mPlayerSprite;
 
-        TileSet mTileSet;
+        //TileSet mTileSet;
         ColorScheme mColors;
         
     };
