@@ -200,8 +200,6 @@ Level::Level() {
                 
 
                 int squareIndex = mSquareIndices[y][x];
-    
-                printf( "squareIndex = %d\n", squareIndex );
                 
                 mSoftGridColors[ squareIndex ] = 
                     mGridColorsBlurred[ squareIndex ];
@@ -560,6 +558,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     //mTileSet.startDrawingWalls();
 
 
+    doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
+                            mRisePosition.y - MAX_LEVEL_H/2 };
+
 
     // opt:  don't draw whole grid, just visible part
     
@@ -618,7 +619,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                       c.g,
                       c.b, 1 );
         
-        if( mEdgeFadeIn >= 1 ) {
+        double maxDistance = 5;
+        
+        double dist = distance( mPlayerPos, riseSpot );
+        
+        if( mEdgeFadeIn >= 1 && dist > maxDistance ) {
             
             // draw floor edges
             
@@ -632,6 +637,19 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         else {
+            
+            double fade = mEdgeFadeIn;
+            
+            if( dist <= maxDistance ) {
+                if( dist > 1 ) {
+                    fade = (dist - 1) / (maxDistance-1);
+                    }
+                else {
+                    fade = 0;
+                    }
+                }
+            
+
             // use stencil to draw transparent floor edge w/out overlap 
             // artifacts
         
@@ -648,13 +666,15 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             setDrawColor( c.r,
                           c.g,
-                          c.b, mEdgeFadeIn );
+                          c.b, fade );
 
             drawSquare( sGridWorldSpots[ MAX_LEVEL_H / 2 ][ MAX_LEVEL_W / 2 ],
                         MAX_LEVEL_W / 2 );
             
             
-            mEdgeFadeIn += 0.01;
+            if( mEdgeFadeIn < 1 ) {    
+                mEdgeFadeIn += 0.01;
+                }
             
             stopStencil();
             }
@@ -679,75 +699,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
 
-    
-    
-
-    if( false ) {
-        
-    // draw walls and floor
-    for( int y=0; y<MAX_LEVEL_H; y++ ) {
-        for( int x=0; x<MAX_LEVEL_W; x++ ) {
-            
-
-            if( mWallFlags[y][x] != 0 ) {
-                doublePair spot = { x - MAX_LEVEL_W/2,
-                                    y - MAX_LEVEL_H/2 };
-                
-                
-                /*
-                if( mWallFlags[y][x] == 1 ) {
-                    // draw floor        
-                    //setDrawColor( 0.5, 0.5, 0.5, 1 );                    
-                    
-                    setDrawColor( 
-                        mColors.secondary.elements[floorColorIndex].r,
-                        mColors.secondary.elements[floorColorIndex].g,
-                        mColors.secondary.elements[floorColorIndex].b, 1 );
-                    floorColorIndex = (floorColorIndex + 1) % 3;
-                    drawSquare( spot, 0.5 );
-                    }
-                else if( mWallFlags[y][x] == 2 ) {
-                    // wall
-                    //setDrawColor( 0.25, 0.25, 0.25, 1 );
-                    
-                    setDrawColor( 
-                        mColors.primary.elements[wallColorIndex].r,
-                        mColors.primary.elements[wallColorIndex].g,
-                        mColors.primary.elements[wallColorIndex].b, 1 );
-                    wallColorIndex = (wallColorIndex + 1) % 3;
-                    //mTileSet.drawWall( spot );
-                    drawSquare( spot, 0.5 );
-                    }
-                */
-                Color *c = &( mGridColors[mSquareIndices[y][x]] );
-                
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-                
-                drawSquare( spot, 0.5 );
-                
-                
-                /*
-                // draw edges too
-                if( mWallEdgeFlags[y][x] != 0 ) {
-                    mTileSet.drawWallEdges( spot, mWallEdgeFlags[y][x] );
-                    }
-                */
-
-                }
-            }
-        }
-        }
-    
 
     // draw rise marker
-    doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
-                            mRisePosition.y - MAX_LEVEL_H/2 };
-    /*
-    setDrawColor( 1, 1, 0, 1 ); 
-    drawSquare( riseSpot, 0.5 );
-    */
     setDrawColor( 1, 1, 1, 1 );
     drawSprite( riseMarker, riseSpot );
     
