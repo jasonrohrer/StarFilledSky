@@ -661,6 +661,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             if( dist <= maxDistance ) {
                 if( dist > 1 ) {
                     fade = (dist - 1) / (maxDistance-1);
+
+                    if( fade > mEdgeFadeIn ) {
+                        // not done fading in yet, don't let
+                        // "near rise marker" fade trump fade-in
+                        fade = mEdgeFadeIn;
+                        }
                     }
                 else {
                     fade = 0;
