@@ -54,9 +54,11 @@ Level::Level() {
     int floorColorIndex = 0;
 
 
-    int numFilledSquares = 0;
+    mNumUsedSquares = 0;
     
     int numFloorSquares = 0;
+
+    SimpleVector<Color> gridColorsWorking;
     
     // random walk with buffer from grid edge
     // limit in number of random steps taken (for time) or
@@ -65,15 +67,17 @@ Level::Level() {
         if( mWallFlags[y][x] != 1 ) {
             numFloorSquares++;
 
-            mSquareIndices[y][x] = numFilledSquares;
-            numFilledSquares++;
+            mSquareIndices[y][x] = mNumUsedSquares;
+            mNumUsedSquares++;
+            
+            gridColorsWorking.push_back(
+                mColors.secondary.elements[floorColorIndex] );
+
+            floorColorIndex = (floorColorIndex + 1) % 3;
             }
         
         mWallFlags[y][x] = 1;
         
-        mGridColors[mSquareIndices[y][x]] = 
-            mColors.secondary.elements[floorColorIndex];
-        floorColorIndex = (floorColorIndex + 1) % 3;
 
         // move only in x or y, not both
         if( randSource.getRandomBoolean() ) {
@@ -126,11 +130,11 @@ Level::Level() {
                 if( floorNeighbor ) {
                     mWallFlags[y][x] = 2;
 
-                    mSquareIndices[y][x] = numFilledSquares;
-                    numFilledSquares++;
+                    mSquareIndices[y][x] = mNumUsedSquares;
+                    mNumUsedSquares++;
 
-                    mGridColors[mSquareIndices[y][x]] = 
-                        mColors.primary.elements[wallColorIndex];
+                    gridColorsWorking.push_back( 
+                        mColors.primary.elements[wallColorIndex] );
                     wallColorIndex = (wallColorIndex + 1) % 3;
                     
                     numWallSquares ++;
@@ -138,8 +142,9 @@ Level::Level() {
                 }
             }
         }
-    
-    
+
+    mHardGridColors = gridColorsWorking.getElementArray();
+        
     
 
     Color mGridColorsBlurred[MAX_LEVEL_SQUARES];
@@ -164,7 +169,8 @@ Level::Level() {
                         if( mWallFlags[ y + dy ][ x + dx ] == thisWallFlag ) {
                             
                             Color *c = 
-                                &( mGridColors[ mSquareIndices[y+dy][x+dx] ] );
+                                &( mHardGridColors[ 
+                                       mSquareIndices[y+dy][x+dx] ] );
                             
                             cSums[0] += c->r;
                             cSums[1] += c->g;
@@ -185,15 +191,38 @@ Level::Level() {
         }
 
     // copy over
+    mSoftGridColors = new Color[ mNumUsedSquares ];
+    
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
             
-            int squareIndex = mSquareIndices[y][x];
-            
-            mGridColors[ squareIndex ] = mGridColorsBlurred[ squareIndex ];
+            if( mWallFlags[y][x] != 0 ) {
+                
+
+                int squareIndex = mSquareIndices[y][x];
+    
+                printf( "squareIndex = %d\n", squareIndex );
+                
+                mSoftGridColors[ squareIndex ] = 
+                    mGridColorsBlurred[ squareIndex ];
+                }
             }
+        
+        }
+
+    // actual, working grid colors
+    mGridColors = new Color[ mNumUsedSquares ];
+    memcpy( mGridColors, mSoftGridColors, sizeof( Color ) * mNumUsedSquares );
+    
+    mColorMix = new float[ mNumUsedSquares ];
+    mColorMixDelta = new float[ mNumUsedSquares ];
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        mColorMix[i] = 0;
+        //mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.001, 0.01 );
+        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.01, 0.02 );
         }
     
+
 
     // now compute which walls should have edges, again using safe loop bounds
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
@@ -294,6 +323,9 @@ Level::Level() {
 
 
 Level::~Level() {
+    delete [] mGridColors;
+    delete [] mSoftGridColors;
+    delete [] mHardGridColors;
     }
 
 
@@ -428,6 +460,36 @@ void Level::step() {
             }
         
         }
+
+
+    // step square colors
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        mColorMix[i] += mColorMixDelta[i];
+        
+        if( mColorMix[i] > 1 ) {
+            mColorMix[i] = 1;
+            mColorMixDelta[i] *= -1;
+            }
+        else if( mColorMix[i] < 0 ) {
+            mColorMix[i] = 0;
+            mColorMixDelta[i] *= -1;
+            }
+        
+        // never go fully hard
+        float mix = mColorMix[i] * 0.2;
+        float counterMix = 1 - mix;
+        
+        mGridColors[i].r = 
+            mHardGridColors[i].r * mix 
+            + mSoftGridColors[i].r * counterMix;
+        mGridColors[i].g = 
+            mHardGridColors[i].g * mix 
+            + mSoftGridColors[i].g * counterMix;
+        mGridColors[i].b = 
+            mHardGridColors[i].b * mix 
+            + mSoftGridColors[i].b * counterMix;
+        }
+    
     }
 
 

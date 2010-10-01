@@ -120,8 +120,19 @@ class Level {
         short mSquareIndices[MAX_LEVEL_H][MAX_LEVEL_W];
         
         char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
+
+
+        int mNumUsedSquares;
+        // dynamically allocate to save space based on actual number of
+        // squares
+        Color *mGridColors;
+
+        Color *mHardGridColors;
+        Color *mSoftGridColors;
+
+        float *mColorMix;
+        float *mColorMixDelta;
         
-        Color mGridColors[MAX_LEVEL_SQUARES];
         
 
         // static to save RAM
