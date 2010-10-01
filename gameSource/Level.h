@@ -39,6 +39,12 @@ typedef struct WindowPosition {
 
 
 
+typedef struct GridPos {
+        int x;
+        int y;
+    } GridPos;
+
+
 
 
 class Level {
@@ -110,6 +116,9 @@ class Level {
         
         void drawPlayer( double inFade );
         void drawMouse( double inFade );
+
+        GridPos getGridPos( doublePair inWorldPos );
+        
         
 
         // need these for quick wall collision detection

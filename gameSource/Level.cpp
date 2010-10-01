@@ -218,7 +218,6 @@ Level::Level() {
     mColorMixDelta = new float[ mNumUsedSquares ];
     for( int i=0; i<mNumUsedSquares; i++ ) {
         mColorMix[i] = 0;
-        //mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.001, 0.01 );
         mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.01, 0.02 );
         }
     
@@ -373,24 +372,45 @@ void Level::step() {
         
         b->position = add( b->position, b->velocity );
         
-        char hit = false;
         
+        // light up square passing over (or wall hit)
+        GridPos p = getGridPos( b->position );
+            
+        int squareIndex = mSquareIndices[p.y][p.x];
+        
+        mColorMix[ squareIndex ] = 1;
+        
+
+        char hit = false;
+
         if( isWall( b->position ) ) {
             hit = true;
-                        }
-        else if( b->playerFlag ) {
-            // check if hit enemy
-            char hit = false;
+
+            // jump to hard when hit, then fade out
+            mGridColors[ squareIndex ] = mHardGridColors[ squareIndex ];
+            }
+        else {
+            // color floor
+
+            // more subtle than wall hit.... jump to soft?
+            mGridColors[ squareIndex ] = mSoftGridColors[ squareIndex ];
             
-            for( int j=0; j<mEnemies.size() && !hit; j++ ) {
-                Enemy *e = mEnemies.getElement( j );
+            
+            if( b->playerFlag ) {
+                // check if hit enemy
+                hit = false;
                 
-                if( distance( e->position, b->position ) < 0.4 ) {
-                    hit = true;
-                    mEnemies.deleteElement( j );
+                for( int j=0; j<mEnemies.size() && !hit; j++ ) {
+                    Enemy *e = mEnemies.getElement( j );
+                    
+                    if( distance( e->position, b->position ) < 0.4 ) {
+                        hit = true;
+                        mEnemies.deleteElement( j );
+                        }
                     }
                 }
             }
+        
 
 
         if( hit ) {
@@ -478,16 +498,24 @@ void Level::step() {
         // never go fully hard
         float mix = mColorMix[i] * 0.2;
         float counterMix = 1 - mix;
-        
-        mGridColors[i].r = 
+
+        // average our grid color with the current target mix
+        mix *= 0.05;
+        counterMix *= 0.05;
+        mGridColors[i].r += 
             mHardGridColors[i].r * mix 
             + mSoftGridColors[i].r * counterMix;
-        mGridColors[i].g = 
+        mGridColors[i].g += 
             mHardGridColors[i].g * mix 
             + mSoftGridColors[i].g * counterMix;
-        mGridColors[i].b = 
+        mGridColors[i].b += 
             mHardGridColors[i].b * mix 
             + mSoftGridColors[i].b * counterMix;
+        
+        
+        mGridColors[i].r /= 1.05;
+        mGridColors[i].g /= 1.05;
+        mGridColors[i].b /= 1.05;
         }
     
     }
@@ -822,9 +850,28 @@ void Level::forgetItemWindow() {
 
 
 
+GridPos Level::getGridPos( doublePair inWorldPos ) {
+    GridPos p;
+    p.x = (int)( rint( inWorldPos.x ) );
+    p.y = (int)( rint( inWorldPos.y ) );
+    
+    p.x += MAX_LEVEL_W/2;
+    p.y += MAX_LEVEL_H/2;
+    
+    if( p.x < 0 || p.x >= MAX_LEVEL_W ||
+        p.y < 0 || p.y >= MAX_LEVEL_H ) {
+        // out of bounds
+        
+        p.x = 0;
+        p.y = 0;
+        }
+    return p;
+    }
+
 
 
 char Level::isWall( doublePair inPos ) {
+    /*
     int x = (int)( rint( inPos.x ) );
     int y = (int)( rint( inPos.y ) );
     
@@ -836,9 +883,10 @@ char Level::isWall( doublePair inPos ) {
         // out of bounds
         return false;
         }
-    
+    */
+    GridPos p = getGridPos( inPos );
         
-    return ( mWallFlags[y][x] == 2 );
+    return ( mWallFlags[p.y][p.x] == 2 );
     }
 
 
