@@ -265,6 +265,29 @@ Level::Level() {
         sGridWorldSpotsComputed = true;
         }
     
+
+    // make indexed versions of these for quick looping later
+    mWallFlagsIndexed = new char[mNumUsedSquares];
+    mGridWorldSpots = new doublePair*[ mNumUsedSquares ];
+
+    for( y=0; y<MAX_LEVEL_H; y++ ) {
+        for( x=0; x<MAX_LEVEL_W; x++ ) {
+            
+            int squareIndex = mSquareIndices[y][x];
+            
+            if( squareIndex != -1 ) {
+                
+                mGridWorldSpots[ squareIndex ] =
+                    &( sGridWorldSpots[y][x] );
+
+                mWallFlagsIndexed[ squareIndex ] =
+                    mWallFlags[y][x];
+                }
+            }
+        }
+    
+    
+
     
 
     // place enemies in random floor spots
@@ -323,6 +346,10 @@ Level::~Level() {
     delete [] mGridColors;
     delete [] mSoftGridColors;
     delete [] mHardGridColors;
+    delete [] mColorMix;
+    delete [] mColorMixDelta;
+    delete [] mWallFlagsIndexed;
+    delete [] mGridWorldSpots;
     }
 
 
@@ -595,23 +622,18 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     // draw walls
-    for( int y=yVisStart; y<=yVisEnd; y++ ) {
-        for( int x=xVisStart; x<=xVisEnd; x++ ) {
-            
-            
-            if( mWallFlags[y][x] == 2 ) {
-                
-                Color *c = &( mGridColors[mSquareIndices[y][x]] );
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        if( mWallFlagsIndexed[i] == 2 ) {
+            Color *c = &( mGridColors[i] );
                                 
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-                
-                drawSquare( sGridWorldSpots[y][x], 0.5 );
-                }
+            setDrawColor( c->r,
+                          c->g,
+                          c->b, 1 );
+            
+            drawSquare( *( mGridWorldSpots[i] ), 0.5 );
             }
         }
-
+    
     
     if( mDrawFloorEdges ) {
         Color c = mColors.primary.elements[3];
@@ -626,13 +648,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mEdgeFadeIn >= 1 && dist > maxDistance ) {
             
             // draw floor edges
-            
-            for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    
-                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
-                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
-                        }
+            for( int i=0; i<mNumUsedSquares; i++ ) {
+                if( mFloorEdgeFlags[i] != 0 ) {
+                    drawSquare( *( mGridWorldSpots[i] ), 0.5625 );
                     }
                 }
             }
@@ -654,14 +672,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // artifacts
         
             startAddingToStencil( false, true );
-            for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    
-                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
-                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
-                        }
+            for( int i=0; i<mNumUsedSquares; i++ ) {
+                if( mFloorEdgeFlags[i] != 0 ) {
+                    drawSquare( *( mGridWorldSpots[i] ), 0.5625 );
                     }
                 }
+            
             startDrawingThroughStencil();
             
             setDrawColor( c.r,
@@ -682,23 +698,18 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
     // draw floor
-    for( int y=yVisStart; y<=yVisEnd; y++ ) {
-        for( int x=xVisStart; x<=xVisEnd; x++ ) {
-            
-            
-            if( mWallFlags[y][x] == 1 ) {
-                Color *c = &( mGridColors[mSquareIndices[y][x]] );
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        if( mWallFlagsIndexed[i] == 1 ) {
+            Color *c = &( mGridColors[i] );
                                 
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-                
-                drawSquare( sGridWorldSpots[y][x], 0.5 );
-                }
+            setDrawColor( c->r,
+                          c->g,
+                          c->b, 1 );
+            
+            drawSquare( *( mGridWorldSpots[i] ), 0.5 );
             }
         }
     
-
 
     // draw rise marker
     setDrawColor( 1, 1, 1, 1 );

@@ -142,6 +142,10 @@ class Level {
         float *mColorMix;
         float *mColorMixDelta;
         
+        // using square indices
+        char *mWallFlagsIndexed;
+        doublePair **mGridWorldSpots;
+        
         
 
         // static to save RAM
