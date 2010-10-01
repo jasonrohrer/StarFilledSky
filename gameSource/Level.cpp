@@ -543,6 +543,29 @@ void Level::step() {
         mGridColors[i].b /= 1.05;
         }
     
+
+    // FIXME:  code to track the black square bug
+
+    GridPos mouseGridPos = getGridPos( mMousePos );
+
+    char mouseWallFlag = mWallFlags[ mouseGridPos.y ][mouseGridPos.x ];
+
+    /*
+    printf( "Wall flag %d\n", mouseWallFlag );
+    */
+    int mouseSquareIndex = mSquareIndices[ mouseGridPos.y ][mouseGridPos.x ];
+
+    //printf( "Square index %d\n", mouseSquareIndex );
+    
+    if( mouseSquareIndex != -1 ) {
+        printf( "Square color %f,%f,%f\n", 
+                mGridColors[ mouseSquareIndex ].r,
+                mGridColors[ mouseSquareIndex ].g,
+                mGridColors[ mouseSquareIndex ].b );
+        }
+    
+                
+    
     }
 
 
