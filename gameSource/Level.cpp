@@ -622,15 +622,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     // draw walls
-    for( int i=0; i<mNumUsedSquares; i++ ) {
-        if( mWallFlagsIndexed[i] == 2 ) {
-            Color *c = &( mGridColors[i] );
-                                
-            setDrawColor( c->r,
-                          c->g,
-                          c->b, 1 );
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+            if( mWallFlags[y][x] == 2 ) {
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
+                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
             
-            drawSquare( *( mGridWorldSpots[i] ), 0.5 );
+                drawSquare( sGridWorldSpots[y][x], 0.5 );
+                }
             }
         }
     
@@ -648,9 +650,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mEdgeFadeIn >= 1 && dist > maxDistance ) {
             
             // draw floor edges
-            for( int i=0; i<mNumUsedSquares; i++ ) {
-                if( mFloorEdgeFlags[i] != 0 ) {
-                    drawSquare( *( mGridWorldSpots[i] ), 0.5625 );
+            for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                for( int x=xVisStart; x<=xVisEnd; x++ ) {
+                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                        }
                     }
                 }
             }
@@ -678,9 +682,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // artifacts
         
             startAddingToStencil( false, true );
-            for( int i=0; i<mNumUsedSquares; i++ ) {
-                if( mFloorEdgeFlags[i] != 0 ) {
-                    drawSquare( *( mGridWorldSpots[i] ), 0.5625 );
+            for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                for( int x=xVisStart; x<=xVisEnd; x++ ) {
+                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                        }
                     }
                 }
             
@@ -704,15 +710,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
     // draw floor
-    for( int i=0; i<mNumUsedSquares; i++ ) {
-        if( mWallFlagsIndexed[i] == 1 ) {
-            Color *c = &( mGridColors[i] );
-                                
-            setDrawColor( c->r,
-                          c->g,
-                          c->b, 1 );
-            
-            drawSquare( *( mGridWorldSpots[i] ), 0.5 );
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+            if( mWallFlags[y][x] == 1 ) {
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
+                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+                
+                drawSquare( sGridWorldSpots[y][x], 0.5 );
+                }
             }
         }
     
