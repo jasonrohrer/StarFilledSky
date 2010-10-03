@@ -652,7 +652,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // draw floor edges
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                    if( mWallFlags[y][x] == 1 &&
+                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                        
                         drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
@@ -682,9 +684,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // artifacts
         
             startAddingToStencil( false, true );
+            
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
                 for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    if( mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                    if( mWallFlags[y][x] == 1 &&
+                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                        
                         drawSquare( sGridWorldSpots[y][x], 0.5625 );
                         }
                     }
@@ -695,9 +700,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             setDrawColor( c.r,
                           c.g,
                           c.b, fade );
-
-            drawSquare( sGridWorldSpots[ MAX_LEVEL_H / 2 ][ MAX_LEVEL_W / 2 ],
-                        MAX_LEVEL_W / 2 );
+            
+            drawRect( inViewCenter.x - inViewSize/2, 
+                      inViewCenter.y - inViewSize/2, 
+                      inViewCenter.x + inViewSize/2, 
+                      inViewCenter.y + inViewSize/2 );
             
             
             if( mEdgeFadeIn < 1 ) {    
