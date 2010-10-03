@@ -216,7 +216,7 @@ Level::Level() {
     mColorMixDelta = new float[ mNumUsedSquares ];
     for( int i=0; i<mNumUsedSquares; i++ ) {
         mColorMix[i] = 0;
-        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.01, 0.02 );
+        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.04, 0.08 );
         }
     
 
