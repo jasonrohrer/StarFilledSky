@@ -18,23 +18,37 @@ double maxEnemySpeed = 0.10;
 double enemyBulletSpeed = 0.2;
 
 
-Level::Level() {
+void Level::generateReproducibleData() {
 
-    mFrozen = false;
-    mDrawFloorEdges = true;
-    mEdgeFadeIn = 0.0f;
+    if( mDataGenerated ) {
+        // already generated
+        return;
+        }
+
+
+
+    // dynamically allocate base arrays
+
+    //char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+    //short mSquareIndices[MAX_LEVEL_H][MAX_LEVEL_W];
     
-    mWindowSet = false;
+    mWallFlags = new char*[MAX_LEVEL_H];
+    mSquareIndices = new short*[MAX_LEVEL_H];
     
-    mMousePos.x = 0;
-    mMousePos.y = 0;
-    mPlayerPos.x = 0;
-    mPlayerPos.y = 0;
-    mEnteringMouse = false;
+    for( int i=0; i<MAX_LEVEL_H; i++ ) {
+        mWallFlags[i] = new char[MAX_LEVEL_W];
+        mSquareIndices[i] = new short[MAX_LEVEL_W];
+        }
+    
+    //char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
+    mFloorEdgeFlags = new char[MAX_LEVEL_SQUARES];
+
+
     
 
-    int x;
-    int y;
+    randSource.restoreFromSavedState( mRandSeedState );
+
+    int x, y;
     
     // blank all
     for( y=0; y<MAX_LEVEL_H; y++ ) {
@@ -286,8 +300,68 @@ Level::Level() {
             }
         }
     
+    mDataGenerated = true;
+    }
+
+
+
+
+void Level::freeReproducibleData() {
+    if( mDataGenerated ) {
+        
+
+        for( int i=0; i<MAX_LEVEL_H; i++ ) {
+            delete [] mWallFlags[i];
+            delete [] mSquareIndices[i];
+            }
+        delete [] mWallFlags;
+        delete [] mSquareIndices;
+        delete [] mFloorEdgeFlags;
+
+    
+        delete [] mGridColors;
+        delete [] mSoftGridColors;
+        delete [] mHardGridColors;
+        delete [] mColorMix;
+        delete [] mColorMixDelta;
+        delete [] mWallFlagsIndexed;
+        delete [] mGridWorldSpots;
+    
+        mDataGenerated = false;
+        }
+    }
+
+
+
+
+Level::Level() {
+    
+    randSource.saveState();
+    mRandSeedState = randSource.getSavedState();
+    
+    mDataGenerated = false;
     
 
+    mFrozen = false;
+    mDrawFloorEdges = true;
+    mEdgeFadeIn = 0.0f;
+    
+    mWindowSet = false;
+    
+    mMousePos.x = 0;
+    mMousePos.y = 0;
+    mPlayerPos.x = 0;
+    mPlayerPos.y = 0;
+    mEnteringMouse = false;
+    
+
+    int x;
+    int y;
+    
+        
+    
+    generateReproducibleData();
+    
     
 
     // place enemies in random floor spots
@@ -343,14 +417,20 @@ Level::Level() {
 
 
 Level::~Level() {
-    delete [] mGridColors;
-    delete [] mSoftGridColors;
-    delete [] mHardGridColors;
-    delete [] mColorMix;
-    delete [] mColorMixDelta;
-    delete [] mWallFlagsIndexed;
-    delete [] mGridWorldSpots;
+    freeReproducibleData();
     }
+
+
+
+void Level::compactLevel() {
+    freeReproducibleData();
+    }
+
+        
+void Level::decompactLevel() {
+    generateReproducibleData();
+    }
+
 
 
 

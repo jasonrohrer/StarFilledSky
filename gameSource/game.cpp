@@ -333,7 +333,21 @@ void drawFrame() {
         zoomProgress += zoomSpeed * zoomDirection;
         
         if( zoomProgress >= 1 && zoomDirection == 1) {
+            
+            struct mallinfo meminfo = mallinfo();
+    
+            int oldAllocedBytes = meminfo.uordblks;
+            
+            // going down, compact it first
+            lastLevel->compactLevel();
+
+            meminfo = mallinfo();
+            printf( "Level compaction used %d kbytes (%d tot)\n",
+                    (meminfo.uordblks - oldAllocedBytes ) / 1024,
+                    meminfo.uordblks / 1024 );
+
             lastLevel = NULL;
+
             // go with current level
             setViewSize( viewWidth );
             setViewCenterPosition( lastScreenViewCenter.x, 
@@ -586,6 +600,8 @@ void drawFrame() {
         levelRisePositionInfoStack.deleteElement( 
             levelRisePositionInfoStack.size() - 1 );
         
+        lastLevel->decompactLevel();
+
         lastLevel->freezeLevel( true );
         zoomProgress = 1;
         zoomDirection = -1;

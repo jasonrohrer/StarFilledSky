@@ -58,6 +58,14 @@ class Level {
         ~Level();
 
         
+        // compacts level, discarding reproducible data
+        // level cannot be drawn or stepped until decompact is called
+        void compactLevel();
+        
+        void decompactLevel();
+
+
+        
         void setPlayerPos( doublePair inPos );
         void setMousePos( doublePair inPos );
         
@@ -118,18 +126,35 @@ class Level {
         void drawMouse( double inFade );
 
         GridPos getGridPos( doublePair inWorldPos );
+
+
+        // generate data that can be reproduced from the seed
+        void generateReproducibleData();
         
+        // free up memory consumed by reproducible data
+        void freeReproducibleData();
+        
+        char mDataGenerated;
         
 
+        // random generator state that generated this level
+        unsigned int mRandSeedState;
+        
+
+        // dynamically allocate these to make them compactable
+
         // need these for quick wall collision detection
-        char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+        //char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+        char **mWallFlags;
 
         // save ram, because grid is a sparse matrix
         // map each grid space to an index
-        short mSquareIndices[MAX_LEVEL_H][MAX_LEVEL_W];
-        
-        char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
+        //short mSquareIndices[MAX_LEVEL_H][MAX_LEVEL_W];
+        short **mSquareIndices;
 
+        //char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
+        char *mFloorEdgeFlags;
+        
 
         int mNumUsedSquares;
         // dynamically allocate to save space based on actual number of
