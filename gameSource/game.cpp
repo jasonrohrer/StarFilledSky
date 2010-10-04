@@ -526,21 +526,24 @@ void drawFrame() {
         int enemyIndex;
         doublePair enteringPos;
         char enteringHit = false;
+        int enteringType = 0;
         
         if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
             enteringPos = currentLevel->getEnemyCenter( enemyIndex );
             enteringHit = true;
+            enteringType = 1;
             }
         else if( currentLevel->isPlayer( mousePos ) ) {
             enteringPos = playerPos;
             enteringHit = true;
+            enteringType = 0;
             }
         
 
         if( enteringHit ) {
             levelRiseStack.push_back( currentLevel );
-            // enemy is entry position
+            // enemy or player is entry position
             LevelPositionInfo info = 
                 { playerPos, lastScreenViewCenter, 
                   enteringPos,
@@ -558,7 +561,10 @@ void drawFrame() {
     
             int oldAllocedBytes = meminfo.uordblks;
             
-            currentLevel = new Level();
+            ColorScheme c = 
+                currentLevel->getEnteringPointColors( mousePos, enteringType );
+
+            currentLevel = new Level( &c );
 
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",

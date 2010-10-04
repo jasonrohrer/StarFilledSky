@@ -19,7 +19,6 @@ PlayerSprite::PlayerSprite() {
         }
     
 
-    // symmetrical
     for( int y=0; y<16; y++ ) {
         for( int x=0; x<8; x++ ) {
             int pixIndex = y * 16 + x;
@@ -29,6 +28,7 @@ PlayerSprite::PlayerSprite() {
                 channels[i][ pixIndex ] = 0;
                 }
             
+            /*
             int chanWithColor = randSource.getRandomBoundedInt( 0, 2 );
             
             channels[chanWithColor][pixIndex] = randSource.getRandomDouble();
@@ -40,7 +40,29 @@ PlayerSprite::PlayerSprite() {
             //int chanWithColor3 = randSource.getRandomBoundedInt( 0, 2 );
 
             //channels[chanWithColor3][pixIndex] = randSource.getRandomDouble();
+            */
+            
+            // pick color randomly from either primary or secondary
+            float r, g, b;
+            
+            int randPick = randSource.getRandomBoundedInt( 0, 2 );
+            if( randSource.getRandomBoolean() ) {
+                r = mColors.primary.elements[randPick].r;
+                g = mColors.primary.elements[randPick].g;
+                b = mColors.primary.elements[randPick].b;
+                }
+            else {
+                r = mColors.secondary.elements[randPick].r;
+                g = mColors.secondary.elements[randPick].g;
+                b = mColors.secondary.elements[randPick].b;
+                }
+            
+            channels[0][pixIndex] = r;
+            channels[1][pixIndex] = g;
+            channels[2][pixIndex] = b;
             }
+        
+        // symmetrical
         for( int x=8; x<16; x++ ) {
             for( int i=0; i<3; i++ ) {
                 channels[i][ y * 16 + x ] =
@@ -103,7 +125,7 @@ PlayerSprite::PlayerSprite() {
     mCenterSprite = fillSprite( &centerImage );
     
     
-    Image borderImage( 16, 16, 4, true );
+    Image borderImage( 16, 16, 4, false );
 
     
     double *borderChannels[4];
@@ -111,13 +133,24 @@ PlayerSprite::PlayerSprite() {
     for( int i=0; i<4; i++ ) {
         borderChannels[i] = borderImage.getChannel( i );
         }
+
+    Color borderColor = mColors.primary.elements[3];
+
+    for( int p=0; p<16*16; p++ ) {
+        borderChannels[0][p] = borderColor.r;
+        borderChannels[1][p] = borderColor.g;
+        borderChannels[2][p] = borderColor.b;
+        
+        // all trans for now
+        borderChannels[3][p] = 0;
+        }
     
     for( int y=1; y<15; y++ ) {
         for( int x=1; x<15; x++ ) {
             
             if( channels[3][ y*16+x ] != 0 ) {
                 
-                // fill empty neighbors in border image with black
+                // fill empty neighbors in border image with opaque pixels
 
                 int n = (y-1) * 16 + x;
                 
@@ -143,3 +176,10 @@ PlayerSprite::PlayerSprite() {
 
     mBorderSprite = fillSprite( &borderImage );
     }
+
+
+
+ColorScheme PlayerSprite::getColors() {
+    return mColors;
+    }
+

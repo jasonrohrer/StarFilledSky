@@ -51,8 +51,10 @@ class Level {
         
 
     public:
-        
-        Level();
+
+        // Pass NULL to generate a fresh scheme
+        // destroyed by caller
+        Level( ColorScheme *inColors=NULL );
 
 
         ~Level();
@@ -96,6 +98,12 @@ class Level {
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         char isPlayer( doublePair inPos  );
         
+        // 0 player
+        // 1 enemy
+        ColorScheme getEnteringPointColors( doublePair inPosition,
+                                            int inType );
+        
+
         char isRiseSpot( doublePair inPos );
         
 

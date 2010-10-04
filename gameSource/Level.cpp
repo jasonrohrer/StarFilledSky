@@ -334,13 +334,20 @@ void Level::freeReproducibleData() {
 
 
 
-Level::Level() {
+Level::Level( ColorScheme *inColors ) {
     
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
     
     mDataGenerated = false;
-    
+
+
+    if( inColors != NULL ) {
+        // copy
+        mColors = *( inColors );
+        }
+    // else use randomly-generated mColors from stack
+
 
     mFrozen = false;
     mDrawFloorEdges = true;
@@ -1001,6 +1008,33 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
 
 char Level::isPlayer( doublePair inPos ) {
     return ( distance( mPlayerPos, inPos ) < 0.5 );
+    }
+
+
+
+ColorScheme Level::getEnteringPointColors( doublePair inPosition,
+                                           int inType ) {
+    switch( inType ) {
+        case 0: {
+            return mPlayerSprite.getColors();
+            }
+            break;
+        case 1: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                
+                // FIXME:  enemies have no colors yet
+                // return default
+
+                }
+            }
+            break;
+        }
+    
+    // default
+    ColorScheme c;
+    return c;
     }
 
 
