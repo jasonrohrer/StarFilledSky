@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <malloc.h>
 
 
 #include "minorGems/graphics/Color.h"
@@ -539,7 +540,17 @@ void drawFrame() {
             zoomProgress = 0;
             zoomDirection = 1;
             
+            struct mallinfo meminfo = mallinfo();
+    
+            int oldAllocedBytes = meminfo.uordblks;
+            
             currentLevel = new Level();
+
+            meminfo = mallinfo();
+            printf( "Level construction used %d kbytes (%d tot)\n",
+                    (meminfo.uordblks - oldAllocedBytes ) / 1024,
+                    meminfo.uordblks / 1024 );
+
             playerPos.x = 0;
             playerPos.y = 0;
             lastMouseX = 0;
@@ -718,6 +729,13 @@ void keyDown( unsigned char inASCII ) {
             break;
         case ' ':
             entering = true;
+            break;
+        case 'm':
+        case 'M': {
+            struct mallinfo meminfo = mallinfo();
+            printf( "Mem alloc: %d\n",
+                    meminfo.uordblks / 1024 );
+            }
             break;
         }
     }
