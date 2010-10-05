@@ -28,41 +28,55 @@ PlayerSprite::PlayerSprite() {
                 channels[i][ pixIndex ] = 0;
                 }
             
-            /*
-            int chanWithColor = randSource.getRandomBoundedInt( 0, 2 );
-            
-            channels[chanWithColor][pixIndex] = randSource.getRandomDouble();
-
-            int chanWithColor2 = randSource.getRandomBoundedInt( 0, 2 );
-
-            channels[chanWithColor2][pixIndex] = randSource.getRandomDouble();
-
-            //int chanWithColor3 = randSource.getRandomBoundedInt( 0, 2 );
-
-            //channels[chanWithColor3][pixIndex] = randSource.getRandomDouble();
-            */
-            
-            // pick color randomly from either primary or secondary
-            float r, g, b;
-            
+            // pick color randomly from primary
             int randPick = randSource.getRandomBoundedInt( 0, 2 );
-            if( randSource.getRandomBoolean() ) {
-                r = mColors.primary.elements[randPick].r;
-                g = mColors.primary.elements[randPick].g;
-                b = mColors.primary.elements[randPick].b;
-                }
-            else {
-                r = mColors.secondary.elements[randPick].r;
-                g = mColors.secondary.elements[randPick].g;
-                b = mColors.secondary.elements[randPick].b;
-                }
-            
-            channels[0][pixIndex] = r;
-            channels[1][pixIndex] = g;
-            channels[2][pixIndex] = b;
+            channels[0][pixIndex] = mColors.primary.elements[randPick].r;
+            channels[1][pixIndex] = mColors.primary.elements[randPick].g;
+            channels[2][pixIndex] = mColors.primary.elements[randPick].b;
+            }       
+        }
+
+    // random walk to fill in some secondary color
+    for( int r=0; r<3; r++ ) {
+    int x=7;
+    int y = 7;
+        
+
+    for( int s=0; s<30; s++ ) {    
+        
+        int pixIndex = y * 16 + x;
+        
+
+        int randPick = randSource.getRandomBoundedInt( 0, 2 );
+
+        channels[0][ pixIndex ] = mColors.secondary.elements[randPick].r;
+        channels[1][ pixIndex ] = mColors.secondary.elements[randPick].g;
+        channels[2][ pixIndex ] = mColors.secondary.elements[randPick].b;
+        
+        if( randSource.getRandomBoolean() ) {
+            x += randSource.getRandomBoundedInt( -1, 1 );
+            }
+        else {
+            y += randSource.getRandomBoundedInt( -1, 1 );
             }
         
-        // symmetrical
+        if( x < 0 ) {
+            x = 0;
+            }
+        else if( x > 7 ) {
+            x = 7;
+            }
+        if( y < 0 ) {
+            y = 0;
+            }
+        else if( y > 15 ) {
+            y = 15;
+            }
+        }
+        }
+    
+    // symmetrical
+    for( int y=0; y<16; y++ ) {
         for( int x=8; x<16; x++ ) {
             for( int i=0; i<3; i++ ) {
                 channels[i][ y * 16 + x ] =
@@ -71,6 +85,7 @@ PlayerSprite::PlayerSprite() {
             }       
         }
 
+
     BoxBlurFilter filter( 1 );
     
 
@@ -78,7 +93,7 @@ PlayerSprite::PlayerSprite() {
     
 
     // start random walks in center to lay out alpha
-    for( int r=0; r<20; r++ ) {
+    for( int r=0; r<15; r++ ) {
         int x=7;
         int y = 7;
         
