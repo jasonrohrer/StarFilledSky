@@ -151,7 +151,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    //grabInput( true );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -616,8 +616,9 @@ void drawFrame() {
             ColorScheme c = currentLevel->getLevelColors();
             levelRiseStack.push_back( new Level( &c ) );
             
+            // center player in symmetrical level
             LevelPositionInfo info = 
-                { {0,0}, {0,0}, {0,0}, 0, 0 };
+                { {-0.5,0}, {-0.5,0}, {-0.5,0}, 0, 0 };
             levelRisePositionInfoStack.push_back( info );
             }
         

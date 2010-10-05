@@ -432,10 +432,19 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     
     mWindowSet = false;
     
-    mMousePos.x = 0;
-    mMousePos.y = 0;
-    mPlayerPos.x = 0;
-    mPlayerPos.y = 0;
+    if( mSymmetrical ) {
+        mMousePos.x = -0.5;
+        mMousePos.y = 0;
+        mPlayerPos.x = -0.5;
+        mPlayerPos.y = 0;
+        }
+    else {
+        mMousePos.x = 0;
+        mMousePos.y = 0;
+        mPlayerPos.x = 0;
+        mPlayerPos.y = 0;
+        }
+    
     mEnteringMouse = false;
     
 
