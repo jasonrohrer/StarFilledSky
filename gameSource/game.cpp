@@ -576,7 +576,7 @@ void drawFrame() {
 
             char symmetrical = ( enteringType == 0 );
             
-            currentLevel = new Level( &c, symmetrical );
+            currentLevel = new Level( NULL, &c, symmetrical );
 
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
@@ -613,7 +613,8 @@ void drawFrame() {
         
         if( levelRiseStack.size() == 0 ) {
             // push one on to rise into
-            levelRiseStack.push_back( new Level() );
+            ColorScheme c = currentLevel->getLevelColors();
+            levelRiseStack.push_back( new Level( &c ) );
             
             LevelPositionInfo info = 
                 { {0,0}, {0,0}, {0,0}, 0, 0 };

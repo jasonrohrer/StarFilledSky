@@ -409,7 +409,9 @@ void Level::freeReproducibleData() {
 
 
 
-Level::Level( ColorScheme *inColors, char inSymmetrical ) {
+Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
+              char inSymmetrical ) 
+        : mPlayerSprite( inPlayerColors ) {
     
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
@@ -1091,6 +1093,11 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
 
 char Level::isPlayer( doublePair inPos ) {
     return ( distance( mPlayerPos, inPos ) < 0.5 );
+    }
+
+
+ColorScheme Level::getLevelColors() {
+    return mColors;
     }
 
 

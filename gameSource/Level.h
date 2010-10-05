@@ -56,7 +56,9 @@ class Level {
 
         // Pass NULL to generate a fresh scheme
         // destroyed by caller
-        Level( ColorScheme *inColors=NULL, char inSymmetrical=true );
+        Level( ColorScheme *inPlayerColors=NULL,
+               ColorScheme *inColors=NULL, 
+               char inSymmetrical=true );
 
 
         ~Level();
@@ -99,6 +101,9 @@ class Level {
         
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         char isPlayer( doublePair inPos  );
+        
+        ColorScheme getLevelColors();
+        
         
         // 0 player
         // 1 enemy

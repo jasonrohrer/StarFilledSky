@@ -8,7 +8,12 @@ extern CustomRandomSource randSource;
 
 
 
-PlayerSprite::PlayerSprite() {
+PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
+
+    if( inColors != NULL ) {
+        mColors = *inColors;
+        }
+    
 
     Image centerImage( 16, 16, 4, true );
     
