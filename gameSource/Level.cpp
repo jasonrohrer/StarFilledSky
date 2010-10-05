@@ -401,7 +401,7 @@ void Level::freeReproducibleData() {
         delete [] mColorMixDelta;
         delete [] mWallFlagsIndexed;
         delete [] mGridWorldSpots;
-    
+
         mDataGenerated = false;
         }
     }
@@ -469,7 +469,8 @@ Level::Level( ColorScheme *inColors, char inSymmetrical ) {
                         doublePair a = { 0, 0 };
                         
                         Enemy e = { spot, v, a, 20, 
-                                    randSource.getRandomBoundedInt( 0, 10 ) };
+                                    randSource.getRandomBoundedInt( 0, 10 ),
+                                    new EnemySprite() };
                         
                         mEnemies.push_back( e );
                         }
@@ -500,6 +501,12 @@ Level::Level( ColorScheme *inColors, char inSymmetrical ) {
 
 Level::~Level() {
     freeReproducibleData();
+
+
+    for( int i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        delete e->sprite;
+        }
     }
 
 
@@ -923,27 +930,25 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     // draw enemies
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
-        
-        setDrawColor( 0, 0, 0, 1 );
-        drawSquare( e->position, 0.25 );
+        e->sprite->draw( e->position, 1 );
         }
     
     
 
 
 
+    // window for zoom
+    // use whole sprite, with border, as window
+    // draw border on top as part of shade
     if( mWindowSet && ! mWindowPosition.isPlayer ) {
         startAddingToStencil( false, true );
         Enemy *e = mEnemies.getElement( mWindowPosition.index );
-        drawSquare( e->position, 0.2 );
+        e->sprite->draw( e->position, 1 );
         }
     else if( mWindowSet && mWindowPosition.isPlayer ) {
         drawMouse( 1 );
         drawPlayer( 1 );
         
-        // player is window for zoom
-        // use whole player, with border, as window
-        // draw border on top as part of shade
         startAddingToStencil( false, true );
         mPlayerSprite.draw( mPlayerPos );
         }
@@ -974,16 +979,17 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
         stopStencil();
         
         if( mWindowPosition.isPlayer ) {
-            //setDrawColor( 1, 0, 0, inFade );
-            //drawSquare( mPlayerPos, 0.2 );
             mPlayerSprite.drawCenter( mPlayerPos, inFade );
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
+            
+            // mouse drawn under player
             }
         else {    
             Enemy *e = mEnemies.getElement( mWindowPosition.index );
-            setDrawColor( 0, 0, 0, inFade );
-            drawSquare( e->position, 0.2 );
+            e->sprite->drawCenter( e->position, inFade );
+            e->sprite->drawBorder( e->position, inFrameFade );
 
+            // mouse and player drawn on top of enemy
             drawMouse( inFade );
             drawPlayer( inFade );
             }

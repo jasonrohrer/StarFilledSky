@@ -3,6 +3,7 @@
 
 
 #include "PlayerSprite.h"
+#include "EnemySprite.h"
 #include "TileSet.h"
 #include "ColorScheme.h"
 
@@ -28,6 +29,7 @@ typedef struct Enemy {
         doublePair accel;
         int stepsBetweenBullets;
         int stepsTilNextBullet;
+        EnemySprite *sprite;
     } Enemy;
 
 

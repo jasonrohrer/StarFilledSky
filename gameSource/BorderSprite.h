@@ -1,3 +1,7 @@
+#ifndef BORDER_SPRITE_INCLUDED
+#define BORDER_SPRITE_INCLUDED
+
+
 #include "minorGems/game/doublePair.h"
 #include "minorGems/game/gameGraphics.h"
 
@@ -27,3 +31,5 @@ class BorderSprite {
 
     };
 
+
+#endif

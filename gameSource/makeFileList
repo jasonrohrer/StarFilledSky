@@ -16,7 +16,8 @@ fixedSpriteBank.cpp \
 BorderSprite.cpp \
 PlayerSprite.cpp \
 TileSet.cpp \
-ColorScheme.cpp
+ColorScheme.cpp \
+EnemySprite.cpp
 
 
 GAME_GRAPHICS = \
