@@ -38,41 +38,41 @@ PlayerSprite::PlayerSprite() {
 
     // random walk to fill in some secondary color
     for( int r=0; r<3; r++ ) {
-    int x=7;
-    int y = 7;
+        int x=7;
+        int y = 7;
         
 
-    for( int s=0; s<30; s++ ) {    
+        for( int s=0; s<30; s++ ) {    
         
-        int pixIndex = y * 16 + x;
+            int pixIndex = y * 16 + x;
         
 
-        int randPick = randSource.getRandomBoundedInt( 0, 2 );
+            int randPick = randSource.getRandomBoundedInt( 0, 2 );
 
-        channels[0][ pixIndex ] = mColors.secondary.elements[randPick].r;
-        channels[1][ pixIndex ] = mColors.secondary.elements[randPick].g;
-        channels[2][ pixIndex ] = mColors.secondary.elements[randPick].b;
+            channels[0][ pixIndex ] = mColors.secondary.elements[randPick].r;
+            channels[1][ pixIndex ] = mColors.secondary.elements[randPick].g;
+            channels[2][ pixIndex ] = mColors.secondary.elements[randPick].b;
         
-        if( randSource.getRandomBoolean() ) {
-            x += randSource.getRandomBoundedInt( -1, 1 );
-            }
-        else {
-            y += randSource.getRandomBoundedInt( -1, 1 );
-            }
+            if( randSource.getRandomBoolean() ) {
+                x += randSource.getRandomBoundedInt( -1, 1 );
+                }
+            else {
+                y += randSource.getRandomBoundedInt( -1, 1 );
+                }
         
-        if( x < 0 ) {
-            x = 0;
+            if( x < 0 ) {
+                x = 0;
+                }
+            else if( x > 7 ) {
+                x = 7;
+                }
+            if( y < 0 ) {
+                y = 0;
+                }
+            else if( y > 15 ) {
+                y = 15;
+                }
             }
-        else if( x > 7 ) {
-            x = 7;
-            }
-        if( y < 0 ) {
-            y = 0;
-            }
-        else if( y > 15 ) {
-            y = 15;
-            }
-        }
         }
     
     // symmetrical
