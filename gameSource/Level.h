@@ -54,7 +54,7 @@ class Level {
 
         // Pass NULL to generate a fresh scheme
         // destroyed by caller
-        Level( ColorScheme *inColors=NULL );
+        Level( ColorScheme *inColors=NULL, char inSymmetrical=true );
 
 
         ~Level();
@@ -147,6 +147,9 @@ class Level {
 
         // random generator state that generated this level
         unsigned int mRandSeedState;
+        
+
+        char mSymmetrical;
         
 
         // dynamically allocate these to make them compactable

@@ -73,11 +73,26 @@ void Level::generateReproducibleData() {
     int numFloorSquares = 0;
 
     SimpleVector<Color> gridColorsWorking;
+
+    int xLimit = 2;
+    int numFloorSquaresMax = MAX_FLOOR_SQUARES;
+    int stepLimit = 4000;
+    if( mSymmetrical ) {
+        // stop at center
+        xLimit = x;
+        
+        // generate half squares
+        numFloorSquaresMax /= 2;
+        stepLimit /= 2;
+        }
+    
+    
+
     
     // random walk with buffer from grid edge
     // limit in number of random steps taken (for time) or
     // number of floor squares generated
-    for( int i=0; i<4000 && numFloorSquares < MAX_FLOOR_SQUARES; i++ ) {
+    for( int i=0; i<stepLimit && numFloorSquares < numFloorSquaresMax; i++ ) {
         if( mWallFlags[y][x] != 1 ) {
             numFloorSquares++;
 
@@ -104,8 +119,8 @@ void Level::generateReproducibleData() {
         if( x >= MAX_LEVEL_W - 2 ) {
             x = MAX_LEVEL_W - 3;
             }
-        if( x < 2 ) {
-            x = 2;
+        if( x < xLimit ) {
+            x = xLimit;
             }
         if( y >= MAX_LEVEL_H - 2 ) {
             y = MAX_LEVEL_H - 3;
@@ -115,6 +130,33 @@ void Level::generateReproducibleData() {
             }    
         }
 
+
+    if( mSymmetrical ) {
+        for( y=0; y<MAX_LEVEL_H; y++ ) {
+            for( x=0; x<MAX_LEVEL_W/2; x++ ) {
+                
+                int copyX = MAX_LEVEL_W - x - 1;
+                
+
+                if( mWallFlags[y][copyX] == 1 ) {
+                    numFloorSquares++;
+
+                    mSquareIndices[y][x] = mNumUsedSquares;
+                    mNumUsedSquares++;
+                    
+                    // copy colors symmetrically too
+                    Color copyColor =
+                        *( gridColorsWorking.getElement( 
+                               mSquareIndices[y][copyX] ) );
+                    
+                    gridColorsWorking.push_back( copyColor );
+                    
+                    mWallFlags[y][x] = 1;
+                    }
+                }
+            }
+        }
+    
     
 
 
@@ -124,8 +166,13 @@ void Level::generateReproducibleData() {
 
     int numWallSquares = 0;
     
+    int xStart = 1;
+    if( mSymmetrical ) {
+        xStart = MAX_LEVEL_W/2;
+        }
+    
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
-        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
+        for( x=xStart; x<MAX_LEVEL_W - 1; x++ ) {
          
             if( mWallFlags[y][x] == 0 ) {
                 
@@ -156,6 +203,34 @@ void Level::generateReproducibleData() {
                 }
             }
         }
+
+    if( mSymmetrical ) {
+        for( y=0; y<MAX_LEVEL_H; y++ ) {
+            for( x=0; x<MAX_LEVEL_W/2; x++ ) {
+                
+                int copyX = MAX_LEVEL_W - x - 1;
+                
+
+                if( mWallFlags[y][copyX] == 2 ) {
+                    numWallSquares++;
+
+                    mSquareIndices[y][x] = mNumUsedSquares;
+                    mNumUsedSquares++;
+                    
+                    // copy colors symmetrically too
+                    Color copyColor =
+                        *( gridColorsWorking.getElement( 
+                               mSquareIndices[y][copyX] ) );
+                    
+                    gridColorsWorking.push_back( copyColor );
+                    
+                    mWallFlags[y][x] = 2;
+                    }
+                }
+            }
+        }
+    
+
 
     mHardGridColors = gridColorsWorking.getElementArray();
         
@@ -334,13 +409,13 @@ void Level::freeReproducibleData() {
 
 
 
-Level::Level( ColorScheme *inColors ) {
+Level::Level( ColorScheme *inColors, char inSymmetrical ) {
     
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
     
     mDataGenerated = false;
-
+    mSymmetrical = inSymmetrical;
 
     if( inColors != NULL ) {
         // copy

@@ -65,7 +65,7 @@ double globalRandomSeed = 0;
 
 
 // position of view in world
-doublePair playerPos = {0, 0};
+doublePair playerPos = {-0.5, 0};
 doublePair lastScreenViewCenter = playerPos;
 
 
@@ -574,19 +574,35 @@ void drawFrame() {
             ColorScheme c = 
                 currentLevel->getEnteringPointColors( mousePos, enteringType );
 
-            currentLevel = new Level( &c );
+            char symmetrical = ( enteringType == 0 );
+            
+            currentLevel = new Level( &c, symmetrical );
 
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,
                     meminfo.uordblks / 1024 );
 
-            playerPos.x = 0;
-            playerPos.y = 0;
-            lastMouseX = 0;
-            lastMouseY = 0;
-            lastScreenViewCenter.x = 0;
-            lastScreenViewCenter.y = 0;
+            if( symmetrical ) {
+                playerPos.x = -0.5;
+                playerPos.y = 0;
+                lastMouseX = -0.5;
+                lastMouseY = 0;
+
+                lastScreenViewCenter.x = -0.5;
+                lastScreenViewCenter.y = 0;
+                }
+            else {
+                // safe, since -0.5 might be out of bounds
+                playerPos.x = 0;
+                playerPos.y = 0;
+                lastMouseX = 0;
+                lastMouseY = 0;
+
+                lastScreenViewCenter.x = 0;
+                lastScreenViewCenter.y = 0;
+                }
+            
             setViewCenterPosition( 0, 0 );
             currentLevel->drawFloorEdges( false );
             }
