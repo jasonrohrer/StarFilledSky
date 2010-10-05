@@ -1107,9 +1107,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     
             if( isEnemy( inPosition, &i ) ) {
                 
-                // FIXME:  enemies have no colors yet
-                // return default
-
+                return mEnemies.getElement( i )->sprite->getColors();
                 }
             }
             break;

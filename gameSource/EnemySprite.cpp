@@ -20,7 +20,7 @@ EnemySprite::EnemySprite() {
     
 
     for( int y=0; y<16; y++ ) {
-        for( int x=0; x<8; x++ ) {
+        for( int x=0; x<16; x++ ) {
             int pixIndex = y * 16 + x;
             
             // only one chan with color, full saturation
@@ -38,53 +38,43 @@ EnemySprite::EnemySprite() {
 
     // random walk to fill in some secondary color
     for( int r=0; r<3; r++ ) {
-    int x=7;
-    int y = 7;
+        int x=7;
+        int y = 7;
         
 
-    for( int s=0; s<30; s++ ) {    
+        for( int s=0; s<30; s++ ) {    
         
-        int pixIndex = y * 16 + x;
+            int pixIndex = y * 16 + x;
         
 
-        int randPick = randSource.getRandomBoundedInt( 0, 2 );
+            int randPick = randSource.getRandomBoundedInt( 0, 2 );
 
-        channels[0][ pixIndex ] = mColors.secondary.elements[randPick].r;
-        channels[1][ pixIndex ] = mColors.secondary.elements[randPick].g;
-        channels[2][ pixIndex ] = mColors.secondary.elements[randPick].b;
+            channels[0][ pixIndex ] = mColors.secondary.elements[randPick].r;
+            channels[1][ pixIndex ] = mColors.secondary.elements[randPick].g;
+            channels[2][ pixIndex ] = mColors.secondary.elements[randPick].b;
         
-        if( randSource.getRandomBoolean() ) {
-            x += randSource.getRandomBoundedInt( -1, 1 );
-            }
-        else {
-            y += randSource.getRandomBoundedInt( -1, 1 );
-            }
+            if( randSource.getRandomBoolean() ) {
+                x += randSource.getRandomBoundedInt( -1, 1 );
+                }
+            else {
+                y += randSource.getRandomBoundedInt( -1, 1 );
+                }
         
-        if( x < 0 ) {
-            x = 0;
+            if( x < 0 ) {
+                x = 0;
+                }
+            else if( x > 15 ) {
+                x = 5;
+                }
+            if( y < 0 ) {
+                y = 0;
+                }
+            else if( y > 15 ) {
+                y = 15;
+                }
             }
-        else if( x > 7 ) {
-            x = 7;
-            }
-        if( y < 0 ) {
-            y = 0;
-            }
-        else if( y > 15 ) {
-            y = 15;
-            }
-        }
         }
     
-    // symmetrical
-    for( int y=0; y<16; y++ ) {
-        for( int x=8; x<16; x++ ) {
-            for( int i=0; i<3; i++ ) {
-                channels[i][ y * 16 + x ] =
-                    channels[i][ y * 16 + (16 - x - 1) ];
-                }
-            }       
-        }
-
 
     BoxBlurFilter filter( 1 );
     
@@ -111,8 +101,8 @@ EnemySprite::EnemySprite() {
             if( x < 1 ) {
                 x = 1;
                 }
-            else if( x > 7 ) {
-                x = 7;
+            else if( x > 14 ) {
+                x = 14;
                 }
             if( y < 1 ) {
                 y = 1;
@@ -123,19 +113,6 @@ EnemySprite::EnemySprite() {
             }
         }
 
-    // symmetrical
-    for( int y=0; y<16; y++ ) {
-        for( int x=8; x<16; x++ ) {
-            channels[3][ y * 16 + x ] =
-                channels[3][ y * 16 + (16 - x - 1) ];
-            }       
-        }
-    
-    /*
-    for( int p=0; p<16*16; p++ ) {
-        channels[3][p] = 1;
-        }
-    */
 
     mCenterSprite = fillSprite( &centerImage );
     
