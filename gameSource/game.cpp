@@ -325,7 +325,17 @@ void drawFrame() {
             setViewSize( lastLevelCurrentViewSize );
             setViewCenterPosition( lastLevelCurrentViewCenter.x,
                                    lastLevelCurrentViewCenter.y );
-            lastLevel->drawWindowShade( 1 - zoomProgress );
+            
+            // fade frame just at tail end of zoom (to ensure that any
+            // visible parts of frame don't pop out at end)
+            double frameFade = ( 1 - zoomProgress ) / 0.25;
+            if( frameFade > 1 ) {
+                frameFade = 1;
+                }
+            
+            double centerFade = 1 - zoomProgress;
+            
+            lastLevel->drawWindowShade( centerFade, frameFade );
             }
 
         // step zoom and check for zoom end

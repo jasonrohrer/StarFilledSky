@@ -85,7 +85,7 @@ class Level {
         
         // after drawing through stencil, call this to draw item body shade 
         // on top.
-        void drawWindowShade( double inFade );
+        void drawWindowShade( double inFade, double inFrameFade );
 
         void forgetItemWindow();
 
@@ -201,7 +201,6 @@ class Level {
 
         char mWindowSet;
         WindowPosition mWindowPosition;
-        
 
         doublePair mMousePos;
         char mEnteringMouse;

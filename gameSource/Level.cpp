@@ -867,9 +867,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawPlayer( 1 );
         
         // player is window for zoom
+        // use whole player, with border, as window
+        // draw border on top as part of shade
         startAddingToStencil( false, true );
-        //drawSquare( mPlayerPos, 0.2 );
-        mPlayerSprite.drawCenter( mPlayerPos );
+        mPlayerSprite.draw( mPlayerPos );
         }
     
 
@@ -893,7 +894,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
 
-void Level::drawWindowShade( double inFade ) {
+void Level::drawWindowShade( double inFade, double inFrameFade ) {
     if( mWindowSet ) {
         stopStencil();
         
@@ -901,6 +902,7 @@ void Level::drawWindowShade( double inFade ) {
             //setDrawColor( 1, 0, 0, inFade );
             //drawSquare( mPlayerPos, 0.2 );
             mPlayerSprite.drawCenter( mPlayerPos, inFade );
+            mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
             }
         else {    
             Enemy *e = mEnemies.getElement( mWindowPosition.index );
