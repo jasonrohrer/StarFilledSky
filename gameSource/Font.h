@@ -17,24 +17,24 @@ class Font {
     public:
         
         // file contains TGA with 16x16 ascii table
-        Font( char *inFileName, int inCharSpacing, int inSpaceWidth,
+        Font( const char *inFileName, int inCharSpacing, int inSpaceWidth,
               char inFixedWidth );
         
         ~Font();
         
         
-        // draws a string on the current screen
+        // draws a string on the current screen using set draw color
         // returns x coordinate of string end
-        int drawString( char *inString, int inX, int inY, rgbaColor inColor,
-                        TextAlignment inAlign = alignCenter );
+        double drawString( const char *inString, doublePair inPosition,
+                           TextAlignment inAlign = alignCenter );
 
 
-        int measureString( char *inString );
+        double measureString( const char *inString );
 
     private:
         
         // returns x coordinate to right of drawn character
-        int drawCharacter( char inC, int inX, int inY, rgbaColor inColor );
+        double drawCharacter( char inC, doublePair inPosition );
         
         
         
@@ -44,13 +44,14 @@ class Font {
         char mFixedWidth;
         
         int mSpriteWidth;
+        int mSpriteHeight;
         
         // maps ascii chars to sprite IDs
-        SpriteHandle mSpriteMap[ 128 ];
+        SpriteHandle mSpriteMap[ 256 ];
         
         // for kerning (ignored if fixed width flag on)
-        int mCharLeftEdgeOffset[ 128 ];
-        int mCharWidth[ 128 ];
+        int mCharLeftEdgeOffset[ 256 ];
+        int mCharWidth[ 256 ];
         
         
     };

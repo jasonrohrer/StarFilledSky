@@ -17,7 +17,8 @@ BorderSprite.cpp \
 PlayerSprite.cpp \
 TileSet.cpp \
 ColorScheme.cpp \
-EnemySprite.cpp
+EnemySprite.cpp \
+Font.cpp
 
 
 GAME_GRAPHICS = \

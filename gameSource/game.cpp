@@ -35,7 +35,7 @@
 #include "drawUtils.h"
 #include "Level.h"
 #include "fixedSpriteBank.h"
-
+#include "Font.h"
 
 
 // globals
@@ -133,6 +133,9 @@ double zoomSpeed = 0.02;
 double zoomDirection = 1;
 
 
+Font *mainFont;
+
+
 
 
 void initFrameDrawer( int inWidth, int inHeight ) {
@@ -151,7 +154,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -162,6 +165,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     initSpriteBank();
 
+    mainFont = new Font( "font_8_16.tga", 1, 4, false );
+
     currentLevel = new Level();
     }
 
@@ -170,6 +175,9 @@ void freeFrameDrawer() {
     delete currentLevel;
     
     freeSpriteBank();
+
+    delete mainFont;
+    
 
     for( int i=0; i<levelRiseStack.size(); i++ ) {
         delete *( levelRiseStack.getElement( i ) );
@@ -316,6 +324,9 @@ void drawFrame() {
     currentLevel->setPlayerPos( playerPos );
     currentLevel->setEnteringMouse( entering );
     currentLevel->drawLevel( lastScreenViewCenter, viewSize );
+
+    mainFont->drawString( "Test this", playerPos, alignLeft );
+    
 
 
     if( stencilDrawn ) {
