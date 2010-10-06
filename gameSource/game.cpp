@@ -105,6 +105,9 @@ const char *getWindowTitle() {
     return "Game 10";
     }
 
+
+int levelNumber = 0;
+
 Level *currentLevel;
 
 SimpleVector<Level *> levelRiseStack;
@@ -165,7 +168,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     initSpriteBank();
 
-    mainFont = new Font( "font_8_16.tga", 1, 4, false );
+    mainFont = new Font( "font_8_16.tga", -2, 4, true );
 
     currentLevel = new Level();
     }
@@ -325,9 +328,6 @@ void drawFrame() {
     currentLevel->setEnteringMouse( entering );
     currentLevel->drawLevel( lastScreenViewCenter, viewSize );
 
-    mainFont->drawString( "Test this", playerPos, alignLeft );
-    
-
 
     if( stencilDrawn ) {
         
@@ -375,6 +375,8 @@ void drawFrame() {
                                    lastScreenViewCenter.y );
             
             currentLevel->drawFloorEdges( true );
+            
+            levelNumber -= 1;
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
@@ -399,12 +401,49 @@ void drawFrame() {
             setViewSize( viewWidth );
             setViewCenterPosition( lastScreenViewCenter.x, 
                                    lastScreenViewCenter.y );
+
+            levelNumber += 1;
             }    
         }
+
+
+
+    // draw dashboard
+    setViewSize( viewWidth );
+    setViewCenterPosition( lastScreenViewCenter.x, 
+                           lastScreenViewCenter.y );
+    
+    setDrawColor( 0, 0, 0, 1 );
+    
     
 
+    drawRect( lastScreenViewCenter.x - viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 ,
+              lastScreenViewCenter.x + viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 - 1  );
+
+
+    // level number display on dash
+    setDrawColor( 1, 1, 1, 0.5 );
+    
+    doublePair levelNumberPos = { lastScreenViewCenter.x +
+                                  viewWidth /2,
+                                  lastScreenViewCenter.y +
+                                  viewHeightFraction * viewWidth /2 - 0.625 };
     
     
+    char *levelString = autoSprintf( "%d", levelNumber );
+    
+    mainFont->drawString( levelString, levelNumberPos, alignRight );
+    
+    delete [] levelString;
+    
+    
+    
+
+
 
 
 
