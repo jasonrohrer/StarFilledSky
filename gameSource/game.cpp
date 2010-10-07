@@ -176,18 +176,20 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     currentLevel = new Level();
     
-    if( true ) {
+
+    // for level construction optimization
+    if( false ) {
         
-    double msTime = Time::getCurrentTime();
+        double msTime = Time::getCurrentTime();
+        
+        for( int i=0; i<100; i++ ) {
+            Level *l = new Level();
+            delete l;
+            }
+        printf( "Contstructing levels took %f s\n",
+                (Time::getCurrentTime() - msTime) );
     
-    for( int i=0; i<100; i++ ) {
-        Level *l = new Level();
-        delete l;
-        }
-    printf( "Contstructing levels took %f s\n",
-            (Time::getCurrentTime() - msTime) );
-    
-    exit(0);
+        exit(0);
         }
     
     }
