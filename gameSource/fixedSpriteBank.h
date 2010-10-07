@@ -7,6 +7,8 @@ void freeSpriteBank();
 
 
 enum spriteID { riseMarker = 0,
+                crosshair,
+                enterCrosshair,
                 endSpriteID };                
 
 

@@ -729,18 +729,13 @@ void Level::step() {
 
 void Level::drawMouse( double inFade ) {
     // reticle
+    setDrawColor( 1, 1, 1, 0.5 * inFade );
     if( mEnteringMouse ) {
-        setDrawColor( 1, 1, 1, 1 * inFade );
+        drawSprite( enterCrosshair, mMousePos );
         }
     else {
-        setDrawColor( 0, 1, 0, 0.5 * inFade );
+        drawSprite( crosshair, mMousePos );
         }
-    
-    drawSquare( mMousePos, 0.125 );
-
-    setDrawColor( 0, 0, 0, 0.5 * inFade );
-
-    drawSquare( mMousePos, 0.025 );
     }
 
 
@@ -1000,9 +995,15 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
             e->sprite->drawCenter( e->position, inFade );
             e->sprite->drawBorder( e->position, inFrameFade );
 
+
             // mouse and player drawn on top of enemy
-            drawMouse( inFade );
-            drawPlayer( inFade );
+            // fade these a bit sooner to get them out of the way
+            double overlieFade = (inFade - 0.63) / 0.37;
+            if( overlieFade > 0 ) {
+                drawMouse( overlieFade );
+                drawPlayer( overlieFade );
+                }
+            
             }
         
         }
