@@ -26,6 +26,8 @@
 
 #include "minorGems/util/log/AppLog.h"
 
+#include "minorGems/system/Time.h"
+
 
 #include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
@@ -171,8 +173,19 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     initSpriteBank();
 
     mainFont = new Font( "font_8_16.tga", -2, 4, true );
-
+    
     currentLevel = new Level();
+    
+    double msTime = Time::getCurrentTime();
+    
+    for( int i=0; i<100; i++ ) {
+        Level *l = new Level();
+        delete l;
+        }
+    printf( "Contstructing levels took %f s\n",
+            (Time::getCurrentTime() - msTime) );
+
+    exit(0);
     }
 
 
@@ -671,7 +684,7 @@ void drawFrame() {
             char symmetrical = ( enteringType == 0 );
             
             currentLevel = new Level( NULL, &c, symmetrical );
-
+            
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,

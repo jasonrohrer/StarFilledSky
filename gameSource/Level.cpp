@@ -178,6 +178,10 @@ void Level::generateReproducibleData() {
                 
                 char floorNeighbor = false;
                 
+                /*
+                  // opt( found with profiler)
+                  // roll +dy +dx computations right into loop bounds
+                  
                 for( int dy=-1; dy<=1 && !floorNeighbor; dy++ ) {
                     for( int dx=-1; dx<=1 && !floorNeighbor; dx++ ) {
                         
@@ -186,7 +190,43 @@ void Level::generateReproducibleData() {
                             }
                         }
                     }
+                */
                 
+                /*
+                for( int ny=y-1; ny<=y+1; ny++ ) {
+                    for( int nx=x-1; nx<=x+1; nx++ ) {
+                        
+                        if( mWallFlags[ny][nx] == 1 ) {
+                            floorNeighbor = true;
+
+                            // opt (found with profiler):  
+                            // avoid checking variable floorNeighbor to jump
+                            // out of loop, use goto hack instead
+                            goto neighborLoopEnd;
+                            }
+                        }
+                    }
+                neighborLoopEnd:
+                */
+
+                for( int ny=y-1; ny<=y+1; ny++ ) {
+                    // opt (found with profiler):  
+                    // unroll nx neighbor loop
+                    if( mWallFlags[ny][x-1] == 1 ||
+                        mWallFlags[ny][x] == 1 ||
+                        mWallFlags[ny][x+1] == 1 ) {
+                        floorNeighbor = true;
+                        
+                        // opt (found with profiler):  
+                        // avoid checking variable floorNeighbor to jump
+                        // out of loop, use goto hack instead
+                        goto neighborLoopEnd;
+                        }
+                    }
+                neighborLoopEnd:
+
+
+
 
                 if( floorNeighbor ) {
                     mWallFlags[y][x] = 2;
