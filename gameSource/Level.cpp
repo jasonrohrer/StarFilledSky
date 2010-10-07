@@ -43,9 +43,9 @@ void Level::generateReproducibleData() {
 
         // blank all
         memset( mWallFlags[y], 0, MAX_LEVEL_W );
-        for( x=0; x<MAX_LEVEL_W; x++ ) {
-            mSquareIndices[y][x] = -1;
-            }
+        
+        // no need to blank square indices, because we never use
+        // a non-existent y,x pair to index mSquareIndices
         }
     
     //char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
@@ -136,31 +136,31 @@ void Level::generateReproducibleData() {
 
 
     if( mSymmetrical ) {
-        for( y=0; y<MAX_LEVEL_H; y++ ) {
-            for( x=0; x<MAX_LEVEL_W/2; x++ ) {
+        int floorSquaresFirstHalf = mNumFloorSquares;
+        
+        for( int i=0; i<floorSquaresFirstHalf; i++ ) {
+            
+            int x = mIndexToGridMap[i].x;
+            int y = mIndexToGridMap[i].y;
+                            
+            int copyX = MAX_LEVEL_W - x - 1;
                 
-                int copyX = MAX_LEVEL_W - x - 1;
-                
+            mNumFloorSquares++;
 
-                if( mWallFlags[y][copyX] == 1 ) {
-                    mNumFloorSquares++;
-
-                    mSquareIndices[y][x] = mNumUsedSquares;
-                    mIndexToGridMap[mNumUsedSquares].x = x;
-                    mIndexToGridMap[mNumUsedSquares].y = y;
+            mSquareIndices[y][copyX] = mNumUsedSquares;
+            mIndexToGridMap[mNumUsedSquares].x = copyX;
+            mIndexToGridMap[mNumUsedSquares].y = y;
+            
+            mNumUsedSquares++;
                     
-                    mNumUsedSquares++;
+            // copy colors symmetrically too
+            Color copyColor =
+                *( gridColorsWorking.getElement( 
+                       mSquareIndices[y][x] ) );
                     
-                    // copy colors symmetrically too
-                    Color copyColor =
-                        *( gridColorsWorking.getElement( 
-                               mSquareIndices[y][copyX] ) );
-                    
-                    gridColorsWorking.push_back( copyColor );
-                    
-                    mWallFlags[y][x] = 1;
-                    }
-                }
+            gridColorsWorking.push_back( copyColor );
+            
+            mWallFlags[y][copyX] = 1;
             }
         }
     
@@ -178,38 +178,42 @@ void Level::generateReproducibleData() {
         xStart = MAX_LEVEL_W/2;
         }
 
-    // opt:  only look at floor squares, instead of checking all empty squares
-    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
-        for( x=xStart; x<MAX_LEVEL_W - 1; x++ ) {
-         
-            if( mWallFlags[y][x] == 1 ) {
+    // opt:  only look at floor squares, instead of checking all squares
+    for( int i=0; i<mNumFloorSquares; i++ ) {
+        
+        int x = mIndexToGridMap[i].x;
+        int y = mIndexToGridMap[i].y;
+
+        // check if on proper side of symm line
+        if( y >= 1 && y < MAX_LEVEL_H - 1
+            &&
+            x >= xStart && x < MAX_LEVEL_W - 1 ) {
                 
-                int nxStart = x - 1;
-                if( x == xStart && mSymmetrical ) {
-                    // avoid sticking walls across symm line
-                    nxStart = x;
-                    }
+            int nxStart = x - 1;
+            if( x == xStart && mSymmetrical ) {
+                // avoid sticking walls across symm line
+                nxStart = x;
+                }
                 
-                for( int ny=y-1; ny<=y+1; ny++ ) {
-                    for( int nx=nxStart; nx<=x+1; nx++ ) {
+            for( int ny=y-1; ny<=y+1; ny++ ) {
+                for( int nx=nxStart; nx<=x+1; nx++ ) {
                         
-                        if( mWallFlags[ny][nx] == 0 ) {
-                            // empty spot adjacent to this floor square
+                    if( mWallFlags[ny][nx] == 0 ) {
+                        // empty spot adjacent to this floor square
 
-                            mWallFlags[ny][nx] = 2;
+                        mWallFlags[ny][nx] = 2;
                                                 
-                            mSquareIndices[ny][nx] = mNumUsedSquares;
-                            mIndexToGridMap[mNumUsedSquares].x = nx;
-                            mIndexToGridMap[mNumUsedSquares].y = ny;
+                        mSquareIndices[ny][nx] = mNumUsedSquares;
+                        mIndexToGridMap[mNumUsedSquares].x = nx;
+                        mIndexToGridMap[mNumUsedSquares].y = ny;
 
-                            mNumUsedSquares++;
+                        mNumUsedSquares++;
 
-                            gridColorsWorking.push_back( 
-                                mColors.primary.elements[wallColorIndex] );
-                            wallColorIndex = (wallColorIndex + 1) % 3;
+                        gridColorsWorking.push_back( 
+                            mColors.primary.elements[wallColorIndex] );
+                        wallColorIndex = (wallColorIndex + 1) % 3;
                     
-                            mNumWallSquares ++;
-                            }
+                        mNumWallSquares ++;
                         }
                     }
                 }
@@ -220,31 +224,33 @@ void Level::generateReproducibleData() {
 
 
     if( mSymmetrical ) {
-        for( y=0; y<MAX_LEVEL_H; y++ ) {
-            for( x=0; x<MAX_LEVEL_W/2; x++ ) {
+        
+        int wallSquaresFirstHalf = mNumWallSquares;
+        
+        for( int i=mNumFloorSquares; 
+             i<mNumFloorSquares + wallSquaresFirstHalf; i++ ) {
+            
+            int x = mIndexToGridMap[i].x;
+            int y = mIndexToGridMap[i].y;
                 
-                int copyX = MAX_LEVEL_W - x - 1;
-                
+            int copyX = MAX_LEVEL_W - x - 1;
+            
+            mNumWallSquares++;
 
-                if( mWallFlags[y][copyX] == 2 ) {
-                    mNumWallSquares++;
-
-                    mSquareIndices[y][x] = mNumUsedSquares;
-                    mIndexToGridMap[mNumUsedSquares].x = x;
-                    mIndexToGridMap[mNumUsedSquares].y = y;
+            mSquareIndices[y][copyX] = mNumUsedSquares;
+            mIndexToGridMap[mNumUsedSquares].x = copyX;
+            mIndexToGridMap[mNumUsedSquares].y = y;
                     
-                    mNumUsedSquares++;
+            mNumUsedSquares++;
                     
-                    // copy colors symmetrically too
-                    Color copyColor =
-                        *( gridColorsWorking.getElement( 
-                               mSquareIndices[y][copyX] ) );
+            // copy colors symmetrically too
+            Color copyColor =
+                *( gridColorsWorking.getElement( 
+                       mSquareIndices[y][x] ) );
                     
-                    gridColorsWorking.push_back( copyColor );
+            gridColorsWorking.push_back( copyColor );
                     
-                    mWallFlags[y][x] = 2;
-                    }
-                }
+            mWallFlags[y][copyX] = 2;
             }
         }
     
@@ -333,18 +339,6 @@ void Level::generateReproducibleData() {
         }
 
 
-        if( !sGridWorldSpotsComputed ) {
-        
-        // precompute to-world coord mapping
-        for( y=0; y<MAX_LEVEL_H; y++ ) {
-            for( x=0; x<MAX_LEVEL_W; x++ ) {
-                
-                sGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
-                sGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
-                }
-            }
-        sGridWorldSpotsComputed = true;
-        }
     
 
 
@@ -419,6 +413,22 @@ void Level::freeReproducibleData() {
 Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
               char inSymmetrical ) 
         : mPlayerSprite( inPlayerColors ) {
+
+
+    if( !sGridWorldSpotsComputed ) {
+        
+        // precompute to-world coord mapping
+        for( int y=0; y<MAX_LEVEL_H; y++ ) {
+            for( int x=0; x<MAX_LEVEL_W; x++ ) {
+                
+                sGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
+                sGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
+                }
+            }
+        sGridWorldSpotsComputed = true;
+        }
+
+
     
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
