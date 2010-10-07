@@ -34,10 +34,18 @@ void Level::generateReproducibleData() {
     
     mWallFlags = new char*[MAX_LEVEL_H];
     mSquareIndices = new short*[MAX_LEVEL_H];
+
+    int x, y;
     
-    for( int i=0; i<MAX_LEVEL_H; i++ ) {
-        mWallFlags[i] = new char[MAX_LEVEL_W];
-        mSquareIndices[i] = new short[MAX_LEVEL_W];
+    for( y=0; y<MAX_LEVEL_H; y++ ) {
+        mWallFlags[y] = new char[MAX_LEVEL_W];
+        mSquareIndices[y] = new short[MAX_LEVEL_W];
+
+        // blank all
+        memset( mWallFlags[y], 0, MAX_LEVEL_W );
+        for( x=0; x<MAX_LEVEL_W; x++ ) {
+            mSquareIndices[y][x] = -1;
+            }
         }
     
     //char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
@@ -47,16 +55,6 @@ void Level::generateReproducibleData() {
     
 
     randSource.restoreFromSavedState( mRandSeedState );
-
-    int x, y;
-    
-    // blank all
-    for( y=0; y<MAX_LEVEL_H; y++ ) {
-        for( x=0; x<MAX_LEVEL_W; x++ ) {
-            mWallFlags[y][x] = 0;
-            mSquareIndices[y][x] = -1;
-            }
-        }
     
 
     // start in center
@@ -170,79 +168,40 @@ void Level::generateReproducibleData() {
     if( mSymmetrical ) {
         xStart = MAX_LEVEL_W/2;
         }
-    
+
+    // opt:  only look at floor squares, instead of checking all empty squares
     for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
         for( x=xStart; x<MAX_LEVEL_W - 1; x++ ) {
          
-            if( mWallFlags[y][x] == 0 ) {
+            if( mWallFlags[y][x] == 1 ) {
                 
                 char floorNeighbor = false;
                 
-                /*
-                  // opt( found with profiler)
-                  // roll +dy +dx computations right into loop bounds
-                  
-                for( int dy=-1; dy<=1 && !floorNeighbor; dy++ ) {
-                    for( int dx=-1; dx<=1 && !floorNeighbor; dx++ ) {
-                        
-                        if( mWallFlags[y+dy][x+dx] == 1 ) {
-                            floorNeighbor = true;
-                            }
-                        }
-                    }
-                */
-                
-                /*
                 for( int ny=y-1; ny<=y+1; ny++ ) {
                     for( int nx=x-1; nx<=x+1; nx++ ) {
                         
-                        if( mWallFlags[ny][nx] == 1 ) {
-                            floorNeighbor = true;
+                        if( mWallFlags[ny][nx] == 0 ) {
+                            // empty spot adjacent to this floor square
 
-                            // opt (found with profiler):  
-                            // avoid checking variable floorNeighbor to jump
-                            // out of loop, use goto hack instead
-                            goto neighborLoopEnd;
+                            mWallFlags[ny][nx] = 2;
+                                                
+                            mSquareIndices[ny][nx] = mNumUsedSquares;
+                            mNumUsedSquares++;
+
+                            gridColorsWorking.push_back( 
+                                mColors.primary.elements[wallColorIndex] );
+                            wallColorIndex = (wallColorIndex + 1) % 3;
+                    
+                            numWallSquares ++;
                             }
                         }
-                    }
-                neighborLoopEnd:
-                */
-
-                for( int ny=y-1; ny<=y+1; ny++ ) {
-                    // opt (found with profiler):  
-                    // unroll nx neighbor loop
-                    if( mWallFlags[ny][x-1] == 1 ||
-                        mWallFlags[ny][x] == 1 ||
-                        mWallFlags[ny][x+1] == 1 ) {
-                        floorNeighbor = true;
-                        
-                        // opt (found with profiler):  
-                        // avoid checking variable floorNeighbor to jump
-                        // out of loop, use goto hack instead
-                        goto neighborLoopEnd;
-                        }
-                    }
-                neighborLoopEnd:
-
-
-
-
-                if( floorNeighbor ) {
-                    mWallFlags[y][x] = 2;
-
-                    mSquareIndices[y][x] = mNumUsedSquares;
-                    mNumUsedSquares++;
-
-                    gridColorsWorking.push_back( 
-                        mColors.primary.elements[wallColorIndex] );
-                    wallColorIndex = (wallColorIndex + 1) % 3;
-                    
-                    numWallSquares ++;
                     }
                 }
             }
         }
+
+
+
 
     if( mSymmetrical ) {
         for( y=0; y<MAX_LEVEL_H; y++ ) {

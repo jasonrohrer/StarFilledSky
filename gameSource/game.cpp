@@ -184,8 +184,9 @@ void initFrameDrawer( int inWidth, int inHeight ) {
         }
     printf( "Contstructing levels took %f s\n",
             (Time::getCurrentTime() - msTime) );
-
+    
     exit(0);
+    
     }
 
 
