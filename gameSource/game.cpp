@@ -515,16 +515,11 @@ void drawFrame() {
 
 
 
-    double screenCenterDistanceFromPlayer = 
-        distance( posToCenterOnScreen, tweakedScreenViewCenter );
 
     double screenCenterDistanceFromPlayerX = 
         fabs( posToCenterOnScreen.x - tweakedScreenViewCenter.x );
     double screenCenterDistanceFromPlayerY = 
         fabs( posToCenterOnScreen.y - tweakedScreenViewCenter.y );
-
-    double minDistanceToMoveScreen = 
-        0.2 * ( viewWidth * viewHeightFraction ) / 2;
 
     double minDistanceToMoveScreenX = 
         0.2 * ( viewWidth ) / 2;
