@@ -249,217 +249,131 @@ static void confineMouseOnScreen() {
 
 void drawFrame() {
 
+    // update all movement and detect special conditions
 
-    // draw stuff
-
-
-
-    /*
-    glClearColor( mBackgroundColor->r,
-                  mBackgroundColor->g,
-                  mBackgroundColor->b,
-                  mBackgroundColor->a );
-    */
-
-
-    char stencilDrawn = false;
-    
-    double zoomFactor = 1;
-    double viewSize = viewWidth;
-    
-    if( lastLevel != NULL ) {
-        //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
-        zoomFactor = 
-            (sin( (zoomProgress * 2 - 1) * M_PI/2 ) * 0.5 + 0.5 ) 
-            * 70 + 1;
-        
-        
-
-        viewSize = viewWidth / zoomFactor;
-
-        setViewSize( viewSize );
-        lastLevelCurrentViewSize = viewSize;
-        
-        // move toward entry point as we zoom in
-        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 71 );
-        doublePair center = lastLevelPosition.lastScreenViewCenter;
-        
-        center.x *= ( 1 - moveFraction );
-        center.y *= ( 1 - moveFraction );
-        
-        center.x += moveFraction * lastLevelPosition.entryPosition.x;
-        center.y += moveFraction * lastLevelPosition.entryPosition.y;
-        
-        
-        
-        setViewCenterPosition( center.x, center.y );
-    
-        setDrawColor( 0, 0, 0, 1 );
-    
-        drawSquare( center, viewSize );
-
-        lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
-        lastLevel->drawLevel( center, viewSize );
-        stencilDrawn = true;
-        
-        lastLevelCurrentViewCenter = center;
-        
-
-        // now draw current level
-        
-
-        center = sub( lastLevelPosition.entryPosition,
-                      lastLevelPosition.lastScreenViewCenter );
-        
-        center.x *= 1 - moveFraction;
-        center.y *= 1 - moveFraction;
-        center.x *= -1;
-        center.y *= -1;
-        center.x *= 71;
-        center.y *= 71;
-        
-        center = add( center, lastScreenViewCenter );
-        /*
-        setViewCenterPosition( lastScreenViewCenter.x, 
-                               lastScreenViewCenter.y );
-        */
-        setViewCenterPosition( center.x, 
-                               center.y );
-
-        setDrawColor( 0, 0, 0, 1 );
-    
-        setViewSize( viewWidth );
-        drawSquare( center, viewWidth );
-
-
-        viewSize = 71 * viewWidth / zoomFactor;        
-        setViewSize( viewSize );
-        }
-    else {
-        setDrawColor( 0, 0, 0, 1 );
-    
-        drawSquare( lastScreenViewCenter, viewWidth );
-        }
-
-    
     doublePair mousePos = { lastMouseX, lastMouseY };
 
-    currentLevel->setMousePos( mousePos );
-    currentLevel->setPlayerPos( playerPos );
-    currentLevel->setEnteringMouse( entering );
-    currentLevel->drawLevel( lastScreenViewCenter, viewSize );
 
 
-    if( stencilDrawn ) {
+    // do this here, before drawing anything, to avoid final frame hiccups
+    // when entering something (due to level construction time, which varies)
+    if( entering && lastLevel == NULL ) {
         
+        int enemyIndex;
+        doublePair enteringPos;
+        char enteringHit = false;
+        int enteringType = 0;
         
-        if( lastLevel != NULL ) {
-            setViewSize( lastLevelCurrentViewSize );
-            setViewCenterPosition( lastLevelCurrentViewCenter.x,
-                                   lastLevelCurrentViewCenter.y );
+        if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
-            // fade frame just at tail end of zoom (to ensure that any
-            // visible parts of frame don't pop out at end)
-            double frameFade = ( 1 - zoomProgress ) / 0.25;
-            if( frameFade > 1 ) {
-                frameFade = 1;
-                }
-            
-            double centerFade = 1 - zoomProgress;
-            
-            lastLevel->drawWindowShade( centerFade, frameFade );
+            enteringPos = currentLevel->getEnemyCenter( enemyIndex );
+            enteringHit = true;
+            enteringType = 1;
             }
-
-        // step zoom and check for zoom end
-
-        zoomProgress += zoomSpeed * zoomDirection;
+        else if( currentLevel->isPlayer( mousePos ) ) {
+            enteringPos = playerPos;
+            enteringHit = true;
+            enteringType = 0;
+            }
         
-        if( zoomProgress >= 1 && zoomDirection == 1) {
+
+        if( enteringHit ) {
+            levelRiseStack.push_back( currentLevel );
+            // enemy or player is entry position
+            LevelPositionInfo info = 
+                { playerPos, lastScreenViewCenter, 
+                  enteringPos,
+                  lastMouseX, lastMouseY };
+            levelRisePositionInfoStack.push_back( info );
+
+            lastLevel = currentLevel;
+            lastLevel->freezeLevel( true );
+
+            lastLevelPosition = info;
+            zoomProgress = 0;
+            zoomDirection = 1;
             
             struct mallinfo meminfo = mallinfo();
     
             int oldAllocedBytes = meminfo.uordblks;
             
-            // going down, compact it first
-            lastLevel->compactLevel();
+            ColorScheme c = 
+                currentLevel->getEnteringPointColors( mousePos, enteringType );
 
+            char symmetrical = ( enteringType == 0 );
+            
+            currentLevel = new Level( NULL, &c, symmetrical );
+            
             meminfo = mallinfo();
-            printf( "Level compaction used %d kbytes (%d tot)\n",
+            printf( "Level construction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,
                     meminfo.uordblks / 1024 );
 
-            lastLevel = NULL;
+            if( symmetrical ) {
+                playerPos.x = -0.5;
+                playerPos.y = 0;
+                lastMouseX = -0.5;
+                lastMouseY = 0;
 
-            // go with current level
-            setViewSize( viewWidth );
-            setViewCenterPosition( lastScreenViewCenter.x, 
-                                   lastScreenViewCenter.y );
+                lastScreenViewCenter.x = -0.5;
+                lastScreenViewCenter.y = 0;
+                }
+            else {
+                // safe, since -0.5 might be out of bounds
+                playerPos.x = 0;
+                playerPos.y = 0;
+                lastMouseX = 0;
+                lastMouseY = 0;
+
+                lastScreenViewCenter.x = 0;
+                lastScreenViewCenter.y = 0;
+                }
             
-            currentLevel->drawFloorEdges( true );
-            
-            levelNumber -= 1;
+            setViewCenterPosition( 0, 0 );
+            currentLevel->drawFloorEdges( false );
             }
-        else if( zoomProgress <= 0 && zoomDirection == -1 ) {
-            
-            // done with current level
-            delete currentLevel;
-            
-            // switch to last level (zooming out)
-            currentLevel = lastLevel;
-            currentLevel->freezeLevel( false );
-            currentLevel->forgetItemWindow();
-            playerPos = lastLevelPosition.playerPos;
-            lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
-            lastMouseX = lastLevelPosition.lastMouseX;
-            lastMouseY = lastLevelPosition.lastMouseY;
-            
-            mousePos.x = lastMouseX;
-            mousePos.y = lastMouseY;
-            
-
-            lastLevel = NULL;
         
-            setViewSize( viewWidth );
-            setViewCenterPosition( lastScreenViewCenter.x, 
-                                   lastScreenViewCenter.y );
+        }
+    
+    if( currentLevel->isRiseSpot( playerPos ) && lastLevel == NULL ) {
+        
+        if( levelRiseStack.size() == 0 ) {
+            // push one on to rise into
+            ColorScheme c = currentLevel->getLevelColors();
+            levelRiseStack.push_back( new Level( &c ) );
+            
+            // center player in symmetrical level
+            LevelPositionInfo info = 
+                { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
+            levelRisePositionInfoStack.push_back( info );
+            }
+        
+        // rise up to last level on stack
+        lastLevel = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        
+        levelRiseStack.deleteElement( levelRiseStack.size() - 1 );
+        
+        lastLevelPosition =
+            *( levelRisePositionInfoStack.getElement( 
+                   levelRisePositionInfoStack.size() - 1 ) );
+        levelRisePositionInfoStack.deleteElement( 
+            levelRisePositionInfoStack.size() - 1 );
+        
+        lastLevel->decompactLevel();
 
-            levelNumber += 1;
-            }    
+        lastLevel->freezeLevel( true );
+        zoomProgress = 1;
+        zoomDirection = -1;
+        currentLevel->drawFloorEdges( false );
         }
 
 
 
-    // draw dashboard
-    setViewSize( viewWidth );
-    setViewCenterPosition( lastScreenViewCenter.x, 
-                           lastScreenViewCenter.y );
-    
-    setDrawColor( 0, 0, 0, 1 );
-    
-    
-
-    drawRect( lastScreenViewCenter.x - viewWidth /2,
-              lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 ,
-              lastScreenViewCenter.x + viewWidth /2,
-              lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 - dashHeight );
 
 
-    // level number display on dash
-    setDrawColor( 1, 1, 1, 0.5 );
-    
-    doublePair levelNumberPos = { lastScreenViewCenter.x +
-                                  viewWidth /2,
-                                  lastScreenViewCenter.y +
-                                  viewHeightFraction * viewWidth /2 - 0.625 };
-    
-    
-    char *levelString = autoSprintf( "%d", levelNumber );
-    
-    mainFont->drawString( levelString, levelNumberPos, alignRight );
-    
-    delete [] levelString;
+
+
     
     
     
@@ -595,9 +509,6 @@ void drawFrame() {
             // move mouse with screen
             lastMouseX += screenMoveDelta.x;
             lastMouseY += screenMoveDelta.y;
-
-            mousePos.x = lastMouseX;
-            mousePos.y = lastMouseY;
             }
         }
 
@@ -605,19 +516,14 @@ void drawFrame() {
     if( viewDelta.x != 0 || viewDelta.y != 0 ) {
         confineMouseOnScreen();
         }
-
-
-    // set latest again here, in case level frozen due to following tests
-    currentLevel->setMousePos( mousePos );
-    currentLevel->setPlayerPos( playerPos );
-    currentLevel->setEnteringMouse( entering );
-
+    
+    mousePos.x = lastMouseX;
+    mousePos.y = lastMouseY;
 
     if( shooting ) {
         if( stepsTilNextBullet == 0 ) {
             // fire bullet
 
-            doublePair mousePos = { lastMouseX, lastMouseY };
             double mouseDist = distance( mousePos, playerPos );
             doublePair bulletVelocity = sub( mousePos, playerPos );
             
@@ -643,118 +549,213 @@ void drawFrame() {
         }
 
 
-    if( entering && lastLevel == NULL ) {
-        doublePair mousePos = { lastMouseX, lastMouseY };
 
-        int enemyIndex;
-        doublePair enteringPos;
-        char enteringHit = false;
-        int enteringType = 0;
+
+
+    // now draw stuff AFTER all updates
+
+
+    char stencilDrawn = false;
+    
+    double zoomFactor = 1;
+    double viewSize = viewWidth;
+    
+    if( lastLevel != NULL ) {
+        //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
+        zoomFactor = 
+            (sin( (zoomProgress * 2 - 1) * M_PI/2 ) * 0.5 + 0.5 ) 
+            * 70 + 1;
         
-        if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
+        
+
+        viewSize = viewWidth / zoomFactor;
+
+        setViewSize( viewSize );
+        lastLevelCurrentViewSize = viewSize;
+        
+        // move toward entry point as we zoom in
+        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 71 );
+        doublePair center = lastLevelPosition.lastScreenViewCenter;
+        
+        center.x *= ( 1 - moveFraction );
+        center.y *= ( 1 - moveFraction );
+        
+        center.x += moveFraction * lastLevelPosition.entryPosition.x;
+        center.y += moveFraction * lastLevelPosition.entryPosition.y;
+        
+        
+        
+        setViewCenterPosition( center.x, center.y );
+    
+        setDrawColor( 0, 0, 0, 1 );
+    
+        drawSquare( center, viewSize );
+
+        lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
+        lastLevel->drawLevel( center, viewSize );
+        stencilDrawn = true;
+        
+        lastLevelCurrentViewCenter = center;
+        
+
+        // now draw current level
+        
+
+        center = sub( lastLevelPosition.entryPosition,
+                      lastLevelPosition.lastScreenViewCenter );
+        
+        center.x *= 1 - moveFraction;
+        center.y *= 1 - moveFraction;
+        center.x *= -1;
+        center.y *= -1;
+        center.x *= 71;
+        center.y *= 71;
+        
+        center = add( center, lastScreenViewCenter );
+        /*
+        setViewCenterPosition( lastScreenViewCenter.x, 
+                               lastScreenViewCenter.y );
+        */
+        setViewCenterPosition( center.x, 
+                               center.y );
+
+        setDrawColor( 0, 0, 0, 1 );
+    
+        setViewSize( viewWidth );
+        drawSquare( center, viewWidth );
+
+
+        viewSize = 71 * viewWidth / zoomFactor;        
+        setViewSize( viewSize );
+        }
+    else {
+        setDrawColor( 0, 0, 0, 1 );
+    
+        drawSquare( lastScreenViewCenter, viewWidth );
+        }
+
+    
+
+    currentLevel->setMousePos( mousePos );
+    currentLevel->setPlayerPos( playerPos );
+    currentLevel->setEnteringMouse( entering );
+    currentLevel->drawLevel( lastScreenViewCenter, viewSize );
+
+
+    if( stencilDrawn ) {
+        
+        
+        if( lastLevel != NULL ) {
+            setViewSize( lastLevelCurrentViewSize );
+            setViewCenterPosition( lastLevelCurrentViewCenter.x,
+                                   lastLevelCurrentViewCenter.y );
             
-            enteringPos = currentLevel->getEnemyCenter( enemyIndex );
-            enteringHit = true;
-            enteringType = 1;
+            // fade frame just at tail end of zoom (to ensure that any
+            // visible parts of frame don't pop out at end)
+            double frameFade = ( 1 - zoomProgress ) / 0.25;
+            if( frameFade > 1 ) {
+                frameFade = 1;
+                }
+            
+            double centerFade = 1 - zoomProgress;
+            
+            lastLevel->drawWindowShade( centerFade, frameFade );
             }
-        else if( currentLevel->isPlayer( mousePos ) ) {
-            enteringPos = playerPos;
-            enteringHit = true;
-            enteringType = 0;
-            }
+
+        // step zoom and check for zoom end
+
+        zoomProgress += zoomSpeed * zoomDirection;
         
-
-        if( enteringHit ) {
-            levelRiseStack.push_back( currentLevel );
-            // enemy or player is entry position
-            LevelPositionInfo info = 
-                { playerPos, lastScreenViewCenter, 
-                  enteringPos,
-                  lastMouseX, lastMouseY };
-            levelRisePositionInfoStack.push_back( info );
-
-            lastLevel = currentLevel;
-            lastLevel->freezeLevel( true );
-
-            lastLevelPosition = info;
-            zoomProgress = 0;
-            zoomDirection = 1;
+        if( zoomProgress >= 1 && zoomDirection == 1) {
             
             struct mallinfo meminfo = mallinfo();
     
             int oldAllocedBytes = meminfo.uordblks;
             
-            ColorScheme c = 
-                currentLevel->getEnteringPointColors( mousePos, enteringType );
+            // going down, compact it first
+            lastLevel->compactLevel();
 
-            char symmetrical = ( enteringType == 0 );
-            
-            currentLevel = new Level( NULL, &c, symmetrical );
-            
             meminfo = mallinfo();
-            printf( "Level construction used %d kbytes (%d tot)\n",
+            printf( "Level compaction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,
                     meminfo.uordblks / 1024 );
 
-            if( symmetrical ) {
-                playerPos.x = -0.5;
-                playerPos.y = 0;
-                lastMouseX = -0.5;
-                lastMouseY = 0;
+            lastLevel = NULL;
 
-                lastScreenViewCenter.x = -0.5;
-                lastScreenViewCenter.y = 0;
-                }
-            else {
-                // safe, since -0.5 might be out of bounds
-                playerPos.x = 0;
-                playerPos.y = 0;
-                lastMouseX = 0;
-                lastMouseY = 0;
-
-                lastScreenViewCenter.x = 0;
-                lastScreenViewCenter.y = 0;
-                }
+            // go with current level
+            setViewSize( viewWidth );
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
             
-            setViewCenterPosition( 0, 0 );
-            currentLevel->drawFloorEdges( false );
+            currentLevel->drawFloorEdges( true );
+            
+            levelNumber -= 1;
             }
+        else if( zoomProgress <= 0 && zoomDirection == -1 ) {
+            
+            // done with current level
+            delete currentLevel;
+            
+            // switch to last level (zooming out)
+            currentLevel = lastLevel;
+            currentLevel->freezeLevel( false );
+            currentLevel->forgetItemWindow();
+            playerPos = lastLevelPosition.playerPos;
+            lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
+            lastMouseX = lastLevelPosition.lastMouseX;
+            lastMouseY = lastLevelPosition.lastMouseY;
+            
+            mousePos.x = lastMouseX;
+            mousePos.y = lastMouseY;
+            
+
+            lastLevel = NULL;
         
+            setViewSize( viewWidth );
+            setViewCenterPosition( lastScreenViewCenter.x, 
+                                   lastScreenViewCenter.y );
+
+            levelNumber += 1;
+            }    
         }
+
+
+
+    // draw dashboard
+    setViewSize( viewWidth );
+    setViewCenterPosition( lastScreenViewCenter.x, 
+                           lastScreenViewCenter.y );
     
-    if( currentLevel->isRiseSpot( playerPos ) && lastLevel == NULL ) {
-        
-        if( levelRiseStack.size() == 0 ) {
-            // push one on to rise into
-            ColorScheme c = currentLevel->getLevelColors();
-            levelRiseStack.push_back( new Level( &c ) );
-            
-            // center player in symmetrical level
-            LevelPositionInfo info = 
-                { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
-            levelRisePositionInfoStack.push_back( info );
-            }
-        
-        // rise up to last level on stack
-        lastLevel = 
-            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
-        
-        levelRiseStack.deleteElement( levelRiseStack.size() - 1 );
-        
-        lastLevelPosition =
-            *( levelRisePositionInfoStack.getElement( 
-                   levelRisePositionInfoStack.size() - 1 ) );
-        levelRisePositionInfoStack.deleteElement( 
-            levelRisePositionInfoStack.size() - 1 );
-        
-        lastLevel->decompactLevel();
+    setDrawColor( 0, 0, 0, 1 );
+    
+    
 
-        lastLevel->freezeLevel( true );
-        zoomProgress = 1;
-        zoomDirection = -1;
-        currentLevel->drawFloorEdges( false );
-        }
+    drawRect( lastScreenViewCenter.x - viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 ,
+              lastScreenViewCenter.x + viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 - dashHeight );
+
+
+    // level number display on dash
+    setDrawColor( 1, 1, 1, 0.5 );
+    
+    doublePair levelNumberPos = { lastScreenViewCenter.x +
+                                  viewWidth /2,
+                                  lastScreenViewCenter.y +
+                                  viewHeightFraction * viewWidth /2 - 0.625 };
+    
+    
+    char *levelString = autoSprintf( "%d", levelNumber );
+    
+    mainFont->drawString( levelString, levelNumberPos, alignRight );
+    
+    delete [] levelString;
+
     }
+
+
 
 
 static void mouseMove( float inX, float inY ) {

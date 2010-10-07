@@ -409,11 +409,17 @@ void Level::freeReproducibleData() {
 
 
 
+#include "minorGems/system/Thread.h"
+
+
 
 Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
               char inSymmetrical ) 
         : mPlayerSprite( inPlayerColors ) {
 
+
+    Thread::staticSleep( 1000 );
+    
 
     if( !sGridWorldSpotsComputed ) {
         
