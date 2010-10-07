@@ -161,7 +161,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -176,6 +176,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     currentLevel = new Level();
     
+    if( true ) {
+        
     double msTime = Time::getCurrentTime();
     
     for( int i=0; i<100; i++ ) {
@@ -186,6 +188,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
             (Time::getCurrentTime() - msTime) );
     
     exit(0);
+        }
     
     }
 

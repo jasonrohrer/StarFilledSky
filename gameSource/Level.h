@@ -174,6 +174,8 @@ class Level {
         char *mFloorEdgeFlags;
         
 
+        int mNumFloorSquares;
+        int mNumWallSquares;
         int mNumUsedSquares;
         // dynamically allocate to save space based on actual number of
         // squares
@@ -187,6 +189,7 @@ class Level {
         
         // using square indices
         char *mWallFlagsIndexed;
+        GridPos *mIndexToGridMap;
         doublePair **mGridWorldSpots;
         
         

@@ -50,7 +50,8 @@ void Level::generateReproducibleData() {
     
     //char mFloorEdgeFlags[MAX_LEVEL_SQUARES];
     mFloorEdgeFlags = new char[MAX_LEVEL_SQUARES];
-
+    mIndexToGridMap = new GridPos[MAX_LEVEL_SQUARES];
+    
 
     
 
@@ -68,8 +69,9 @@ void Level::generateReproducibleData() {
 
     mNumUsedSquares = 0;
     
-    int numFloorSquares = 0;
-
+    mNumFloorSquares = 0;
+    mNumWallSquares = 0;
+    
     SimpleVector<Color> gridColorsWorking;
 
     int xLimit = 2;
@@ -90,11 +92,15 @@ void Level::generateReproducibleData() {
     // random walk with buffer from grid edge
     // limit in number of random steps taken (for time) or
     // number of floor squares generated
-    for( int i=0; i<stepLimit && numFloorSquares < numFloorSquaresMax; i++ ) {
+    for( int i=0; i<stepLimit && mNumFloorSquares < numFloorSquaresMax; i++ ) {
         if( mWallFlags[y][x] != 1 ) {
-            numFloorSquares++;
+            mNumFloorSquares++;
 
+            
             mSquareIndices[y][x] = mNumUsedSquares;
+            mIndexToGridMap[mNumUsedSquares].x = x;
+            mIndexToGridMap[mNumUsedSquares].y = y;
+            
             mNumUsedSquares++;
             
             gridColorsWorking.push_back(
@@ -137,9 +143,12 @@ void Level::generateReproducibleData() {
                 
 
                 if( mWallFlags[y][copyX] == 1 ) {
-                    numFloorSquares++;
+                    mNumFloorSquares++;
 
                     mSquareIndices[y][x] = mNumUsedSquares;
+                    mIndexToGridMap[mNumUsedSquares].x = x;
+                    mIndexToGridMap[mNumUsedSquares].y = y;
+                    
                     mNumUsedSquares++;
                     
                     // copy colors symmetrically too
@@ -162,7 +171,7 @@ void Level::generateReproducibleData() {
     // set loop boundaries so it's safe to check neighbors
     int wallColorIndex = 0;
 
-    int numWallSquares = 0;
+    mNumWallSquares = 0;
     
     int xStart = 1;
     if( mSymmetrical ) {
@@ -175,10 +184,14 @@ void Level::generateReproducibleData() {
          
             if( mWallFlags[y][x] == 1 ) {
                 
-                char floorNeighbor = false;
+                int nxStart = x - 1;
+                if( x == xStart && mSymmetrical ) {
+                    // avoid sticking walls across symm line
+                    nxStart = x;
+                    }
                 
                 for( int ny=y-1; ny<=y+1; ny++ ) {
-                    for( int nx=x-1; nx<=x+1; nx++ ) {
+                    for( int nx=nxStart; nx<=x+1; nx++ ) {
                         
                         if( mWallFlags[ny][nx] == 0 ) {
                             // empty spot adjacent to this floor square
@@ -186,13 +199,16 @@ void Level::generateReproducibleData() {
                             mWallFlags[ny][nx] = 2;
                                                 
                             mSquareIndices[ny][nx] = mNumUsedSquares;
+                            mIndexToGridMap[mNumUsedSquares].x = nx;
+                            mIndexToGridMap[mNumUsedSquares].y = ny;
+
                             mNumUsedSquares++;
 
                             gridColorsWorking.push_back( 
                                 mColors.primary.elements[wallColorIndex] );
                             wallColorIndex = (wallColorIndex + 1) % 3;
                     
-                            numWallSquares ++;
+                            mNumWallSquares ++;
                             }
                         }
                     }
@@ -211,9 +227,12 @@ void Level::generateReproducibleData() {
                 
 
                 if( mWallFlags[y][copyX] == 2 ) {
-                    numWallSquares++;
+                    mNumWallSquares++;
 
                     mSquareIndices[y][x] = mNumUsedSquares;
+                    mIndexToGridMap[mNumUsedSquares].x = x;
+                    mIndexToGridMap[mNumUsedSquares].y = y;
+                    
                     mNumUsedSquares++;
                     
                     // copy colors symmetrically too
@@ -231,6 +250,25 @@ void Level::generateReproducibleData() {
     
 
 
+
+    // make indexed versions of these for quick looping later
+    mWallFlagsIndexed = new char[mNumUsedSquares];
+    mGridWorldSpots = new doublePair*[mNumUsedSquares];
+
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        int x = mIndexToGridMap[i].x;
+        int y = mIndexToGridMap[i].y;
+
+        mGridWorldSpots[ i ] = &( sGridWorldSpots[y][x] );
+
+        mWallFlagsIndexed[ i ] = mWallFlags[y][x];
+        }
+
+
+
+
+
+
     mHardGridColors = gridColorsWorking.getElementArray();
         
     
@@ -241,59 +279,46 @@ void Level::generateReproducibleData() {
     
     #define R  1
 
-    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
-        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
-            char thisWallFlag = mWallFlags[y][x];
-            
-            if( thisWallFlag != 0 ) {
+    for( int i=0; i<mNumUsedSquares; i++ ) {        
+        char thisWallFlag = mWallFlagsIndexed[i];
+        float cSums[3] = { 0, 0, 0 };
+        
+        int numInSum = 0;
+        
+        int x = mIndexToGridMap[i].x;
+        int y = mIndexToGridMap[i].y;
+        
+
+        for( int dy = -R; dy <= R; dy++ ) {
+            for( int dx = -R; dx <= R; dx++ ) {
                 
-                float cSums[3] = { 0, 0, 0 };
-                
-                int numInSum = 0;
-                
-                for( int dy = -R; dy <= R; dy++ ) {
-                    for( int dx = -R; dx <= R; dx++ ) {
+                if( mWallFlags[ y + dy ][ x + dx ] == thisWallFlag ) {
                     
-                        if( mWallFlags[ y + dy ][ x + dx ] == thisWallFlag ) {
-                            
-                            Color *c = 
-                                &( mHardGridColors[ 
-                                       mSquareIndices[y+dy][x+dx] ] );
-                            
-                            cSums[0] += c->r;
-                            cSums[1] += c->g;
-                            cSums[2] += c->b;
-                            
-                            numInSum ++;
-                            }
-                        }
+                    Color *c = 
+                        &( mHardGridColors[ 
+                               mSquareIndices[y+dy][x+dx] ] );
+                    
+                    cSums[0] += c->r;
+                    cSums[1] += c->g;
+                    cSums[2] += c->b;
+                    
+                    numInSum ++;
                     }
-                
-                for( int i=0; i<3; i++ ) {
-                    mGridColorsBlurred[ mSquareIndices[y][x] ][i] = 
-                        cSums[i] / numInSum;
-                    }
-                
                 }
             }
+                
+        for( int i=0; i<3; i++ ) {
+            mGridColorsBlurred[ mSquareIndices[y][x] ][i] = 
+                cSums[i] / numInSum;
+            }
+        
         }
 
     // copy over
     mSoftGridColors = new Color[ mNumUsedSquares ];
-    
-    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
-        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
-            
-            if( mWallFlags[y][x] != 0 ) {
-                
-
-                int squareIndex = mSquareIndices[y][x];
-                
-                mSoftGridColors[ squareIndex ] = 
-                    mGridColorsBlurred[ squareIndex ];
-                }
-            }
-        
+ 
+    for( int i=0; i<mNumUsedSquares; i++ ) {        
+       mSoftGridColors[ i ] = mGridColorsBlurred[ i ];
         }
 
     // actual, working grid colors
@@ -306,41 +331,9 @@ void Level::generateReproducibleData() {
         mColorMix[i] = 0;
         mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.04, 0.08 );
         }
-    
 
 
-    // now compute which walls should have edges, again using safe loop bounds
-    for( y=1; y<MAX_LEVEL_H - 1; y++ ) {
-        for( x=1; x<MAX_LEVEL_W - 1; x++ ) {
-            
-            if( mWallFlags[y][x] == 1 ) {
-                // floor here
-
-                char flag = 0;
-                if( mWallFlags[y + 1][x] != 1 ) {
-                    flag |= 0x01;
-                    }
-                if( mWallFlags[y][x+1] != 1 ) {
-                    flag |= 0x02;
-                    }
-                if( mWallFlags[y - 1][x] != 1 ) {
-                    flag |= 0x04;
-                    }
-                if( mWallFlags[y][x-1] != 1 ) {
-                    flag |= 0x08;
-                    }
-
-                mFloorEdgeFlags[mSquareIndices[y][x]] = flag;                
-                }
-            else if( mSquareIndices[y][x] != -1 ) {
-                // no floor, no edges
-                mFloorEdgeFlags[mSquareIndices[y][x]] = 0;
-                }
-            }
-        }
-    
-
-    if( !sGridWorldSpotsComputed ) {
+        if( !sGridWorldSpotsComputed ) {
         
         // precompute to-world coord mapping
         for( y=0; y<MAX_LEVEL_H; y++ ) {
@@ -354,25 +347,39 @@ void Level::generateReproducibleData() {
         }
     
 
-    // make indexed versions of these for quick looping later
-    mWallFlagsIndexed = new char[mNumUsedSquares];
-    mGridWorldSpots = new doublePair*[ mNumUsedSquares ];
 
-    for( y=0; y<MAX_LEVEL_H; y++ ) {
-        for( x=0; x<MAX_LEVEL_W; x++ ) {
-            
-            int squareIndex = mSquareIndices[y][x];
-            
-            if( squareIndex != -1 ) {
-                
-                mGridWorldSpots[ squareIndex ] =
-                    &( sGridWorldSpots[y][x] );
 
-                mWallFlagsIndexed[ squareIndex ] =
-                    mWallFlags[y][x];
+    
+
+
+    // now compute which walls should have edges
+    // don't bother filling at all for non-floor squares
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        if( mWallFlagsIndexed[i] == 1 ) {
+            // floor here
+            int x = mIndexToGridMap[ i ].x;
+            int y = mIndexToGridMap[ i ].y;
+            
+            
+            char flag = 0;
+            if( mWallFlags[y + 1][x] != 1 ) {
+                flag |= 0x01;
                 }
+            if( mWallFlags[y][x+1] != 1 ) {
+                flag |= 0x02;
+                }
+            if( mWallFlags[y - 1][x] != 1 ) {
+                flag |= 0x04;
+                }
+            if( mWallFlags[y][x-1] != 1 ) {
+                flag |= 0x08;
+                }
+
+            mFloorEdgeFlags[i] = flag;                
             }
         }
+    
+
     
     mDataGenerated = true;
     }
@@ -399,6 +406,7 @@ void Level::freeReproducibleData() {
         delete [] mColorMix;
         delete [] mColorMixDelta;
         delete [] mWallFlagsIndexed;
+        delete [] mIndexToGridMap;
         delete [] mGridWorldSpots;
 
         mDataGenerated = false;
@@ -447,10 +455,6 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     mEnteringMouse = false;
     
 
-    int x;
-    int y;
-    
-        
     
     generateReproducibleData();
     
@@ -458,38 +462,46 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
     // place enemies in random floor spots
 
-    for( y=0; y<MAX_LEVEL_H; y++ ) {
-        for( x=0; x<MAX_LEVEL_W; x++ ) {
-            if( mWallFlags[y][x] == 1 ) {    
-                // floor
-                
-                // small chance of enemy
-                if( randSource.getRandomBoundedInt( 0, 100 ) > 97 ) {
-                    // hit
-
-                    doublePair spot = sGridWorldSpots[y][x];
-                    
-                    // keep enemies away from player starting spot (fair)
-
-                    doublePair playerSpot = {0,0};
-                    
-                    if( distance( spot, playerSpot ) > 20 ) {
-                    
-                        doublePair v = { 0, 0 };
-                        doublePair a = { 0, 0 };
-                        
-                        Enemy e = { spot, v, a, 20, 
-                                    randSource.getRandomBoundedInt( 0, 10 ),
-                                    new EnemySprite() };
-                        
-                        mEnemies.push_back( e );
-                        }
-                    
-                    }
-                }
+    for( int i=0; i<10; i++ ) {
+        
+        // pick random floor spot until found one away from player
+        
+        int floorPick = 
+            randSource.getRandomBoundedInt( 0, mNumFloorSquares - 1 );
+        
+        char hit = false;
+        
+        int numTries = 0;
+        
+        while( ! hit && numTries < 20 ) {
+            numTries++;
             
+            doublePair spot = *( mGridWorldSpots[ floorPick ] );
+                    
+            // keep enemies away from player starting spot (fair)
+
+            doublePair playerSpot = {0,0};
+            
+            if( distance( spot, playerSpot ) > 20 ) {
+                
+                doublePair v = { 0, 0 };
+                doublePair a = { 0, 0 };
+                
+                Enemy e = { spot, v, a, 20, 
+                            randSource.getRandomBoundedInt( 0, 10 ),
+                            new EnemySprite() };
+                        
+                mEnemies.push_back( e );
+                hit = true;
+                }
+            else {
+                // try new pick
+                floorPick = 
+                    randSource.getRandomBoundedInt( 0, mNumFloorSquares - 1 );
+                }
             }
         }
+    
     
     // place rise marker in random floor spot
     char placed = false;
