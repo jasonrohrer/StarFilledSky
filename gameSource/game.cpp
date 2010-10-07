@@ -61,12 +61,14 @@ double globalRandomSeed = 0;
 
 
 
-
+// height of dashboard at top of screen
+double dashHeight = 1;
 
 
 // position of view in world
 doublePair playerPos = {-0.5, 0};
-doublePair lastScreenViewCenter = playerPos;
+// up a bit to account for dashboard
+doublePair lastScreenViewCenter = {-0.5, 0.5 * dashHeight };
 
 
 // world with of one view
@@ -157,7 +159,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    //grabInput( true );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -197,7 +199,7 @@ float lastScreenMouseX, lastScreenMouseY;
 
 
 
-float lastMouseX = 0;
+float lastMouseX = -0.5;
 float lastMouseY = 0;
 
 
@@ -215,8 +217,8 @@ static void confineMouseOnScreen() {
 
     double halfViewHeight = ( viewWidth * viewHeightFraction ) / 2;
     
-    if( lastMouseY > lastScreenViewCenter.y + halfViewHeight ) {
-        lastMouseY = lastScreenViewCenter.y + halfViewHeight;
+    if( lastMouseY > lastScreenViewCenter.y + halfViewHeight - dashHeight ) {
+        lastMouseY = lastScreenViewCenter.y + halfViewHeight - dashHeight;
         }
     else if( lastMouseY < lastScreenViewCenter.y - halfViewHeight ) {
         lastMouseY = lastScreenViewCenter.y - halfViewHeight;
@@ -422,7 +424,7 @@ void drawFrame() {
                 viewHeightFraction * viewWidth /2 ,
               lastScreenViewCenter.x + viewWidth /2,
               lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 - 1  );
+                viewHeightFraction * viewWidth /2 - dashHeight );
 
 
     // level number display on dash
@@ -476,39 +478,86 @@ void drawFrame() {
 
     playerPos = newPlayerPos;
 
+
+
+
+
+    // move screen to follow player and mouse
+
+
+    // tweak screen center to account for dashboard
+    doublePair tweakedScreenViewCenter = lastScreenViewCenter;
+    tweakedScreenViewCenter.y -= dashHeight / 2;
+
+    double tweakedViewHeightFraction = 
+        (viewHeightFraction * viewWidth - dashHeight) / viewWidth;
+
     
     // between player and reticle, closer to player (to keep player on screen)
-    doublePair posToCenterOnScreen = add( playerPos, mousePos );
-    // more weight to player pos
-    posToCenterOnScreen = add( playerPos, posToCenterOnScreen );
-        
-    posToCenterOnScreen.x /= 3;
-    posToCenterOnScreen.y /= 3;
     
+    doublePair posToCenterOnScreen = mousePos;
+    
+    // increase player weight as player moves farther from screen center 
+    double playerPosWeightX = 
+        1 + 0.4 * sqrt( fabs( playerPos.x - tweakedScreenViewCenter.x ) );
+    // closer to player in vertical direction, because screen is shorter
+    double playerPosWeightY = 
+        1 + 0.4 
+        * sqrt( fabs( playerPos.y - tweakedScreenViewCenter.y ) 
+                / tweakedViewHeightFraction);
+    
+    posToCenterOnScreen.x += playerPosWeightX * playerPos.x;
+    posToCenterOnScreen.y += playerPosWeightY * playerPos.y;
+    
+    posToCenterOnScreen.x /= 1 + playerPosWeightX;
+    posToCenterOnScreen.y /= 1 + playerPosWeightY;
+
+
+
 
     double screenCenterDistanceFromPlayer = 
-        distance( posToCenterOnScreen, lastScreenViewCenter );
+        distance( posToCenterOnScreen, tweakedScreenViewCenter );
+
+    double screenCenterDistanceFromPlayerX = 
+        fabs( posToCenterOnScreen.x - tweakedScreenViewCenter.x );
+    double screenCenterDistanceFromPlayerY = 
+        fabs( posToCenterOnScreen.y - tweakedScreenViewCenter.y );
+
     double minDistanceToMoveScreen = 
         0.2 * ( viewWidth * viewHeightFraction ) / 2;
 
-    // stop move screen whenever position to center is inside the center square
-    if( screenCenterDistanceFromPlayer > 
-        minDistanceToMoveScreen ) {
+    double minDistanceToMoveScreenX = 
+        0.2 * ( viewWidth ) / 2;
+    double minDistanceToMoveScreenY = 
+        0.2 * ( viewWidth * tweakedViewHeightFraction ) / 2;
+
+    // stop move screen whenever position to center is inside the center 
+    // rectangle (separate threshold for x and y)
+    if( screenCenterDistanceFromPlayerX > 
+        minDistanceToMoveScreenX ||
+        screenCenterDistanceFromPlayerY > 
+        minDistanceToMoveScreenY ) {
 
         doublePair screenMoveDelta = sub( posToCenterOnScreen, 
-                                          lastScreenViewCenter );
+                                          tweakedScreenViewCenter );
         
         // set correction speed based on how far off we are from VERY CENTER
         // since we stop moving when player inside center box, this eliminates
         // jerky micro-movements.
-        double correctionSpeed = 
+        double correctionSpeedX = 
             0.005 * 
             pow(
-                (screenCenterDistanceFromPlayer - 0),
+                (screenCenterDistanceFromPlayerX - 0),
+                2 );
+        double correctionSpeedY = 
+            0.005 *
+            pow(
+                (screenCenterDistanceFromPlayerY - 0) 
+                / tweakedViewHeightFraction,
                 2 );
         
-        screenMoveDelta.x *= correctionSpeed;
-        screenMoveDelta.y *= correctionSpeed;
+        screenMoveDelta.x *= correctionSpeedX;
+        screenMoveDelta.y *= correctionSpeedY;
 
         /*
           // not actually seeing any round-off errors.
@@ -668,7 +717,7 @@ void drawFrame() {
             
             // center player in symmetrical level
             LevelPositionInfo info = 
-                { {-0.5,0}, {-0.5,0}, {-0.5,0}, 0, 0 };
+                { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
             levelRisePositionInfoStack.push_back( info );
             }
         
