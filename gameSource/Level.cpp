@@ -942,7 +942,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     setDrawColor( c->r,
                   c->g,
                   c->b, 1 );
-    //drawSprite( riseMarker, riseSpot );
+    drawSprite( riseMarker, riseSpot );
     
 
     // draw bullets
