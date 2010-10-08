@@ -121,8 +121,7 @@ typedef struct LevelPositionInfo {
         doublePair playerPos;
         doublePair lastScreenViewCenter;
         doublePair entryPosition;
-        double lastMouseX;
-        double lastMouseY;
+        doublePair mousePos;
     } LevelPositionInfo;
 
 SimpleVector<LevelPositionInfo> levelRisePositionInfoStack;
@@ -152,7 +151,7 @@ static void populateLevelRiseStack() {
         
         // center player in symmetrical level
         LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, {-0.5, 0} };
         levelRisePositionInfoStack.push_back( info );
         }
     }
@@ -235,29 +234,27 @@ float lastScreenMouseX, lastScreenMouseY;
 
 
 
-float lastMouseX = -0.5;
-float lastMouseY = 0;
-
+doublePair mousePos = { -0.5, 0 };
 
 
 
 static void confineMouseOnScreen() {
     double halfViewWidth = viewWidth / 2;
     
-    if( lastMouseX > lastScreenViewCenter.x + halfViewWidth ) {
-        lastMouseX = lastScreenViewCenter.x + halfViewWidth;
+    if( mousePos.x > lastScreenViewCenter.x + halfViewWidth ) {
+        mousePos.x = lastScreenViewCenter.x + halfViewWidth;
         }
-    else if( lastMouseX < lastScreenViewCenter.x - halfViewWidth ) {
-        lastMouseX = lastScreenViewCenter.x - halfViewWidth;
+    else if( mousePos.x < lastScreenViewCenter.x - halfViewWidth ) {
+        mousePos.x = lastScreenViewCenter.x - halfViewWidth;
         }
 
     double halfViewHeight = ( viewWidth * viewHeightFraction ) / 2;
     
-    if( lastMouseY > lastScreenViewCenter.y + halfViewHeight - dashHeight ) {
-        lastMouseY = lastScreenViewCenter.y + halfViewHeight - dashHeight;
+    if( mousePos.y > lastScreenViewCenter.y + halfViewHeight - dashHeight ) {
+        mousePos.y = lastScreenViewCenter.y + halfViewHeight - dashHeight;
         }
-    else if( lastMouseY < lastScreenViewCenter.y - halfViewHeight ) {
-        lastMouseY = lastScreenViewCenter.y - halfViewHeight;
+    else if( mousePos.y < lastScreenViewCenter.y - halfViewHeight ) {
+        mousePos.y = lastScreenViewCenter.y - halfViewHeight;
         }
 
     }
@@ -289,8 +286,6 @@ void drawFrame() {
 
     // update all movement and detect special conditions
 
-    doublePair mousePos = { lastMouseX, lastMouseY };
-
 
 
     // do this here, before drawing anything, to avoid final frame hiccups
@@ -320,8 +315,7 @@ void drawFrame() {
             // enemy or player is entry position
             LevelPositionInfo info = 
                 { playerPos, lastScreenViewCenter, 
-                  enteringPos,
-                  lastMouseX, lastMouseY };
+                  enteringPos, mousePos };
             levelRisePositionInfoStack.push_back( info );
 
             lastLevel = currentLevel;
@@ -350,8 +344,8 @@ void drawFrame() {
             if( symmetrical ) {
                 playerPos.x = -0.5;
                 playerPos.y = 0;
-                lastMouseX = -0.5;
-                lastMouseY = 0;
+                mousePos.x = -0.5;
+                mousePos.y = 0;
 
                 lastScreenViewCenter.x = -0.5;
                 lastScreenViewCenter.y = 0;
@@ -360,8 +354,8 @@ void drawFrame() {
                 // safe, since -0.5 might be out of bounds
                 playerPos.x = 0;
                 playerPos.y = 0;
-                lastMouseX = 0;
-                lastMouseY = 0;
+                mousePos.x = 0;
+                mousePos.y = 0;
 
                 lastScreenViewCenter.x = 0;
                 lastScreenViewCenter.y = 0;
@@ -540,8 +534,8 @@ void drawFrame() {
 
         if( ! shooting ) {
             // move mouse with screen
-            lastMouseX += screenMoveDelta.x;
-            lastMouseY += screenMoveDelta.y;
+            mousePos.x += screenMoveDelta.x;
+            mousePos.y += screenMoveDelta.y;
             }
         }
 
@@ -550,8 +544,6 @@ void drawFrame() {
         confineMouseOnScreen();
         }
     
-    mousePos.x = lastMouseX;
-    mousePos.y = lastMouseY;
 
     if( shooting ) {
         if( stepsTilNextBullet == 0 ) {
@@ -746,11 +738,7 @@ void drawFrame() {
             currentLevel->forgetItemWindow();
             playerPos = lastLevelPosition.playerPos;
             lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
-            lastMouseX = lastLevelPosition.lastMouseX;
-            lastMouseY = lastLevelPosition.lastMouseY;
-            
-            mousePos.x = lastMouseX;
-            mousePos.y = lastMouseY;
+            mousePos = lastLevelPosition.mousePos;
             
 
             lastLevel = NULL;
@@ -821,8 +809,8 @@ static void mouseMove( float inX, float inY ) {
         lastScreenMouseY = inY;
 
 
-        lastMouseX += mouseSpeed * deltaX;
-        lastMouseY -= mouseSpeed * deltaY;
+        mousePos.x += mouseSpeed * deltaX;
+        mousePos.y -= mouseSpeed * deltaY;
         
 
         confineMouseOnScreen();
