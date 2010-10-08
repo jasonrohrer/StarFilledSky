@@ -7,7 +7,7 @@ static SpriteHandle spriteBank[ 100 ];
 
 
 void initSpriteBank() {
-    spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga" );
+    spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", true );
     spriteBank[ crosshair ] = loadSprite( "crosshair.tga" );
     spriteBank[ enterCrosshair ] = loadSprite( "enterCrosshair.tga" );
     }

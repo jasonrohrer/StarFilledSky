@@ -498,7 +498,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
             doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 0 ) {
+            if( distance( spot, playerSpot ) > 20 ) {
                 
                 doublePair v = { 0, 0 };
                 doublePair a = { 0, 0 };
@@ -935,8 +935,14 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
     // draw rise marker
-    setDrawColor( 1, 1, 1, 1 );
-    drawSprite( riseMarker, riseSpot );
+    // color same as floor tile
+    Color *c = 
+        &( mGridColors[mSquareIndices[mRisePosition.y][mRisePosition.x]] );
+    
+    setDrawColor( c->r,
+                  c->g,
+                  c->b, 1 );
+    //drawSprite( riseMarker, riseSpot );
     
 
     // draw bullets

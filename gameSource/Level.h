@@ -204,7 +204,7 @@ class Level {
 
         SimpleVector<Enemy> mEnemies;
         
-        doublePair mRisePosition;
+        GridPos mRisePosition;
         
         char mFrozen;
         
