@@ -409,7 +409,7 @@ void Level::freeReproducibleData() {
 
 
 
-#include "minorGems/system/Thread.h"
+//#include "minorGems/system/Thread.h"
 
 
 
@@ -418,7 +418,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
         : mPlayerSprite( inPlayerColors ) {
 
 
-    Thread::staticSleep( 1000 );
+    //Thread::staticSleep( 1000 );
     
 
     if( !sGridWorldSpotsComputed ) {
@@ -498,7 +498,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
             doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 20 ) {
+            if( distance( spot, playerSpot ) > 0 ) {
                 
                 doublePair v = { 0, 0 };
                 doublePair a = { 0, 0 };

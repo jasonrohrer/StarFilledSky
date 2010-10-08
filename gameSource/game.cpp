@@ -144,6 +144,21 @@ Font *mainFont;
 
 
 
+static void populateLevelRiseStack() {
+    if( levelRiseStack.size() == 0 ) {
+        // push one on to rise into
+        ColorScheme c = currentLevel->getLevelColors();
+        levelRiseStack.push_back( new Level( &c ) );
+        
+        // center player in symmetrical level
+        LevelPositionInfo info = 
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
+        levelRisePositionInfoStack.push_back( info );
+        }
+    }
+
+
+
 
 void initFrameDrawer( int inWidth, int inHeight ) {
     screenW = inWidth;
@@ -175,6 +190,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     mainFont = new Font( "font_8_16.tga", -2, 4, true );
     
     currentLevel = new Level();
+    
+    populateLevelRiseStack();
     
 
     // for level construction optimization
@@ -247,7 +264,28 @@ static void confineMouseOnScreen() {
 
 
 
+// used to keep level rise stack populated without a visible frame hiccup
+// hide the hiccup right after the final freeze frame of the level
+// we're rising into
+
+// turns out there are two final zoom frames at end of rise out
+static char secondToLastRiseFreezeFrameDrawn = false;
+static char lastRiseFreezeFrameDrawn = false;
+
+
+
 void drawFrame() {
+
+    if( lastRiseFreezeFrameDrawn ) {
+        // populate stack here, in case we rise back out further
+        // this prevents frame hiccups, because this happens
+        // at the tail end of lastLevel's freeze right before
+        // it becomes the current level, so the hiccup is hidden
+        populateLevelRiseStack();
+        }
+    
+
+
 
     // update all movement and detect special conditions
 
@@ -338,16 +376,11 @@ void drawFrame() {
     if( currentLevel->isRiseSpot( playerPos ) && lastLevel == NULL ) {
         
         if( levelRiseStack.size() == 0 ) {
-            // push one on to rise into
-            ColorScheme c = currentLevel->getLevelColors();
-            levelRiseStack.push_back( new Level( &c ) );
-            
-            // center player in symmetrical level
-            LevelPositionInfo info = 
-                { {-0.5,0}, {-0.5,0}, {-0.5,0}, -0.5, 0 };
-            levelRisePositionInfoStack.push_back( info );
+            printf( "WARNING:  level stack empty unexpectedly\n" );            
+            populateLevelRiseStack();
             }
         
+
         // rise up to last level on stack
         lastLevel = 
             *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
@@ -635,12 +668,21 @@ void drawFrame() {
         }
 
     
-
-    currentLevel->setMousePos( mousePos );
-    currentLevel->setPlayerPos( playerPos );
-    currentLevel->setEnteringMouse( entering );
+    if( lastRiseFreezeFrameDrawn ) {
+        lastRiseFreezeFrameDrawn = false;
+        currentLevel->freezeLevel( false );
+        }
+    else if( secondToLastRiseFreezeFrameDrawn ) {
+        secondToLastRiseFreezeFrameDrawn = false;
+        lastRiseFreezeFrameDrawn = true;
+        }
+    else {
+        // okay to pass player movement to level
+        currentLevel->setMousePos( mousePos );
+        currentLevel->setPlayerPos( playerPos );
+        currentLevel->setEnteringMouse( entering );
+        }
     currentLevel->drawLevel( lastScreenViewCenter, viewSize );
-
 
     if( stencilDrawn ) {
         
@@ -698,7 +740,9 @@ void drawFrame() {
             
             // switch to last level (zooming out)
             currentLevel = lastLevel;
-            currentLevel->freezeLevel( false );
+            
+            // don't unfreeze yet, still drawing final zoom-out frames
+            //currentLevel->freezeLevel( false );
             currentLevel->forgetItemWindow();
             playerPos = lastLevelPosition.playerPos;
             lastScreenViewCenter = lastLevelPosition.lastScreenViewCenter;
@@ -716,6 +760,11 @@ void drawFrame() {
                                    lastScreenViewCenter.y );
 
             levelNumber += 1;
+
+
+            // take time to populate level rise stack after this frame is drawn
+            // to hide hiccup
+            secondToLastRiseFreezeFrameDrawn = true;            
             }    
         }
 
