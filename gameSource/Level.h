@@ -110,6 +110,8 @@ class Level {
         ColorScheme getEnteringPointColors( doublePair inPosition,
                                             int inType );
         
+        BorderSprite *getLastEnterPointSprite();
+        
 
         char isRiseSpot( doublePair inPos );
         
@@ -224,6 +226,9 @@ class Level {
 
         //TileSet mTileSet;
         ColorScheme mColors;
+        
+
+        BorderSprite *mLastEnterPointSprite;
         
     };
 

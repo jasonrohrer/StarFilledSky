@@ -533,6 +533,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
             }
         }
     
+
+    mLastEnterPointSprite = &mPlayerSprite;
     }
 
 
@@ -1149,6 +1151,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                                            int inType ) {
     switch( inType ) {
         case 0: {
+            mLastEnterPointSprite = &mPlayerSprite;
             return mPlayerSprite.getColors();
             }
             break;
@@ -1156,7 +1159,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
             int i;
     
             if( isEnemy( inPosition, &i ) ) {
-                
+                mLastEnterPointSprite = mEnemies.getElement( i )->sprite;
                 return mEnemies.getElement( i )->sprite->getColors();
                 }
             }
@@ -1166,6 +1169,12 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     // default
     ColorScheme c;
     return c;
+    }
+
+
+
+BorderSprite *Level::getLastEnterPointSprite() {
+    return mLastEnterPointSprite;
     }
 
 

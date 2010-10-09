@@ -663,6 +663,7 @@ void drawFrame() {
     if( lastRiseFreezeFrameDrawn ) {
         lastRiseFreezeFrameDrawn = false;
         currentLevel->freezeLevel( false );
+        levelNumber += 1;
         }
     else if( secondToLastRiseFreezeFrameDrawn ) {
         secondToLastRiseFreezeFrameDrawn = false;
@@ -747,7 +748,9 @@ void drawFrame() {
             setViewCenterPosition( lastScreenViewCenter.x, 
                                    lastScreenViewCenter.y );
 
-            levelNumber += 1;
+            // wait until end of freeze to do this, so that it
+            // syncs with dashboard sprite change
+            //levelNumber += 1;
 
 
             // take time to populate level rise stack after this frame is drawn
@@ -763,6 +766,19 @@ void drawFrame() {
     setViewCenterPosition( lastScreenViewCenter.x, 
                            lastScreenViewCenter.y );
     
+    // border around panel
+    setDrawColor( 0.3, 0.3, 0.3, 1 );
+    
+    
+
+    drawRect( lastScreenViewCenter.x - viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 ,
+              lastScreenViewCenter.x + viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
+
+    // body of panel
     setDrawColor( 0, 0, 0, 1 );
     
     
@@ -789,6 +805,41 @@ void drawFrame() {
     mainFont->drawString( levelString, levelNumberPos, alignRight );
     
     delete [] levelString;
+
+
+    Level *nextAbove;
+    
+    if( lastLevel != NULL ) {
+        
+        if( zoomDirection == 1 && levelRiseStack.size() > 1 ) {
+            nextAbove = 
+                *( levelRiseStack.getElement( levelRiseStack.size() - 2 ) );
+            }
+        else {
+            nextAbove = lastLevel;
+            }
+        }
+    else if( levelRiseStack.size() > 0 ) {    
+        nextAbove = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        }
+    else {
+        // draw SOMETHING for now while we wait for next level to be 
+        // populated
+        nextAbove = currentLevel;
+        }
+        
+        
+
+    BorderSprite *weAreInsideSprite = nextAbove->getLastEnterPointSprite();
+    
+    
+    doublePair spritePos = levelNumberPos;
+    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 0.5;
+    spritePos.y += 0.125;
+    
+    weAreInsideSprite->draw( spritePos );
+    
 
     }
 
