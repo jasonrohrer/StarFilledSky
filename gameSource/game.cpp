@@ -38,6 +38,8 @@
 #include "Level.h"
 #include "fixedSpriteBank.h"
 #include "Font.h"
+#include "PowerUpSet.h"
+
 
 
 // globals
@@ -840,7 +842,12 @@ void drawFrame() {
     
     weAreInsideSprite->draw( spritePos );
     
+    PowerUpSet p( 0 );
+    doublePair setPos = spritePos;
+    setPos.x += 3;
 
+    p.drawSet( setPos );
+    
     }
 
 

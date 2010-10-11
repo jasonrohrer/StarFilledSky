@@ -10,6 +10,9 @@ void initSpriteBank() {
     spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );
     spriteBank[ crosshair ] = loadSprite( "crosshair.tga" );
     spriteBank[ enterCrosshair ] = loadSprite( "enterCrosshair.tga" );
+    spriteBank[ powerUpSlot ] = loadSprite( "powerUpSlot.tga" );
+    spriteBank[ powerUpBorder ] = loadSprite( "powerUpBorder.tga" );
+    spriteBank[ powerUpEmpty ] = loadSprite( "powerUpEmpty.tga" );
     }
 
 

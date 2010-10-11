@@ -18,14 +18,19 @@ PlayerSprite.cpp \
 TileSet.cpp \
 ColorScheme.cpp \
 EnemySprite.cpp \
-Font.cpp
+Font.cpp \
+PowerUpSet.cpp \
 
 
 GAME_GRAPHICS = \
 graphics/font_8_16.tga \
 graphics/riseMarker.tga \
 graphics/crosshair.tga \
-graphics/enterCrosshair.tga
+graphics/enterCrosshair.tga \
+graphics/powerUpSlot.tga \
+graphics/powerUpBorder.tga \
+graphics/powerUpEmpty.tga \
+
 
 
 

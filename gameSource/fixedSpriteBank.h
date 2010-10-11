@@ -1,3 +1,7 @@
+#ifndef FIXED_SPRITE_BANK_INCLUDED
+#define FIXED_SPRITE_BANK_INCLUDED
+
+
 #include "minorGems/game/doublePair.h"
 
 
@@ -9,7 +13,13 @@ void freeSpriteBank();
 enum spriteID { riseMarker = 0,
                 crosshair,
                 enterCrosshair,
+                powerUpSlot,
+                powerUpBorder,
+                powerUpEmpty,
                 endSpriteID };                
 
 
 void drawSprite( spriteID inID, doublePair inCenter );
+
+
+#endif
