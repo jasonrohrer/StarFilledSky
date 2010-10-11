@@ -1,3 +1,8 @@
+#ifndef POWER_UP_SET_INCLUDED
+#define POWER_UP_SET_INCLUDED
+
+
+
 #include "fixedSpriteBank.h"
 
 
@@ -22,7 +27,11 @@ void drawPowerUp( PowerUp inPower,
 class PowerUpSet {
         
     public:
+    
+        // constructs a level 0 set
+        PowerUpSet();
         
+    
         // constructs a random set with sum level at max inTotalLevel
         PowerUpSet( int inTotalLevel );
 
@@ -41,3 +50,5 @@ class PowerUpSet {
         
     };
 
+
+#endif

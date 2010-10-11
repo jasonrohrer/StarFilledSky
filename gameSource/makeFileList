@@ -25,6 +25,7 @@ PowerUpSet.cpp \
 GAME_GRAPHICS = \
 graphics/font_8_16.tga \
 graphics/riseMarker.tga \
+graphics/riseIcon.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
 graphics/powerUpSlot.tga \

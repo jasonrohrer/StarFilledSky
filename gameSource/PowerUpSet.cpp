@@ -28,6 +28,14 @@ void drawPowerUp( PowerUp inPower,
 
 
 
+PowerUpSet::PowerUpSet() {
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        mPowers[i].powerType = powerUpEmpty;
+        mPowers[i].level = 0;
+        }
+    }
+
+
 
 PowerUpSet::PowerUpSet( int inTotalLevel ) {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {

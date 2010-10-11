@@ -149,7 +149,9 @@ static void populateLevelRiseStack() {
     if( levelRiseStack.size() == 0 ) {
         // push one on to rise into
         ColorScheme c = currentLevel->getLevelColors();
-        levelRiseStack.push_back( new Level( &c ) );
+        ColorScheme freshColors;
+        levelRiseStack.push_back( new Level( &c, &freshColors,
+                                             levelNumber + 1 ) );
         
         // center player in symmetrical level
         LevelPositionInfo info = 
@@ -336,7 +338,8 @@ void drawFrame() {
 
             char symmetrical = ( enteringType == 0 );
             
-            currentLevel = new Level( NULL, &c, symmetrical );
+            currentLevel = new Level( NULL, &c, levelNumber - 1,
+                                      symmetrical );
             
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
@@ -837,16 +840,50 @@ void drawFrame() {
     
     
     doublePair spritePos = levelNumberPos;
-    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 0.5;
+    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.25;
     spritePos.y += 0.125;
     
     weAreInsideSprite->draw( spritePos );
+
+    doublePair markerPos = spritePos;
+    markerPos.x -= 0.875;
     
-    PowerUpSet p( 0 );
+    drawSprite( riseIcon, markerPos );
+    
+    
+    PowerUpSet p = nextAbove->getLastEnterPointPowers();
     doublePair setPos = spritePos;
-    setPos.x += 3;
+    setPos.x += 2.25;
 
     p.drawSet( setPos );
+    
+
+    
+    PowerUpSet playerPowers;
+        
+    Level *levelToGetCurrentFrom;
+    if( lastLevel != NULL && zoomDirection == 1 ) {
+        levelToGetCurrentFrom = lastLevel;
+        }
+    else {
+        levelToGetCurrentFrom = currentLevel;
+        }
+    
+    
+    p = levelToGetCurrentFrom->getPlayerPowers();
+    setPos = spritePos;
+    setPos.x = lastScreenViewCenter.x;
+
+    p.drawSet( setPos );
+
+    PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
+
+    spritePos = setPos;
+    spritePos.x -= 2.25;
+    
+    playerSprite->draw( spritePos );
+
+
     
     }
 

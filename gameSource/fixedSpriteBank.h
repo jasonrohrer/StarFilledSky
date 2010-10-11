@@ -11,6 +11,7 @@ void freeSpriteBank();
 
 
 enum spriteID { riseMarker = 0,
+                riseIcon,
                 crosshair,
                 enterCrosshair,
                 powerUpSlot,

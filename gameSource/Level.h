@@ -6,6 +6,7 @@
 #include "EnemySprite.h"
 #include "TileSet.h"
 #include "ColorScheme.h"
+#include "PowerUpSet.h"
 
 
 #define MAX_LEVEL_W  400
@@ -30,6 +31,7 @@ typedef struct Enemy {
         int stepsBetweenBullets;
         int stepsTilNextBullet;
         EnemySprite *sprite;
+        PowerUpSet powers;
     } Enemy;
 
 
@@ -58,6 +60,7 @@ class Level {
         // destroyed by caller
         Level( ColorScheme *inPlayerColors=NULL,
                ColorScheme *inColors=NULL, 
+               int inLevelNumber = 0,
                char inSymmetrical=true );
 
 
@@ -112,6 +115,14 @@ class Level {
         
         BorderSprite *getLastEnterPointSprite();
         
+        PowerUpSet getLastEnterPointPowers();
+
+
+        PlayerSprite *getPlayerSprite();
+        
+        PowerUpSet getPlayerPowers();
+        
+
 
         char isRiseSpot( doublePair inPos );
         
@@ -157,6 +168,8 @@ class Level {
         // random generator state that generated this level
         unsigned int mRandSeedState;
         
+        
+        int mLevelNumber;
 
         char mSymmetrical;
         
@@ -223,12 +236,14 @@ class Level {
 
 
         PlayerSprite mPlayerSprite;
-
+        PowerUpSet mPlayerPowers;
+        
         //TileSet mTileSet;
         ColorScheme mColors;
         
 
         BorderSprite *mLastEnterPointSprite;
+        PowerUpSet mLastEnterPointPowers;
         
     };
 

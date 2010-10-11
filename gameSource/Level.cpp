@@ -414,8 +414,11 @@ void Level::freeReproducibleData() {
 
 
 Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
-              char inSymmetrical ) 
-        : mPlayerSprite( inPlayerColors ) {
+              int inLevelNumber, char inSymmetrical ) 
+        : mLevelNumber( inLevelNumber ), 
+          mPlayerSprite( inPlayerColors ),
+          mPlayerPowers( inLevelNumber - 1 ),
+          mLastEnterPointPowers( inLevelNumber - 1 ) {
 
 
     //Thread::staticSleep( 1000 );
@@ -505,7 +508,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 
                 Enemy e = { spot, v, a, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
-                            new EnemySprite() };
+                            new EnemySprite(),
+                            PowerUpSet( mLevelNumber - 1 ) };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -535,6 +539,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     
 
     mLastEnterPointSprite = &mPlayerSprite;
+    mLastEnterPointPowers = mPlayerPowers;
     }
 
 
@@ -1152,6 +1157,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     switch( inType ) {
         case 0: {
             mLastEnterPointSprite = &mPlayerSprite;
+            mLastEnterPointPowers = mPlayerPowers;
             return mPlayerSprite.getColors();
             }
             break;
@@ -1159,7 +1165,11 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
             int i;
     
             if( isEnemy( inPosition, &i ) ) {
-                mLastEnterPointSprite = mEnemies.getElement( i )->sprite;
+                Enemy *e = mEnemies.getElement( i );
+                
+                mLastEnterPointSprite = e->sprite;
+                mLastEnterPointPowers = e->powers;
+                
                 return mEnemies.getElement( i )->sprite->getColors();
                 }
             }
@@ -1176,6 +1186,23 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
 BorderSprite *Level::getLastEnterPointSprite() {
     return mLastEnterPointSprite;
     }
+
+
+
+PowerUpSet Level::getLastEnterPointPowers() {
+    return mLastEnterPointPowers;
+    }
+
+
+PlayerSprite *Level::getPlayerSprite() {
+    return &mPlayerSprite;
+    }
+
+
+PowerUpSet Level::getPlayerPowers() {
+    return mPlayerPowers;
+    }
+
 
 
 
