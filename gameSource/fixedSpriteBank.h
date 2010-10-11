@@ -17,6 +17,7 @@ enum spriteID { riseMarker = 0,
                 powerUpSlot,
                 powerUpBorder,
                 powerUpEmpty,
+                powerUpHeart,
                 endSpriteID };                
 
 

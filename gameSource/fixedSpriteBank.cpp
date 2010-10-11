@@ -14,6 +14,7 @@ void initSpriteBank() {
     spriteBank[ powerUpSlot ] = loadSprite( "powerUpSlot.tga" );
     spriteBank[ powerUpBorder ] = loadSprite( "powerUpBorder.tga" );
     spriteBank[ powerUpEmpty ] = loadSprite( "powerUpEmpty.tga" );
+    spriteBank[ powerUpHeart ] = loadSprite( "powerUpHeart.tga" );
     }
 
 

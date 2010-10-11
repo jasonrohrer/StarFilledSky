@@ -278,6 +278,8 @@ static char lastRiseFreezeFrameDrawn = false;
 void drawFrame() {
 
     if( lastRiseFreezeFrameDrawn ) {
+        levelNumber += 1;
+        
         // populate stack here, in case we rise back out further
         // this prevents frame hiccups, because this happens
         // at the tail end of lastLevel's freeze right before
@@ -668,7 +670,6 @@ void drawFrame() {
     if( lastRiseFreezeFrameDrawn ) {
         lastRiseFreezeFrameDrawn = false;
         currentLevel->freezeLevel( false );
-        levelNumber += 1;
         }
     else if( secondToLastRiseFreezeFrameDrawn ) {
         secondToLastRiseFreezeFrameDrawn = false;
@@ -879,7 +880,7 @@ void drawFrame() {
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
 
     spritePos = setPos;
-    spritePos.x -= 2.25;
+    spritePos.x += 2.25;
     
     playerSprite->draw( spritePos );
 

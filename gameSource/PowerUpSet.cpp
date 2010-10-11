@@ -27,8 +27,7 @@ void drawPowerUp( PowerUp inPower,
     }
 
 
-
-PowerUpSet::PowerUpSet() {
+void PowerUpSet::fillDefaultSet() {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
         mPowers[i].level = 0;
@@ -37,10 +36,30 @@ PowerUpSet::PowerUpSet() {
 
 
 
+PowerUpSet::PowerUpSet() {
+    fillDefaultSet();
+    }
+
+
+
 PowerUpSet::PowerUpSet( int inTotalLevel ) {
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
-        mPowers[i].powerType = powerUpEmpty;
-        mPowers[i].level = 0;
+
+    fillDefaultSet();
+    
+
+    // fill first FIFO slot first
+    for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
+        mPowers[i].powerType = powerUpHeart;
+        
+        int level = 1;
+        
+        if( inTotalLevel / 3 > 0 ) {
+            level = inTotalLevel / 3;
+            }
+        
+        
+        mPowers[i].level = level;
+        inTotalLevel -= level;
         }
     }
 

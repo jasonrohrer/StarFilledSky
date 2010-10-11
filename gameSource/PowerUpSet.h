@@ -47,6 +47,8 @@ class PowerUpSet {
 
     protected:
         
+        void fillDefaultSet();
+        
         
     };
 

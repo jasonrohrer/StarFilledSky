@@ -420,7 +420,9 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
           mPlayerPowers( inLevelNumber - 1 ),
           mLastEnterPointPowers( inLevelNumber - 1 ) {
 
-
+    printf( "Player powers of total level %d\n", inLevelNumber - 1 );
+    
+    
     //Thread::staticSleep( 1000 );
     
 
