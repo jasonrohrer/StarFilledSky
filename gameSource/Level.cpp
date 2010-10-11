@@ -420,7 +420,10 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
           mPlayerPowers( inLevelNumber - 1 ),
           mLastEnterPointPowers( inLevelNumber - 1 ) {
 
-    printf( "Player powers of total level %d\n", inLevelNumber - 1 );
+    int health, max;
+    getPlayerHealth( &health, &max );
+    mPlayerHealth = max;
+    
     
     
     //Thread::staticSleep( 1000 );
@@ -1204,6 +1207,21 @@ PlayerSprite *Level::getPlayerSprite() {
 PowerUpSet Level::getPlayerPowers() {
     return mPlayerPowers;
     }
+
+
+
+void Level::getPlayerHealth( int *outValue, int *outMax ) {
+    *outValue = mPlayerHealth;
+    
+    int max = 0;
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPlayerPowers.mPowers[i].powerType == powerUpHeart ) {
+            max += mPlayerPowers.mPowers[i].level;
+            }
+        }
+    *outMax = max;
+    }
+
 
 
 

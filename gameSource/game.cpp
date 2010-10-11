@@ -883,6 +883,22 @@ void drawFrame() {
     spritePos.x += 2.25;
     
     playerSprite->draw( spritePos );
+    
+    
+    
+    setDrawColor( 0.25, 0.25, 0.25, 1 );
+    drawRect( spritePos.x + 0.75, spritePos.y - 0.25, 
+              spritePos.x + 2.75, spritePos.y + 0.25 );
+
+    int playerHealth, playerMax;
+    levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
+    float playerHealthFraction;
+    //printf( "h, m = %d, %d\n", playerHealth, playerMax );
+    
+    setDrawColor( 1, 0, 0, 1 );
+    drawRect( spritePos.x + 0.875, spritePos.y - 0.125, 
+              spritePos.x + 0.875 + 1.75 * playerHealthFraction, 
+              spritePos.y + 0.125 );
 
 
     

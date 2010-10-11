@@ -122,6 +122,10 @@ class Level {
         
         PowerUpSet getPlayerPowers();
         
+        
+        void getPlayerHealth( int *outValue, int *outMax );
+        
+
 
 
         char isRiseSpot( doublePair inPos );
@@ -238,6 +242,10 @@ class Level {
         PlayerSprite mPlayerSprite;
         PowerUpSet mPlayerPowers;
         
+        int mPlayerHealth;
+        
+
+
         //TileSet mTileSet;
         ColorScheme mColors;
         
