@@ -124,6 +124,7 @@ class Level {
         
         
         void getPlayerHealth( int *outValue, int *outMax );
+        void restorePlayerHealth();
         
 
 

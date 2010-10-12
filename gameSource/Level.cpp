@@ -642,7 +642,6 @@ void Level::step() {
             
             if( b->playerFlag ) {
                 // check if hit enemy
-                hit = false;
                 
                 for( int j=0; j<mEnemies.size() && !hit; j++ ) {
                     Enemy *e = mEnemies.getElement( j );
@@ -653,6 +652,17 @@ void Level::step() {
                         }
                     }
                 }
+            else {
+                // check if hit player
+                if( distance( mPlayerPos, b->position ) < 0.4 ) {
+                    hit = true;
+                    mPlayerHealth -= 1;
+                    if( mPlayerHealth < 0 ) {
+                        mPlayerHealth = 0;
+                        }
+                    }
+                }
+            
             }
         
 
@@ -1213,13 +1223,21 @@ PowerUpSet Level::getPlayerPowers() {
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
     *outValue = mPlayerHealth;
     
-    int max = 0;
+    int max = 3;
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( mPlayerPowers.mPowers[i].powerType == powerUpHeart ) {
             max += mPlayerPowers.mPowers[i].level;
             }
         }
     *outMax = max;
+    }
+
+
+
+void Level::restorePlayerHealth() {
+    int v, m;
+    getPlayerHealth( &v, &m );
+    mPlayerHealth = m;
     }
 
 

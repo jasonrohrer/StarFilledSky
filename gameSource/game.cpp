@@ -296,20 +296,27 @@ void drawFrame() {
 
     // do this here, before drawing anything, to avoid final frame hiccups
     // when entering something (due to level construction time, which varies)
-    if( entering && lastLevel == NULL ) {
+
+    // force entry into self when player health reduced to 0
+    int playerHealth, playerMax;
+    currentLevel->getPlayerHealth( &playerHealth, &playerMax );
+    
+    if( ( entering || playerHealth == 0 ) && lastLevel == NULL ) {
         
         int enemyIndex;
         doublePair enteringPos;
         char enteringHit = false;
         int enteringType = 0;
         
-        if( currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
+        if( playerHealth > 0 && 
+            currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
             
             enteringPos = currentLevel->getEnemyCenter( enemyIndex );
             enteringHit = true;
             enteringType = 1;
             }
-        else if( currentLevel->isPlayer( mousePos ) ) {
+        else if( playerHealth == 0 ||
+                 currentLevel->isPlayer( mousePos ) ) {
             enteringPos = playerPos;
             enteringHit = true;
             enteringType = 0;
@@ -397,6 +404,7 @@ void drawFrame() {
         lastLevel->decompactLevel();
 
         lastLevel->freezeLevel( true );
+        lastLevel->restorePlayerHealth();
         zoomProgress = 1;
         zoomDirection = -1;
         currentLevel->drawFloorEdges( false );
@@ -890,10 +898,15 @@ void drawFrame() {
     drawRect( spritePos.x + 0.75, spritePos.y - 0.25, 
               spritePos.x + 2.75, spritePos.y + 0.25 );
 
-    int playerHealth, playerMax;
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
-    float playerHealthFraction;
+    float playerHealthFraction = playerHealth / (float)playerMax;
     //printf( "h, m = %d, %d\n", playerHealth, playerMax );
+
+    setDrawColor( 0, 0, 0, 1 );
+    drawRect( spritePos.x + 0.875, spritePos.y - 0.125, 
+              spritePos.x + 0.875 + 1.75, 
+              spritePos.y + 0.125 );
+
     
     setDrawColor( 1, 0, 0, 1 );
     drawRect( spritePos.x + 0.875, spritePos.y - 0.125, 
