@@ -39,7 +39,7 @@
 #include "fixedSpriteBank.h"
 #include "Font.h"
 #include "PowerUpSet.h"
-
+#include "numerals.h"
 
 
 // globals
@@ -192,6 +192,9 @@ void initFrameDrawer( int inWidth, int inHeight ) {
 
     mainFont = new Font( "font_8_16.tga", -2, 4, true );
     
+    initNumerals( "numerals.tga" );
+    
+
     currentLevel = new Level();
     
     populateLevelRiseStack();
@@ -219,6 +222,9 @@ void freeFrameDrawer() {
     delete currentLevel;
     
     freeSpriteBank();
+
+    freeNumerals();
+    
 
     delete mainFont;
     

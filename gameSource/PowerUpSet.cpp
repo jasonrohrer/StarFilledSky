@@ -1,4 +1,5 @@
 #include "PowerUpSet.h"
+#include "numerals.h"
 #include "minorGems/game/gameGraphics.h"
 
 
@@ -14,6 +15,15 @@ void drawPowerUpCenter( PowerUp inPower,
                         doublePair inPosition, double inFade ) {
     setDrawColor( 1, 1, 1, inFade );
     drawSprite( inPower.powerType, inPosition );
+    if( inPower.powerType != powerUpEmpty ) {
+
+        setDrawColor( 0.5, 0.5, 0.5, inFade );
+        
+        inPosition.x += 0.5 - 0.3125;
+        inPosition.y -= 0.5 - 0.25;
+        drawNumber( inPower.level, inPosition );
+        }
+    
     }
 
 
@@ -23,7 +33,8 @@ void drawPowerUp( PowerUp inPower,
 
     setDrawColor( 1, 1, 1, inFade );
     drawSprite( powerUpBorder, inPosition );
-    drawSprite( inPower.powerType, inPosition );
+
+    drawPowerUpCenter( inPower, inPosition, inFade );
     }
 
 
@@ -55,6 +66,11 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
         
         if( inTotalLevel / 3 > 0 ) {
             level = inTotalLevel / 3;
+            
+            if( i == POWER_SET_SIZE - 1 ) {
+                // remainder here
+                level += inTotalLevel % 3;
+                }
             }
         
         
