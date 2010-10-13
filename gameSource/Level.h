@@ -32,6 +32,8 @@ typedef struct Enemy {
         int stepsTilNextBullet;
         EnemySprite *sprite;
         PowerUpSet powers;
+        int health;
+        float healthBarFade;
     } Enemy;
 
 

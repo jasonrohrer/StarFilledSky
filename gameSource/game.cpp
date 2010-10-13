@@ -898,7 +898,8 @@ void drawFrame() {
     
     playerSprite->draw( spritePos );
     
-    
+
+    // health bar
     
     setDrawColor( 0.25, 0.25, 0.25, 1 );
     drawRect( spritePos.x + 0.75, spritePos.y - 0.25, 

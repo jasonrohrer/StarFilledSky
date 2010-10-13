@@ -18,6 +18,24 @@ double maxEnemySpeed = 0.10;
 double enemyBulletSpeed = 0.2;
 
 
+
+static int getMaxHealth( PowerUpSet *inSet ) {
+    int max = 0;
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( inSet->mPowers[i].powerType == powerUpHeart ) {
+            max += inSet->mPowers[i].level;
+            }
+        }
+    return max;
+    }
+
+
+static int getEnemyMaxHealth( PowerUpSet *inSet ) {
+    return 1 + getMaxHealth( inSet );
+    }
+
+
+
 void Level::generateReproducibleData() {
 
     if( mDataGenerated ) {
@@ -511,10 +529,14 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 doublePair v = { 0, 0 };
                 doublePair a = { 0, 0 };
                 
+
+                PowerUpSet p( mLevelNumber - 1 );
+                
                 Enemy e = { spot, v, a, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
-                            PowerUpSet( mLevelNumber - 1 ) };
+                            p,
+                            getEnemyMaxHealth( &p ) };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -648,7 +670,15 @@ void Level::step() {
                     
                     if( distance( e->position, b->position ) < 0.4 ) {
                         hit = true;
-                        mEnemies.deleteElement( j );
+
+                        e->health --;
+                        if( e->health == 0 ) {
+                            mEnemies.deleteElement( j );
+                            }
+                        else {
+                            // redisplay health bar
+                            e->healthBarFade = 1;
+                            }
                         }
                     }
                 }
@@ -733,6 +763,12 @@ void Level::step() {
             e->stepsTilNextBullet --;
             }
         
+        if( e->healthBarFade > 0 ) {
+            e->healthBarFade -= 0.03;
+            if( e->healthBarFade < 0 ) {
+                e->healthBarFade = 0;
+                }
+            }
         }
 
 
@@ -992,6 +1028,40 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         e->sprite->draw( e->position, 1 );
+        
+        if( e->healthBarFade > 0 ) {
+            
+            doublePair pos = e->position;
+            
+            // hold at full vis until half-way through fade
+            float fade = 1;
+
+            if( e->healthBarFade < 0.5 ) {
+                // from held at 1 to sin fade out
+                fade = sin( e->healthBarFade * M_PI );
+                }
+            
+
+            setDrawColor( 0.25, 0.25, 0.25, fade );
+            drawRect( pos.x - 0.5, pos.y + 0.5, 
+                      pos.x + 0.5, pos.y + 0.25 );
+            
+            float healthFraction = e->health / 
+                (float)getEnemyMaxHealth( &( e->powers ) );
+            
+            setDrawColor( 0, 0, 0, fade );
+            drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
+                      pos.y + 0.4375, 
+                      pos.x + 0.4375, 
+                      pos.y + 0.3125 );
+            
+    
+            setDrawColor( 1, 0, 0, fade );
+            drawRect( pos.x -0.4375, 
+                      pos.y + 0.4375,
+                      pos.x - 0.4375 + 0.875 * healthFraction, 
+                      pos.y + 0.3125 );
+            }
         }
     
     
@@ -1222,14 +1292,7 @@ PowerUpSet Level::getPlayerPowers() {
 
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
     *outValue = mPlayerHealth;
-    
-    int max = 3;
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
-        if( mPlayerPowers.mPowers[i].powerType == powerUpHeart ) {
-            max += mPlayerPowers.mPowers[i].level;
-            }
-        }
-    *outMax = max;
+    *outMax = 3 + getMaxHealth( &mPlayerPowers );
     }
 
 
