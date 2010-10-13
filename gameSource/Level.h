@@ -38,6 +38,10 @@ typedef struct Enemy {
 
 
 
+
+
+
+
 typedef struct WindowPosition {
         int index;
         char isPlayer;
@@ -49,6 +53,14 @@ typedef struct GridPos {
         int x;
         int y;
     } GridPos;
+
+
+
+typedef struct PowerUpToken {
+        PowerUp power;
+        GridPos gridPosition;
+        doublePair position;
+    };
 
 
 
@@ -226,6 +238,9 @@ class Level {
 
         SimpleVector<Enemy> mEnemies;
         
+        SimpleVector<PowerUpToken> mPowerUpTokens;
+
+
         GridPos mRisePosition;
         
         char mFrozen;

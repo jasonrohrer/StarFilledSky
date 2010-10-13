@@ -21,6 +21,11 @@ void drawPowerUp( PowerUp inPower,
                   doublePair inPosition, double inFade=1 );
 
 
+PowerUp getRandomPowerUp( int inMaxLevel );
+
+
+
+
 #define POWER_SET_SIZE 3
 #define POWER_SET_CENTERED_INDEX 1
 

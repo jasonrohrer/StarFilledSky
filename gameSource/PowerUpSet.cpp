@@ -3,6 +3,11 @@
 #include "minorGems/game/gameGraphics.h"
 
 
+#include "minorGems/util/random/CustomRandomSource.h"
+
+extern CustomRandomSource randSource;
+
+
 
 void drawPowerUpBorder( doublePair inPosition, double inFade ) {
     setDrawColor( 1, 1, 1, inFade );
@@ -38,6 +43,33 @@ void drawPowerUp( PowerUp inPower,
     }
 
 
+
+PowerUp getRandomPowerUp( int inMaxLevel ) {
+    if( inMaxLevel <= 0 ) {
+        PowerUp p = { powerUpEmpty, 0 };
+        return p;
+        }
+    else {
+        int level = randSource.getRandomBoundedInt( 0, inMaxLevel );
+                
+        spriteID powerUpType = powerUpEmpty;
+        
+        if( level > 0 ) {
+        
+            powerUpType = (spriteID)
+                randSource.getRandomBoundedInt( firstPowerUpID, 
+                                                lastPowerUpID );
+            }
+        
+        PowerUp p = { powerUpType, level };
+        
+        return p;
+        }        
+    }
+
+
+
+
 void PowerUpSet::fillDefaultSet() {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
@@ -60,6 +92,7 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
 
     // fill first FIFO slot first
     for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
+        /*
         mPowers[i].powerType = powerUpHeart;
         
         int level = 1;
@@ -76,6 +109,16 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
         
         mPowers[i].level = level;
         inTotalLevel -= level;
+        */
+
+        if( inTotalLevel / 3 > 1 ) {
+            mPowers[i] = getRandomPowerUp( inTotalLevel / 3 );
+            }
+        else {
+            mPowers[i] = getRandomPowerUp( inTotalLevel );
+            }
+        
+        inTotalLevel -= mPowers[i].level;
         }
     }
 

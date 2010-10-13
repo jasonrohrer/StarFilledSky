@@ -565,6 +565,70 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
         }
     
 
+    
+    int powerUpMaxLevel = mLevelNumber / 3;
+
+    for( int i=0; i<10; i++ ) {
+
+        // pick random floor spot until found one not on rise marker
+        // or existing power token
+        
+        int floorPick = 
+            randSource.getRandomBoundedInt( 0, mNumFloorSquares - 1 );
+        
+        char hit = false;
+        
+        int numTries = 0;
+        
+        while( ! hit && numTries < 20 ) {
+            numTries++;
+
+            
+            GridPos pickPos = mIndexToGridMap[ floorPick ];
+
+            if( mRisePosition.x != pickPos.x
+                &&
+                mRisePosition.y != pickPos.y ) {
+                
+                
+                hit = true;
+                
+                int numExisting = mPowerUpTokens.size();
+                
+                for( int j=0; j<numExisting && hit; j++ ) {
+                    PowerUpToken *p = mPowerUpTokens.getElement( j );
+                    
+                    if( p->gridPosition.x == pickPos.x
+                        &&
+                        p->gridPosition.y == pickPos.y ) {
+                        
+                        hit = false;
+                        }
+                    }
+                }
+
+            if( hit ) {
+                
+                doublePair worldPos = 
+                    sGridWorldSpots[ pickPos.y ][ pickPos.x ];
+
+                PowerUpToken t = { getRandomPowerUp( powerUpMaxLevel ), 
+                                   pickPos,
+                                   worldPos };
+                
+                mPowerUpTokens.push_back( t );
+                }
+            else {
+                // try new pick
+                floorPick = 
+                    randSource.getRandomBoundedInt( 0, mNumFloorSquares - 1 );
+                }
+            }
+        
+        }
+
+
+
     mLastEnterPointSprite = &mPlayerSprite;
     mLastEnterPointPowers = mPlayerPowers;
     }
@@ -1001,6 +1065,15 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                   c->g,
                   c->b, 1 );
     drawSprite( riseMarker, riseSpot );
+
+
+    // draw power-ups
+    for( i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+        drawPowerUp( p->power, p->position );        
+        }
+    
     
 
     // draw bullets

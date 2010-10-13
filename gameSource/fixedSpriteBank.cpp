@@ -5,6 +5,10 @@
 static SpriteHandle spriteBank[ 100 ];
 
 
+int firstPowerUpID = powerUpEmpty;
+int lastPowerUpID = powerUpHeart;
+
+
 
 void initSpriteBank() {
     spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );

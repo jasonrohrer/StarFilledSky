@@ -10,6 +10,8 @@ void initSpriteBank();
 void freeSpriteBank();
 
 
+
+
 enum spriteID { riseMarker = 0,
                 riseIcon,
                 crosshair,
@@ -19,6 +21,10 @@ enum spriteID { riseMarker = 0,
                 powerUpEmpty,
                 powerUpHeart,
                 endSpriteID };                
+
+extern int firstPowerUpID;
+extern int lastPowerUpID;
+
 
 
 void drawSprite( spriteID inID, doublePair inCenter );
