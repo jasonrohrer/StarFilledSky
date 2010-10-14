@@ -118,7 +118,13 @@ class Level {
         
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         char isPlayer( doublePair inPos  );
+      
+        char isPowerUp( doublePair inPos );
+        // removes it from world
+        PowerUp getPowerUp( doublePair inPos );
         
+
+
         ColorScheme getLevelColors();
         
         
@@ -129,7 +135,7 @@ class Level {
         
         BorderSprite *getLastEnterPointSprite();
         
-        PowerUpSet getLastEnterPointPowers();
+        PowerUpSet *getLastEnterPointPowers();
 
 
         PlayerSprite *getPlayerSprite();
@@ -269,7 +275,7 @@ class Level {
         
 
         BorderSprite *mLastEnterPointSprite;
-        PowerUpSet mLastEnterPointPowers;
+        PowerUpSet *mLastEnterPointPowers;
         
     };
 

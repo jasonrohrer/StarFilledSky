@@ -435,8 +435,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( inLevelNumber - 1 ),
-          mLastEnterPointPowers( inLevelNumber - 1 ) {
+          mPlayerPowers( inLevelNumber - 1 ) {
 
     int health, max;
     getPlayerHealth( &health, &max );
@@ -566,7 +565,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     
 
     
-    int powerUpMaxLevel = mLevelNumber / 3;
+    int powerUpMaxLevel = mLevelNumber / POWER_SET_SIZE;
 
     for( int i=0; i<10; i++ ) {
 
@@ -630,7 +629,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
 
     mLastEnterPointSprite = &mPlayerSprite;
-    mLastEnterPointPowers = mPlayerPowers;
+    mLastEnterPointPowers = &mPlayerPowers;
     }
 
 
@@ -1304,6 +1303,40 @@ char Level::isPlayer( doublePair inPos ) {
     }
 
 
+
+char Level::isPowerUp( doublePair inPos ) {
+    for( int j=0; j<mPowerUpTokens.size(); j++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( j );
+        
+        if( distance( t->position, inPos ) < 0.5 ) {
+            return true;
+            }
+        }
+    return false;    
+    }
+
+
+PowerUp Level::getPowerUp( doublePair inPos ) {
+    for( int j=0; j<mPowerUpTokens.size(); j++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( j );
+        
+        if( distance( t->position, inPos ) < 0.5 ) {
+            
+            PowerUp p = t->power;
+            
+            mPowerUpTokens.deleteElement( j );
+            
+            return p;
+            }
+        }
+    
+    printf( "WARNING:  Level::getPowerUp failed\n" );
+    return getRandomPowerUp( mLevelNumber / POWER_SET_SIZE );
+    }
+
+
+
+
 ColorScheme Level::getLevelColors() {
     return mColors;
     }
@@ -1315,7 +1348,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     switch( inType ) {
         case 0: {
             mLastEnterPointSprite = &mPlayerSprite;
-            mLastEnterPointPowers = mPlayerPowers;
+            mLastEnterPointPowers = &mPlayerPowers;
             return mPlayerSprite.getColors();
             }
             break;
@@ -1326,7 +1359,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 Enemy *e = mEnemies.getElement( i );
                 
                 mLastEnterPointSprite = e->sprite;
-                mLastEnterPointPowers = e->powers;
+                mLastEnterPointPowers = &( e->powers );
                 
                 return mEnemies.getElement( i )->sprite->getColors();
                 }
@@ -1347,7 +1380,7 @@ BorderSprite *Level::getLastEnterPointSprite() {
 
 
 
-PowerUpSet Level::getLastEnterPointPowers() {
+PowerUpSet *Level::getLastEnterPointPowers() {
     return mLastEnterPointPowers;
     }
 

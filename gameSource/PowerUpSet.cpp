@@ -141,10 +141,13 @@ void PowerUpSet::pushPower( PowerUp inPower ) {
 void PowerUpSet::drawSet( doublePair inPosition ) {
     int centerIndex = POWER_SET_CENTERED_INDEX;
     
+    
+    
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         doublePair drawPos = inPosition;
         drawPos.x += ( i - centerIndex ) * 1.125;
         
+        setDrawColor( 1, 1, 1, 1 );
         drawSprite( powerUpSlot, drawPos );
 
         drawPowerUp( mPowers[i], drawPos );

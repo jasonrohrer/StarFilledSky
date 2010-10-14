@@ -271,6 +271,35 @@ static void confineMouseOnScreen() {
 
 
 
+
+static Level *getNextAbove() {
+    Level *nextAbove;
+
+    if( lastLevel != NULL ) {
+        
+        if( zoomDirection == 1 && levelRiseStack.size() > 1 ) {
+            nextAbove = 
+                *( levelRiseStack.getElement( levelRiseStack.size() - 2 ) );
+            }
+        else {
+            nextAbove = lastLevel;
+            }
+        }
+    else if( levelRiseStack.size() > 0 ) {    
+        nextAbove = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        }
+    else {
+        // draw SOMETHING for now while we wait for next level to be 
+        // populated
+        nextAbove = currentLevel;
+        }
+
+    return nextAbove;
+    }
+
+
+
 // used to keep level rise stack populated without a visible frame hiccup
 // hide the hiccup right after the final freeze frame of the level
 // we're rising into
@@ -420,7 +449,17 @@ void drawFrame() {
 
 
 
+    if( currentLevel->isPowerUp( playerPos ) ) {
+        
+        PowerUp p = currentLevel->getPowerUp( playerPos );
+        
+        Level *nextAbove = getNextAbove();
+        
+        PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
+        s->pushPower( p );
+        }
+    
 
     
     
@@ -827,27 +866,8 @@ void drawFrame() {
     delete [] levelString;
 
 
-    Level *nextAbove;
+    Level *nextAbove = getNextAbove();
     
-    if( lastLevel != NULL ) {
-        
-        if( zoomDirection == 1 && levelRiseStack.size() > 1 ) {
-            nextAbove = 
-                *( levelRiseStack.getElement( levelRiseStack.size() - 2 ) );
-            }
-        else {
-            nextAbove = lastLevel;
-            }
-        }
-    else if( levelRiseStack.size() > 0 ) {    
-        nextAbove = 
-            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
-        }
-    else {
-        // draw SOMETHING for now while we wait for next level to be 
-        // populated
-        nextAbove = currentLevel;
-        }
         
         
 
@@ -866,16 +886,14 @@ void drawFrame() {
     drawSprite( riseIcon, markerPos );
     
     
-    PowerUpSet p = nextAbove->getLastEnterPointPowers();
+    PowerUpSet *p = nextAbove->getLastEnterPointPowers();
     doublePair setPos = spritePos;
     setPos.x += 2.25;
 
-    p.drawSet( setPos );
+    p->drawSet( setPos );
     
 
     
-    PowerUpSet playerPowers;
-        
     Level *levelToGetCurrentFrom;
     if( lastLevel != NULL && zoomDirection == 1 ) {
         levelToGetCurrentFrom = lastLevel;
@@ -885,11 +903,11 @@ void drawFrame() {
         }
     
     
-    p = levelToGetCurrentFrom->getPlayerPowers();
+    PowerUpSet playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
 
-    p.drawSet( setPos );
+    playerPowers.drawSet( setPos );
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
 
