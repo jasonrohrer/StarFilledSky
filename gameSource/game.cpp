@@ -612,10 +612,16 @@ void drawFrame() {
             double mouseDist = distance( mousePos, playerPos );
             doublePair bulletVelocity = sub( mousePos, playerPos );
             
-            // normalize
-            bulletVelocity.x /= mouseDist;
-            bulletVelocity.y /= mouseDist;
-            
+            if( mouseDist > 0 ) {                
+                // normalize
+                bulletVelocity.x /= mouseDist;
+                bulletVelocity.y /= mouseDist;
+                }
+            else {
+                bulletVelocity.x = 0;
+                bulletVelocity.y = 1;
+                }            
+
             // set speed
             bulletVelocity.x *= bulletSpeed;
             bulletVelocity.y *= bulletSpeed;

@@ -702,68 +702,80 @@ void Level::step() {
         b->position = add( b->position, b->velocity );
         
         
-        // light up square passing over (or wall hit)
         GridPos p = getGridPos( b->position );
-            
-        int squareIndex = mSquareIndices[p.y][p.x];
-        
-        mColorMix[ squareIndex ] = 1;
-        
+
 
         char hit = false;
 
-        if( isWall( b->position ) ) {
-            hit = true;
 
-            // jump to hard when hit, then fade out
-            mGridColors[ squareIndex ] = mHardGridColors[ squareIndex ];
+        // first make sure it's in bounds of sparse world tiles
+        
+        if( mWallFlags[p.y][p.x] == 0 ) {
+            // bullet has escaped out of bounds, kill it
+            hit = true;
             }
         else {
-            // color floor
+            // in bounds of tiles, safe to look up square index
+            int squareIndex = mSquareIndices[p.y][p.x];
 
-            // more subtle than wall hit.... jump to soft?
-            mGridColors[ squareIndex ] = mSoftGridColors[ squareIndex ];
-            
-            
-            if( b->playerFlag ) {
-                // check if hit enemy
-                
-                for( int j=0; j<mEnemies.size() && !hit; j++ ) {
-                    Enemy *e = mEnemies.getElement( j );
-                    
-                    if( distance( e->position, b->position ) < 0.4 ) {
-                        hit = true;
+            // light up square passing over (or wall hit)
 
-                        // make sure enemy health is up-to-date
-                        // (its power-ups may have been modified)
-                        int maxHealth = getEnemyMaxHealth( &( e->powers ) );
-                        
-                        if( e->health > maxHealth ) {
-                            e->health = maxHealth;
-                            }
+            mColorMix[ squareIndex ] = 1;
 
-                        e->health --;
-                        if( e->health == 0 ) {
-                            mEnemies.deleteElement( j );
-                            }
-                        else {
-                            // redisplay health bar
-                            e->healthBarFade = 1;
-                            }
-                        }
-                    }
+            if( isWall( b->position ) ) {
+                hit = true;
+
+                // jump to hard when hit, then fade out
+                mGridColors[ squareIndex ] = mHardGridColors[ squareIndex ];
                 }
             else {
-                // check if hit player
-                if( distance( mPlayerPos, b->position ) < 0.4 ) {
-                    hit = true;
-                    mPlayerHealth -= 1;
-                    if( mPlayerHealth < 0 ) {
-                        mPlayerHealth = 0;
+                // color floor
+
+                // more subtle than wall hit.... jump to soft?
+                mGridColors[ squareIndex ] = mSoftGridColors[ squareIndex ];
+            
+            
+                if( b->playerFlag ) {
+                    // check if hit enemy
+                
+                    for( int j=0; j<mEnemies.size() && !hit; j++ ) {
+                        Enemy *e = mEnemies.getElement( j );
+                    
+                        if( distance( e->position, b->position ) < 0.4 ) {
+                            hit = true;
+
+                            // make sure enemy health is up-to-date
+                            // (its power-ups may have been modified)
+                            int maxHealth = 
+                                getEnemyMaxHealth( &( e->powers ) );
+                        
+                            if( e->health > maxHealth ) {
+                                e->health = maxHealth;
+                                }
+
+                            e->health --;
+                            if( e->health == 0 ) {
+                                mEnemies.deleteElement( j );
+                                }
+                            else {
+                                // redisplay health bar
+                                e->healthBarFade = 1;
+                                }
+                            }
                         }
                     }
-                }
+                else {
+                    // check if hit player
+                    if( distance( mPlayerPos, b->position ) < 0.4 ) {
+                        hit = true;
+                        mPlayerHealth -= 1;
+                        if( mPlayerHealth < 0 ) {
+                            mPlayerHealth = 0;
+                            }
+                        }
+                    }
             
+                }
             }
         
 
@@ -816,10 +828,16 @@ void Level::step() {
             double playerDist = distance( mPlayerPos, e->position );
             doublePair bulletVelocity = sub( mPlayerPos, e->position );
             
-            // normalize
-            bulletVelocity.x /= playerDist;
-            bulletVelocity.y /= playerDist;
-            
+            if( playerDist > 0 ) {    
+                // normalize
+                bulletVelocity.x /= playerDist;
+                bulletVelocity.y /= playerDist;
+                }
+            else {
+                bulletVelocity.x = 0;
+                bulletVelocity.y = 1;
+                }            
+
             // set speed
             bulletVelocity.x *= enemyBulletSpeed;
             bulletVelocity.y *= enemyBulletSpeed;
