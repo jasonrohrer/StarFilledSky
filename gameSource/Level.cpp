@@ -734,6 +734,14 @@ void Level::step() {
                     if( distance( e->position, b->position ) < 0.4 ) {
                         hit = true;
 
+                        // make sure enemy health is up-to-date
+                        // (its power-ups may have been modified)
+                        int maxHealth = getEnemyMaxHealth( &( e->powers ) );
+                        
+                        if( e->health > maxHealth ) {
+                            e->health = maxHealth;
+                            }
+
                         e->health --;
                         if( e->health == 0 ) {
                             mEnemies.deleteElement( j );
