@@ -2,6 +2,8 @@
 #define POWER_UP_SET_INCLUDED
 
 
+#include "minorGems/util/SimpleVector.h"
+
 
 #include "fixedSpriteBank.h"
 
@@ -28,6 +30,16 @@ PowerUp getRandomPowerUp( int inMaxLevel );
 
 #define POWER_SET_SIZE 3
 #define POWER_SET_CENTERED_INDEX 1
+
+
+typedef struct powerPushRecord {
+        
+        double pushProgress;
+        PowerUp powerToPush;
+        doublePair pushStartOffset;
+    } powerPushRecord;
+
+
 
 class PowerUpSet {
         
@@ -60,6 +72,11 @@ class PowerUpSet {
         
         doublePair mLastDrawPos;
 
+
+        // FIXME:  do something with this
+        SimpleVector< powerPushRecord > mPushStack;
+        
+        
         char mPushing;
         double mPushProgress;
         PowerUp mPowerToPush;
