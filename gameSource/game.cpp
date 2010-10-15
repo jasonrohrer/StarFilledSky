@@ -123,6 +123,7 @@ typedef struct LevelPositionInfo {
         doublePair playerPos;
         doublePair lastScreenViewCenter;
         doublePair entryPosition;
+        itemType entryType;
         doublePair mousePos;
     } LevelPositionInfo;
 
@@ -155,7 +156,7 @@ static void populateLevelRiseStack() {
         
         // center player in symmetrical level
         LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, {-0.5, 0} };
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0} };
         levelRisePositionInfoStack.push_back( info );
         }
     }
@@ -368,7 +369,7 @@ void drawFrame() {
             // enemy or player is entry position
             LevelPositionInfo info = 
                 { playerPos, lastScreenViewCenter, 
-                  enteringPos, mousePos };
+                  enteringPos, enteringType, mousePos };
             levelRisePositionInfoStack.push_back( info );
 
             lastLevel = currentLevel;
@@ -692,7 +693,8 @@ void drawFrame() {
     
         drawSquare( center, viewSize );
 
-        lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition );
+        lastLevel->setItemWindowPosition( lastLevelPosition.entryPosition,
+                                          lastLevelPosition.entryType );
         lastLevel->drawLevel( center, viewSize );
         stencilDrawn = true;
         

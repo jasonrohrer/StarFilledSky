@@ -110,7 +110,8 @@ class Level {
         // on the next call to drawLevel
         // this will be set up as a pass-through stencil that will filter
         // all drawing after drawLevel until stopStencil is called
-        void setItemWindowPosition( doublePair inPosition );
+        void setItemWindowPosition( doublePair inPosition, 
+                                    itemType inType );
         
         // after drawing through stencil, call this to draw item body shade 
         // on top.

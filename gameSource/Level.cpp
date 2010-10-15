@@ -689,20 +689,20 @@ void Level::setEnteringMouse( char inEntering ) {
 
 
 
-void Level::setItemWindowPosition( doublePair inPosition ) {
+void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
     int index;
 
-    if( isEnemy( inPosition, &index ) ) {
+    if( inType == enemy && isEnemy( inPosition, &index ) ) {
         mWindowSet = true;
         mWindowPosition.index = index;
         mWindowPosition.type = enemy;
         }
-    else if( isPowerUp( inPosition, &index ) ) {
+    else if( inType == power && isPowerUp( inPosition, &index ) ) {
         mWindowSet = true;
         mWindowPosition.index = index;
         mWindowPosition.type = power;
         }
-    else if( isPlayer( inPosition ) ) {
+    else if( inType == player && isPlayer( inPosition ) ) {
         mWindowSet = true;
         mWindowPosition.type = player;
         }
