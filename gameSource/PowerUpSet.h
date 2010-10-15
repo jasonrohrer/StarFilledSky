@@ -41,7 +41,7 @@ class PowerUpSet {
         PowerUpSet( int inTotalLevel );
 
 
-        void pushPower( PowerUp inPower );
+        void pushPower( PowerUp inPower, doublePair inPowerPos );
         
 
         void drawSet( doublePair inPosition );
@@ -58,8 +58,17 @@ class PowerUpSet {
         
         void fillDefaultSet();
         
+        doublePair mLastDrawPos;
+
+        char mPushing;
+        double mPushProgress;
+        PowerUp mPowerToPush;
+        doublePair mPushStartOffset;
+        
+        
         
     };
+
 
 
 #endif

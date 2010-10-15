@@ -87,6 +87,12 @@ PowerUpSet::PowerUpSet() {
 
 
 PowerUpSet::PowerUpSet( int inTotalLevel ) {
+    
+    mLastDrawPos.x = 0;
+    mLastDrawPos.y = 0;
+    
+    mPushing = false;
+    
 
     fillDefaultSet();
     
@@ -110,12 +116,20 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
 
     
 
-void PowerUpSet::pushPower( PowerUp inPower ) {
+void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
+    
+    mPushing = true;
+    mPushProgress = 0;
+    mPowerToPush = inPower;
+    mPushStartOffset = sub( inPowerPos, mLastDrawPos );
+    
+    /*
     for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
         mPowers[i] = mPowers[i+1];
         }
 
     mPowers[ POWER_SET_SIZE - 1 ] = inPower;
+    */
     }
 
 
@@ -124,17 +138,79 @@ void PowerUpSet::pushPower( PowerUp inPower ) {
 void PowerUpSet::drawSet( doublePair inPosition ) {
     int centerIndex = POWER_SET_CENTERED_INDEX;
     
-    
-    
+    double slotSize = 1.125;
+
+    // draw slots first, under everything
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         doublePair drawPos = inPosition;
-        drawPos.x += ( i - centerIndex ) * 1.125;
+        drawPos.x += ( i - centerIndex ) * slotSize;
         
         setDrawColor( 1, 1, 1, 1 );
         drawSprite( powerUpSlot, drawPos );
+        } 
+
+
+    
+    
+    if( mPushing ) {
+
+        doublePair startPos = add( inPosition, mPushStartOffset );
+        
+
+        doublePair destPos = inPosition;
+        // push into last slot
+        destPos.x += slotSize;
+        
+        doublePair curPos;
+
+        curPos.x = destPos.x * mPushProgress + 
+            startPos.x * (1-mPushProgress);
+        
+        curPos.y = destPos.y * mPushProgress + 
+            startPos.y * (1-mPushProgress);
+        
+        drawPowerUp( mPowerToPush, curPos );
+
+
+        
+
+        // scoot rest over
+        inPosition.x -= mPushProgress * slotSize;
+
+        mPushProgress += 0.1;
+        if( mPushProgress >= 1 ) {
+            mPushing = false;
+
+            // actually stick into our last slot and discard first slot
+            for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
+                mPowers[i] = mPowers[i+1];
+                }
+            
+            mPowers[ POWER_SET_SIZE - 1 ] = mPowerToPush;
+
+            }
+        
+        }
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        doublePair drawPos = inPosition;
+        drawPos.x += ( i - centerIndex ) * slotSize;
+        
+        setDrawColor( 1, 1, 1, 1 );
 
         drawPowerUp( mPowers[i], drawPos );
         } 
+
+    
+    
+
+
+    mLastDrawPos = inPosition;
+
+    
+    
+
+
     }
 
 

@@ -468,7 +468,7 @@ void drawFrame() {
         
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
-        s->pushPower( p );
+        s->pushPower( p, playerPos );
         }
     
 
