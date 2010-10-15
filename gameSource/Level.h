@@ -7,6 +7,7 @@
 #include "TileSet.h"
 #include "ColorScheme.h"
 #include "PowerUpSet.h"
+#include "PowerUpSprite.h"
 
 
 #define MAX_LEVEL_W  400
@@ -65,6 +66,8 @@ typedef struct PowerUpToken {
         PowerUp power;
         GridPos gridPosition;
         doublePair position;
+        PowerUpSprite *sprite;
+        PowerUpSet subPowers;
     };
 
 
@@ -137,7 +140,7 @@ class Level {
         // 0 player
         // 1 enemy
         ColorScheme getEnteringPointColors( doublePair inPosition,
-                                            int inType );
+                                            itemType inType );
         
         BorderSprite *getLastEnterPointSprite();
         

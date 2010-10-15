@@ -71,6 +71,32 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
     }
 
 
+
+void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
+    // primaries are saturated
+    float primarySaturation = randSource.getRandomBoundedDouble( 0.85, 1 );
+    
+    // dark
+    float primaryValue = randSource.getRandomBoundedDouble( 0.45, 0.65 );
+
+
+    primary = makeColorSet( inPrimaryHue, primarySaturation,
+                            primaryValue );
+
+
+    
+    // secondaries are less saturated
+    float secondarySaturation = randSource.getRandomBoundedDouble( 0.25, 
+                                                                   0.45 );
+
+    // brighter
+    float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.85 );
+
+    secondary = makeColorSet( inSecondaryHue, secondarySaturation,
+                              secondaryValue );
+    
+    }
+
     
 
 ColorScheme::ColorScheme() {
@@ -81,18 +107,6 @@ ColorScheme::ColorScheme() {
             float inAlpha=1, char inBuildComposite=false );
     */
     float primaryCenterHue = randSource.getRandomFloat();
-    
-    
-    // primaries are saturated
-    float primarySaturation = randSource.getRandomBoundedDouble( 0.85, 1 );
-    
-    // dark
-    float primaryValue = randSource.getRandomBoundedDouble( 0.45, 0.65 );
-
-
-    primary = makeColorSet( primaryCenterHue, primarySaturation,
-                            primaryValue );
-
 
     // complement
     float secondaryCenterHue = primaryCenterHue + 0.5;
@@ -100,15 +114,14 @@ ColorScheme::ColorScheme() {
     if( secondaryCenterHue > 1 ) {
         secondaryCenterHue -= 1;
         }
-    
-    // secondaries are less saturated
-    float secondarySaturation = randSource.getRandomBoundedDouble( 0.25, 
-                                                                   0.45 );
 
-    // brighter
-    float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.85 );
-
-    secondary = makeColorSet( secondaryCenterHue, secondarySaturation,
-                              secondaryValue );
+    populateScheme( primaryCenterHue, secondaryCenterHue );
     }
+
+
+
+ColorScheme::ColorScheme( float inPrimaryHue, float inSecondaryHue ) {
+    populateScheme( inPrimaryHue, inSecondaryHue );
+    }
+
 

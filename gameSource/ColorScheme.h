@@ -16,13 +16,20 @@ typedef struct colorSet {
 
 class ColorScheme {
     
-    public:    
+    public:   
+        // random color scheme
         ColorScheme();
         
+        // color scheme based on two given hues 
+        ColorScheme( float inPrimaryHue, float inSecondaryHue );
+       
 
         colorSet primary;
         colorSet secondary;
         
+    protected:
+        void populateScheme( float inPrimaryHue, float inSecondaryHue );
+
     };
 
 

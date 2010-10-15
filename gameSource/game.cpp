@@ -385,7 +385,8 @@ void drawFrame() {
             ColorScheme c = 
                 currentLevel->getEnteringPointColors( mousePos, enteringType );
 
-            char symmetrical = ( enteringType == 0 );
+            char symmetrical = ( enteringType == player || 
+                                 enteringType == power );
             
             currentLevel = new Level( NULL, &c, levelNumber - 1,
                                       symmetrical );

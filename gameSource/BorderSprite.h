@@ -13,11 +13,11 @@ class BorderSprite {
 
         virtual ~BorderSprite();
         
-        void drawBorder( doublePair inPosition, double inFade = 1 );
+        virtual void drawBorder( doublePair inPosition, double inFade = 1 );
         
-        void drawCenter( doublePair inPosition, double inFade = 1 );
+        virtual void drawCenter( doublePair inPosition, double inFade = 1 );
         
-        void draw( doublePair inPosition, double inFade = 1 );
+        virtual void draw( doublePair inPosition, double inFade = 1 );
 
         
 

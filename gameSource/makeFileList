@@ -21,7 +21,7 @@ EnemySprite.cpp \
 Font.cpp \
 PowerUpSet.cpp \
 numerals.cpp \
-
+PowerUpSprite.cpp \
 
 
 GAME_GRAPHICS = \

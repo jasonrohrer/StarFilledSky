@@ -611,9 +611,19 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 doublePair worldPos = 
                     sGridWorldSpots[ pickPos.y ][ pickPos.x ];
 
-                PowerUpToken t = { getRandomPowerUp( powerUpMaxLevel ), 
+                PowerUp mainPower = getRandomPowerUp( powerUpMaxLevel );
+                
+
+                PowerUpSet subPowers( 
+                    ( mainPower.level / POWER_SET_SIZE ) );
+                
+
+
+                PowerUpToken t = { mainPower,
                                    pickPos,
-                                   worldPos };
+                                   worldPos,
+                                   new PowerUpSprite( mainPower ),
+                                   subPowers };
                 
                 mPowerUpTokens.push_back( t );
                 }
@@ -641,6 +651,11 @@ Level::~Level() {
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         delete e->sprite;
+        }
+
+    for( int i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( i );
+        delete t->sprite;
         }
     }
 
@@ -1407,15 +1422,15 @@ ColorScheme Level::getLevelColors() {
 
 
 ColorScheme Level::getEnteringPointColors( doublePair inPosition,
-                                           int inType ) {
+                                           itemType inType ) {
     switch( inType ) {
-        case 0: {
+        case player: {
             mLastEnterPointSprite = &mPlayerSprite;
             mLastEnterPointPowers = &mPlayerPowers;
             return mPlayerSprite.getColors();
             }
             break;
-        case 1: {
+        case enemy: {
             int i;
     
             if( isEnemy( inPosition, &i ) ) {
@@ -1424,10 +1439,23 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 mLastEnterPointSprite = e->sprite;
                 mLastEnterPointPowers = &( e->powers );
                 
-                return mEnemies.getElement( i )->sprite->getColors();
+                return e->sprite->getColors();
                 }
             }
             break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                PowerUpToken *t = mPowerUpTokens.getElement( i );
+                
+                mLastEnterPointSprite = t->sprite;
+                mLastEnterPointPowers = &( t->subPowers );
+                
+                return t->sprite->getColors();
+                }
+            }
+            break;            
         }
     
     // default
