@@ -138,3 +138,17 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
     }
 
 
+
+int PowerUpSet::getLevelSum( spriteID inPowerUpType ) {
+    int sum = 0;
+
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType == inPowerUpType ) {
+            
+            sum += mPowers[i].level;
+            }
+        }
+    return sum;
+    }
+
+

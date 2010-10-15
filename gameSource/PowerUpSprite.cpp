@@ -26,8 +26,8 @@ static ColorScheme getScheme( spriteID inPowerType ) {
     
 
 
-PowerUpSprite::PowerUpSprite( PowerUp inPower )
-        : mPower( inPower ), 
+PowerUpSprite::PowerUpSprite( PowerUp inPower, PowerUpSet *inSubPowers )
+        : mPower( inPower ), mSubPowers( inSubPowers ), 
           mColors( getScheme( inPower.powerType ) )  {
     
 
@@ -41,11 +41,15 @@ void PowerUpSprite::drawBorder( doublePair inPosition, double inFade ) {
 
 
 void PowerUpSprite::drawCenter( doublePair inPosition, double inFade ) {
+    mPower.level = mSubPowers->getLevelSum( mPower.powerType );
+
     drawPowerUpCenter( mPower, inPosition, inFade );
     }
 
         
 void PowerUpSprite::draw( doublePair inPosition, double inFade ) {
+    mPower.level = mSubPowers->getLevelSum( mPower.powerType );
+
     drawPowerUp( mPower, inPosition, inFade );
     }
 

@@ -46,6 +46,10 @@ class PowerUpSet {
 
         void drawSet( doublePair inPosition );
         
+        
+        // sum of powers in set that match a type
+        int getLevelSum( spriteID inPowerUpType );
+        
 
 
         PowerUp mPowers[ POWER_SET_SIZE ];

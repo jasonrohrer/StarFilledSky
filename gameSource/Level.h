@@ -32,7 +32,7 @@ typedef struct Enemy {
         int stepsBetweenBullets;
         int stepsTilNextBullet;
         EnemySprite *sprite;
-        PowerUpSet powers;
+        PowerUpSet *powers;
         int health;
         float healthBarFade;
     } Enemy;
@@ -67,7 +67,7 @@ typedef struct PowerUpToken {
         GridPos gridPosition;
         doublePair position;
         PowerUpSprite *sprite;
-        PowerUpSet subPowers;
+        PowerUpSet *subPowers;
     };
 
 

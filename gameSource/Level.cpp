@@ -529,13 +529,13 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 doublePair a = { 0, 0 };
                 
 
-                PowerUpSet p( mLevelNumber - 1 );
+                PowerUpSet *p = new PowerUpSet( mLevelNumber - 1 );
                 
                 Enemy e = { spot, v, a, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
                             p,
-                            getEnemyMaxHealth( &p ) };
+                            getEnemyMaxHealth( p ) };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -615,14 +615,15 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 
 
                 // powers must sum to main power
-                PowerUpSet subPowers( mainPower.level );
+                PowerUpSet *subPowers = new PowerUpSet( mainPower.level );
                 
 
 
                 PowerUpToken t = { mainPower,
                                    pickPos,
                                    worldPos,
-                                   new PowerUpSprite( mainPower ),
+                                   new PowerUpSprite( mainPower, 
+                                                      subPowers ),
                                    subPowers };
                 
                 mPowerUpTokens.push_back( t );
@@ -651,11 +652,13 @@ Level::~Level() {
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         delete e->sprite;
+        delete e->powers;
         }
 
     for( int i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( i );
         delete t->sprite;
+        delete t->subPowers;
         }
     }
 
@@ -766,7 +769,7 @@ void Level::step() {
                             // make sure enemy health is up-to-date
                             // (its power-ups may have been modified)
                             int maxHealth = 
-                                getEnemyMaxHealth( &( e->powers ) );
+                                getEnemyMaxHealth( e->powers );
                         
                             if( e->health > maxHealth ) {
                                 e->health = maxHealth;
@@ -1164,7 +1167,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                       pos.x + 0.5, pos.y + 0.25 );
             
             float healthFraction = e->health / 
-                (float)getEnemyMaxHealth( &( e->powers ) );
+                (float)getEnemyMaxHealth( e->powers );
             
             setDrawColor( 0, 0, 0, fade );
             drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
@@ -1437,7 +1440,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 Enemy *e = mEnemies.getElement( i );
                 
                 mLastEnterPointSprite = e->sprite;
-                mLastEnterPointPowers = &( e->powers );
+                mLastEnterPointPowers = e->powers;
                 
                 return e->sprite->getColors();
                 }
@@ -1450,7 +1453,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 PowerUpToken *t = mPowerUpTokens.getElement( i );
                 
                 mLastEnterPointSprite = t->sprite;
-                mLastEnterPointPowers = &( t->subPowers );
+                mLastEnterPointPowers = t->subPowers;
                 
                 return t->sprite->getColors();
                 }
@@ -1481,7 +1484,7 @@ int Level::getEnteringPointSubLevel( doublePair inPosition,
                 int powerSum = 0;
                 for( int j=0; j<POWER_SET_SIZE; j++ ) {
                     
-                    powerSum += e->powers.mPowers[j].level;
+                    powerSum += e->powers->mPowers[j].level;
                     }
                 return powerSum;
                 }
