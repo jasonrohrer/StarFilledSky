@@ -641,6 +641,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
     mLastEnterPointSprite = &mPlayerSprite;
     mLastEnterPointPowers = &mPlayerPowers;
+    
+    mLastEnterPointPowerTokenIndex = -1;
     }
 
 
@@ -950,7 +952,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     if( !mFrozen ) {
         step();
         }
+    else {
+        // frozen, but keep any token that was sub-level entry point updated
+        
+        if( mLastEnterPointPowerTokenIndex != -1 ) {
+            PowerUpToken *t = mPowerUpTokens.getElement( 
+                mLastEnterPointPowerTokenIndex );
+            
+            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+            }
+        }
     
+        
+
+
     int i;
     
     //mTileSet.startDrawingWalls();
@@ -1430,6 +1445,8 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
         case player: {
             mLastEnterPointSprite = &mPlayerSprite;
             mLastEnterPointPowers = &mPlayerPowers;
+            mLastEnterPointPowerTokenIndex = -1;
+            
             return mPlayerSprite.getColors();
             }
             break;
@@ -1441,7 +1458,8 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 
                 mLastEnterPointSprite = e->sprite;
                 mLastEnterPointPowers = e->powers;
-                
+                mLastEnterPointPowerTokenIndex = -1;
+
                 return e->sprite->getColors();
                 }
             }
@@ -1454,7 +1472,8 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 
                 mLastEnterPointSprite = t->sprite;
                 mLastEnterPointPowers = t->subPowers;
-                
+                mLastEnterPointPowerTokenIndex = i;
+
                 return t->sprite->getColors();
                 }
             }

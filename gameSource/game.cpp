@@ -196,7 +196,7 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     initNumerals( "numerals.tga" );
     
 
-    currentLevel = new Level();
+    currentLevel = new Level( NULL, NULL, levelNumber );
     
     populateLevelRiseStack();
     

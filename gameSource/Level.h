@@ -296,6 +296,10 @@ class Level {
         BorderSprite *mLastEnterPointSprite;
         PowerUpSet *mLastEnterPointPowers;
         
+        // -1 if last enter point was not a power token
+        int mLastEnterPointPowerTokenIndex;
+        
+
     };
 
         
