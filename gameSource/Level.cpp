@@ -676,16 +676,20 @@ void Level::setEnteringMouse( char inEntering ) {
 
 void Level::setItemWindowPosition( doublePair inPosition ) {
     int index;
-    char found = isEnemy( inPosition, &index );
-    
-    if( found ) {
+
+    if( isEnemy( inPosition, &index ) ) {
         mWindowSet = true;
         mWindowPosition.index = index;
-        mWindowPosition.isPlayer = false;
+        mWindowPosition.type = enemy;
+        }
+    else if( isPowerUp( inPosition, &index ) ) {
+        mWindowSet = true;
+        mWindowPosition.index = index;
+        mWindowPosition.type = power;
         }
     else if( isPlayer( inPosition ) ) {
         mWindowSet = true;
-        mWindowPosition.isPlayer = true;
+        mWindowPosition.type = player;
         }
     }
 
@@ -1169,17 +1173,23 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     // window for zoom
     // use whole sprite, with border, as window
     // draw border on top as part of shade
-    if( mWindowSet && ! mWindowPosition.isPlayer ) {
+    if( mWindowSet && mWindowPosition.type == enemy ) {
         startAddingToStencil( false, true );
         Enemy *e = mEnemies.getElement( mWindowPosition.index );
         e->sprite->draw( e->position, 1 );
         }
-    else if( mWindowSet && mWindowPosition.isPlayer ) {
+    else if( mWindowSet && mWindowPosition.type == player ) {
         drawMouse( 1 );
         drawPlayer( 1 );
         
         startAddingToStencil( false, true );
         mPlayerSprite.draw( mPlayerPos );
+        }
+    else if( mWindowSet && mWindowPosition.type == power ) {
+        startAddingToStencil( false, true );
+        PowerUpToken *t = mPowerUpTokens.getElement( mWindowPosition.index );
+        
+        drawPowerUp( t->power, t->position, 1 );
         }
     
 
@@ -1207,16 +1217,33 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
     if( mWindowSet ) {
         stopStencil();
         
-        if( mWindowPosition.isPlayer ) {
+        if( mWindowPosition.type == player ) {
             mPlayerSprite.drawCenter( mPlayerPos, inFade );
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
             
             // mouse drawn under player
             }
-        else {    
+        else if( mWindowPosition.type == enemy ) {    
             Enemy *e = mEnemies.getElement( mWindowPosition.index );
             e->sprite->drawCenter( e->position, inFade );
             e->sprite->drawBorder( e->position, inFrameFade );
+
+
+            // mouse and player drawn on top of enemy
+            // fade these a bit sooner to get them out of the way
+            double overlieFade = (inFade - 0.63) / 0.37;
+            if( overlieFade > 0 ) {
+                drawMouse( overlieFade );
+                drawPlayer( overlieFade );
+                }
+            
+            }
+        else if( mWindowPosition.type == power ) {    
+            PowerUpToken *t = 
+                mPowerUpTokens.getElement( mWindowPosition.index );
+            
+            drawPowerUpCenter( t->power, t->position, inFade );
+            drawPowerUpBorder( t->position, inFrameFade );
 
 
             // mouse and player drawn on top of enemy
@@ -1305,6 +1332,12 @@ doublePair Level::getEnemyCenter( int inEnemyIndex ) {
     }
 
 
+doublePair Level::getPowerUpCenter( int inPowerUpIndex ) {
+    PowerUpToken *t = mPowerUpTokens.getElement( inPowerUpIndex );
+    return t->position;
+    }
+
+
 
 
 char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
@@ -1330,11 +1363,15 @@ char Level::isPlayer( doublePair inPos ) {
 
 
 
-char Level::isPowerUp( doublePair inPos ) {
+char Level::isPowerUp( doublePair inPos, int *outPowerUpIndex ) {
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
         
         if( distance( t->position, inPos ) < 0.5 ) {
+            if( outPowerUpIndex != NULL ) {
+                *outPowerUpIndex = j;
+                }
+
             return true;
             }
         }

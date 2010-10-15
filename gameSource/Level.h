@@ -40,11 +40,16 @@ typedef struct Enemy {
 
 
 
+enum itemType { player = 0,
+                enemy,
+                power };                
+
+
 
 
 typedef struct WindowPosition {
         int index;
-        char isPlayer;
+        itemType type;
     } WindowPosition;
 
 
@@ -119,7 +124,8 @@ class Level {
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         char isPlayer( doublePair inPos  );
       
-        char isPowerUp( doublePair inPos );
+        char isPowerUp( doublePair inPos, int *outPowerUpIndex = NULL );
+
         // removes it from world
         PowerUp getPowerUp( doublePair inPos );
         
@@ -153,6 +159,7 @@ class Level {
         
 
         doublePair getEnemyCenter( int inEnemyIndex );
+        doublePair getPowerUpCenter( int inPowerUpIndex );
         
 
         // freeze level step updates during drawLevel

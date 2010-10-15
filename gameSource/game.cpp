@@ -338,23 +338,28 @@ void drawFrame() {
     
     if( ( entering || playerHealth == 0 ) && lastLevel == NULL ) {
         
-        int enemyIndex;
+        int itemIndex;
         doublePair enteringPos;
         char enteringHit = false;
-        int enteringType = 0;
+        itemType enteringType = player;
         
         if( playerHealth > 0 && 
-            currentLevel->isEnemy( mousePos, &enemyIndex ) ) {
+            currentLevel->isEnemy( mousePos, &itemIndex ) ) {
             
-            enteringPos = currentLevel->getEnemyCenter( enemyIndex );
+            enteringPos = currentLevel->getEnemyCenter( itemIndex );
             enteringHit = true;
-            enteringType = 1;
+            enteringType = enemy;
             }
         else if( playerHealth == 0 ||
                  currentLevel->isPlayer( mousePos ) ) {
             enteringPos = playerPos;
             enteringHit = true;
-            enteringType = 0;
+            enteringType = player;
+            }
+        else if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
+            enteringPos = currentLevel->getPowerUpCenter( itemIndex );
+            enteringHit = true;
+            enteringType = power;
             }
         
 
