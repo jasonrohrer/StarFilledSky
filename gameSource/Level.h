@@ -142,6 +142,14 @@ class Level {
         ColorScheme getEnteringPointColors( doublePair inPosition,
                                             itemType inType );
         
+        // level number of subLevel if entered here
+        int getEnteringPointSubLevel( doublePair inPosition,
+                                      itemType inType );
+        
+        
+        int getLevelNumber();
+        
+
         BorderSprite *getLastEnterPointSprite();
         
         PowerUpSet *getLastEnterPointPowers();

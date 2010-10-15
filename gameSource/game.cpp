@@ -112,7 +112,7 @@ const char *getWindowTitle() {
     }
 
 
-int levelNumber = 0;
+int levelNumber = 1;
 
 Level *currentLevel;
 
@@ -313,7 +313,7 @@ static char lastRiseFreezeFrameDrawn = false;
 void drawFrame() {
 
     if( lastRiseFreezeFrameDrawn ) {
-        levelNumber += 1;
+        levelNumber = currentLevel->getLevelNumber();
         
         // populate stack here, in case we rise back out further
         // this prevents frame hiccups, because this happens
@@ -385,10 +385,14 @@ void drawFrame() {
             ColorScheme c = 
                 currentLevel->getEnteringPointColors( mousePos, enteringType );
 
+            int subLevelNumber =
+                currentLevel->getEnteringPointSubLevel( mousePos, 
+                                                        enteringType );
+
             char symmetrical = ( enteringType == player || 
                                  enteringType == power );
             
-            currentLevel = new Level( NULL, &c, levelNumber - 1,
+            currentLevel = new Level( NULL, &c, subLevelNumber,
                                       symmetrical );
             
             meminfo = mallinfo();
@@ -795,7 +799,7 @@ void drawFrame() {
             
             currentLevel->drawFloorEdges( true );
             
-            levelNumber -= 1;
+            levelNumber = currentLevel->getLevelNumber();
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             

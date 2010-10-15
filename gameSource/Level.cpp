@@ -1465,6 +1465,50 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
 
 
 
+int Level::getEnteringPointSubLevel( doublePair inPosition,
+                                     itemType inType ) {
+    switch( inType ) {
+        case player: {
+            return mLevelNumber - 1;
+            }
+            break;
+        case enemy: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                int powerSum = 0;
+                for( int j=0; j<POWER_SET_SIZE; j++ ) {
+                    
+                    powerSum += e->powers.mPowers[j].level;
+                    }
+                return powerSum;
+                }
+            }
+            break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                return mLevelNumber / POWER_SET_SIZE;
+                }
+            }
+            break;            
+        }
+    
+    // default
+    return 0;
+    }
+
+
+
+int Level::getLevelNumber() {
+    return mLevelNumber;
+    }
+
+
+
 BorderSprite *Level::getLastEnterPointSprite() {
     return mLastEnterPointSprite;
     }
