@@ -150,7 +150,8 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
         } 
 
 
-    
+
+    doublePair slotContentsPos = inPosition;
     
     if( mPushing ) {
 
@@ -169,15 +170,39 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
         curPos.y = destPos.y * mPushProgress + 
             startPos.y * (1-mPushProgress);
         
-        drawPowerUp( mPowerToPush, curPos );
+        // start faded out so it doesn't pop in over player
+        double fadeFactor = 1;
+        if( mPushProgress < 0.2 ) {
+            fadeFactor = mPushProgress / 0.2;
+            }
+        
+        drawPowerUp( mPowerToPush, curPos, fadeFactor );
 
 
         
 
         // scoot rest over
-        inPosition.x -= mPushProgress * slotSize;
+        slotContentsPos.x -= mPushProgress * slotSize;        
+        }
+    
 
-        mPushProgress += 0.1;
+    // draw existing slot contents
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        doublePair drawPos = slotContentsPos;
+        drawPos.x += ( i - centerIndex ) * slotSize;
+
+        double fadeFactor = 1;
+        if( mPushing && i == 0 ) {
+            fadeFactor = 1 - mPushProgress;
+            }
+        
+        drawPowerUp( mPowers[i], drawPos, fadeFactor );
+        } 
+
+    
+
+    if( mPushing ) {
+        mPushProgress += 0.05;
         if( mPushProgress >= 1 ) {
             mPushing = false;
 
@@ -187,20 +212,8 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
                 }
             
             mPowers[ POWER_SET_SIZE - 1 ] = mPowerToPush;
-
             }
-        
         }
-    
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
-        doublePair drawPos = inPosition;
-        drawPos.x += ( i - centerIndex ) * slotSize;
-        
-        setDrawColor( 1, 1, 1, 1 );
-
-        drawPowerUp( mPowers[i], drawPos );
-        } 
-
     
     
 
