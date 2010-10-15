@@ -37,7 +37,7 @@ class PowerUpSet {
         PowerUpSet();
         
     
-        // constructs a random set with sum level at max inTotalLevel
+        // constructs a random set with sum level at most inTotalLevel
         PowerUpSet( int inTotalLevel );
 
 

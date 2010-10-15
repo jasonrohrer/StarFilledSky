@@ -614,8 +614,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 PowerUp mainPower = getRandomPowerUp( powerUpMaxLevel );
                 
 
-                PowerUpSet subPowers( 
-                    ( mainPower.level / POWER_SET_SIZE ) );
+                // powers must sum to main power
+                PowerUpSet subPowers( mainPower.level );
                 
 
 

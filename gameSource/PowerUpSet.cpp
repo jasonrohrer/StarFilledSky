@@ -56,8 +56,9 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
         
         if( level > 0 ) {
         
+            // skip empty if we've gotten here
             powerUpType = (spriteID)
-                randSource.getRandomBoundedInt( firstPowerUpID, 
+                randSource.getRandomBoundedInt( firstPowerUpID + 1, 
                                                 lastPowerUpID );
             }
         
@@ -92,26 +93,8 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
 
     // fill first FIFO slot first
     for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
-        /*
-        mPowers[i].powerType = powerUpHeart;
-        
-        int level = 1;
         
         if( inTotalLevel / 3 > 0 ) {
-            level = inTotalLevel / 3;
-            
-            if( i == POWER_SET_SIZE - 1 ) {
-                // remainder here
-                level += inTotalLevel % 3;
-                }
-            }
-        
-        
-        mPowers[i].level = level;
-        inTotalLevel -= level;
-        */
-
-        if( inTotalLevel / 3 > 1 ) {
             mPowers[i] = getRandomPowerUp( inTotalLevel / 3 );
             }
         else {
