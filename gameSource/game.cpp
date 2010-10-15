@@ -460,15 +460,18 @@ void drawFrame() {
 
 
 
-    if( currentLevel->isPowerUp( playerPos ) ) {
+    int powerUpIndex;
+    if( currentLevel->isPowerUp( playerPos, &powerUpIndex ) ) {
         
+        doublePair powerPos = currentLevel->getPowerUpCenter( powerUpIndex );
+
         PowerUp p = currentLevel->getPowerUp( playerPos );
         
         Level *nextAbove = getNextAbove();
         
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
-        s->pushPower( p, playerPos );
+        s->pushPower( p, powerPos );
         }
     
 
