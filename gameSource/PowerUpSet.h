@@ -37,6 +37,7 @@ typedef struct powerPushRecord {
         double pushProgress;
         PowerUp powerToPush;
         doublePair pushStartOffset;
+        powerPushRecord *next;
     } powerPushRecord;
 
 
@@ -47,6 +48,8 @@ class PowerUpSet {
     
         // constructs a level 0 set
         PowerUpSet();
+        
+        ~PowerUpSet();
         
     
         // constructs a random set with sum level at most inTotalLevel
@@ -73,8 +76,8 @@ class PowerUpSet {
         doublePair mLastDrawPos;
 
 
-        // FIXME:  do something with this
-        SimpleVector< powerPushRecord > mPushStack;
+
+        powerPushRecord *mPushStack;
         
         
         char mPushing;

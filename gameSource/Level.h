@@ -158,7 +158,7 @@ class Level {
 
         PlayerSprite *getPlayerSprite();
         
-        PowerUpSet getPlayerPowers();
+        PowerUpSet *getPlayerPowers();
         
         
         void getPlayerHealth( int *outValue, int *outMax );
@@ -283,7 +283,7 @@ class Level {
 
 
         PlayerSprite mPlayerSprite;
-        PowerUpSet mPlayerPowers;
+        PowerUpSet *mPlayerPowers;
         
         int mPlayerHealth;
         

@@ -68,6 +68,7 @@ void drawNumber( unsigned int inNumber, doublePair inPosition,
         
         inPosition.x -= .25;
         }
-    
+
+    delete [] numberString;    
     }
 

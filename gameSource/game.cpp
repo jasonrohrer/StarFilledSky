@@ -924,11 +924,11 @@ void drawFrame() {
         }
     
     
-    PowerUpSet playerPowers = levelToGetCurrentFrom->getPlayerPowers();
+    PowerUpSet *playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
 
-    playerPowers.drawSet( setPos );
+    playerPowers->drawSet( setPos );
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
 

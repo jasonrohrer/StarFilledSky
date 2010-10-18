@@ -435,7 +435,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( inLevelNumber - 1 ) {
+          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ) {
 
     int health, max;
     getPlayerHealth( &health, &max );
@@ -640,7 +640,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
 
     mLastEnterPointSprite = &mPlayerSprite;
-    mLastEnterPointPowers = &mPlayerPowers;
+    mLastEnterPointPowers = mPlayerPowers;
     
     mLastEnterPointPowerTokenIndex = -1;
     }
@@ -662,6 +662,8 @@ Level::~Level() {
         delete t->sprite;
         delete t->subPowers;
         }
+
+    delete mPlayerPowers;
     }
 
 
@@ -779,6 +781,9 @@ void Level::step() {
 
                             e->health --;
                             if( e->health == 0 ) {
+                                delete e->sprite;
+                                delete e->powers;
+                                
                                 mEnemies.deleteElement( j );
                                 }
                             else {
@@ -1419,9 +1424,13 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
         if( distance( t->position, inPos ) < 0.5 ) {
             
             PowerUp p = t->power;
-            
+
+            delete t->sprite;
+            delete t->subPowers;
+
             mPowerUpTokens.deleteElement( j );
             
+
             return p;
             }
         }
@@ -1444,7 +1453,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     switch( inType ) {
         case player: {
             mLastEnterPointSprite = &mPlayerSprite;
-            mLastEnterPointPowers = &mPlayerPowers;
+            mLastEnterPointPowers = mPlayerPowers;
             mLastEnterPointPowerTokenIndex = -1;
             
             return mPlayerSprite.getColors();
@@ -1547,7 +1556,7 @@ PlayerSprite *Level::getPlayerSprite() {
     }
 
 
-PowerUpSet Level::getPlayerPowers() {
+PowerUpSet *Level::getPlayerPowers() {
     return mPlayerPowers;
     }
 
@@ -1555,7 +1564,7 @@ PowerUpSet Level::getPlayerPowers() {
 
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
     *outValue = mPlayerHealth;
-    *outMax = 3 + getMaxHealth( &mPlayerPowers );
+    *outMax = 3 + getMaxHealth( mPlayerPowers );
     }
 
 

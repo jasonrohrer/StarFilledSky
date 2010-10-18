@@ -93,6 +93,8 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
     
     mPushing = false;
     
+    mPushStack = NULL;
+    
 
     fillDefaultSet();
     
@@ -113,23 +115,56 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
 
 
 
+PowerUpSet::~PowerUpSet() {
+
+
+    // clear stack
+    powerPushRecord *nextInStack = mPushStack;
+        
+    while( nextInStack != NULL ) {
+        
+        powerPushRecord *p = nextInStack;
+
+        nextInStack = nextInStack->next;
+
+        delete p;
+        }
+    mPushStack = NULL;
+    
+    }
+
+
+
 
     
 
 void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
-    
-    mPushing = true;
-    mPushProgress = 0;
-    mPowerToPush = inPower;
-    mPushStartOffset = sub( inPowerPos, mLastDrawPos );
-    
-    /*
-    for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
-        mPowers[i] = mPowers[i+1];
-        }
 
-    mPowers[ POWER_SET_SIZE - 1 ] = inPower;
-    */
+    if( !mPushing ) {    
+        mPushing = true;
+        mPushProgress = 0;
+        mPowerToPush = inPower;
+        mPushStartOffset = sub( inPowerPos, mLastDrawPos );
+        }
+    else {
+        // already pushing, add to stack
+        
+        powerPushRecord **nextInStack = &( mPushStack );
+        
+        while( *nextInStack != NULL ) {
+        
+            nextInStack = &( (*nextInStack)->next );
+            }
+        
+        powerPushRecord *p = new powerPushRecord;
+        p->pushProgress = 0;
+        p->powerToPush = inPower;
+        p->pushStartOffset = sub( inPowerPos, mLastDrawPos );
+        p->next = NULL;
+        
+
+        *nextInStack = p;        
+        }
     }
 
 
@@ -217,6 +252,21 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
                 }
             
             mPowers[ POWER_SET_SIZE - 1 ] = mPowerToPush;
+
+            if( mPushStack != NULL ) {
+                // start next from stack
+                mPushing = true;
+                
+                mPushProgress = 0;
+                mPowerToPush = mPushStack->powerToPush;
+                mPushStartOffset = mPushStack->pushStartOffset;
+
+                powerPushRecord *recordToDiscard = mPushStack;
+                
+                mPushStack = mPushStack->next;
+
+                delete recordToDiscard;
+                }
             }
         }
     
