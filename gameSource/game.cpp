@@ -159,6 +159,35 @@ static void populateLevelRiseStack() {
             { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0} };
         levelRisePositionInfoStack.push_back( info );
         }
+    if( levelRiseStack.size() == 1 ) {
+        // always have two to rise into
+        Level *nextAbove = *( levelRiseStack.getElement( 0 ) );
+        
+        // push them back in to maintain stack order
+        levelRiseStack.deleteAll();
+
+        ColorScheme c = nextAbove->getLevelColors();
+        ColorScheme freshColors;
+        levelRiseStack.push_back( new Level( &c, &freshColors,
+                                             levelNumber + 1 ) );
+        
+        levelRiseStack.push_back( nextAbove );
+        
+        
+        LevelPositionInfo nextAboveInfo = 
+            *( levelRisePositionInfoStack.getElement( 0 ) );
+        
+        // again, maintain stack order
+        levelRisePositionInfoStack.deleteAll();
+        
+        // center player in symmetrical level
+        LevelPositionInfo info = 
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0} };
+        levelRisePositionInfoStack.push_back( info );
+        
+        levelRisePositionInfoStack.push_back( nextAboveInfo );
+        }
+        
     }
 
 
@@ -922,6 +951,7 @@ void drawFrame() {
         
 
     BorderSprite *weAreInsideSprite = nextAbove->getLastEnterPointSprite();
+    PowerUpSet *p = nextAbove->getLastEnterPointPowers();
     
     
     doublePair spritePos = levelNumberPos;
@@ -933,6 +963,18 @@ void drawFrame() {
     float fade = 1;
     if( zoomProgress != 0 ) {
         fade = 1 - zoomProgress;
+
+        if( zoomDirection != 1 ) {
+            if( levelRiseStack.size() >= 1 ) {
+                Level *nextHigher = *( levelRiseStack.getElement(
+                                           levelRiseStack.size() - 1 ) );
+                
+                weAreInsideSprite = nextHigher->getLastEnterPointSprite();
+                p = nextHigher->getLastEnterPointPowers();
+                }
+            
+            }
+        
         }
     
 
@@ -947,7 +989,6 @@ void drawFrame() {
     drawSprite( riseIcon, markerPos );
     
     
-    PowerUpSet *p = nextAbove->getLastEnterPointPowers();
     doublePair setPos = spritePos;
     setPos.x += 2.25;
 
@@ -981,20 +1022,40 @@ void drawFrame() {
         playerSprite->draw( spritePos, zoomProgress );
         }
 
-    
+
+
+    fade = 1;
+
     PowerUpSet *playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
     setPos.x -= zoomProgress * (viewWidth /2 - 3.5);
-    
-    playerPowers->drawSet( setPos );
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
-
     spritePos = setPos;
     spritePos.x -= 2.25;
+
     
-    playerSprite->draw( spritePos );
+    if( zoomProgress != 0 && lastLevel != NULL ) {
+        BorderSprite *lastLevelSprite = lastLevel->getLastEnterPointSprite();
+        
+        
+        if( playerSprite != lastLevelSprite ) {
+            // moving set doesn't match one we're going inside
+            // fade out moving set
+            fade = 1 - zoomProgress;
+
+            PowerUpSet *lastLevelPowers = 
+                lastLevel->getLastEnterPointPowers();
+            
+            lastLevelPowers->drawSet( setPos, 1 - fade );
+            lastLevelSprite->draw( spritePos, 1 - fade );
+            }
+        }
+    
+    
+    playerPowers->drawSet( setPos, fade );
+    playerSprite->draw( spritePos, fade );
     
     
 
