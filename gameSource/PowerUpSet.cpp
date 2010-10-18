@@ -193,7 +193,12 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
 
         double fadeFactor = 1;
         if( mPushing && i == 0 ) {
+            // fade discared one out
             fadeFactor = 1 - mPushProgress;
+            // move it differently
+            drawPos = inPosition;
+            drawPos.x += ( i - centerIndex ) * slotSize;
+            drawPos.y -= mPushProgress;
             }
         
         drawPowerUp( mPowers[i], drawPos, fadeFactor );
