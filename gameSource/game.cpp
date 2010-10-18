@@ -505,7 +505,12 @@ void drawFrame() {
         lastLevel->decompactLevel();
 
         lastLevel->freezeLevel( true );
-        lastLevel->restorePlayerHealth();
+        if( lastLevel->getLastEnterPointSprite() == 
+            lastLevel->getPlayerSprite() ) {
+            // rising out of player, restore health
+            lastLevel->restorePlayerHealth();
+            }
+        
         zoomProgress = 1;
         zoomDirection = -1;
         currentLevel->drawFloorEdges( false );
