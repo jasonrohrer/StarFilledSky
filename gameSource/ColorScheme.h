@@ -27,6 +27,9 @@ class ColorScheme {
         colorSet primary;
         colorSet secondary;
         
+        // color that stands out from primary and secondary
+        Color special;
+        
     protected:
         void populateScheme( float inPrimaryHue, float inSecondaryHue );
 

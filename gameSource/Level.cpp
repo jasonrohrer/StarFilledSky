@@ -1125,9 +1125,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     // draw rise marker
     // color same as floor tile
-    Color *c = 
+    /*Color *c = 
         &( mGridColors[mSquareIndices[mRisePosition.y][mRisePosition.x]] );
-    
+    */
+    Color *c = &( mColors.special );
     setDrawColor( c->r,
                   c->g,
                   c->b, 1 );

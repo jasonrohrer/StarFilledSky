@@ -95,6 +95,15 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
     secondary = makeColorSet( inSecondaryHue, secondarySaturation,
                               secondaryValue );
     
+
+    // half way between
+    float specialHue = ( inPrimaryHue + inSecondaryHue ) / 2;
+    float specialSat = ( primarySaturation + secondarySaturation ) / 2;
+    
+    Color *newColor = Color::makeColorFromHSV( specialHue,
+                                               specialSat,
+                                               secondaryValue );
+    special = *newColor;
     }
 
     
