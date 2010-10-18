@@ -22,6 +22,8 @@ Font.cpp \
 PowerUpSet.cpp \
 numerals.cpp \
 PowerUpSprite.cpp \
+powerUpProperties.cpp \
+bulletSizeSet.cpp \
 
 
 GAME_GRAPHICS = \
@@ -35,6 +37,14 @@ graphics/powerUpSlot.tga \
 graphics/powerUpBorder.tga \
 graphics/powerUpEmpty.tga \
 graphics/powerUpHeart.tga \
+graphics/powerUpBulletSize.tga \
+graphics/bullet1.tga \
+graphics/bullet2.tga \
+graphics/bullet3.tga \
+graphics/bullet4.tga \
+graphics/bullet5.tga \
+graphics/bullet6.tga \
+graphics/bullet7.tga \
 
 
 

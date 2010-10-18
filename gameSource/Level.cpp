@@ -1,6 +1,8 @@
 #include "Level.h"
 #include "drawUtils.h"
 #include "fixedSpriteBank.h"
+#include "powerUpProperties.h"
+#include "bulletSizeSet.h"
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/util/random/CustomRandomSource.h"
@@ -19,20 +21,14 @@ double enemyBulletSpeed = 0.2;
 
 
 
-static int getMaxHealth( PowerUpSet *inSet ) {
-    int max = 0;
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
-        if( inSet->mPowers[i].powerType == powerUpHeart ) {
-            max += inSet->mPowers[i].level;
-            }
-        }
-    return max;
-    }
+
 
 
 static int getEnemyMaxHealth( PowerUpSet *inSet ) {
     return 1 + getMaxHealth( inSet );
     }
+
+
 
 
 
@@ -1149,18 +1145,14 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         Bullet *b = mBullets.getElement( i );
 
-        // border
-        setDrawColor( 0, 0, 0, 1 );
-        drawSquare( b->position, 0.1 );
-
-        // fill
+        
         if( b->playerFlag ) {
-            setDrawColor( 0, 1, 0, 1 );
+            setDrawColor( 1, 1, 1, 1 );
             }
         else {
-            setDrawColor( 1, 0, 0, 1 );
+            setDrawColor( 0, 0, 0, 1 );
             }
-        drawSquare( b->position, 0.05 );
+        drawBullet( 1, b->position );
         }
 
 

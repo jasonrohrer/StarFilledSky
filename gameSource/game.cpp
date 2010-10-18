@@ -40,6 +40,7 @@
 #include "Font.h"
 #include "PowerUpSet.h"
 #include "numerals.h"
+#include "bulletSizeSet.h"
 
 
 // globals
@@ -219,7 +220,8 @@ void initFrameDrawer( int inWidth, int inHeight ) {
     
     
     initSpriteBank();
-
+    initBulletSizeSet();
+    
     mainFont = new Font( "font_8_16.tga", -2, 4, true );
     
     initNumerals( "numerals.tga" );
@@ -252,7 +254,8 @@ void freeFrameDrawer() {
     delete currentLevel;
     
     freeSpriteBank();
-
+    freeBulletSizeSet();
+    
     freeNumerals();
     
 
