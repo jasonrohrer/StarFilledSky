@@ -59,7 +59,7 @@ class PowerUpSet {
         void pushPower( PowerUp inPower, doublePair inPowerPos );
         
 
-        void drawSet( doublePair inPosition );
+        void drawSet( doublePair inPosition, float inFade=1 );
         
         
         // sum of powers in set that match a type

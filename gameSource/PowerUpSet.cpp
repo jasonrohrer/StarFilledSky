@@ -170,7 +170,7 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
 
 
 
-void PowerUpSet::drawSet( doublePair inPosition ) {
+void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
     int centerIndex = POWER_SET_CENTERED_INDEX;
     
     double slotSize = 1.125;
@@ -180,7 +180,7 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
         doublePair drawPos = inPosition;
         drawPos.x += ( i - centerIndex ) * slotSize;
         
-        setDrawColor( 1, 1, 1, 1 );
+        setDrawColor( 1, 1, 1, inFade );
         drawSprite( powerUpSlot, drawPos );
         } 
 
@@ -206,9 +206,9 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
             startPos.y * (1-mPushProgress);
         
         // start faded out so it doesn't pop in over player
-        double fadeFactor = 1;
+        double fadeFactor = inFade;
         if( mPushProgress < 0.2 ) {
-            fadeFactor = mPushProgress / 0.2;
+            fadeFactor *= mPushProgress / 0.2;
             }
         
         drawPowerUp( mPowerToPush, curPos, fadeFactor );
@@ -226,10 +226,10 @@ void PowerUpSet::drawSet( doublePair inPosition ) {
         doublePair drawPos = slotContentsPos;
         drawPos.x += ( i - centerIndex ) * slotSize;
 
-        double fadeFactor = 1;
+        double fadeFactor = inFade;
         if( mPushing && i == 0 ) {
             // fade discared one out
-            fadeFactor = 1 - mPushProgress;
+            fadeFactor *= 1 - mPushProgress;
             // move it differently
             drawPos = inPosition;
             drawPos.x += ( i - centerIndex ) * slotSize;

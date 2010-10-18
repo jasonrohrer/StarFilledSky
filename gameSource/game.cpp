@@ -300,6 +300,32 @@ static Level *getNextAbove() {
     }
 
 
+void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
+                    float inFade, char inDrawBarBackground ) {
+    
+    if( inDrawBarBackground ) {    
+        setDrawColor( 0.25, 0.25, 0.25, inFade );
+        drawRect( inBarLeftEdge.x, inBarLeftEdge.y - 0.25, 
+                  inBarLeftEdge.x + 2, inBarLeftEdge.y + 0.25 );
+        }
+    
+            
+    setDrawColor( 0, 0, 0, inFade );
+    drawRect( inBarLeftEdge.x + 0.125 + 1.75 * inHealthFraction, 
+              inBarLeftEdge.y - 0.125, 
+              inBarLeftEdge.x + 0.125 + 1.75, 
+              inBarLeftEdge.y + 0.125 );
+
+    
+    setDrawColor( 1, 0, 0, inFade );
+    drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y - 0.125, 
+              inBarLeftEdge.x + 0.125 + 1.75 * inHealthFraction, 
+              inBarLeftEdge.y + 0.125 );
+
+    }
+
+
+
 
 // used to keep level rise stack populated without a visible frame hiccup
 // hide the hiccup right after the final freeze frame of the level
@@ -805,6 +831,7 @@ void drawFrame() {
             currentLevel->drawFloorEdges( true );
             
             levelNumber = currentLevel->getLevelNumber();
+            zoomProgress = 0;
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
             
@@ -835,7 +862,9 @@ void drawFrame() {
 
             // take time to populate level rise stack after this frame is drawn
             // to hide hiccup
-            secondToLastRiseFreezeFrameDrawn = true;            
+            secondToLastRiseFreezeFrameDrawn = true;
+            
+            zoomProgress = 0;
             }    
         }
 
@@ -897,12 +926,23 @@ void drawFrame() {
     
     doublePair spritePos = levelNumberPos;
     spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.25;
+    //spritePos.x -= zoomProgress * viewWidth /2;
+    
     spritePos.y += 0.125;
     
-    weAreInsideSprite->draw( spritePos );
+    float fade = 1;
+    if( zoomProgress != 0 ) {
+        fade = 1 - zoomProgress;
+        }
+    
+
+    weAreInsideSprite->draw( spritePos, fade );
 
     doublePair markerPos = spritePos;
     markerPos.x -= 0.875;
+    
+    
+    setDrawColor( 1, 1, 1, 1 );
     
     drawSprite( riseIcon, markerPos );
     
@@ -911,56 +951,73 @@ void drawFrame() {
     doublePair setPos = spritePos;
     setPos.x += 2.25;
 
-    p->drawSet( setPos );
+    p->drawSet( setPos, fade );
     
 
     
     Level *levelToGetCurrentFrom;
-    if( lastLevel != NULL && zoomDirection == 1 ) {
+    if( lastLevel != NULL ) {
         levelToGetCurrentFrom = lastLevel;
         }
     else {
         levelToGetCurrentFrom = currentLevel;
         }
+
+
+    if( levelToGetCurrentFrom != currentLevel ) {
+        // draw for current level too, underneath, keep centered
+
+        PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
+        setPos = spritePos;
+        setPos.x = lastScreenViewCenter.x;
+        
+        playerPowers->drawSet( setPos, zoomProgress );
+
+        PlayerSprite *playerSprite = currentLevel->getPlayerSprite(); 
+
+        spritePos = setPos;
+        spritePos.x -= 2.25;
     
+        playerSprite->draw( spritePos, zoomProgress );
+        }
+
     
     PowerUpSet *playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
-
+    setPos.x -= zoomProgress * (viewWidth /2 - 3.5);
+    
     playerPowers->drawSet( setPos );
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
 
     spritePos = setPos;
-    spritePos.x += 2.25;
+    spritePos.x -= 2.25;
     
     playerSprite->draw( spritePos );
     
+    
+
 
     // health bar
-    
-    setDrawColor( 0.25, 0.25, 0.25, 1 );
-    drawRect( spritePos.x + 0.75, spritePos.y - 0.25, 
-              spritePos.x + 2.75, spritePos.y + 0.25 );
+    doublePair barPos = { lastScreenViewCenter.x, setPos.y };
+    barPos.x += 1.75;
 
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
-    //printf( "h, m = %d, %d\n", playerHealth, playerMax );
 
-    setDrawColor( 0, 0, 0, 1 );
-    drawRect( spritePos.x + 0.875, spritePos.y - 0.125, 
-              spritePos.x + 0.875 + 1.75, 
-              spritePos.y + 0.125 );
+    drawHealthBar( barPos, playerHealthFraction, 1, true );
 
     
-    setDrawColor( 1, 0, 0, 1 );
-    drawRect( spritePos.x + 0.875, spritePos.y - 0.125, 
-              spritePos.x + 0.875 + 1.75 * playerHealthFraction, 
-              spritePos.y + 0.125 );
+    if( levelToGetCurrentFrom != currentLevel ) {
+        // draw faded in on top
+        
+        currentLevel->getPlayerHealth( &playerHealth, &playerMax );
+        float playerHealthFraction = playerHealth / (float)playerMax;
 
+        drawHealthBar( barPos, playerHealthFraction, zoomProgress, false );
+        }
 
-    
     }
 
 
