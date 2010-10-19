@@ -35,8 +35,6 @@ void freeBulletSizeSet() {
 void drawBullet( float inSize, doublePair inCenter ) {
     int baseSize = (int)inSize;
     
-    setDrawFade( 1 );
-    drawSprite( spriteBank[ baseSize - 1 ], inCenter, 1.0/16 );
     
     
     float extra = inSize - baseSize;
@@ -45,7 +43,19 @@ void drawBullet( float inSize, doublePair inCenter ) {
     if( extra != 0 ) {
         setDrawFade( extra );
         drawSprite( spriteBank[ baseSize ], inCenter, 1.0/16 );
+   
+        if( extra < 0.25 ) {
+            setDrawFade( 1 );
+            }
+        else {
+            setDrawFade( (1 - extra) / 0.75 );
+            }
+        }
+    else {
+        setDrawFade( 1 );
         }
     
+
+    drawSprite( spriteBank[ baseSize - 1 ], inCenter, 1.0/16 );    
     }
 

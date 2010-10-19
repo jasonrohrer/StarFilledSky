@@ -22,6 +22,7 @@ typedef struct Bullet {
         doublePair position;
         doublePair velocity;
         char playerFlag;
+        float size;
     } Bullet;
 
 
