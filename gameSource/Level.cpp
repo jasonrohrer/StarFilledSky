@@ -615,12 +615,15 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                                                         mainPower.powerType );
                 
 
-
+                char startedEmpty = ( mainPower.powerType == powerUpEmpty );
+                
                 PowerUpToken t = { mainPower,
+                                   startedEmpty,
                                    pickPos,
                                    worldPos,
                                    new PowerUpSprite( mainPower, 
-                                                      subPowers ),
+                                                      subPowers,
+                                                      startedEmpty ),
                                    subPowers };
                 
                 mPowerUpTokens.push_back( t );
@@ -965,6 +968,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             PowerUpToken *t = mPowerUpTokens.getElement( 
                 mLastEnterPointPowerTokenIndex );
             
+            if( t->startedEmpty ) {
+                t->power.powerType = t->subPowers->getMajorityType();
+                }
+
             t->power.level = t->subPowers->getLevelSum( t->power.powerType );
             }
         }
@@ -1480,6 +1487,17 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 mLastEnterPointSprite = t->sprite;
                 mLastEnterPointPowers = t->subPowers;
                 mLastEnterPointPowerTokenIndex = i;
+
+                if( t->startedEmpty &&
+                    t->power.powerType != powerUpEmpty ) {
+                    
+                    // type has been changed by some sub-level activity
+                
+                    // fix the type away from empty now
+                    t->startedEmpty = false;
+                    t->sprite->mStartedEmpty = false;
+                    }
+                
 
                 return t->sprite->getColors();
                 }

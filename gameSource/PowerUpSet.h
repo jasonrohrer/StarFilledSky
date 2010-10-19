@@ -69,7 +69,9 @@ class PowerUpSet {
         // sum of powers in set that match a type
         int getLevelSum( spriteID inPowerUpType );
         
-
+        // gets type of heaviest-total-weight power in set
+        spriteID getMajorityType();
+        
 
         PowerUp mPowers[ POWER_SET_SIZE ];
 

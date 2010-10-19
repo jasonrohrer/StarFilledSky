@@ -65,6 +65,7 @@ typedef struct GridPos {
 
 typedef struct PowerUpToken {
         PowerUp power;
+        char startedEmpty;
         GridPos gridPosition;
         doublePair position;
         PowerUpSprite *sprite;

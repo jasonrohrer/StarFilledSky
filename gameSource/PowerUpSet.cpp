@@ -343,3 +343,30 @@ int PowerUpSet::getLevelSum( spriteID inPowerUpType ) {
     }
 
 
+
+spriteID PowerUpSet::getMajorityType() {
+    #define NUM_POWER_TYPES  lastPowerUpID - firstPowerUpID + 1
+    
+    int sums[ NUM_POWER_TYPES ];
+    for( int i=0; i<NUM_POWER_TYPES; i++ ) {
+        sums[i] = 0;
+        }
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType != powerUpEmpty ) {
+            sums[ mPowers[i].powerType - firstPowerUpID ] += mPowers[i].level;
+            }
+        }
+
+    int maxType = powerUpEmpty;
+    int maxSum = 0;
+    
+    for( int i=0; i<NUM_POWER_TYPES; i++ ) {
+        if( sums[i] > maxSum ) {
+            maxSum = sums[i];
+            maxType = i + firstPowerUpID;
+            }
+        }
+    
+    return (spriteID)maxType;
+    }
