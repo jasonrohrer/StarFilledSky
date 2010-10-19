@@ -14,6 +14,10 @@ static ColorScheme getScheme( spriteID inPowerType ) {
             ColorScheme c( 0.0f, 0.1667f );
             return c;
             }
+        case powerUpBulletSize: {
+            ColorScheme c( 0.6667f, 0.1667f );
+            return c;
+            }
         default: {
             // make new one (should never happen)
             ColorScheme c;
