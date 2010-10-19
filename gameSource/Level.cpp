@@ -721,12 +721,7 @@ void Level::step() {
         
         Bullet *b = mBullets.getElement( i );
         
-        b->position = add( b->position, b->velocity );
-        b->size += 0.1;
-        if( b->size > maxBulletSize ) {
-            b->size = maxBulletSize;
-            }
-        
+        b->position = add( b->position, b->velocity );        
         
         GridPos p = getGridPos( b->position );
 
@@ -872,7 +867,7 @@ void Level::step() {
             bulletVelocity.y *= enemyBulletSpeed;
             
             
-            addBullet( e->position, bulletVelocity, false );
+            addBullet( e->position, bulletVelocity, false, i );
             
 
             e->stepsTilNextBullet = e->stepsBetweenBullets;
@@ -1657,9 +1652,20 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
 
 
 void Level::addBullet( doublePair inPosition,
-                       doublePair inVelocity, char inPlayerBullet ) {
+                       doublePair inVelocity, char inPlayerBullet,
+                       int inEnemyIndex ) {
     
-    Bullet b = { inPosition, inVelocity, inPlayerBullet, 1 };
+    float size = 1;
+
+    if( inPlayerBullet ) {
+        size = getBulletSize( mPlayerPowers );
+        printf( "Player size = %f\n", size );
+        }
+    else {
+        size = getBulletSize( mEnemies.getElement( inEnemyIndex )->powers );
+        }
+
+    Bullet b = { inPosition, inVelocity, inPlayerBullet, size };
     mBullets.push_back( b );
     }
 

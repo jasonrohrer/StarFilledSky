@@ -33,10 +33,9 @@ float getBulletSize( PowerUpSet *inSet ) {
     float boundedSize = size / ( size + bulletParam );
 
     // bound to 1:10
-    boundedSize *= maxBulletSize;
+    boundedSize *= ( maxBulletSize - 1 );
     
-    if( boundedSize < 1 ) {
-        boundedSize = 1;
-        }
+    boundedSize += 1;
+    
     return boundedSize;
     }

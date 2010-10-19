@@ -33,9 +33,14 @@ void freeBulletSizeSet() {
 
 
 void drawBullet( float inSize, doublePair inCenter ) {
+    
+    // tweak to center, since bullets have odd sizes
+    // hackish:  half a sprite pixel
+    inCenter.x += 0.03125;
+    inCenter.y -= 0.03125;
+
+
     int baseSize = (int)inSize;
-    
-    
     
     float extra = inSize - baseSize;
     
@@ -55,7 +60,6 @@ void drawBullet( float inSize, doublePair inCenter ) {
         setDrawFade( 1 );
         }
     
-
     drawSprite( spriteBank[ baseSize - 1 ], inCenter, 1.0/16 );    
     }
 
