@@ -98,6 +98,15 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
 
     // half way between
     float specialHue = ( inPrimaryHue + inSecondaryHue ) / 2;
+    if( inPrimaryHue == inSecondaryHue ) {
+        // no half-way
+        // go around wheel by 1/4 to get a different-looking color
+        specialHue = inPrimaryHue += 0.25;
+        if( specialHue > 1 ) {
+            specialHue -= 1;
+            }
+        }
+    
     float specialSat = ( primarySaturation + secondarySaturation ) / 2;
     
     Color *newColor = Color::makeColorFromHSV( specialHue,
