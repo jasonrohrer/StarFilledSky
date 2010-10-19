@@ -755,14 +755,19 @@ void Level::step() {
                 // more subtle than wall hit.... jump to soft?
                 mGridColors[ squareIndex ] = mSoftGridColors[ squareIndex ];
             
+
+                float hitRadius = 0.5 + b->size / 16;
             
                 if( b->playerFlag ) {
                     // check if hit enemy
-                
+                                    
+                    
                     for( int j=0; j<mEnemies.size() && !hit; j++ ) {
                         Enemy *e = mEnemies.getElement( j );
                     
-                        if( distance( e->position, b->position ) < 0.4 ) {
+                        if( distance( e->position, b->position ) < 
+                            hitRadius  ) {
+                            
                             hit = true;
 
                             // make sure enemy health is up-to-date
@@ -790,7 +795,7 @@ void Level::step() {
                     }
                 else {
                     // check if hit player
-                    if( distance( mPlayerPos, b->position ) < 0.4 ) {
+                    if( distance( mPlayerPos, b->position ) < hitRadius ) {
                         hit = true;
                         mPlayerHealth -= 1;
                         if( mPlayerHealth < 0 ) {
