@@ -611,7 +611,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 
 
                 // powers must sum to main power
-                PowerUpSet *subPowers = new PowerUpSet( mainPower.level );
+                PowerUpSet *subPowers = new PowerUpSet( mainPower.level,
+                                                        mainPower.powerType );
                 
 
 

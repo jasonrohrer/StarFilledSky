@@ -55,6 +55,10 @@ class PowerUpSet {
         // constructs a random set with sum level at most inTotalLevel
         PowerUpSet( int inTotalLevel );
 
+        // constructs a random set with sum level of EXACTLY inTotalLevel
+        // for type inType (and maybe more in other types)
+        PowerUpSet( int inTotalLevel, spriteID inType );
+
 
         void pushPower( PowerUp inPower, doublePair inPowerPos );
         
@@ -72,7 +76,9 @@ class PowerUpSet {
     protected:
         
         void fillDefaultSet();
+        void fillRandomSet( int inTotalLevel );
         
+
         doublePair mLastDrawPos;
 
 

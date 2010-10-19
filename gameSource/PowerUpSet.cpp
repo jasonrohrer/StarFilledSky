@@ -72,6 +72,13 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
 
 
 void PowerUpSet::fillDefaultSet() {
+    mLastDrawPos.x = 0;
+    mLastDrawPos.y = 0;
+    
+    mPushing = false;
+    
+    mPushStack = NULL;
+
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
         mPowers[i].level = 0;
@@ -80,25 +87,8 @@ void PowerUpSet::fillDefaultSet() {
 
 
 
-PowerUpSet::PowerUpSet() {
-    fillDefaultSet();
-    }
-
-
-
-PowerUpSet::PowerUpSet( int inTotalLevel ) {
+void PowerUpSet::fillRandomSet( int inTotalLevel ) {
     
-    mLastDrawPos.x = 0;
-    mLastDrawPos.y = 0;
-    
-    mPushing = false;
-    
-    mPushStack = NULL;
-    
-
-    fillDefaultSet();
-    
-
     // fill first FIFO slot first
     for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
         
@@ -113,6 +103,63 @@ PowerUpSet::PowerUpSet( int inTotalLevel ) {
         }
     }
 
+
+
+
+PowerUpSet::PowerUpSet() {
+    fillDefaultSet();
+    }
+
+
+
+PowerUpSet::PowerUpSet( int inTotalLevel ) {
+    fillDefaultSet();
+    
+    fillRandomSet( inTotalLevel );
+    }
+
+
+
+PowerUpSet::PowerUpSet( int inTotalLevel, spriteID inType ) {
+    fillDefaultSet();
+    
+    // fill with random first
+
+    fillRandomSet( inTotalLevel );
+    
+
+    // spread inType tokens evenly throughout set
+    int typeSum = 0;
+        
+    for( int i=POWER_SET_SIZE-1; i>=0; i-- ) {
+        
+        if( mPowers[i].powerType == powerUpEmpty ) {
+            // use any empty slots too, but only if needed
+            }
+        else {
+            // change all non-empty tokens to inType
+            mPowers[i].powerType = inType;
+            typeSum += mPowers[i].level;
+            }
+        }
+    if( typeSum < inTotalLevel ) {
+        int extra = inTotalLevel - typeSum;
+        
+        
+        int extraPerSlot = extra / POWER_SET_SIZE;
+        int extraLastSlot = extra % POWER_SET_SIZE;
+            
+        for( int i=POWER_SET_SIZE-1; i>=0; i-- ) {
+            
+            mPowers[i].powerType = inType;
+            mPowers[i].level += extraPerSlot;
+                 
+            if( i == 0 ) {
+                mPowers[i].level += extraLastSlot;
+                }
+            }
+        }
+    }
 
 
 PowerUpSet::~PowerUpSet() {
