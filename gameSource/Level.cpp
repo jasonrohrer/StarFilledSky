@@ -858,44 +858,15 @@ void Level::step() {
         if( e->stepsTilNextBullet == 0 ) {
             // fire bullet
 
-            double playerDist = distance( mPlayerPos, e->position );
-            
-            doublePair aimPos = mPlayerPos;
-            
-                        
             float accuracy = getAccuracy( e->powers );
-            
-            accuracy *= playerDist / 10;
-            
-            aimPos.x += 
-                randSource.getRandomBoundedDouble( -accuracy, accuracy );
-            aimPos.y += 
-                randSource.getRandomBoundedDouble( -accuracy, accuracy );
-
-
-
-
-            double aimDist = distance( aimPos, e->position );
-            doublePair bulletVelocity = sub( aimPos, e->position );
-            
-            if( aimDist > 0 ) {    
-                // normalize
-                bulletVelocity.x /= aimDist;
-                bulletVelocity.y /= aimDist;
-                }
-            else {
-                bulletVelocity.x = 0;
-                bulletVelocity.y = 1;
-                }            
 
             // set speed
             // enemy bullets are slower than equivalent player bullets
             float bulletSpeed = getBulletSpeed( e->powers ) / 2;
-            bulletVelocity.x *= bulletSpeed;
-            bulletVelocity.y *= bulletSpeed;
             
             
-            addBullet( e->position, bulletVelocity, false, i );
+            addBullet( e->position, mPlayerPos, accuracy, 
+                       bulletSpeed, false, i );
             
 
             //e->stepsTilNextBullet = e->stepsBetweenBullets;
@@ -1696,9 +1667,43 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
 
 
 void Level::addBullet( doublePair inPosition,
-                       doublePair inVelocity, char inPlayerBullet,
+                       doublePair inAimPosition,
+                       double inAccuracy,
+                       double inSpread,
+                       double inSpeed, char inPlayerBullet,
                        int inEnemyIndex ) {
+
+    double exactAimDist = distance( inAimPosition, inPosition );
+
+    inAccuracy *= exactAimDist / 10;
+
+
+    inAimPosition.x += 
+        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
+    inAimPosition.y += 
+        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
     
+
+    double aimDist = distance( inAimPosition, inPosition );
+    doublePair bulletVelocity = sub( inAimPosition, inPosition );
+    
+    if( aimDist > 0 ) {                
+        // normalize
+        bulletVelocity.x /= aimDist;
+        bulletVelocity.y /= aimDist;
+        }
+    else {
+        bulletVelocity.x = 0;
+        bulletVelocity.y = 1;
+        }            
+            
+    bulletVelocity.x *= inSpeed;
+    bulletVelocity.y *= inSpeed;
+
+
+
+
+
     float size = 1;
 
     if( inPlayerBullet ) {
@@ -1708,7 +1713,7 @@ void Level::addBullet( doublePair inPosition,
         size = getBulletSize( mEnemies.getElement( inEnemyIndex )->powers );
         }
 
-    Bullet b = { inPosition, inVelocity, inPlayerBullet, size };
+    Bullet b = { inPosition, bulletVelocity, inPlayerBullet, size };
     mBullets.push_back( b );
     }
 

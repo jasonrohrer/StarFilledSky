@@ -16,6 +16,8 @@ static ColorScheme getScheme( spriteID inPowerType ) {
             }
         case powerUpBulletSize:
         case powerUpRapidFire:
+        case powerUpAccuracy:
+        case powerUpSpread:
         case powerUpBulletSpeed: {
             ColorScheme c( 0.6667f, 0.1667f );
             return c;

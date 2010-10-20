@@ -687,43 +687,15 @@ void drawFrame() {
         if( stepsTilNextBullet == 0 ) {
             // fire bullet
             PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
-
-            doublePair aimPos = mousePos;
             
             float accuracy = getAccuracy( playerPowers );
             
-            double mouseDist = distance( mousePos, playerPos );
-            
-            accuracy *= mouseDist / 10;
-            
-            aimPos.x += 
-                randSource.getRandomBoundedDouble( -accuracy, accuracy );
-            aimPos.y += 
-                randSource.getRandomBoundedDouble( -accuracy, accuracy );
-            
-
-            double aimDist = distance( aimPos, playerPos );
-            doublePair bulletVelocity = sub( aimPos, playerPos );
-            
-            if( aimDist > 0 ) {                
-                // normalize
-                bulletVelocity.x /= aimDist;
-                bulletVelocity.y /= aimDist;
-                }
-            else {
-                bulletVelocity.x = 0;
-                bulletVelocity.y = 1;
-                }            
-
-            
             // set speed
             bulletSpeed = getBulletSpeed( playerPowers );
+
             
-            bulletVelocity.x *= bulletSpeed;
-            bulletVelocity.y *= bulletSpeed;
-            
-            
-            currentLevel->addBullet( playerPos, bulletVelocity, true );
+            currentLevel->addBullet( playerPos, mousePos, accuracy, 
+                                     bulletSpeed, true );
             
 
             //stepsTilNextBullet = stepsBetweenBullets;

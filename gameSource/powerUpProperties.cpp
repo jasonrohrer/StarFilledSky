@@ -35,7 +35,7 @@ float getBulletSize( PowerUpSet *inSet ) {
     // first bound to 0:1
     float boundedSize = totalLevel / ( totalLevel + bulletParam );
 
-    // bound to 1:10
+    // bound to 1:maxBulletSize
     boundedSize *= ( maxBulletSize - 1 );
     
     boundedSize += 1;
@@ -87,5 +87,19 @@ float getAccuracy( PowerUpSet *inSet ) {
     
     
     return boundedAccuracy;
+    }
+
+
+
+float getSpread( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpBulletSize );
+
+    // first bound to 0:1
+    float boundedSpread = totalLevel / ( totalLevel + bulletParam );
+
+    // bound to 0:10
+    boundedSpread *= 10;
+    
+    return boundedSpread;
     }
 

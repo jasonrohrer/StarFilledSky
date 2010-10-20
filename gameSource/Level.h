@@ -188,7 +188,10 @@ class Level {
         
 
         void addBullet( doublePair inPosition,
-                        doublePair inVelocity, char inPlayerBullet,
+                        doublePair inAimPosition,
+                        double inAccuracy,
+                        double inSpread,
+                        double inSpeed, char inPlayerBullet,
                         int inEnemyIndex = -1 );
 
 
