@@ -872,8 +872,9 @@ void Level::step() {
                 }            
 
             // set speed
-            bulletVelocity.x *= enemyBulletSpeed;
-            bulletVelocity.y *= enemyBulletSpeed;
+            float bulletSpeed = getBulletSpeed( e->powers );
+            bulletVelocity.x *= bulletSpeed;
+            bulletVelocity.y *= bulletSpeed;
             
             
             addBullet( e->position, bulletVelocity, false, i );

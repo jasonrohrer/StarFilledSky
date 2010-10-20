@@ -700,7 +700,12 @@ void drawFrame() {
                 bulletVelocity.y = 1;
                 }            
 
+            PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
+            
             // set speed
+            bulletSpeed = getBulletSpeed( playerPowers );
+            printf( "Bullet speed = %f\n", bulletSpeed );
+            
             bulletVelocity.x *= bulletSpeed;
             bulletVelocity.y *= bulletSpeed;
             
@@ -709,8 +714,7 @@ void drawFrame() {
             
 
             //stepsTilNextBullet = stepsBetweenBullets;
-            stepsTilNextBullet = getStepsBetweenBullets( 
-                currentLevel->getPlayerPowers() );
+            stepsTilNextBullet = getStepsBetweenBullets( playerPowers );
             }
         }
     

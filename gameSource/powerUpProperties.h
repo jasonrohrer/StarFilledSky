@@ -8,3 +8,7 @@ float getBulletSize( PowerUpSet *inSet );
 
 int getStepsBetweenBullets( PowerUpSet *inSet );
 
+
+float getBulletSpeed( PowerUpSet *inSet );
+
+
