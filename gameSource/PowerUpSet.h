@@ -36,7 +36,7 @@ typedef struct powerPushRecord {
         
         double pushProgress;
         PowerUp powerToPush;
-        doublePair pushStartOffset;
+        doublePair pushStartPos;
         powerPushRecord *next;
     } powerPushRecord;
 
@@ -79,19 +79,16 @@ class PowerUpSet {
         
         void fillDefaultSet();
         void fillRandomSet( int inTotalLevel );
-        
-
-        doublePair mLastDrawPos;
-
 
 
         powerPushRecord *mPushStack;
+        int mPushStackSize;
         
         
         char mPushing;
         double mPushProgress;
         PowerUp mPowerToPush;
-        doublePair mPushStartOffset;
+        doublePair mPushStartPos;
         
         
         

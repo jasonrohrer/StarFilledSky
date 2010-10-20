@@ -72,13 +72,11 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
 
 
 void PowerUpSet::fillDefaultSet() {
-    mLastDrawPos.x = 0;
-    mLastDrawPos.y = 0;
-    
     mPushing = false;
     
     mPushStack = NULL;
-
+    mPushStackSize = 0;
+    
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
         mPowers[i].level = 0;
@@ -177,6 +175,7 @@ PowerUpSet::~PowerUpSet() {
         delete p;
         }
     mPushStack = NULL;
+    mPushStackSize = 0;
     
     }
 
@@ -191,7 +190,7 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
         mPushing = true;
         mPushProgress = 0;
         mPowerToPush = inPower;
-        mPushStartOffset = sub( inPowerPos, mLastDrawPos );
+        mPushStartPos = inPowerPos;
         }
     else {
         // already pushing, add to stack
@@ -206,11 +205,12 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
         powerPushRecord *p = new powerPushRecord;
         p->pushProgress = 0;
         p->powerToPush = inPower;
-        p->pushStartOffset = sub( inPowerPos, mLastDrawPos );
+        p->pushStartPos = inPowerPos;
         p->next = NULL;
         
 
         *nextInStack = p;        
+        mPushStackSize++;
         }
     }
 
@@ -235,10 +235,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
 
     doublePair slotContentsPos = inPosition;
     
-    if( mPushing ) {
-
-        doublePair startPos = add( inPosition, mPushStartOffset );
-        
+    if( mPushing ) {        
 
         doublePair destPos = inPosition;
         // push into last slot
@@ -247,10 +244,10 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
         doublePair curPos;
 
         curPos.x = destPos.x * mPushProgress + 
-            startPos.x * (1-mPushProgress);
+            mPushStartPos.x * (1-mPushProgress);
         
         curPos.y = destPos.y * mPushProgress + 
-            startPos.y * (1-mPushProgress);
+            mPushStartPos.y * (1-mPushProgress);
         
         // start faded out so it doesn't pop in over player
         double fadeFactor = inFade;
@@ -289,7 +286,8 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
     
 
     if( mPushing ) {
-        mPushProgress += 0.05;
+        // speed up as stack of waiting power-ups gets taller
+        mPushProgress += 0.05 + 0.05 * mPushStackSize;
         if( mPushProgress >= 1 ) {
             mPushing = false;
 
@@ -306,12 +304,13 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
                 
                 mPushProgress = 0;
                 mPowerToPush = mPushStack->powerToPush;
-                mPushStartOffset = mPushStack->pushStartOffset;
+                mPushStartPos = mPushStack->pushStartPos;
 
                 powerPushRecord *recordToDiscard = mPushStack;
                 
                 mPushStack = mPushStack->next;
-
+                mPushStackSize --;
+                
                 delete recordToDiscard;
                 }
             }
@@ -320,7 +319,6 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
     
 
 
-    mLastDrawPos = inPosition;
 
     
     
