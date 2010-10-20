@@ -12,3 +12,6 @@ int getStepsBetweenBullets( PowerUpSet *inSet );
 float getBulletSpeed( PowerUpSet *inSet );
 
 
+float getAccuracy( PowerUpSet *inSet );
+
+

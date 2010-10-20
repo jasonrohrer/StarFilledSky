@@ -114,7 +114,7 @@ const char *getWindowTitle() {
     }
 
 
-int levelNumber = 20;
+int levelNumber = 10;
 
 Level *currentLevel;
 
@@ -686,21 +686,35 @@ void drawFrame() {
     if( shooting ) {
         if( stepsTilNextBullet == 0 ) {
             // fire bullet
+            PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
 
-            double mouseDist = distance( mousePos, playerPos );
-            doublePair bulletVelocity = sub( mousePos, playerPos );
+            doublePair aimPos = mousePos;
             
-            if( mouseDist > 0 ) {                
+            float accuracy = getAccuracy( playerPowers );
+            
+            double mouseDist = distance( mousePos, playerPos );
+            
+            accuracy *= mouseDist / 10;
+            
+            aimPos.x += 
+                randSource.getRandomBoundedDouble( -accuracy, accuracy );
+            aimPos.y += 
+                randSource.getRandomBoundedDouble( -accuracy, accuracy );
+            
+
+            double aimDist = distance( aimPos, playerPos );
+            doublePair bulletVelocity = sub( aimPos, playerPos );
+            
+            if( aimDist > 0 ) {                
                 // normalize
-                bulletVelocity.x /= mouseDist;
-                bulletVelocity.y /= mouseDist;
+                bulletVelocity.x /= aimDist;
+                bulletVelocity.y /= aimDist;
                 }
             else {
                 bulletVelocity.x = 0;
                 bulletVelocity.y = 1;
                 }            
 
-            PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
             
             // set speed
             bulletSpeed = getBulletSpeed( playerPowers );

@@ -859,12 +859,29 @@ void Level::step() {
             // fire bullet
 
             double playerDist = distance( mPlayerPos, e->position );
-            doublePair bulletVelocity = sub( mPlayerPos, e->position );
             
-            if( playerDist > 0 ) {    
+            doublePair aimPos = mPlayerPos;
+            
+                        
+            float accuracy = getAccuracy( e->powers );
+            
+            accuracy *= playerDist / 10;
+            
+            aimPos.x += 
+                randSource.getRandomBoundedDouble( -accuracy, accuracy );
+            aimPos.y += 
+                randSource.getRandomBoundedDouble( -accuracy, accuracy );
+
+
+
+
+            double aimDist = distance( aimPos, e->position );
+            doublePair bulletVelocity = sub( aimPos, e->position );
+            
+            if( aimDist > 0 ) {    
                 // normalize
-                bulletVelocity.x /= playerDist;
-                bulletVelocity.y /= playerDist;
+                bulletVelocity.x /= aimDist;
+                bulletVelocity.y /= aimDist;
                 }
             else {
                 bulletVelocity.x = 0;
@@ -872,7 +889,8 @@ void Level::step() {
                 }            
 
             // set speed
-            float bulletSpeed = getBulletSpeed( e->powers );
+            // enemy bullets are slower than equivalent player bullets
+            float bulletSpeed = getBulletSpeed( e->powers ) / 2;
             bulletVelocity.x *= bulletSpeed;
             bulletVelocity.y *= bulletSpeed;
             
