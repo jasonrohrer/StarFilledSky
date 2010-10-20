@@ -41,6 +41,7 @@
 #include "PowerUpSet.h"
 #include "numerals.h"
 #include "bulletSizeSet.h"
+#include "powerUpProperties.h"
 
 
 // globals
@@ -707,7 +708,9 @@ void drawFrame() {
             currentLevel->addBullet( playerPos, bulletVelocity, true );
             
 
-            stepsTilNextBullet = stepsBetweenBullets;
+            //stepsTilNextBullet = stepsBetweenBullets;
+            stepsTilNextBullet = getStepsBetweenBullets( 
+                currentLevel->getPlayerPowers() );
             }
         }
     

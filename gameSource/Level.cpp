@@ -879,7 +879,8 @@ void Level::step() {
             addBullet( e->position, bulletVelocity, false, i );
             
 
-            e->stepsTilNextBullet = e->stepsBetweenBullets;
+            //e->stepsTilNextBullet = e->stepsBetweenBullets;
+            e->stepsTilNextBullet = getStepsBetweenBullets( e->powers );
             }
         else {
             e->stepsTilNextBullet --;
@@ -1683,7 +1684,6 @@ void Level::addBullet( doublePair inPosition,
 
     if( inPlayerBullet ) {
         size = getBulletSize( mPlayerPowers );
-        printf( "Player size = %f\n", size );
         }
     else {
         size = getBulletSize( mEnemies.getElement( inEnemyIndex )->powers );

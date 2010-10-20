@@ -39,3 +39,22 @@ float getBulletSize( PowerUpSet *inSet ) {
     
     return boundedSize;
     }
+
+
+float bulletStepParam = 5;
+
+
+
+int getStepsBetweenBullets( PowerUpSet *inSet ) {
+    int totalLevel = 0;
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( inSet->mPowers[i].powerType == powerUpRapidFire ) {
+            totalLevel += inSet->mPowers[i].level;
+            }
+        }
+
+    // max = 20, min = 2
+    return (int)( 20 - 18 * totalLevel / ( totalLevel + bulletStepParam ) );
+    }
+
