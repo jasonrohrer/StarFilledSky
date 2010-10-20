@@ -704,7 +704,6 @@ void drawFrame() {
             
             // set speed
             bulletSpeed = getBulletSpeed( playerPowers );
-            printf( "Bullet speed = %f\n", bulletSpeed );
             
             bulletVelocity.x *= bulletSpeed;
             bulletVelocity.y *= bulletSpeed;
