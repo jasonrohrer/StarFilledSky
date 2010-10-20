@@ -72,8 +72,8 @@ float getBulletSpeed( PowerUpSet *inSet ) {
     // first bound to 0:1
     float boundedSpeed = totalLevel / ( totalLevel + bulletParam );
 
-    // bound to 0.3 : 1.0
-    boundedSpeed *= ( 0.7 );
+    // bound to 0.3 : 0.9
+    boundedSpeed *= ( 0.6 );
     
     boundedSpeed += 0.3;
     
