@@ -865,7 +865,8 @@ void Level::step() {
             float bulletSpeed = getBulletSpeed( e->powers ) / 2;
             
             
-            addBullet( e->position, mPlayerPos, accuracy, 
+            addBullet( e->position, mPlayerPos, accuracy,
+                       getSpread( e->powers ),
                        bulletSpeed, false, i );
             
 
@@ -1663,28 +1664,17 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
     return newPos;
     }
 
-        
 
 
-void Level::addBullet( doublePair inPosition,
-                       doublePair inAimPosition,
-                       double inAccuracy,
-                       double inSpread,
-                       double inSpeed, char inPlayerBullet,
-                       int inEnemyIndex ) {
 
-    double exactAimDist = distance( inAimPosition, inPosition );
-
-    inAccuracy *= exactAimDist / 10;
-
-
-    inAimPosition.x += 
-        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
-    inAimPosition.y += 
-        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
-    
+// when aim already factors in accuracy
+static doublePair getBulletVelocity( doublePair inPosition,
+                                     doublePair inAimPosition,
+                                     double inSpeed ) {
 
     double aimDist = distance( inAimPosition, inPosition );
+
+    // first add center bullet
     doublePair bulletVelocity = sub( inAimPosition, inPosition );
     
     if( aimDist > 0 ) {                
@@ -1697,10 +1687,39 @@ void Level::addBullet( doublePair inPosition,
         bulletVelocity.y = 1;
         }            
             
+    doublePair aimDirection = bulletVelocity;
+    
+
     bulletVelocity.x *= inSpeed;
     bulletVelocity.y *= inSpeed;
 
 
+    return bulletVelocity;
+    }
+
+        
+
+
+void Level::addBullet( doublePair inPosition,
+                       doublePair inAimPosition,
+                       double inAccuracy,
+                       double inSpread,
+                       double inSpeed, char inPlayerBullet,
+                       int inEnemyIndex ) {
+
+    double exactAimDist = distance( inAimPosition, inPosition );
+
+    double distanceScaleFactor = exactAimDist / 10;
+    
+
+    inAccuracy *= distanceScaleFactor;
+
+
+    inAimPosition.x += 
+        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
+    inAimPosition.y += 
+        randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
+    
 
 
 
@@ -1713,8 +1732,100 @@ void Level::addBullet( doublePair inPosition,
         size = getBulletSize( mEnemies.getElement( inEnemyIndex )->powers );
         }
 
+
+    // first add center bullet
+    doublePair bulletVelocity = getBulletVelocity( inPosition, inAimPosition,
+                                                   inSpeed );
+
     Bullet b = { inPosition, bulletVelocity, inPlayerBullet, size };
     mBullets.push_back( b );
+
+
+    
+    if( inSpread > 0 ) {
+        doublePair perpToAim = { - bulletVelocity.y, bulletVelocity.x };
+
+        perpToAim = normalize( perpToAim );
+        
+        int numInPack = (int)inSpread;
+        
+        if( numInPack > 0 ) {
+            
+            doublePair packOffset = perpToAim;
+            
+            packOffset.x *= spreadD2 * distanceScaleFactor;
+            packOffset.y *= spreadD2 * distanceScaleFactor;
+            
+            for( int i=0; i<numInPack; i++ ) {
+                doublePair packMemberOffset = { (i+1) * packOffset.x,
+                                                (i+1) * packOffset.y };
+                
+                // left pack member
+                doublePair packMemberAimPos = 
+                    add( inAimPosition, packMemberOffset );
+                
+                doublePair bulletVelocity = 
+                    getBulletVelocity( inPosition, 
+                                       packMemberAimPos,
+                                       inSpeed );
+
+                Bullet b = { inPosition, bulletVelocity, 
+                             inPlayerBullet, size };
+                mBullets.push_back( b );
+
+
+                // right pack member
+                packMemberAimPos = 
+                    sub( inAimPosition, packMemberOffset );
+                
+                bulletVelocity = 
+                    getBulletVelocity( inPosition, 
+                                       packMemberAimPos,
+                                       inSpeed );
+
+                Bullet br = { inPosition, bulletVelocity, 
+                      inPlayerBullet, size };
+                mBullets.push_back( br );
+                }
+            
+            }
+        
+        double outsiderOffsetFactor = 1 - (inSpread - numInPack);
+        outsiderOffsetFactor *= spreadD1 * distanceScaleFactor;
+        
+        doublePair outsiderOffset = perpToAim;
+        
+        outsiderOffset.x *= outsiderOffsetFactor;
+        outsiderOffset.y *= outsiderOffsetFactor;
+        
+        
+        // left outsider
+        doublePair outsiderAimPos = 
+            add( inAimPosition, outsiderOffset );
+                
+        doublePair bulletVelocity = 
+            getBulletVelocity( inPosition, 
+                               outsiderAimPos,
+                               inSpeed );
+
+        Bullet b = { inPosition, bulletVelocity, 
+                     inPlayerBullet, size };
+        mBullets.push_back( b );
+
+
+        // right pack member
+        outsiderAimPos = 
+            sub( inAimPosition, outsiderOffset );
+                
+        bulletVelocity = 
+            getBulletVelocity( inPosition, 
+                               outsiderAimPos,
+                               inSpeed );
+        
+        Bullet br = { inPosition, bulletVelocity, 
+                     inPlayerBullet, size };
+        mBullets.push_back( br );
+        }
     }
 
     

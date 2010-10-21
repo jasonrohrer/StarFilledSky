@@ -22,7 +22,8 @@ extern float spreadD2;
 
 //  A's are in the pack, B outside:
 //
-//  B     A A A A     B  
+//  B     A A A A     B
+  
 
 float getSpread( PowerUpSet *inSet );
 

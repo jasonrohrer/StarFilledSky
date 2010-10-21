@@ -694,7 +694,8 @@ void drawFrame() {
             bulletSpeed = getBulletSpeed( playerPowers );
 
             
-            currentLevel->addBullet( playerPos, mousePos, accuracy, 
+            currentLevel->addBullet( playerPos, mousePos, accuracy,
+                                     getSpread( playerPowers ),
                                      bulletSpeed, true );
             
 

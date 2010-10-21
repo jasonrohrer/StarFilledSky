@@ -90,9 +90,13 @@ float getAccuracy( PowerUpSet *inSet ) {
     }
 
 
+float spreadD1 = 4;
+float spreadD2 = 0.3;
+
+
 
 float getSpread( PowerUpSet *inSet ) {
-    int totalLevel = getTotalLevel( inSet, powerUpBulletSize );
+    int totalLevel = getTotalLevel( inSet, powerUpSpread );
 
     // first bound to 0:1
     float boundedSpread = totalLevel / ( totalLevel + bulletParam );
