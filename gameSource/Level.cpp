@@ -864,12 +864,31 @@ void Level::step() {
 
         if( hit ) {
             // bullet done
+            
+            HitSmoke s = { b->position, 0 };
+            
+            mSmokeClouds.push_back( s );
+
             mBullets.deleteElement( i );
             i--;
             }
         
         
         }
+
+
+    // step smoke
+    for( i=0; i<mSmokeClouds.size(); i++ ) {
+        HitSmoke *s = mSmokeClouds.getElement( i );
+        
+        s->progress += 0.0625;
+        if( s->progress > 1 ) {
+            
+            mSmokeClouds.deleteElement( i );
+            i--;
+            }
+        }
+    
 
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
@@ -1210,6 +1229,18 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawBullet( b->size, b->position );
         }
 
+
+    // draw smoke
+    for( i=0; i<mSmokeClouds.size(); i++ ) {
+        
+        HitSmoke *s = mSmokeClouds.getElement( i );
+
+        
+        setDrawColor( 1, 1, 1, 0.5 - 0.5 * s->progress );
+        //setDrawColor( 1, 1, 1, 1 - s->progress );
+        
+        drawSquare( s->position, 0.5 * s->progress );
+        }
 
 
     // draw enemies

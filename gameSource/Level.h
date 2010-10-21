@@ -29,6 +29,14 @@ typedef struct Bullet {
     } Bullet;
 
 
+typedef struct HitSmoke {
+        doublePair position;
+        float progress;
+    } HitSmoke;
+
+
+
+
 typedef struct Enemy {
         doublePair position;
         doublePair velocity;
@@ -271,7 +279,8 @@ class Level {
 
 
         SimpleVector<Bullet> mBullets;
-
+        SimpleVector<HitSmoke> mSmokeClouds;
+        
         SimpleVector<Enemy> mEnemies;
         
         SimpleVector<PowerUpToken> mPowerUpTokens;
