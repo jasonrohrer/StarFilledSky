@@ -149,11 +149,21 @@ PowerUpSet::PowerUpSet( int inTotalLevel, spriteID inType ) {
             
         for( int i=POWER_SET_SIZE-1; i>=0; i-- ) {
             
-            mPowers[i].powerType = inType;
-            mPowers[i].level += extraPerSlot;
-                 
+            // only change empty tokens if we have level to add to them
+            // (so we don't end up with level-0 inType tokens)
+            if( mPowers[i].powerType != powerUpEmpty 
+                ||
+                extraPerSlot > 0 ) {
+                
+                mPowers[i].powerType = inType;
+                mPowers[i].level += extraPerSlot;
+                }
+
             if( i == 0 ) {
-                mPowers[i].level += extraLastSlot;
+                if( extraLastSlot > 0 ) {
+                    mPowers[i].powerType = inType;
+                    mPowers[i].level += extraLastSlot;
+                    }
                 }
             }
         }
