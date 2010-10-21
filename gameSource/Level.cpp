@@ -733,14 +733,15 @@ void Level::step() {
             doublePair closestTarget = mPlayerPos;
             if( b->playerFlag ) {
                 
-                // search for closest enemy
+                // search for closest enemy to waypoint 
+                // (closest to reticle at time of firing)
                 
                 double minDistance = DBL_MAX;
                 int minIndex = -1;
                 for( int j=0; j<mEnemies.size(); j++ ) {
                     Enemy *e = mEnemies.getElement( j );
                     
-                    double dist = distance( e->position, b->position );
+                    double dist = distance( e->position, b->heatSeekWaypoint );
                     if( dist < minDistance ) {
                         minDistance = dist;
                         minIndex = j;
@@ -754,6 +755,8 @@ void Level::step() {
             doublePair vectorToTarget = normalize( sub( closestTarget, 
                                                         b->position ) );
             adjustedVelocity = normalize( adjustedVelocity );
+            
+            //b->heatSeek = 0.1;
             
             // how much to weight heat seek tendency
             vectorToTarget = mult( vectorToTarget, b->heatSeek );
@@ -914,6 +917,7 @@ void Level::step() {
             addBullet( e->position, mPlayerPos, accuracy,
                        getSpread( e->powers ),
                        getHeatSeek( e->powers ),
+                       mPlayerPos,
                        bulletSpeed, false, i );
             
 
@@ -1752,6 +1756,7 @@ void Level::addBullet( doublePair inPosition,
                        double inAccuracy,
                        double inSpread,
                        double inHeatSeek,
+                       doublePair inHeatSeekWaypoint,
                        double inSpeed, char inPlayerBullet,
                        int inEnemyIndex ) {
 
@@ -1786,6 +1791,7 @@ void Level::addBullet( doublePair inPosition,
                                                    inSpeed );
 
     Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
+                 inHeatSeekWaypoint,
                  inPlayerBullet, size };
     mBullets.push_back( b );
 
@@ -1819,7 +1825,7 @@ void Level::addBullet( doublePair inPosition,
                                        inSpeed );
 
                 Bullet b = { inPosition, bulletVelocity,
-                             inSpeed, inHeatSeek,
+                             inSpeed, inHeatSeek, inHeatSeekWaypoint,
                              inPlayerBullet, size };
                 mBullets.push_back( b );
 
@@ -1834,7 +1840,7 @@ void Level::addBullet( doublePair inPosition,
                                        inSpeed );
 
                 Bullet br = { inPosition, bulletVelocity,
-                              inSpeed, inHeatSeek,
+                              inSpeed, inHeatSeek, inHeatSeekWaypoint,
                               inPlayerBullet, size };
                 mBullets.push_back( br );
                 }
@@ -1860,7 +1866,7 @@ void Level::addBullet( doublePair inPosition,
                                inSpeed );
 
         Bullet b = { inPosition, bulletVelocity, 
-                     inSpeed, inHeatSeek,
+                     inSpeed, inHeatSeek, inHeatSeekWaypoint,
                      inPlayerBullet, size };
         mBullets.push_back( b );
 
@@ -1875,7 +1881,7 @@ void Level::addBullet( doublePair inPosition,
                                inSpeed );
         
         Bullet br = { inPosition, bulletVelocity,
-                      inSpeed, inHeatSeek,
+                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
                       inPlayerBullet, size };
         mBullets.push_back( br );
         }
