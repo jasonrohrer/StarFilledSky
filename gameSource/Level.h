@@ -21,6 +21,8 @@
 typedef struct Bullet {
         doublePair position;
         doublePair velocity;
+        double speed;
+        double heatSeek;
         char playerFlag;
         float size;
     } Bullet;
@@ -191,6 +193,7 @@ class Level {
                         doublePair inAimPosition,
                         double inAccuracy,
                         double inSpread,
+                        double inHeatSeek,
                         double inSpeed, char inPlayerBullet,
                         int inEnemyIndex = -1 );
 

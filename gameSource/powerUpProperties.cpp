@@ -107,3 +107,18 @@ float getSpread( PowerUpSet *inSet ) {
     return boundedSpread;
     }
 
+
+
+float getHeatSeek( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpHeatSeek );
+
+    // first bound to 0:1
+    float boundedHeatSeek = totalLevel / ( totalLevel + bulletParam );
+
+    // bound to 0:0.1
+    boundedSpread *= 0.1;
+
+    
+    return boundedHeatSeek;
+    }
+

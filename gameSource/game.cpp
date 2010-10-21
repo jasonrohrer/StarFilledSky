@@ -696,6 +696,7 @@ void drawFrame() {
             
             currentLevel->addBullet( playerPos, mousePos, accuracy,
                                      getSpread( playerPowers ),
+                                     getHeatSeek( playerPowers ),
                                      bulletSpeed, true );
             
 

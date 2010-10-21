@@ -28,3 +28,8 @@ extern float spreadD2;
 float getSpread( PowerUpSet *inSet );
 
 
+
+// weight of heat-seek influence, 0..1
+float getHeatSeek( PowerUpSet *inSet );
+
+

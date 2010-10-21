@@ -10,6 +10,7 @@ static ColorScheme getScheme( spriteID inPowerType ) {
             ColorScheme c( 0.1667f, 0.1667f );
             return c;
             }
+        case powerUpHeatSeek:
         case powerUpHeart: {
             ColorScheme c( 0.0f, 0.1667f );
             return c;
