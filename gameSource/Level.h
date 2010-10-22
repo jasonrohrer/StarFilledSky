@@ -25,6 +25,7 @@ typedef struct Bullet {
         double heatSeek;
         doublePair heatSeekWaypoint;
         double distanceLeft;
+        int bouncesLeft;
         char playerFlag;
         float size;
     } Bullet;

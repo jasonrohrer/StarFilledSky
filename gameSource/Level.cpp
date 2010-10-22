@@ -725,8 +725,6 @@ void Level::step() {
         
         Bullet *b = mBullets.getElement( i );
         
-        doublePair adjustedVelocity = b->velocity;
-        
         if( b->heatSeek > 0 ) {
 
             // vector toward closest target
@@ -765,7 +763,7 @@ void Level::step() {
                 
                 doublePair vectorToTarget = normalize( sub( closestTarget, 
                                                             b->position ) );
-                adjustedVelocity = normalize( adjustedVelocity );
+                doublePair adjustedVelocity = normalize( b->velocity );
             
                 // how much to weight heat seek tendency
                 vectorToTarget = mult( vectorToTarget, b->heatSeek );
@@ -784,7 +782,7 @@ void Level::step() {
         
 
 
-        b->position = add( b->position, adjustedVelocity );        
+        b->position = add( b->position, b->velocity );        
         
         b->distanceLeft -= b->speed;
         
@@ -812,10 +810,35 @@ void Level::step() {
             mColorMix[ squareIndex ] = 1;
 
             if( isWall( b->position ) ) {
-                hit = true;
-
                 // jump to hard when hit, then fade out
                 mGridColors[ squareIndex ] = mHardGridColors[ squareIndex ];
+
+                if( b->bouncesLeft == 0 ) {
+                    
+                    hit = true;
+                    }
+                else {
+                    b->bouncesLeft --;
+                    
+                    doublePair oldPos = 
+                        sub( b->position, b->velocity );        
+
+                    doublePair yOnly = oldPos;
+                    yOnly.y += b->velocity.y;
+                    
+                    doublePair xOnly = oldPos;
+                    xOnly.x += b->velocity.x;
+                    
+                    if( isWall( yOnly ) ) {
+                        b->velocity.y *= -1;
+                        }
+                    if( isWall( xOnly ) ) {
+                        b->velocity.x *= -1;
+                        }
+                    
+                    // first step in bounce-back, to get outside of wall
+                    //b->position = add( b->position, b->velocity );
+                    }
                 }
             else {
                 // color floor
@@ -1920,7 +1943,9 @@ void Level::addBullet( doublePair inPosition,
     double inHeatSeek = getHeatSeek( inPowers );
     
     double distance = getBulletDistance( inPowers );    
-
+    
+    int bounce = getBounce( inPowers );
+        
 
     inAccuracy *= distanceScaleFactor;
 
@@ -1950,6 +1975,7 @@ void Level::addBullet( doublePair inPosition,
     Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
                  inHeatSeekWaypoint,
                  distance,
+                 bounce,
                  inPlayerBullet, size };
     mBullets.push_back( b );
 
@@ -1985,6 +2011,7 @@ void Level::addBullet( doublePair inPosition,
                 Bullet b = { inPosition, bulletVelocity,
                              inSpeed, inHeatSeek, inHeatSeekWaypoint,
                              distance,
+                             bounce,
                              inPlayerBullet, size };
                 mBullets.push_back( b );
 
@@ -2001,6 +2028,7 @@ void Level::addBullet( doublePair inPosition,
                 Bullet br = { inPosition, bulletVelocity,
                               inSpeed, inHeatSeek, inHeatSeekWaypoint,
                               distance,
+                              bounce,
                               inPlayerBullet, size };
                 mBullets.push_back( br );
                 }
@@ -2028,6 +2056,7 @@ void Level::addBullet( doublePair inPosition,
         Bullet b = { inPosition, bulletVelocity, 
                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
                      distance,
+                     bounce,
                      inPlayerBullet, size };
         mBullets.push_back( b );
 
@@ -2044,6 +2073,7 @@ void Level::addBullet( doublePair inPosition,
         Bullet br = { inPosition, bulletVelocity,
                       inSpeed, inHeatSeek, inHeatSeekWaypoint,
                       distance,
+                      bounce,
                       inPlayerBullet, size };
         mBullets.push_back( br );
         }

@@ -141,3 +141,19 @@ float getBulletDistance( PowerUpSet *inSet ) {
     return boundedDistance;
     }
 
+
+float bounceParam = 5;
+
+int getBounce( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpBounce );
+
+    // first bound to 0:1
+    float boundedBounce = totalLevel / ( totalLevel + bounceParam );
+
+    // bound to 0:10
+    boundedBounce *= 10;
+    
+    return (int)boundedBounce;
+    }
+
+

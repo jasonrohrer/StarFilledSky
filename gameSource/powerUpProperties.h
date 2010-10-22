@@ -35,3 +35,6 @@ float getHeatSeek( PowerUpSet *inSet );
 
 
 float getBulletDistance( PowerUpSet *inSet );
+
+
+int getBounce( PowerUpSet *inSet );
