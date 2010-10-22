@@ -780,7 +780,8 @@ void Level::step() {
 
 
         char hit = false;
-
+        char damage = false;
+        
 
         // first make sure it's in bounds of sparse world tiles
         
@@ -822,7 +823,8 @@ void Level::step() {
                             hitRadius  ) {
                             
                             hit = true;
-
+                            damage = true;
+                            
                             // make sure enemy health is up-to-date
                             // (its power-ups may have been modified)
                             int maxHealth = 
@@ -850,6 +852,7 @@ void Level::step() {
                     // check if hit player
                     if( distance( mPlayerPos, b->position ) < hitRadius ) {
                         hit = true;
+                        damage = true;
                         mPlayerHealth -= 1;
                         if( mPlayerHealth < 0 ) {
                             mPlayerHealth = 0;
@@ -865,7 +868,15 @@ void Level::step() {
         if( hit ) {
             // bullet done
             
-            HitSmoke s = { b->position, 0 };
+            char type = 0;
+            if( damage ) {
+                type = 2;
+                }
+            else if( b->playerFlag ) {
+                type = 1;
+                }
+            
+            HitSmoke s = { b->position, 0, type };
             
             mSmokeClouds.push_back( s );
 
@@ -1014,6 +1025,37 @@ void Level::drawPlayer( double inFade ) {
     //setDrawColor( 1, 0, 0, inFade );
     //drawSquare( mPlayerPos, 0.25 );
     mPlayerSprite.draw( mPlayerPos, inFade );
+    }
+
+
+
+void Level::drawSmoke( double inFade ) {
+    // draw smoke
+    for( int i=0; i<mSmokeClouds.size(); i++ ) {
+        
+        HitSmoke *s = mSmokeClouds.getElement( i );
+        
+        float fade = inFade * ( 0.5 - 0.5 * s->progress );
+        
+        switch( s->type ) {
+            case 0:
+                setDrawColor( 0, 0, 0, fade );
+                break;
+            case 1:
+                setDrawColor( 1, 1, 1, fade );
+                break;
+            case 2:
+                setDrawColor( 1, 0, 0, fade * 2 );
+                break;
+            };
+        
+
+        
+        //setDrawColor( 1, 1, 1, 1 - s->progress );
+        
+        drawSquare( s->position, 0.5 * s->progress );
+        }
+
     }
 
 
@@ -1230,17 +1272,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    // draw smoke
-    for( i=0; i<mSmokeClouds.size(); i++ ) {
-        
-        HitSmoke *s = mSmokeClouds.getElement( i );
-
-        
-        setDrawColor( 1, 1, 1, 0.5 - 0.5 * s->progress );
-        //setDrawColor( 1, 1, 1, 1 - s->progress );
-        
-        drawSquare( s->position, 0.5 * s->progress );
-        }
 
 
     // draw enemies
@@ -1311,11 +1342,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    // draw player and mouse
-    
     if( !mWindowSet ) {
         drawMouse( 1 );
         drawPlayer( 1 );
+
+        drawSmoke( 1 );
         }
     
 
@@ -1334,45 +1365,39 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
     if( mWindowSet ) {
         stopStencil();
         
+        double overlieFade = (inFade - 0.63) / 0.37;
+
         if( mWindowPosition.type == player ) {
             mPlayerSprite.drawCenter( mPlayerPos, inFade );
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
             
             // mouse drawn under player
             }
-        else if( mWindowPosition.type == enemy ) {    
-            Enemy *e = mEnemies.getElement( mWindowPosition.index );
-            e->sprite->drawCenter( e->position, inFade );
-            e->sprite->drawBorder( e->position, inFrameFade );
+        else {
+            if( mWindowPosition.type == enemy ) {    
+                Enemy *e = mEnemies.getElement( mWindowPosition.index );
+                e->sprite->drawCenter( e->position, inFade );
+                e->sprite->drawBorder( e->position, inFrameFade );
+                }
+            else if( mWindowPosition.type == power ) {    
+                PowerUpToken *t = 
+                    mPowerUpTokens.getElement( mWindowPosition.index );
+                
+                drawPowerUpCenter( t->power, t->position, inFade );
+                drawPowerUpBorder( t->position, inFrameFade );
+                }
+            
 
-
-            // mouse and player drawn on top of enemy
+            // mouse and player drawn on top of enemy or power-up
             // fade these a bit sooner to get them out of the way
-            double overlieFade = (inFade - 0.63) / 0.37;
             if( overlieFade > 0 ) {
                 drawMouse( overlieFade );
                 drawPlayer( overlieFade );
                 }
-            
             }
-        else if( mWindowPosition.type == power ) {    
-            PowerUpToken *t = 
-                mPowerUpTokens.getElement( mWindowPosition.index );
-            
-            drawPowerUpCenter( t->power, t->position, inFade );
-            drawPowerUpBorder( t->position, inFrameFade );
 
-
-            // mouse and player drawn on top of enemy
-            // fade these a bit sooner to get them out of the way
-            double overlieFade = (inFade - 0.63) / 0.37;
-            if( overlieFade > 0 ) {
-                drawMouse( overlieFade );
-                drawPlayer( overlieFade );
-                }
-            
-            }
-        
+        // smoke drawn on top of all
+        drawSmoke( overlieFade );
         }
     }
 

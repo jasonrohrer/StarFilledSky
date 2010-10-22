@@ -32,6 +32,10 @@ typedef struct Bullet {
 typedef struct HitSmoke {
         doublePair position;
         float progress;
+        // 0 enemy vs wall
+        // 1 player vs wall
+        // 2 damage
+        char type;
     } HitSmoke;
 
 
@@ -215,6 +219,7 @@ class Level {
         
         void drawPlayer( double inFade );
         void drawMouse( double inFade );
+        void drawSmoke( double inFade );
 
         GridPos getGridPos( doublePair inWorldPos );
 
