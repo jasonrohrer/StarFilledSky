@@ -930,8 +930,9 @@ void Level::step() {
         if( hit ) {
             // bullet done
             
-            if( !destroyed ) {
-                // target not destroyed by hit, draw smoke
+            if( !destroyed || ! b->playerFlag ) {
+                // target not destroyed by hit, or player destroyed, 
+                // draw smoke
 
                 char type = 0;
                 if( damage ) {
@@ -943,7 +944,14 @@ void Level::step() {
                 // unused
                 Color c;
                 
-                HitSmoke s = { b->position, 0, 0.5, type, c };
+                double progress = 0;
+                if( destroyed && ! b->playerFlag ) {
+                    // start bigger
+                    progress = 0.25;
+                    }
+                
+
+                HitSmoke s = { b->position, progress, 0.5, type, c };
                 
                 mSmokeClouds.push_back( s );
                 }
