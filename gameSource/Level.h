@@ -32,10 +32,13 @@ typedef struct Bullet {
 typedef struct HitSmoke {
         doublePair position;
         float progress;
+        float maxSize;
         // 0 enemy vs wall
         // 1 player vs wall
         // 2 damage
+        // 3 enemy explosion
         char type;
+        Color enemyColor;
     } HitSmoke;
 
 

@@ -781,6 +781,7 @@ void Level::step() {
 
         char hit = false;
         char damage = false;
+        char destroyed = false;
         
 
         // first make sure it's in bounds of sparse world tiles
@@ -836,6 +837,64 @@ void Level::step() {
 
                             e->health --;
                             if( e->health == 0 ) {
+
+                                // add hit smoke at enemy center
+                                
+                                ColorScheme colors = e->sprite->getColors();
+                                
+                                Color borderColor = colors.primary.elements[3];
+                                
+                                // big smoke for border, dead center
+                                HitSmoke s = { e->position, 0, 0.75, 3, 
+                                               borderColor };
+                                
+                                mSmokeClouds.push_back( s );
+                                
+
+                                // one extra small puff for each other color
+                                for( int i=0; i<3; i++ ) {
+                                    doublePair pos = e->position;
+                                    
+                                    pos.x += 
+                                        randSource.getRandomBoundedDouble(
+                                            -0.25, 0.25 );
+                                    pos.y += 
+                                        randSource.getRandomBoundedDouble(
+                                            -0.25, 0.25 );
+                                    
+                                    
+                                    Color primary = colors.primary.elements[i];
+                                    HitSmoke s2 = { pos, 0, 0.5, 3, 
+                                                    primary };
+                                
+                                    mSmokeClouds.push_back( s2 );
+                                
+
+
+                                    pos = e->position;
+                                    
+                                    pos.x += 
+                                        randSource.getRandomBoundedDouble(
+                                            -0.25, 0.25 );
+                                    pos.y += 
+                                        randSource.getRandomBoundedDouble(
+                                            -0.25, 0.25 );
+
+                                    Color secondary = 
+                                        colors.secondary.elements[i];
+                                    HitSmoke s3 = { pos, 0, 0.5, 3, 
+                                                    secondary };
+                                
+                                    mSmokeClouds.push_back( s3 );
+                                    }
+                                
+                                
+
+                                
+                                // don't generate other hit smoke
+                                destroyed = true;
+                                
+
                                 delete e->sprite;
                                 delete e->powers;
                                 
@@ -857,6 +916,9 @@ void Level::step() {
                         if( mPlayerHealth < 0 ) {
                             mPlayerHealth = 0;
                             }
+                        if( mPlayerHealth == 0 ) {
+                            destroyed = true;
+                            }                                
                         }
                     }
             
@@ -868,18 +930,24 @@ void Level::step() {
         if( hit ) {
             // bullet done
             
-            char type = 0;
-            if( damage ) {
-                type = 2;
-                }
-            else if( b->playerFlag ) {
-                type = 1;
-                }
-            
-            HitSmoke s = { b->position, 0, type };
-            
-            mSmokeClouds.push_back( s );
+            if( !destroyed ) {
+                // target not destroyed by hit, draw smoke
 
+                char type = 0;
+                if( damage ) {
+                    type = 2;
+                    }
+                else if( b->playerFlag ) {
+                    type = 1;
+                    }
+                // unused
+                Color c;
+                
+                HitSmoke s = { b->position, 0, 0.5, type, c };
+                
+                mSmokeClouds.push_back( s );
+                }
+            
             mBullets.deleteElement( i );
             i--;
             }
@@ -1047,13 +1115,18 @@ void Level::drawSmoke( double inFade ) {
             case 2:
                 setDrawColor( 1, 0, 0, fade * 2 );
                 break;
+            case 3:
+                setDrawColor( s->enemyColor.r, 
+                              s->enemyColor.g, 
+                              s->enemyColor.b, fade * 2 );
+                break;
             };
         
 
         
         //setDrawColor( 1, 1, 1, 1 - s->progress );
         
-        drawSquare( s->position, 0.5 * s->progress );
+        drawSquare( s->position, s->maxSize * s->progress );
         }
 
     }
