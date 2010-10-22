@@ -32,7 +32,7 @@ void freeBulletSizeSet() {
 
 
 
-void drawBullet( float inSize, doublePair inCenter ) {
+void drawBullet( float inSize, doublePair inCenter, float inFade ) {
     
     // tweak to center, since bullets have odd sizes
     // hackish:  half a sprite pixel
@@ -46,18 +46,18 @@ void drawBullet( float inSize, doublePair inCenter ) {
     
 
     if( extra != 0 ) {
-        setDrawFade( extra );
+        setDrawFade( extra * inFade );
         drawSprite( spriteBank[ baseSize ], inCenter, 1.0/16 );
    
         if( extra < 0.25 ) {
-            setDrawFade( 1 );
+            setDrawFade( inFade);
             }
         else {
-            setDrawFade( (1 - extra) / 0.75 );
+            setDrawFade( inFade * (1 - extra) / 0.75 );
             }
         }
     else {
-        setDrawFade( 1 );
+        setDrawFade( inFade );
         }
     
     drawSprite( spriteBank[ baseSize - 1 ], inCenter, 1.0/16 );    

@@ -688,15 +688,12 @@ void drawFrame() {
             // fire bullet
             PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
             
-            float accuracy = getAccuracy( playerPowers );
-            
             // set speed
             bulletSpeed = getBulletSpeed( playerPowers );
 
             
-            currentLevel->addBullet( playerPos, mousePos, accuracy,
-                                     getSpread( playerPowers ),
-                                     getHeatSeek( playerPowers ),
+            currentLevel->addBullet( playerPos, mousePos, 
+                                     playerPowers,
                                      mousePos,
                                      bulletSpeed, true );
             

@@ -9,4 +9,4 @@ void freeBulletSizeSet();
 extern int maxBulletSize;
 
 
-void drawBullet( float inSize, doublePair inCenter );
+void drawBullet( float inSize, doublePair inCenter, float inFade = 1 );

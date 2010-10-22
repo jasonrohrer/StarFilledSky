@@ -125,3 +125,19 @@ float getHeatSeek( PowerUpSet *inSet ) {
     return boundedHeatSeek;
     }
 
+
+
+float getBulletDistance( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpBulletDistance );
+
+    // first bound to 0:1
+    float boundedDistance = totalLevel / ( totalLevel + bulletParam );
+
+    // bound to 5:30
+    boundedDistance *= 25;
+    
+    boundedDistance += 5;
+    
+    return boundedDistance;
+    }
+

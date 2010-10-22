@@ -33,3 +33,5 @@ float getSpread( PowerUpSet *inSet );
 float getHeatSeek( PowerUpSet *inSet );
 
 
+
+float getBulletDistance( PowerUpSet *inSet );

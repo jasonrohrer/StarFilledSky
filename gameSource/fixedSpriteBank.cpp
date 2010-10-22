@@ -6,7 +6,7 @@ static SpriteHandle spriteBank[ 100 ];
 
 
 int firstPowerUpID = powerUpEmpty;
-int lastPowerUpID = powerUpHeatSeek;
+int lastPowerUpID = powerUpBulletDistance;
 
 
 
@@ -25,6 +25,8 @@ void initSpriteBank() {
     spriteBank[ powerUpAccuracy ] = loadSprite( "powerUpAccuracy.tga" );
     spriteBank[ powerUpSpread ] = loadSprite( "powerUpSpread.tga" );
     spriteBank[ powerUpHeatSeek ] = loadSprite( "powerUpHeatSeek.tga" );
+    spriteBank[ powerUpBulletDistance ] = 
+        loadSprite( "powerUpBulletDistance.tga" );
    }
 
 

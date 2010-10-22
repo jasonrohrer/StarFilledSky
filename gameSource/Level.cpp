@@ -728,53 +728,66 @@ void Level::step() {
         doublePair adjustedVelocity = b->velocity;
         
         if( b->heatSeek > 0 ) {
-            
+
             // vector toward closest target
             doublePair closestTarget = mPlayerPos;
+            char shouldAdjustVelocity = true;
+            
             if( b->playerFlag ) {
-                
-                // search for closest enemy to waypoint 
-                // (closest to reticle at time of firing)
-                
-                double minDistance = DBL_MAX;
-                int minIndex = -1;
-                for( int j=0; j<mEnemies.size(); j++ ) {
-                    Enemy *e = mEnemies.getElement( j );
+            
+                shouldAdjustVelocity = false;
+                if( mEnemies.size() > 0 ) {
+                    shouldAdjustVelocity = true;
                     
-                    double dist = distance( e->position, b->heatSeekWaypoint );
-                    if( dist < minDistance ) {
-                        minDistance = dist;
-                        minIndex = j;
-                        }
-                    }
+                    // search for closest enemy to waypoint 
+                    // (closest to reticle at time of firing)
                 
-                Enemy *e = mEnemies.getElement( minIndex );
-                closestTarget = e->position;                        
+                    double minDistance = DBL_MAX;
+                    int minIndex = -1;
+                    for( int j=0; j<mEnemies.size(); j++ ) {
+                        Enemy *e = mEnemies.getElement( j );
+                        
+                        double dist = distance( e->position, 
+                                                b->heatSeekWaypoint );
+                        if( dist < minDistance ) {
+                            minDistance = dist;
+                            minIndex = j;
+                            }
+                        }
+                
+                    Enemy *e = mEnemies.getElement( minIndex );
+                    closestTarget = e->position;                        
+                    }
                 }
             
-            doublePair vectorToTarget = normalize( sub( closestTarget, 
-                                                        b->position ) );
-            adjustedVelocity = normalize( adjustedVelocity );
             
-            //b->heatSeek = 0.1;
+            if( shouldAdjustVelocity ) {
+                
+                doublePair vectorToTarget = normalize( sub( closestTarget, 
+                                                            b->position ) );
+                adjustedVelocity = normalize( adjustedVelocity );
             
-            // how much to weight heat seek tendency
-            vectorToTarget = mult( vectorToTarget, b->heatSeek );
+                // how much to weight heat seek tendency
+                vectorToTarget = mult( vectorToTarget, b->heatSeek );
             
-            // how much to weight forward-velocity tendency 
-            adjustedVelocity = mult( adjustedVelocity, 1 - b->heatSeek );
+                // how much to weight forward-velocity tendency 
+                adjustedVelocity = mult( adjustedVelocity, 1 - b->heatSeek );
             
-            adjustedVelocity = add( adjustedVelocity, vectorToTarget );
+                adjustedVelocity = add( adjustedVelocity, vectorToTarget );
             
-            // maintain bullet speed after we've picked a direction
-            adjustedVelocity = normalize( adjustedVelocity );
-            adjustedVelocity = mult( adjustedVelocity, b->speed );
-            b->velocity = adjustedVelocity;
+                // maintain bullet speed after we've picked a direction
+                adjustedVelocity = normalize( adjustedVelocity );
+                adjustedVelocity = mult( adjustedVelocity, b->speed );
+                b->velocity = adjustedVelocity;
+                }
             }
         
 
 
         b->position = add( b->position, adjustedVelocity );        
+        
+        b->distanceLeft -= b->speed;
+        
         
         GridPos p = getGridPos( b->position );
 
@@ -927,10 +940,11 @@ void Level::step() {
         
 
 
-        if( hit ) {
+        if( hit || b->distanceLeft <= 0 ) {
             // bullet done
             
-            if( !destroyed || ! b->playerFlag ) {
+            if( hit && 
+                ( !destroyed || ! b->playerFlag ) ) {
                 // target not destroyed by hit, or player destroyed, 
                 // draw smoke
 
@@ -949,7 +963,6 @@ void Level::step() {
                     // start bigger
                     progress = 0.25;
                     }
-                
 
                 HitSmoke s = { b->position, progress, 0.5, type, c };
                 
@@ -1013,16 +1026,13 @@ void Level::step() {
         if( e->stepsTilNextBullet == 0 ) {
             // fire bullet
 
-            float accuracy = getAccuracy( e->powers );
-
             // set speed
             // enemy bullets are slower than equivalent player bullets
             float bulletSpeed = getBulletSpeed( e->powers ) / 2;
             
             
-            addBullet( e->position, mPlayerPos, accuracy,
-                       getSpread( e->powers ),
-                       getHeatSeek( e->powers ),
+            addBullet( e->position, mPlayerPos, 
+                       e->powers,
                        mPlayerPos,
                        bulletSpeed, false, i );
             
@@ -1342,14 +1352,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         Bullet *b = mBullets.getElement( i );
 
+        float fade = 1;
+        
+        if( b->distanceLeft < 2 ) {
+            fade = b->distanceLeft * 0.5;
+            }
+
         
         if( b->playerFlag ) {
-            setDrawColor( 1, 1, 1, 1 );
+            setDrawColor( 1, 1, 1, fade );
             }
         else {
-            setDrawColor( 0, 0, 0, 1 );
+            setDrawColor( 0, 0, 0, fade );
             }
-        drawBullet( b->size, b->position );
+        drawBullet( b->size, b->position, fade );
         }
 
 
@@ -1890,9 +1906,7 @@ static doublePair getBulletVelocity( doublePair inPosition,
 
 void Level::addBullet( doublePair inPosition,
                        doublePair inAimPosition,
-                       double inAccuracy,
-                       double inSpread,
-                       double inHeatSeek,
+                       PowerUpSet *inPowers,
                        doublePair inHeatSeekWaypoint,
                        double inSpeed, char inPlayerBullet,
                        int inEnemyIndex ) {
@@ -1901,6 +1915,12 @@ void Level::addBullet( doublePair inPosition,
 
     double distanceScaleFactor = exactAimDist / 10;
     
+    double inAccuracy = getAccuracy( inPowers );
+    double inSpread = getSpread( inPowers );
+    double inHeatSeek = getHeatSeek( inPowers );
+    
+    double distance = getBulletDistance( inPowers );    
+
 
     inAccuracy *= distanceScaleFactor;
 
@@ -1929,6 +1949,7 @@ void Level::addBullet( doublePair inPosition,
 
     Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
                  inHeatSeekWaypoint,
+                 distance,
                  inPlayerBullet, size };
     mBullets.push_back( b );
 
@@ -1963,6 +1984,7 @@ void Level::addBullet( doublePair inPosition,
 
                 Bullet b = { inPosition, bulletVelocity,
                              inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                             distance,
                              inPlayerBullet, size };
                 mBullets.push_back( b );
 
@@ -1978,6 +2000,7 @@ void Level::addBullet( doublePair inPosition,
 
                 Bullet br = { inPosition, bulletVelocity,
                               inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                              distance,
                               inPlayerBullet, size };
                 mBullets.push_back( br );
                 }
@@ -2004,6 +2027,7 @@ void Level::addBullet( doublePair inPosition,
 
         Bullet b = { inPosition, bulletVelocity, 
                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                     distance,
                      inPlayerBullet, size };
         mBullets.push_back( b );
 
@@ -2019,6 +2043,7 @@ void Level::addBullet( doublePair inPosition,
         
         Bullet br = { inPosition, bulletVelocity,
                       inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                      distance,
                       inPlayerBullet, size };
         mBullets.push_back( br );
         }
