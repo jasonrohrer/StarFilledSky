@@ -1398,7 +1398,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             setDrawColor( 1, 1, 1, fade );
             }
         else {
-            setDrawColor( 0, 0, 0, fade );
+            setDrawColor( 0.35, 0.35, 0.35, fade );
             }
         drawBullet( b->size, b->position, fade );
         }
