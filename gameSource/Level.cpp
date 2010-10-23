@@ -831,9 +831,21 @@ void Level::step() {
                     
                     if( isWall( yOnly ) ) {
                         b->velocity.y *= -1;
+                    
+                        if( isWall( xOnly ) ) {
+                            b->velocity.x *= -1;
+                            }
                         }
-                    if( isWall( xOnly ) ) {
+                    else if( isWall( xOnly ) ) {
                         b->velocity.x *= -1;
+                        if( isWall( yOnly ) ) {
+                            b->velocity.y *= -1;
+                            }
+                        }
+                    else {
+                        // corner case?
+                        b->velocity.x *= -1;
+                        b->velocity.y *= -1;
                         }
                     
                     // first step in bounce-back, to get outside of wall
