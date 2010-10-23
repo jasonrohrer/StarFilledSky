@@ -1980,16 +1980,11 @@ void Level::addBullet( doublePair inPosition,
         }
 
 
-    // first add center bullet
+    // velocity for center bullet
+    // (add later, on top of pack)
     doublePair bulletVelocity = getBulletVelocity( inPosition, inAimPosition,
                                                    inSpeed );
 
-    Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
-                 inHeatSeekWaypoint,
-                 distance,
-                 bounce,
-                 inPlayerBullet, size };
-    mBullets.push_back( b );
 
 
     
@@ -2000,14 +1995,68 @@ void Level::addBullet( doublePair inPosition,
         
         int numInPack = (int)inSpread;
         
+
+
+        // first add outsiders, under pack members
+
+        double outsiderOffsetFactor = 1 - (inSpread - numInPack);
+        outsiderOffsetFactor *= spreadD1 * distanceScaleFactor;
+        
+        doublePair outsiderOffset = perpToAim;
+        
+        outsiderOffset.x *= outsiderOffsetFactor;
+        outsiderOffset.y *= outsiderOffsetFactor;
+        
+        
+        // left outsider
+        doublePair outsiderAimPos = 
+            add( inAimPosition, outsiderOffset );
+                
+        doublePair bulletVelocity = 
+            getBulletVelocity( inPosition, 
+                               outsiderAimPos,
+                               inSpeed );
+
+        Bullet b = { inPosition, bulletVelocity, 
+                     inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                     distance,
+                     bounce,
+                     inPlayerBullet, size };
+        mBullets.push_back( b );
+
+
+        // right outsider
+        outsiderAimPos = 
+            sub( inAimPosition, outsiderOffset );
+                
+        bulletVelocity = 
+            getBulletVelocity( inPosition, 
+                               outsiderAimPos,
+                               inSpeed );
+        
+        Bullet br = { inPosition, bulletVelocity,
+                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
+                      distance,
+                      bounce,
+                      inPlayerBullet, size };
+        mBullets.push_back( br );
+
+
+
+
+
+
+
+
         if( numInPack > 0 ) {
             
             doublePair packOffset = perpToAim;
             
             packOffset.x *= spreadD2 * distanceScaleFactor;
             packOffset.y *= spreadD2 * distanceScaleFactor;
-            
-            for( int i=0; i<numInPack; i++ ) {
+
+            // add pack members outside-in (so center ones are on top)
+            for( int i=numInPack-1; i>=0; i-- ) {
                 doublePair packMemberOffset = { (i+1) * packOffset.x,
                                                 (i+1) * packOffset.y };
                 
@@ -2047,48 +2096,17 @@ void Level::addBullet( doublePair inPosition,
             
             }
         
-        double outsiderOffsetFactor = 1 - (inSpread - numInPack);
-        outsiderOffsetFactor *= spreadD1 * distanceScaleFactor;
-        
-        doublePair outsiderOffset = perpToAim;
-        
-        outsiderOffset.x *= outsiderOffsetFactor;
-        outsiderOffset.y *= outsiderOffsetFactor;
-        
-        
-        // left outsider
-        doublePair outsiderAimPos = 
-            add( inAimPosition, outsiderOffset );
-                
-        doublePair bulletVelocity = 
-            getBulletVelocity( inPosition, 
-                               outsiderAimPos,
-                               inSpeed );
-
-        Bullet b = { inPosition, bulletVelocity, 
-                     inSpeed, inHeatSeek, inHeatSeekWaypoint,
-                     distance,
-                     bounce,
-                     inPlayerBullet, size };
-        mBullets.push_back( b );
-
-
-        // right pack member
-        outsiderAimPos = 
-            sub( inAimPosition, outsiderOffset );
-                
-        bulletVelocity = 
-            getBulletVelocity( inPosition, 
-                               outsiderAimPos,
-                               inSpeed );
-        
-        Bullet br = { inPosition, bulletVelocity,
-                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
-                      distance,
-                      bounce,
-                      inPlayerBullet, size };
-        mBullets.push_back( br );
         }
+
+
+    // finally, add center bullet on top
+    Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
+                 inHeatSeekWaypoint,
+                 distance,
+                 bounce,
+                 inPlayerBullet, size };
+    mBullets.push_back( b );
+
     }
 
     
