@@ -90,8 +90,8 @@ float getAccuracy( PowerUpSet *inSet ) {
     }
 
 
-float spreadD1 = 1;
-float spreadD2 = 0.3;
+float spreadD1 = 0.5;
+float spreadD2 = 0.035;
 
 
 

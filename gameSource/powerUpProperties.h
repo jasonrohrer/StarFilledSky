@@ -15,9 +15,9 @@ float getBulletSpeed( PowerUpSet *inSet );
 float getAccuracy( PowerUpSet *inSet );
 
 
-// distance between pack and outlying member that hasn't joined pack yet
+// angle between pack and outlying member that hasn't joined pack yet
 extern float spreadD1;
-// distance between members of condensed spread pack
+// angle between members of condensed spread pack
 extern float spreadD2;
 
 //  A's are in the pack, B outside:

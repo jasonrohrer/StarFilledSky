@@ -1990,8 +1990,13 @@ void Level::addBullet( doublePair inPosition,
     
     if( inSpread > 0 ) {
         
+        if( inPlayerBullet ) {
+            printf( "hey!" );
+            }
+        
+
         // pack members spread wider for larger bullets
-        double packSpread = spreadD2 * 2 * size;
+        double packSpreadAngle = spreadD2 * size;
         
 
 
@@ -2001,15 +2006,18 @@ void Level::addBullet( doublePair inPosition,
         
         int numInPack = (int)inSpread;
         
-
+        
 
         // first add outsiders, under pack members
 
-        double outsiderOffsetFactor = 1 - (inSpread - numInPack);
-        outsiderOffsetFactor *= spreadD1 * distanceScaleFactor;
+        double outsiderOffsetAngle = 1 - (inSpread - numInPack);
+        outsiderOffsetAngle *= spreadD1;
         
         // outsider spread in addtion to spread present in pack
-        outsiderOffsetFactor += packSpread * (numInPack + 1);
+        outsiderOffsetAngle += packSpreadAngle * (numInPack + 1);
+        
+        double outsiderOffsetFactor =  
+            exactAimDist * tan( outsiderOffsetAngle );
         
             
         doublePair outsiderOffset = perpToAim;
@@ -2061,15 +2069,18 @@ void Level::addBullet( doublePair inPosition,
         if( numInPack > 0 ) {
             
             doublePair packOffset = perpToAim;
-            
-            // spread out more for bigger bullets
-            packOffset.x *= packSpread * distanceScaleFactor;
-            packOffset.y *= packSpread * distanceScaleFactor;
 
             // add pack members outside-in (so center ones are on top)
             for( int i=numInPack-1; i>=0; i-- ) {
-                doublePair packMemberOffset = { (i+1) * packOffset.x,
-                                                (i+1) * packOffset.y };
+                double packMemberOffsetAngle = (i+1) * packSpreadAngle;
+                
+                double packMemberOffsetFactor = 
+                    exactAimDist * tan( packMemberOffsetAngle );
+                
+                doublePair packMemberOffset = { packMemberOffsetFactor *
+                                                 packOffset.x,
+                                                packMemberOffsetFactor * 
+                                                 packOffset.y };
                 
                 // left pack member
                 doublePair packMemberAimPos = 
