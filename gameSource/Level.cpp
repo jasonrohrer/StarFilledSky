@@ -2097,15 +2097,16 @@ void Level::addBullet( doublePair inPosition,
             }
         
         }
-
-
-    // finally, add center bullet on top
-    Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
-                 inHeatSeekWaypoint,
-                 distance,
-                 bounce,
-                 inPlayerBullet, size };
-    mBullets.push_back( b );
+    else {
+        // if no spread, one centered bullet instead
+        Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
+                     inHeatSeekWaypoint,
+                     distance,
+                     bounce,
+                     inPlayerBullet, size };
+        mBullets.push_back( b );
+        }
+    
 
     }
 
