@@ -1994,7 +1994,7 @@ void Level::addBullet( doublePair inPosition,
         
 
         // pack members spread wider for larger bullets
-        double packSpreadAngle = spreadD2 * size;
+        double packSpreadAngle = spreadD2 + ( size * 0.02 );
 
         
         int numInPack = (int)inSpread;
