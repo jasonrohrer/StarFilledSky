@@ -1990,19 +1990,12 @@ void Level::addBullet( doublePair inPosition,
     
     if( inSpread > 0 ) {
         
-        if( inPlayerBullet ) {
-            printf( "hey!" );
-            }
+        doublePair relativeAimPosition = sub( inAimPosition, inPosition );
         
 
         // pack members spread wider for larger bullets
         double packSpreadAngle = spreadD2 * size;
-        
 
-
-        doublePair perpToAim = { - bulletVelocity.y, bulletVelocity.x };
-
-        perpToAim = normalize( perpToAim );
         
         int numInPack = (int)inSpread;
         
@@ -2016,20 +2009,12 @@ void Level::addBullet( doublePair inPosition,
         // outsider spread in addtion to spread present in pack
         outsiderOffsetAngle += packSpreadAngle * (numInPack + 1);
         
-        double outsiderOffsetFactor =  
-            exactAimDist * tan( outsiderOffsetAngle );
-        
-            
-        doublePair outsiderOffset = perpToAim;
-        
-        outsiderOffset.x *= outsiderOffsetFactor;
-        outsiderOffset.y *= outsiderOffsetFactor;
-        
         
         // left outsider
-        doublePair outsiderAimPos = 
-            add( inAimPosition, outsiderOffset );
-                
+        doublePair outsiderAimPos = rotate( relativeAimPosition, 
+                                            outsiderOffsetAngle );
+        outsiderAimPos = add( outsiderAimPos, inPosition );
+        
         doublePair bulletVelocity = 
             getBulletVelocity( inPosition, 
                                outsiderAimPos,
@@ -2044,9 +2029,10 @@ void Level::addBullet( doublePair inPosition,
 
 
         // right outsider
-        outsiderAimPos = 
-            sub( inAimPosition, outsiderOffset );
-                
+        outsiderAimPos = rotate( relativeAimPosition, 
+                                 - outsiderOffsetAngle );
+        outsiderAimPos = add( outsiderAimPos, inPosition );
+        
         bulletVelocity = 
             getBulletVelocity( inPosition, 
                                outsiderAimPos,
@@ -2068,23 +2054,14 @@ void Level::addBullet( doublePair inPosition,
 
         if( numInPack > 0 ) {
             
-            doublePair packOffset = perpToAim;
-
             // add pack members outside-in (so center ones are on top)
             for( int i=numInPack-1; i>=0; i-- ) {
                 double packMemberOffsetAngle = (i+1) * packSpreadAngle;
                 
-                double packMemberOffsetFactor = 
-                    exactAimDist * tan( packMemberOffsetAngle );
-                
-                doublePair packMemberOffset = { packMemberOffsetFactor *
-                                                 packOffset.x,
-                                                packMemberOffsetFactor * 
-                                                 packOffset.y };
-                
                 // left pack member
-                doublePair packMemberAimPos = 
-                    add( inAimPosition, packMemberOffset );
+                doublePair packMemberAimPos = rotate( relativeAimPosition, 
+                                                      packMemberOffsetAngle );
+                packMemberAimPos = add( packMemberAimPos, inPosition );
                 
                 doublePair bulletVelocity = 
                     getBulletVelocity( inPosition, 
@@ -2100,9 +2077,10 @@ void Level::addBullet( doublePair inPosition,
 
 
                 // right pack member
-                packMemberAimPos = 
-                    sub( inAimPosition, packMemberOffset );
-                
+                packMemberAimPos = rotate( relativeAimPosition, 
+                                           - packMemberOffsetAngle );
+                packMemberAimPos = add( packMemberAimPos, inPosition );
+
                 bulletVelocity = 
                     getBulletVelocity( inPosition, 
                                        packMemberAimPos,
