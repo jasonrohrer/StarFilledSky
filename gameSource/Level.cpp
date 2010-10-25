@@ -1989,6 +1989,12 @@ void Level::addBullet( doublePair inPosition,
 
     
     if( inSpread > 0 ) {
+        
+        // pack members spread wider for larger bullets
+        double packSpread = spreadD2 * 2 * size;
+        
+
+
         doublePair perpToAim = { - bulletVelocity.y, bulletVelocity.x };
 
         perpToAim = normalize( perpToAim );
@@ -2002,6 +2008,10 @@ void Level::addBullet( doublePair inPosition,
         double outsiderOffsetFactor = 1 - (inSpread - numInPack);
         outsiderOffsetFactor *= spreadD1 * distanceScaleFactor;
         
+        // outsider spread in addtion to spread present in pack
+        outsiderOffsetFactor += packSpread * (numInPack + 1);
+        
+            
         doublePair outsiderOffset = perpToAim;
         
         outsiderOffset.x *= outsiderOffsetFactor;
@@ -2052,8 +2062,9 @@ void Level::addBullet( doublePair inPosition,
             
             doublePair packOffset = perpToAim;
             
-            packOffset.x *= spreadD2 * distanceScaleFactor;
-            packOffset.y *= spreadD2 * distanceScaleFactor;
+            // spread out more for bigger bullets
+            packOffset.x *= packSpread * distanceScaleFactor;
+            packOffset.y *= packSpread * distanceScaleFactor;
 
             // add pack members outside-in (so center ones are on top)
             for( int i=numInPack-1; i>=0; i-- ) {
@@ -2097,15 +2108,14 @@ void Level::addBullet( doublePair inPosition,
             }
         
         }
-    else {
-        // if no spread, one centered bullet instead
-        Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
-                     inHeatSeekWaypoint,
-                     distance,
-                     bounce,
-                     inPlayerBullet, size };
-        mBullets.push_back( b );
-        }
+    
+    // finally, one centered bullet on top
+    Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
+                 inHeatSeekWaypoint,
+                 distance,
+                 bounce,
+                 inPlayerBullet, size };
+    mBullets.push_back( b );
     
 
     }
