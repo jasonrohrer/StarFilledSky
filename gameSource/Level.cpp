@@ -525,7 +525,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 doublePair a = { 0, 0 };
                 
 
-                PowerUpSet *p = new PowerUpSet( mLevelNumber - 1 );
+                PowerUpSet *p = new PowerUpSet( mLevelNumber - 1, true );
                 
                 Enemy e = { spot, v, a, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
@@ -714,6 +714,36 @@ void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
         mWindowPosition.type = player;
         }
     }
+
+
+
+typedef struct pathSearchRecord {
+        GridPos pos;
+        
+        int cost;
+        double estimate;
+        double total;
+        
+        // index of pred in done queue
+        int predIndex;
+        
+
+    } pathSearchRecord;
+
+
+double getGridDistance( GridPos inA, GridPos inB ) {
+    int dX = inA.x - inB.x;
+    int dY = inA.y - inB.y;
+    
+    return sqrt( dX * dX + dY * dY );
+    }
+
+
+char equal( GridPos inA, GridPos inB ) {
+    return inA.x == inB.x && inA.y == inB.y;
+    }
+
+
 
 
 
@@ -1075,35 +1105,171 @@ void Level::step() {
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
-    
-        doublePair oldPos = e->position;
-        e->position = stopMoveWithWall( e->position,
-                                        e->velocity );
-        
-        // get actual velocity, taking wall collision into account
-        e->velocity = sub( e->position, oldPos );
-        
-        e->velocity = add( e->velocity, e->accel );
 
-        if( e->velocity.x > maxEnemySpeed ) {
-            e->velocity.x = maxEnemySpeed;
-            }
-        else if( e->velocity.x < -maxEnemySpeed ) {
-            e->velocity.x = -maxEnemySpeed;
-            }
 
-        if( e->velocity.y > maxEnemySpeed ) {
-            e->velocity.y = maxEnemySpeed;
-            }
-        else if( e->velocity.y < -maxEnemySpeed ) {
-            e->velocity.y = -maxEnemySpeed;
+        // search for behaviors
+        char follow = false;
+        
+        for( int p=0; p<POWER_SET_SIZE; p++ ) {
+            if( e->powers->mPowers[p].powerType == enemyBehaviorFollow ) {
+                follow = true;
+                }
             }
         
-        
-        // random adjustment to acceleration
-        e->accel.x = randSource.getRandomBoundedDouble( -0.05, 0.05 );
-        e->accel.y = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+        // FIXME:  this algorithm infinite loops
+        if( follow && false) {
+            // conduct pathfinding search
+            GridPos start = getGridPos( e->position );
+            
+            GridPos goal = getGridPos( mPlayerPos );
+            
+            SimpleVector<pathSearchRecord> searchQueue;
+            SimpleVector<pathSearchRecord> doneQueue;
+            
+            pathSearchRecord startRecord = { start,
+                                             0,
+                                             getGridDistance( start, goal ),
+                                             getGridDistance( start, goal ),
+                                             -1 };
+            searchQueue.push_back( startRecord );
 
+            
+
+
+            char done = false;
+            
+            
+            while( searchQueue.size() > 0 && !done ) {
+                
+                int bestIndex = -1;
+                double bestTotal = DBL_MAX;
+                
+                for( int q=0; q<searchQueue.size(); q++ ) {
+                    pathSearchRecord *record = searchQueue.getElement( q );
+                    
+                    if( record->total < bestTotal ) {
+                        bestTotal = record->total;
+                        bestIndex = q;
+                        }
+                    }
+                
+                pathSearchRecord *bestRecord = 
+                    searchQueue.getElement( bestIndex );
+                
+                searchQueue.deleteElement( bestIndex );
+                
+
+                doneQueue.push_back( *bestRecord );
+
+                int predIndex = doneQueue.size() - 1;
+                
+
+                if( equal( bestRecord->pos, goal ) ) {
+                    // goal record has lowest total score in queue
+                    done = true;
+                    }
+                else {
+                    // add neighbors
+                    GridPos neighbors[4];
+                    
+                    GridPos bestPos = bestRecord->pos;
+                    
+                    neighbors[0].x = bestPos.x;
+                    neighbors[0].y = bestPos.y - 1;
+
+                    neighbors[1].x = bestPos.x;
+                    neighbors[1].y = bestPos.y + 1;
+
+                    neighbors[2].x = bestPos.x - 1;
+                    neighbors[2].y = bestPos.y;
+
+                    neighbors[3].x = bestPos.x + 1;
+                    neighbors[3].y = bestPos.y;
+                    
+                    // one step to neighbors from best record
+                    int cost = bestRecord->cost + 1;
+
+                    for( int n=0; n<4; n++ ) {
+                        
+                        if( mWallFlags[ neighbors[n].y ][ neighbors[n].x ]
+                            == 1 ) {
+                            // floor
+                            
+                            // add this neighbor
+                            double dist = getGridDistance( neighbors[n], 
+                                                           goal );
+                            
+                            // track how we got here (pred)
+                            pathSearchRecord nRecord = { neighbors[n],
+                                                         cost,
+                                                         dist,
+                                                         dist + cost,
+                                                         predIndex };
+                            searchQueue.push_back( nRecord );
+                            }
+                        }
+                    
+
+                    }
+                }
+            
+            // follow index to reconstruct path
+            // last in done queue is best-reached goal node
+            
+            int currentIndex = doneQueue.size() - 1;
+            
+            pathSearchRecord *currentRecord = 
+                doneQueue.getElement( currentIndex );
+
+            pathSearchRecord *predRecord = 
+                doneQueue.getElement( currentRecord->predIndex );
+            
+            while( ! equal(  predRecord->pos, start ) ) {
+                currentRecord = predRecord;
+                predRecord = 
+                    doneQueue.getElement( currentRecord->predIndex );
+                }
+            // current record shows best move
+
+            doublePair targetMove =
+                sGridWorldSpots[ currentRecord->pos.y ]
+                               [ currentRecord->pos.x ];
+            
+            e->position = targetMove;
+            
+            
+            }
+        else {
+            
+            doublePair oldPos = e->position;
+            e->position = stopMoveWithWall( e->position,
+                                            e->velocity );
+        
+            // get actual velocity, taking wall collision into account
+            e->velocity = sub( e->position, oldPos );
+        
+            e->velocity = add( e->velocity, e->accel );
+
+            if( e->velocity.x > maxEnemySpeed ) {
+                e->velocity.x = maxEnemySpeed;
+                }
+            else if( e->velocity.x < -maxEnemySpeed ) {
+                e->velocity.x = -maxEnemySpeed;
+                }
+
+            if( e->velocity.y > maxEnemySpeed ) {
+                e->velocity.y = maxEnemySpeed;
+                }
+            else if( e->velocity.y < -maxEnemySpeed ) {
+                e->velocity.y = -maxEnemySpeed;
+                }
+        
+        
+            // random adjustment to acceleration
+            e->accel.x = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+            e->accel.y = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+            }
+        
         
         if( e->stepsTilNextBullet == 0 ) {
             // fire bullet

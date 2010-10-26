@@ -8,6 +8,9 @@ static SpriteHandle spriteBank[ 100 ];
 int firstPowerUpID = powerUpEmpty;
 int lastPowerUpID = powerUpExplode;
 
+int firstBehaviorID = enemyBehaviorFollow;
+int lastBehaviorID = enemyBehaviorFollow;
+
 
 
 void initSpriteBank() {
@@ -29,6 +32,8 @@ void initSpriteBank() {
         loadSprite( "powerUpBulletDistance.tga" );
     spriteBank[ powerUpBounce ] = loadSprite( "powerUpBounce.tga" );
     spriteBank[ powerUpExplode ] = loadSprite( "powerUpExplode.tga" );
+    spriteBank[ enemyBehaviorFollow ] = 
+        loadSprite( "enemyBehaviorFollow.tga" );
    }
 
 

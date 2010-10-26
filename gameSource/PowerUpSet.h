@@ -11,6 +11,7 @@
 typedef struct PowerUp {
         spriteID powerType;
         int level;
+        char behavior;
     } PowerUp;
 
 
@@ -53,7 +54,7 @@ class PowerUpSet {
         
     
         // constructs a random set with sum level at most inTotalLevel
-        PowerUpSet( int inTotalLevel );
+        PowerUpSet( int inTotalLevel, char inIsEnemy = false );
 
         // constructs a random set with sum level of EXACTLY inTotalLevel
         // for type inType (and maybe more in other types)

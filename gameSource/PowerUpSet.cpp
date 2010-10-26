@@ -20,7 +20,7 @@ void drawPowerUpCenter( PowerUp inPower,
                         doublePair inPosition, double inFade ) {
     setDrawColor( 1, 1, 1, inFade );
     drawSprite( inPower.powerType, inPosition );
-    if( inPower.powerType != powerUpEmpty ) {
+    if( ! inPower.behavior && inPower.powerType != powerUpEmpty ) {
 
         setDrawColor( 0.5, 0.5, 0.5, inFade );
         
@@ -46,7 +46,7 @@ void drawPowerUp( PowerUp inPower,
 
 PowerUp getRandomPowerUp( int inMaxLevel ) {
     if( inMaxLevel <= 0 ) {
-        PowerUp p = { powerUpEmpty, 0 };
+        PowerUp p = { powerUpEmpty, 0, false };
         return p;
         }
     else {
@@ -62,7 +62,7 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
                                                 lastPowerUpID );
             }
         
-        PowerUp p = { powerUpType, level };
+        PowerUp p = { powerUpType, level, false };
         
         return p;
         }        
@@ -110,10 +110,17 @@ PowerUpSet::PowerUpSet() {
 
 
 
-PowerUpSet::PowerUpSet( int inTotalLevel ) {
+PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
     fillDefaultSet();
     
     fillRandomSet( inTotalLevel );
+
+    if( inIsEnemy ) {
+        // stick a follow in one spot
+        mPowers[ 0 ].powerType = enemyBehaviorFollow;
+        mPowers[ 0 ].behavior = true;
+        }
+    
     }
 
 
