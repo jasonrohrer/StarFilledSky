@@ -2008,6 +2008,16 @@ void Level::addBullet( doublePair inPosition,
     double explode = getExplode( inPowers );
     
 
+    /*
+      // for testing
+    if( inPlayerBullet ) {
+        explode = 4.9;
+        //inSpread = 9.9;
+        bounce = 9;
+        distance = 29;
+        }
+    */
+
     inAccuracy *= distanceScaleFactor;
 
 
