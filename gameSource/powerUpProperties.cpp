@@ -157,3 +157,17 @@ int getBounce( PowerUpSet *inSet ) {
     }
 
 
+
+float getExplode( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpExplode );
+
+    // first bound to 0:1
+    float boundedExplode = totalLevel / ( totalLevel + bulletParam );
+
+    // bound to 0:5
+    boundedExplode *= 10;
+    
+    return boundedExplode;
+    }
+
+

@@ -38,3 +38,6 @@ float getBulletDistance( PowerUpSet *inSet );
 
 
 int getBounce( PowerUpSet *inSet );
+
+
+float getExplode( PowerUpSet *inSet );

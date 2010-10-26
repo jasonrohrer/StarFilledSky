@@ -978,7 +978,7 @@ void Level::step() {
         if( hit || b->distanceLeft <= 0 ) {
             // bullet done
             
-            if( hit && 
+            if( ( hit || b->explode > 0 ) && 
                 ( !destroyed || ! b->playerFlag ) ) {
                 // target not destroyed by hit, or player destroyed, 
                 // draw smoke
@@ -1004,6 +1004,53 @@ void Level::step() {
                 mSmokeClouds.push_back( s );
                 }
             
+            if( b->explode > 0 ) {
+                // make explosion happen
+                
+                Bullet explosionTemplate = *b;
+                
+                // reset bounces and distance
+                explosionTemplate.distanceLeft = b->startDistance;
+                explosionTemplate.bouncesLeft = b->startBounces;
+                
+                // no sub-explosions
+                explosionTemplate.explode = 0;
+                
+                // start pointing back at shooter
+                explosionTemplate.velocity.x *= -1;
+                explosionTemplate.velocity.y *= -1;
+                
+
+                int numSubBullets = 3 + (int)( b->explode );
+                
+                double extra = b->explode - (int)( b->explode );
+                
+                double sepAngle = 2 * M_PI / numSubBullets;
+
+                // as we approach next explosion level, get closer
+                // to "perfect" explosion that sends no sub-bullet back
+                // at shooter
+                // move toward start angle that evenly splits back-facing
+                // bullets on either side of original aim vector
+                double startAngle = extra * sepAngle / 2;
+                
+                for( int s=0; s<numSubBullets; s++ ) {
+                    Bullet subBullet = explosionTemplate;
+                    subBullet.velocity = rotate( subBullet.velocity,
+                                                 startAngle + s * sepAngle );
+                    
+                    if( hit ) {
+                        // take first step here to back bullet out of
+                        // whatever was hit
+                        subBullet.position = add( subBullet.position, 
+                                                  subBullet.velocity );
+                        }
+                    
+                    mBullets.push_back( subBullet );
+                    }
+                }
+            
+                
             mBullets.deleteElement( i );
             i--;
             }
@@ -1389,7 +1436,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
         float fade = 1;
         
-        if( b->distanceLeft < 2 ) {
+        if( b->explode == 0 && b->distanceLeft < 2 ) {
             fade = b->distanceLeft * 0.5;
             }
 
@@ -1957,7 +2004,9 @@ void Level::addBullet( doublePair inPosition,
     double distance = getBulletDistance( inPowers );    
     
     int bounce = getBounce( inPowers );
-        
+    
+    double explode = getExplode( inPowers );
+    
 
     inAccuracy *= distanceScaleFactor;
 
@@ -2023,7 +2072,10 @@ void Level::addBullet( doublePair inPosition,
         Bullet b = { inPosition, bulletVelocity, 
                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
                      distance,
+                     distance,
                      bounce,
+                     bounce,
+                     explode,
                      inPlayerBullet, size };
         mBullets.push_back( b );
 
@@ -2041,7 +2093,10 @@ void Level::addBullet( doublePair inPosition,
         Bullet br = { inPosition, bulletVelocity,
                       inSpeed, inHeatSeek, inHeatSeekWaypoint,
                       distance,
+                      distance,
                       bounce,
+                      bounce,
+                      explode,
                       inPlayerBullet, size };
         mBullets.push_back( br );
 
@@ -2071,7 +2126,10 @@ void Level::addBullet( doublePair inPosition,
                 Bullet b = { inPosition, bulletVelocity,
                              inSpeed, inHeatSeek, inHeatSeekWaypoint,
                              distance,
+                             distance,
                              bounce,
+                             bounce,
+                             explode,
                              inPlayerBullet, size };
                 mBullets.push_back( b );
 
@@ -2089,7 +2147,10 @@ void Level::addBullet( doublePair inPosition,
                 Bullet br = { inPosition, bulletVelocity,
                               inSpeed, inHeatSeek, inHeatSeekWaypoint,
                               distance,
+                              distance,
                               bounce,
+                              bounce,
+                              explode,
                               inPlayerBullet, size };
                 mBullets.push_back( br );
                 }
@@ -2102,7 +2163,10 @@ void Level::addBullet( doublePair inPosition,
     Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
                  inHeatSeekWaypoint,
                  distance,
+                 distance,
                  bounce,
+                 bounce,
+                 explode,
                  inPlayerBullet, size };
     mBullets.push_back( b );
     

@@ -28,6 +28,7 @@ enum spriteID { riseMarker = 0,
                 powerUpHeatSeek,
                 powerUpBulletDistance,
                 powerUpBounce,
+                powerUpExplode,
                 endSpriteID };                
 
 extern int firstPowerUpID;
