@@ -338,7 +338,7 @@ void Level::generateReproducibleData() {
     mSoftGridColors = new Color[ mNumUsedSquares ];
  
     for( int i=0; i<mNumUsedSquares; i++ ) {        
-       mSoftGridColors[ i ] = mGridColorsBlurred[ i ];
+        mSoftGridColors[ i ] = mGridColorsBlurred[ i ];
         }
 
     // actual, working grid colors
@@ -348,8 +348,8 @@ void Level::generateReproducibleData() {
     mColorMix = new float[ mNumUsedSquares ];
     mColorMixDelta = new float[ mNumUsedSquares ];
     for( int i=0; i<mNumUsedSquares; i++ ) {
-        mColorMix[i] = 0;
-        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.04, 0.08 );
+        mColorMix[i] = randSource.getRandomBoundedDouble( 0, 1 );
+        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.01, 0.02 );
         }
 
 
@@ -1102,7 +1102,7 @@ void Level::step() {
             }
         
         // never go fully hard
-        float mix = mColorMix[i] * 0.2;
+        float mix = mColorMix[i] * 0.4;
         float counterMix = 1 - mix;
 
         // average our grid color with the current target mix
