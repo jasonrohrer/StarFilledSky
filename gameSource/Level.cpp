@@ -749,7 +749,8 @@ char equal( GridPos inA, GridPos inB ) {
 
 
 
-GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
+GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld, 
+                         GridPos inGoal ) {
     SimpleVector<pathSearchRecord> searchQueue;
     SimpleVector<pathSearchRecord> doneQueue;
             
@@ -914,8 +915,9 @@ GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
 
         // straight-line, unobstructed path from start to currentRecord?
 
-        doublePair stepPos = { inStart.x, inStart.y };
-        doublePair goalPos = { currentRecord->pos.x, currentRecord->pos.y };
+        doublePair stepPos = { inStartWorld.x, inStartWorld.y };
+        doublePair goalPos = 
+            sGridWorldSpots[ currentRecord->pos.x ][ currentRecord->pos.y ];
         GridPos stepGridPos = inStart;
         
         doublePair stepDelta = mult( normalize( sub( goalPos, stepPos ) ),
@@ -925,8 +927,7 @@ GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
                mWallFlags[ stepGridPos.y ][ stepGridPos.x ] == 1 ) {
             
             stepPos = add( stepPos, stepDelta );
-            stepGridPos.x = (int)rint( stepPos.x );
-            stepGridPos.y = (int)rint( stepPos.y );
+            stepGridPos = getGridPos( stepPos );
             }
         
         if( equal( stepGridPos, currentRecord->pos ) ) {
@@ -1333,7 +1334,8 @@ void Level::step() {
                 
                 if( !equal( start, goal ) ) {
                     
-                    GridPos targetGridPos = pathFind( start, goal );
+                    GridPos targetGridPos = pathFind( start, e->position,
+                                                      goal );
                 
                     
                     doublePair targetMove =
@@ -1349,9 +1351,9 @@ void Level::step() {
             
 
             // weighted sum with old velocity to smooth out movement
-            doublePair weightedFollow = mult( e->followVelocity, 0.5 );
+            doublePair weightedFollow = mult( e->followVelocity, 1 );
             
-            e->velocity = mult( e->velocity, 0.5 );
+            e->velocity = mult( e->velocity, 0 );
             e->velocity = add( e->velocity, weightedFollow );
             
             e->position = stopMoveWithWall( e->position,
