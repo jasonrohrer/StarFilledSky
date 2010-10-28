@@ -437,6 +437,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     getPlayerHealth( &health, &max );
     mPlayerHealth = max;
     
+    mNextEnemyPathFindIndex = 0;
     
     
     //Thread::staticSleep( 1000 );
@@ -531,7 +532,9 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
                             p,
-                            getEnemyMaxHealth( p ) };
+                            getEnemyMaxHealth( p ),
+                            0,
+                            v };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -742,6 +745,173 @@ double getGridDistance( GridPos inA, GridPos inB ) {
 char equal( GridPos inA, GridPos inB ) {
     return inA.x == inB.x && inA.y == inB.y;
     }
+
+
+
+
+GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
+    SimpleVector<pathSearchRecord> searchQueue;
+    SimpleVector<pathSearchRecord> doneQueue;
+            
+    pathSearchRecord startRecord = 
+        { inStart,
+          0,
+          getGridDistance( inStart, inGoal ),
+          getGridDistance( inStart, inGoal ),
+          -1 };
+                
+    searchQueue.push_back( startRecord );
+            
+
+
+    char done = false;
+            
+            
+    while( searchQueue.size() > 0 && !done ) {
+                
+        int bestIndex = -1;
+        double bestTotal = DBL_MAX;
+                
+        for( int q=0; q<searchQueue.size(); q++ ) {
+            pathSearchRecord *record = searchQueue.getElement( q );
+                    
+            if( record->total < bestTotal ) {
+                bestTotal = record->total;
+                bestIndex = q;
+                }
+            }
+                
+
+        pathSearchRecord bestRecord = 
+            *( searchQueue.getElement( bestIndex ) );
+                
+        if( false )
+            printf( "Best record found:  "
+                    "(%d,%d), cost %d, total %f, "
+                    "pred %d, this index %d\n",
+                    bestRecord.pos.x, bestRecord.pos.y,
+                    bestRecord.cost, bestRecord.total,
+                    bestRecord.predIndex, doneQueue.size() );
+                
+
+        searchQueue.deleteElement( bestIndex );
+                
+
+        doneQueue.push_back( bestRecord );
+
+        int predIndex = doneQueue.size() - 1;
+                
+
+        if( equal( bestRecord.pos, inGoal ) ) {
+            // goal record has lowest total score in queue
+            done = true;
+            }
+        else {
+            // add neighbors
+            GridPos neighbors[4];
+                    
+            GridPos bestPos = bestRecord.pos;
+                    
+            neighbors[0].x = bestPos.x;
+            neighbors[0].y = bestPos.y - 1;
+
+            neighbors[1].x = bestPos.x;
+            neighbors[1].y = bestPos.y + 1;
+
+            neighbors[2].x = bestPos.x - 1;
+            neighbors[2].y = bestPos.y;
+
+            neighbors[3].x = bestPos.x + 1;
+            neighbors[3].y = bestPos.y;
+                    
+            // one step to neighbors from best record
+            int cost = bestRecord.cost + 1;
+
+            for( int n=0; n<4; n++ ) {
+                        
+                if( mWallFlags[ neighbors[n].y ][ neighbors[n].x ]
+                    == 1 ) {
+                    // floor
+                            
+                    char foundInDone = false;
+                            
+
+                    for( int q=0; 
+                         q<doneQueue.size() && ! foundInDone; 
+                         q++ ) {
+                                
+                        pathSearchRecord *record = 
+                            doneQueue.getElement( q );
+                                
+                        if( equal( record->pos, neighbors[n] ) ) {
+                            foundInDone = true;
+                            }
+                        }
+                            
+                    char foundInSearch = false;
+                            
+                    if( !foundInDone ) {
+                                
+                        for( int q=0; 
+                             q<searchQueue.size() && 
+                                 ! foundInSearch; 
+                             q++ ) {
+                                
+                            pathSearchRecord *record = 
+                                searchQueue.getElement( q );
+                                    
+                            if( equal( record->pos, 
+                                       neighbors[n] ) ) {
+                                            
+                                foundInSearch = true;
+                                }
+                            }
+                        }
+                            
+                            
+                    if( !foundInDone && !foundInSearch ) {
+                        // add this neighbor
+                        double dist = 
+                            getGridDistance( neighbors[n], 
+                                             inGoal );
+                            
+                        // track how we got here (pred)
+                        pathSearchRecord nRecord = { neighbors[n],
+                                                     cost,
+                                                     dist,
+                                                     dist + cost,
+                                                     predIndex };
+                        searchQueue.push_back( nRecord );
+                        }
+                            
+                    }
+                }
+                    
+
+            }
+        }
+            
+    // follow index to reconstruct path
+    // last in done queue is best-reached goal node
+            
+    int currentIndex = doneQueue.size() - 1;
+            
+    pathSearchRecord *currentRecord = 
+        doneQueue.getElement( currentIndex );
+
+    pathSearchRecord *predRecord = 
+        doneQueue.getElement( currentRecord->predIndex );
+            
+    while( ! equal(  predRecord->pos, inStart ) ) {
+        currentRecord = predRecord;
+        predRecord = 
+            doneQueue.getElement( currentRecord->predIndex );
+        }
+    // current record shows best move
+
+    return currentRecord->pos;                
+    }
+
 
 
 
@@ -1101,6 +1271,13 @@ void Level::step() {
             }
         }
     
+    
+    
+    mNextEnemyPathFindIndex ++;
+    if( mNextEnemyPathFindIndex > mEnemies.size() - 1 ) {
+        mNextEnemyPathFindIndex = 0;
+        }
+    
 
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
@@ -1118,184 +1295,41 @@ void Level::step() {
         
         // FIXME:  seems to work, but too slow
         // also, enemies single-stepping toward player
-        if( follow && false ) {
-            // conduct pathfinding search
-            GridPos start = getGridPos( e->position );
-            
-            GridPos goal = getGridPos( mPlayerPos );
-            
-            if( !equal( start, goal ) ) {
-                
-                SimpleVector<pathSearchRecord> searchQueue;
-                SimpleVector<pathSearchRecord> doneQueue;
-            
-                pathSearchRecord startRecord = 
-                    { start,
-                      0,
-                      getGridDistance( start, goal ),
-                      getGridDistance( start, goal ),
-                      -1 };
-                
-                searchQueue.push_back( startRecord );
+        if( follow ) {
 
-            
-                if( false )
-                    printf( "Starting search from (%d,%d) to (%d,%d)\n",
-                            start.x, start.y, goal.x, goal.y );
-            
-
-
-                char done = false;
-            
-            
-                while( searchQueue.size() > 0 && !done ) {
+            if( mNextEnemyPathFindIndex == i ) {
                 
-                    int bestIndex = -1;
-                    double bestTotal = DBL_MAX;
+
+                // conduct pathfinding search
+                GridPos start = getGridPos( e->position );
                 
-                    for( int q=0; q<searchQueue.size(); q++ ) {
-                        pathSearchRecord *record = searchQueue.getElement( q );
+                GridPos goal = getGridPos( mPlayerPos );
+                
+                if( !equal( start, goal ) ) {
                     
-                        if( record->total < bestTotal ) {
-                            bestTotal = record->total;
-                            bestIndex = q;
-                            }
-                        }
+                    GridPos targetGridPos = pathFind( start, goal );
                 
-
-                    pathSearchRecord bestRecord = 
-                        *( searchQueue.getElement( bestIndex ) );
-                
-                    if( false )
-                        printf( "Best record found:  "
-                                "(%d,%d), cost %d, total %f, "
-                                "pred %d, this index %d\n",
-                                bestRecord.pos.x, bestRecord.pos.y,
-                                bestRecord.cost, bestRecord.total,
-                                bestRecord.predIndex, doneQueue.size() );
-                
-
-                    searchQueue.deleteElement( bestIndex );
-                
-
-                    doneQueue.push_back( bestRecord );
-
-                    int predIndex = doneQueue.size() - 1;
-                
-
-                    if( equal( bestRecord.pos, goal ) ) {
-                        // goal record has lowest total score in queue
-                        done = true;
-                        }
-                    else {
-                        // add neighbors
-                        GridPos neighbors[4];
                     
-                        GridPos bestPos = bestRecord.pos;
+                    doublePair targetMove =
+                        sGridWorldSpots[ targetGridPos.y ]
+                        [ targetGridPos.x ];
                     
-                        neighbors[0].x = bestPos.x;
-                        neighbors[0].y = bestPos.y - 1;
-
-                        neighbors[1].x = bestPos.x;
-                        neighbors[1].y = bestPos.y + 1;
-
-                        neighbors[2].x = bestPos.x - 1;
-                        neighbors[2].y = bestPos.y;
-
-                        neighbors[3].x = bestPos.x + 1;
-                        neighbors[3].y = bestPos.y;
-                    
-                        // one step to neighbors from best record
-                        int cost = bestRecord.cost + 1;
-
-                        for( int n=0; n<4; n++ ) {
-                        
-                            if( mWallFlags[ neighbors[n].y ][ neighbors[n].x ]
-                                == 1 ) {
-                                // floor
-                            
-                                char foundInDone = false;
-                            
-
-                                for( int q=0; 
-                                     q<doneQueue.size() && ! foundInDone; 
-                                     q++ ) {
-                                
-                                    pathSearchRecord *record = 
-                                        doneQueue.getElement( q );
-                                
-                                    if( equal( record->pos, neighbors[n] ) ) {
-                                        foundInDone = true;
-                                        }
-                                    }
-                            
-                                char foundInSearch = false;
-                            
-                                if( !foundInDone ) {
-                                
-                                    for( int q=0; 
-                                         q<searchQueue.size() && 
-                                             ! foundInSearch; 
-                                         q++ ) {
-                                
-                                        pathSearchRecord *record = 
-                                            searchQueue.getElement( q );
-                                    
-                                        if( equal( record->pos, 
-                                                   neighbors[n] ) ) {
-                                            
-                                            foundInSearch = true;
-                                            }
-                                        }
-                                    }
-                            
-                            
-                                if( !foundInDone && !foundInSearch ) {
-                                    // add this neighbor
-                                    double dist = 
-                                        getGridDistance( neighbors[n], 
-                                                         goal );
-                            
-                                    // track how we got here (pred)
-                                    pathSearchRecord nRecord = { neighbors[n],
-                                                                 cost,
-                                                                 dist,
-                                                                 dist + cost,
-                                                                 predIndex };
-                                    searchQueue.push_back( nRecord );
-                                    }
-                            
-                                }
-                            }
-                    
-
-                        }
+                    e->followVelocity = 
+                        normalize( sub( targetMove, e->position ) );
+                    e->followVelocity = mult( e->followVelocity, 
+                                              maxEnemySpeed );
                     }
+                }
             
-                // follow index to reconstruct path
-                // last in done queue is best-reached goal node
-            
-                int currentIndex = doneQueue.size() - 1;
-            
-                pathSearchRecord *currentRecord = 
-                    doneQueue.getElement( currentIndex );
 
-                pathSearchRecord *predRecord = 
-                    doneQueue.getElement( currentRecord->predIndex );
+            // weighted sum with old velocity to smooth out movement
+            doublePair weightedFollow = mult( e->followVelocity, 0.3 );
             
-                while( ! equal(  predRecord->pos, start ) ) {
-                    currentRecord = predRecord;
-                    predRecord = 
-                        doneQueue.getElement( currentRecord->predIndex );
-                    }
-                // current record shows best move
-
-                doublePair targetMove =
-                    sGridWorldSpots[ currentRecord->pos.y ]
-                    [ currentRecord->pos.x ];
+            e->velocity = mult( e->velocity, 0.7 );
+            e->velocity = add( e->velocity, weightedFollow );
             
-                e->position = targetMove;
-                }            
+            e->position = stopMoveWithWall( e->position,
+                                            e->velocity );
             }
         else {
             

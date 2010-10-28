@@ -59,6 +59,7 @@ typedef struct Enemy {
         PowerUpSet *powers;
         int health;
         float healthBarFade;
+        doublePair followVelocity;
     } Enemy;
 
 
@@ -229,6 +230,9 @@ class Level {
 
         GridPos getGridPos( doublePair inWorldPos );
 
+        GridPos pathFind( GridPos inStart, GridPos inGoal );
+        
+
 
         // generate data that can be reproduced from the seed
         void generateReproducibleData();
@@ -329,6 +333,11 @@ class Level {
         
         // -1 if last enter point was not a power token
         int mLastEnterPointPowerTokenIndex;
+        
+
+        // only update path finding for one enemy per timestep 
+        // (avoid slowdown)
+        int mNextEnemyPathFindIndex;
         
 
     };
