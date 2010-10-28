@@ -894,6 +894,9 @@ GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
     // follow index to reconstruct path
     // last in done queue is best-reached goal node
             
+    // stop following path back once we find a node that is straight-line
+    // reachable from start with no obstacles
+
     int currentIndex = doneQueue.size() - 1;
             
     pathSearchRecord *currentRecord = 
@@ -902,10 +905,33 @@ GridPos Level::pathFind( GridPos inStart, GridPos inGoal ) {
     pathSearchRecord *predRecord = 
         doneQueue.getElement( currentRecord->predIndex );
             
-    while( ! equal(  predRecord->pos, inStart ) ) {
+    done = false;
+    
+    while( ! equal(  predRecord->pos, inStart ) && ! done ) {
         currentRecord = predRecord;
         predRecord = 
             doneQueue.getElement( currentRecord->predIndex );
+
+        // straight-line, unobstructed path from start to currentRecord?
+
+        doublePair stepPos = { inStart.x, inStart.y };
+        doublePair goalPos = { currentRecord->pos.x, currentRecord->pos.y };
+        GridPos stepGridPos = inStart;
+        
+        doublePair stepDelta = mult( normalize( sub( goalPos, stepPos ) ),
+                                     maxEnemySpeed );
+        
+        while( !equal( stepGridPos, currentRecord->pos ) &&
+               mWallFlags[ stepGridPos.y ][ stepGridPos.x ] == 1 ) {
+            
+            stepPos = add( stepPos, stepDelta );
+            stepGridPos.x = (int)rint( stepPos.x );
+            stepGridPos.y = (int)rint( stepPos.y );
+            }
+        
+        if( equal( stepGridPos, currentRecord->pos ) ) {
+            done = true;
+            }
         }
     // current record shows best move
 
@@ -1323,9 +1349,9 @@ void Level::step() {
             
 
             // weighted sum with old velocity to smooth out movement
-            doublePair weightedFollow = mult( e->followVelocity, 0.3 );
+            doublePair weightedFollow = mult( e->followVelocity, 0.5 );
             
-            e->velocity = mult( e->velocity, 0.7 );
+            e->velocity = mult( e->velocity, 0.5 );
             e->velocity = add( e->velocity, weightedFollow );
             
             e->position = stopMoveWithWall( e->position,
