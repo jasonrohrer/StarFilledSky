@@ -110,6 +110,7 @@ PowerUpSet::PowerUpSet() {
 
 
 #define MIN_FOLLOW_LEVEL 5
+#define MIN_DODGE_LEVEL 5
 
 
 PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
@@ -125,7 +126,10 @@ PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
             randSource.getRandomBoundedInt( 0, 
                                             POWER_SET_SIZE - 1 );
 
-        if( mPowers[ index ].level > MIN_FOLLOW_LEVEL ) {
+        char behaviorPicked = false;
+        
+
+        if( !behaviorPicked && mPowers[ index ].level > MIN_FOLLOW_LEVEL ) {
             
             if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {
                 
@@ -133,9 +137,25 @@ PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
                 mPowers[ index ].powerType = enemyBehaviorFollow;
                 mPowers[ index ].behavior = true;
                 // keep existing level number
+
+                behaviorPicked = true;
                 }
             }
-        
+
+        if( !behaviorPicked && mPowers[ index ].level > MIN_DODGE_LEVEL ) {
+            
+            if( randSource.getRandomBoundedInt( 0, 10 ) > 5 ) {
+                
+                // stick a follow in one spot
+                mPowers[ index ].powerType = enemyBehaviorDodge;
+                mPowers[ index ].behavior = true;
+                // keep existing level number
+
+                behaviorPicked = true;
+                }
+            }
+
+
         }
     
     }

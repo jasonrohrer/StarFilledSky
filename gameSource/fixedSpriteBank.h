@@ -30,6 +30,7 @@ enum spriteID { riseMarker = 0,
                 powerUpBounce,
                 powerUpExplode,
                 enemyBehaviorFollow,
+                enemyBehaviorDodge,
                 endSpriteID };                
 
 extern int firstPowerUpID;

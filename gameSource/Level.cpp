@@ -534,7 +534,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             p,
                             getEnemyMaxHealth( p ),
                             0,
-                            v };
+                            spot,
+                            randSource.getRandomBoolean() };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -1313,10 +1314,20 @@ void Level::step() {
 
         // search for behaviors
         char follow = false;
+        char dodge = false;
         
         for( int p=0; p<POWER_SET_SIZE; p++ ) {
-            if( e->powers->mPowers[p].powerType == enemyBehaviorFollow ) {
-                follow = true;
+            spriteID powerType =e-> powers->mPowers[p].powerType;
+            
+            switch( powerType ) {
+                case enemyBehaviorFollow:
+                    follow = true;
+                    break;
+                case enemyBehaviorDodge:
+                    dodge = true;
+                    break;
+                default:
+                    break;
                 }
             }
         
@@ -1357,6 +1368,68 @@ void Level::step() {
             
             e->position = stopMoveWithWall( e->position,
                                             e->velocity );
+            }
+        else if( dodge ) {
+            
+            // find closest player bullet
+            int closestIndex = -1;
+            double closestDistance = DBL_MAX;
+            
+            for( int b=0; b<mBullets.size(); b++ ) {
+                
+                Bullet *bullet = mBullets.getElement( b );
+                
+                if( bullet->playerFlag ) {
+                    
+                    double dist = distance( bullet->position, e->position );
+                
+                    if( dist < closestDistance ) {
+                        closestDistance = dist;
+                        closestIndex = b;
+                        }               
+                    }
+                }
+            
+            if( closestIndex != -1 ) {
+                
+                Bullet *bullet = mBullets.getElement( closestIndex );
+                
+                doublePair moveChoiceA = { bullet->velocity.y,
+                                           -bullet->velocity.x };
+                
+                doublePair moveChoiceB = { -bullet->velocity.y,
+                                           bullet->velocity.x };
+                
+
+                moveChoiceA = normalize( moveChoiceA );
+                moveChoiceB = normalize( moveChoiceB );
+                
+                doublePair awayFromBullet = 
+                    normalize( sub( e->position, bullet->position ) );
+                
+                doublePair moveChoice;
+                
+                if( dot( moveChoiceA, awayFromBullet ) > 0 ) {
+                    moveChoice = moveChoiceA;
+                    }
+                else {
+                    moveChoice = moveChoiceB;
+                    }
+
+
+                e->velocity = mult( normalize( moveChoice ),
+                                    maxEnemySpeed );
+                
+                doublePair desiredPosition = add( e->position, e->velocity );
+                
+                e->position = stopMoveWithWall( e->position,
+                                                e->velocity );
+
+                if( !equal( e->position, desiredPosition ) ) {
+                    // hit wall, switch
+                    e->dodgeDirection = ! e->dodgeDirection;
+                    }
+                }
             }
         else {
             

@@ -9,7 +9,7 @@ int firstPowerUpID = powerUpEmpty;
 int lastPowerUpID = powerUpExplode;
 
 int firstBehaviorID = enemyBehaviorFollow;
-int lastBehaviorID = enemyBehaviorFollow;
+int lastBehaviorID = enemyBehaviorDodge;
 
 
 
@@ -34,6 +34,8 @@ void initSpriteBank() {
     spriteBank[ powerUpExplode ] = loadSprite( "powerUpExplode.tga" );
     spriteBank[ enemyBehaviorFollow ] = 
         loadSprite( "enemyBehaviorFollow.tga" );
+    spriteBank[ enemyBehaviorDodge ] = 
+        loadSprite( "enemyBehaviorDodge.tga" );
    }
 
 
