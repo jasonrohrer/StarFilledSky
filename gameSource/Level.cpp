@@ -917,7 +917,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
         doublePair stepPos = { inStartWorld.x, inStartWorld.y };
         doublePair goalPos = 
-            sGridWorldSpots[ currentRecord->pos.x ][ currentRecord->pos.y ];
+            sGridWorldSpots[ currentRecord->pos.y ][ currentRecord->pos.x ];
         GridPos stepGridPos = inStart;
         
         doublePair stepDelta = mult( normalize( sub( goalPos, stepPos ) ),
@@ -1338,22 +1338,23 @@ void Level::step() {
                                                       goal );
                 
                     
-                    doublePair targetMove =
+                    e->followNextWaypoint = 
                         sGridWorldSpots[ targetGridPos.y ]
                         [ targetGridPos.x ];
-                    
-                    e->followVelocity = 
-                        normalize( sub( targetMove, e->position ) );
-                    e->followVelocity = mult( e->followVelocity, 
-                                              maxEnemySpeed );
                     }
                 }
             
-
-            // weighted sum with old velocity to smooth out movement
-            doublePair weightedFollow = mult( e->followVelocity, 1 );
             
-            e->velocity = mult( e->velocity, 0 );
+            doublePair followVelocity = 
+                mult( normalize( sub( e->followNextWaypoint, 
+                                      e->position ) ),
+                      maxEnemySpeed );
+
+            
+            // weighted sum with old velocity to smooth out movement
+            doublePair weightedFollow = mult( followVelocity, 0.3 );
+            
+            e->velocity = mult( e->velocity, 0.7 );
             e->velocity = add( e->velocity, weightedFollow );
             
             e->position = stopMoveWithWall( e->position,

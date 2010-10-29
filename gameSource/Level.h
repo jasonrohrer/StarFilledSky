@@ -59,7 +59,7 @@ typedef struct Enemy {
         PowerUpSet *powers;
         int health;
         float healthBarFade;
-        doublePair followVelocity;
+        doublePair followNextWaypoint;
     } Enemy;
 
 
