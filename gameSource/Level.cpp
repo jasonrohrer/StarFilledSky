@@ -1320,8 +1320,6 @@ void Level::step() {
                 }
             }
         
-        // FIXME:  seems to work, but too slow
-        // also, enemies single-stepping toward player
         if( follow ) {
 
             if( mNextEnemyPathFindIndex == i ) {
