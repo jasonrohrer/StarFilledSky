@@ -60,7 +60,7 @@ typedef struct Enemy {
         int health;
         float healthBarFade;
         doublePair followNextWaypoint;
-        char dodgeDirection;
+        Bullet *dodgeBullet;
     } Enemy;
 
 

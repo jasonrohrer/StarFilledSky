@@ -535,7 +535,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             getEnemyMaxHealth( p ),
                             0,
                             spot,
-                            randSource.getRandomBoolean() };
+                            NULL };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -1278,6 +1278,16 @@ void Level::step() {
                     }
                 }
             
+
+            // clear out any enemy pointer to this bullet
+            for( int j=0; j<mEnemies.size(); j++ ) {
+                Enemy *e = mEnemies.getElement( j );
+                
+                if( e->dodgeBullet == b ) {
+                    e->dodgeBullet = NULL;
+                    }
+                }
+            
                 
             mBullets.deleteElement( i );
             i--;
@@ -1371,67 +1381,86 @@ void Level::step() {
             }
         else if( dodge ) {
             
-            // find closest player bullet
-            int closestIndex = -1;
-            double closestDistance = DBL_MAX;
-            
-            for( int b=0; b<mBullets.size(); b++ ) {
+            if( i == mNextEnemyPathFindIndex ) {
                 
-                Bullet *bullet = mBullets.getElement( b );
+
+                // find closest player bullet
+                int closestIndex = -1;
+                double closestDistance = DBL_MAX;
                 
-                if( bullet->playerFlag ) {
+                for( int b=0; b<mBullets.size(); b++ ) {
                     
-                    double dist = distance( bullet->position, e->position );
-                
-                    if( dist < closestDistance ) {
-                        closestDistance = dist;
-                        closestIndex = b;
-                        }               
+                    Bullet *bullet = mBullets.getElement( b );
+                    
+                    if( bullet->playerFlag ) {
+                        
+                        double dist = distance( bullet->position, 
+                                                e->position );
+                        
+                        if( dist < closestDistance ) {
+                            closestDistance = dist;
+                            closestIndex = b;
+                            }               
+                        }
+                    }
+            
+                if( closestIndex != -1 ) {
+                    e->dodgeBullet = mBullets.getElement( closestIndex );
+                    }
+                else {
+                    e->dodgeBullet = NULL;
                     }
                 }
             
-            if( closestIndex != -1 ) {
+
+            if( e->dodgeBullet != NULL ) {
                 
-                Bullet *bullet = mBullets.getElement( closestIndex );
+                Bullet *bullet = e->dodgeBullet;
                 
-                doublePair moveChoiceA = { bullet->velocity.y,
-                                           -bullet->velocity.x };
+                // indexing in mBullets may change as bullets expire
+                if( bullet->playerFlag ) {
+                    
+                    doublePair moveChoiceA = { bullet->velocity.y,
+                                               -bullet->velocity.x };
                 
-                doublePair moveChoiceB = { -bullet->velocity.y,
-                                           bullet->velocity.x };
+                    doublePair moveChoiceB = { -bullet->velocity.y,
+                                               bullet->velocity.x };
                 
 
-                moveChoiceA = normalize( moveChoiceA );
-                moveChoiceB = normalize( moveChoiceB );
+                    moveChoiceA = normalize( moveChoiceA );
+                    moveChoiceB = normalize( moveChoiceB );
                 
-                doublePair awayFromBullet = 
-                    normalize( sub( e->position, bullet->position ) );
+                    doublePair awayFromBullet = 
+                        normalize( sub( e->position, bullet->position ) );
                 
-                doublePair moveChoice;
+                    doublePair moveChoice;
                 
-                if( dot( moveChoiceA, awayFromBullet ) > 0 ) {
-                    moveChoice = moveChoiceA;
-                    }
-                else {
-                    moveChoice = moveChoiceB;
-                    }
+                    if( dot( moveChoiceA, awayFromBullet ) > 0 ) {
+                        moveChoice = moveChoiceA;
+                        }
+                    else {
+                        moveChoice = moveChoiceB;
+                        }
 
 
-                e->velocity = mult( normalize( moveChoice ),
-                                    maxEnemySpeed );
+                    e->velocity = mult( normalize( moveChoice ),
+                                        maxEnemySpeed );
                 
-                doublePair desiredPosition = add( e->position, e->velocity );
+                    doublePair desiredPosition = 
+                        add( e->position, e->velocity );
                 
-                e->position = stopMoveWithWall( e->position,
-                                                e->velocity );
-
-                if( !equal( e->position, desiredPosition ) ) {
-                    // hit wall, switch
-                    e->dodgeDirection = ! e->dodgeDirection;
+                    // don't update position here, do it in normal move phase
+                    // below
+                    /*
+                      e->position = stopMoveWithWall( e->position,
+                      e->velocity );
+                    */
                     }
                 }
             }
-        else {
+
+        if( !follow ) {
+            // normal movement for all enemies
             
             doublePair oldPos = e->position;
             e->position = stopMoveWithWall( e->position,
