@@ -1487,8 +1487,8 @@ void Level::step() {
         
         
             // random adjustment to acceleration
-            e->accel.x = randSource.getRandomBoundedDouble( -0.05, 0.05 );
-            e->accel.y = randSource.getRandomBoundedDouble( -0.05, 0.05 );
+            e->accel.x = randSource.getRandomBoundedDouble( -0.01, 0.01 );
+            e->accel.y = randSource.getRandomBoundedDouble( -0.01, 0.01 );
             }
         
         
