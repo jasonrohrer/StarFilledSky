@@ -79,7 +79,7 @@ class PowerUpSet {
     protected:
         
         void fillDefaultSet();
-        void fillRandomSet( int inTotalLevel );
+        void fillRandomSet( int inTotalLevel, char inIsEnemy = false );
 
 
         powerPushRecord *mPushStack;

@@ -85,8 +85,20 @@ void PowerUpSet::fillDefaultSet() {
 
 
 
-void PowerUpSet::fillRandomSet( int inTotalLevel ) {
+#define MIN_FOLLOW_LEVEL 5
+#define MIN_DODGE_LEVEL 5
+#define MIN_FAST_LEVEL 10
+
+
+
+void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
     
+    // ensure enemy behaviors are inserted at most once
+    char follow = false;
+    char dodge = false;
+    char fast = false;
+    
+
     // fill first FIFO slot first
     for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
         
@@ -98,6 +110,61 @@ void PowerUpSet::fillRandomSet( int inTotalLevel ) {
             }
         
         inTotalLevel -= mPowers[i].level;
+
+        
+
+        if( inIsEnemy ) {
+        
+            // special behaviors?
+            
+            char behaviorPicked = false;
+            
+            
+            if( !behaviorPicked && ! follow &&
+                mPowers[ i ].level > MIN_FOLLOW_LEVEL ) {
+            
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 93 ) {
+                
+                    // stick a follow in this spot
+                    mPowers[ i ].powerType = enemyBehaviorFollow;
+                    mPowers[ i ].behavior = true;
+                    // keep existing level number
+
+                    behaviorPicked = true;
+                    follow = true;
+                    }
+                }
+
+            if( !behaviorPicked && ! dodge &&
+                mPowers[ i ].level > MIN_DODGE_LEVEL ) {
+            
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
+                
+                    // stick a dodge in this spot
+                    mPowers[ i ].powerType = enemyBehaviorDodge;
+                    mPowers[ i ].behavior = true;
+                    // keep existing level number
+                    
+                    behaviorPicked = true;
+                    dodge = true;
+                    }
+                }
+
+            if( !behaviorPicked && ! fast &&
+                mPowers[ i ].level > MIN_FAST_LEVEL ) {
+            
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 90 ) {
+                
+                    // stick a fast in this spot
+                    mPowers[ i ].powerType = enemyBehaviorFast;
+                    mPowers[ i ].behavior = true;
+                    // keep existing level number
+                    
+                    behaviorPicked = true;
+                    fast = true;
+                    }
+                }
+            }
         }
     }
 
@@ -109,82 +176,12 @@ PowerUpSet::PowerUpSet() {
     }
 
 
-#define MIN_FOLLOW_LEVEL 5
-#define MIN_DODGE_LEVEL 5
-#define MIN_FAST_LEVEL 10
 
 
 PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
     fillDefaultSet();
     
-    fillRandomSet( inTotalLevel );
-
-    if( inIsEnemy ) {
-        
-        // special behaviors?
-
-        int index = 
-            randSource.getRandomBoundedInt( 0, 
-                                            POWER_SET_SIZE - 1 );
-
-        char behaviorPicked = false;
-        
-
-        if( !behaviorPicked && mPowers[ index ].level > MIN_FOLLOW_LEVEL ) {
-            
-            if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {
-                
-                // stick a follow in one spot
-                mPowers[ index ].powerType = enemyBehaviorFollow;
-                mPowers[ index ].behavior = true;
-                // keep existing level number
-
-                behaviorPicked = true;
-                }
-            }
-
-        if( !behaviorPicked && mPowers[ index ].level > MIN_DODGE_LEVEL ) {
-            
-            if( randSource.getRandomBoundedInt( 0, 10 ) > 5 ) {
-                
-                // stick a follow in one spot
-                mPowers[ index ].powerType = enemyBehaviorDodge;
-                mPowers[ index ].behavior = true;
-                // keep existing level number
-
-                behaviorPicked = true;
-                }
-            }
-
-
-        // can have fast in addition to other behaviors
-        int index2 = index;
-        if( behaviorPicked ) {
-            if( randSource.getRandomBoolean() ) {
-                index2 = index + 1;
-                }
-            else {
-                index2 = index - 1;
-                }
-            index2 = index2 % POWER_SET_SIZE;
-            }
-        
-        if( mPowers[ index2 ].level > MIN_FAST_LEVEL ) {
-            
-            if( randSource.getRandomBoundedInt( 0, 10 ) > 7 ) {
-                
-                // stick a follow in one spot
-                mPowers[ index2 ].powerType = enemyBehaviorFast;
-                mPowers[ index2 ].behavior = true;
-                // keep existing level number
-
-                behaviorPicked = true;
-                }
-            }
-
-
-        }
-    
+    fillRandomSet( inTotalLevel, inIsEnemy );
     }
 
 

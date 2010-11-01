@@ -1345,7 +1345,9 @@ void Level::step() {
                 }
             }
 
-        if( follow ) {
+
+        // temporarily disable follow during dodge
+        if( follow && e->dodgeBullet == NULL ) {
 
             if( mNextEnemyPathFindIndex == i ) {
                 
@@ -1381,10 +1383,13 @@ void Level::step() {
             e->velocity = mult( e->velocity, 0.7 );
             e->velocity = add( e->velocity, weightedFollow );
             
+            // handle this in normal move phase below
+            /*
             e->position = stopMoveWithWall( e->position,
                                             e->velocity );
+            */
             }
-        else if( dodge ) {
+        if( dodge ) {
             
             if( i == mNextEnemyPathFindIndex ) {
                 
@@ -1408,8 +1413,10 @@ void Level::step() {
                             }               
                         }
                     }
-            
-                if( closestIndex != -1 ) {
+
+                if( closestIndex != -1 &&
+                    // ignore too far away to dodge
+                    closestDistance < 5 ) {
                     e->dodgeBullet = mBullets.getElement( closestIndex );
                     }
                 else {
@@ -1448,11 +1455,16 @@ void Level::step() {
                         }
 
 
-                    e->velocity = mult( normalize( moveChoice ),
-                                        moveSpeed );
-                
-                    doublePair desiredPosition = 
-                        add( e->position, e->velocity );
+
+                    // weighted sum with old velocity to smooth out movement
+                    doublePair dogeVelocity = mult( normalize( moveChoice ),
+                                                    moveSpeed );
+                    
+                    doublePair weightedDodge = mult( dogeVelocity, 0.8 );
+            
+                    e->velocity = mult( e->velocity, 0.2 );
+                    e->velocity = add( e->velocity, weightedDodge );
+            
                 
                     // don't update position here, do it in normal move phase
                     // below
@@ -1464,16 +1476,17 @@ void Level::step() {
                 }
             }
 
-        if( !follow ) {
-            // normal movement for all enemies
+        // normal movement for all enemies
+        
+        doublePair oldPos = e->position;
+        e->position = stopMoveWithWall( e->position,
+                                        e->velocity );
+        
+        // get actual velocity, taking wall collision into account
+        e->velocity = sub( e->position, oldPos );
             
-            doublePair oldPos = e->position;
-            e->position = stopMoveWithWall( e->position,
-                                            e->velocity );
-        
-            // get actual velocity, taking wall collision into account
-            e->velocity = sub( e->position, oldPos );
-        
+        if( !follow ) {
+            // random accel
             e->velocity = add( e->velocity, e->accel );
 
             if( e->velocity.x > moveSpeed ) {
