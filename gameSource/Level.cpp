@@ -751,7 +751,7 @@ char equal( GridPos inA, GridPos inB ) {
 
 
 GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld, 
-                         GridPos inGoal ) {
+                         GridPos inGoal, double inMoveSpeed ) {
     SimpleVector<pathSearchRecord> searchQueue;
     SimpleVector<pathSearchRecord> doneQueue;
             
@@ -922,7 +922,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
         GridPos stepGridPos = inStart;
         
         doublePair stepDelta = mult( normalize( sub( goalPos, stepPos ) ),
-                                     maxEnemySpeed );
+                                     inMoveSpeed );
         
         while( !equal( stepGridPos, currentRecord->pos ) &&
                mWallFlags[ stepGridPos.y ][ stepGridPos.x ] == 1 ) {
@@ -1326,6 +1326,8 @@ void Level::step() {
         char follow = false;
         char dodge = false;
         
+        double moveSpeed = maxEnemySpeed;
+        
         for( int p=0; p<POWER_SET_SIZE; p++ ) {
             spriteID powerType =e-> powers->mPowers[p].powerType;
             
@@ -1336,11 +1338,13 @@ void Level::step() {
                 case enemyBehaviorDodge:
                     dodge = true;
                     break;
+                case enemyBehaviorFast:
+                    moveSpeed *= 2;
                 default:
                     break;
                 }
             }
-        
+
         if( follow ) {
 
             if( mNextEnemyPathFindIndex == i ) {
@@ -1354,7 +1358,8 @@ void Level::step() {
                 if( !equal( start, goal ) ) {
                     
                     GridPos targetGridPos = pathFind( start, e->position,
-                                                      goal );
+                                                      goal,
+                                                      moveSpeed );
                 
                     
                     e->followNextWaypoint = 
@@ -1367,7 +1372,7 @@ void Level::step() {
             doublePair followVelocity = 
                 mult( normalize( sub( e->followNextWaypoint, 
                                       e->position ) ),
-                      maxEnemySpeed );
+                      moveSpeed );
 
             
             // weighted sum with old velocity to smooth out movement
@@ -1444,7 +1449,7 @@ void Level::step() {
 
 
                     e->velocity = mult( normalize( moveChoice ),
-                                        maxEnemySpeed );
+                                        moveSpeed );
                 
                     doublePair desiredPosition = 
                         add( e->position, e->velocity );
@@ -1471,18 +1476,18 @@ void Level::step() {
         
             e->velocity = add( e->velocity, e->accel );
 
-            if( e->velocity.x > maxEnemySpeed ) {
-                e->velocity.x = maxEnemySpeed;
+            if( e->velocity.x > moveSpeed ) {
+                e->velocity.x = moveSpeed;
                 }
-            else if( e->velocity.x < -maxEnemySpeed ) {
-                e->velocity.x = -maxEnemySpeed;
+            else if( e->velocity.x < -moveSpeed ) {
+                e->velocity.x = -moveSpeed;
                 }
 
-            if( e->velocity.y > maxEnemySpeed ) {
-                e->velocity.y = maxEnemySpeed;
+            if( e->velocity.y > moveSpeed ) {
+                e->velocity.y = moveSpeed;
                 }
-            else if( e->velocity.y < -maxEnemySpeed ) {
-                e->velocity.y = -maxEnemySpeed;
+            else if( e->velocity.y < -moveSpeed ) {
+                e->velocity.y = -moveSpeed;
                 }
         
         

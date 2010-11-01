@@ -232,7 +232,8 @@ class Level {
         GridPos getGridPos( doublePair inWorldPos );
 
         GridPos pathFind( GridPos inStart, doublePair inStartWorld,
-                          GridPos inGoal );
+                          GridPos inGoal,
+                          double inMoveSpeed );
         
 
 

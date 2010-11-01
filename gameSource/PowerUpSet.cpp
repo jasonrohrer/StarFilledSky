@@ -111,6 +111,7 @@ PowerUpSet::PowerUpSet() {
 
 #define MIN_FOLLOW_LEVEL 5
 #define MIN_DODGE_LEVEL 5
+#define MIN_FAST_LEVEL 10
 
 
 PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
@@ -149,6 +150,32 @@ PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
                 // stick a follow in one spot
                 mPowers[ index ].powerType = enemyBehaviorDodge;
                 mPowers[ index ].behavior = true;
+                // keep existing level number
+
+                behaviorPicked = true;
+                }
+            }
+
+
+        // can have fast in addition to other behaviors
+        int index2 = index;
+        if( behaviorPicked ) {
+            if( randSource.getRandomBoolean() ) {
+                index2 = index + 1;
+                }
+            else {
+                index2 = index - 1;
+                }
+            index2 = index2 % POWER_SET_SIZE;
+            }
+        
+        if( mPowers[ index2 ].level > MIN_FAST_LEVEL ) {
+            
+            if( randSource.getRandomBoundedInt( 0, 10 ) > 7 ) {
+                
+                // stick a follow in one spot
+                mPowers[ index2 ].powerType = enemyBehaviorFast;
+                mPowers[ index2 ].behavior = true;
                 // keep existing level number
 
                 behaviorPicked = true;
