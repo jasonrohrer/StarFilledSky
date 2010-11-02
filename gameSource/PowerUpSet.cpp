@@ -87,6 +87,7 @@ void PowerUpSet::fillDefaultSet() {
 
 #define MIN_FOLLOW_LEVEL 5
 #define MIN_DODGE_LEVEL 5
+#define MIN_RANDOM_LEVEL 5
 #define MIN_FAST_LEVEL 10
 
 
@@ -94,9 +95,11 @@ void PowerUpSet::fillDefaultSet() {
 void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
     
     // ensure enemy behaviors are inserted at most once
-    char follow = false;
     char dodge = false;
     char fast = false;
+    
+    // enemy move styles block each other
+    char moveStyle = false;
     
 
     // fill first FIFO slot first
@@ -119,8 +122,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
             
             char behaviorPicked = false;
             
-            
-            if( !behaviorPicked && ! follow &&
+            if( !behaviorPicked && ! moveStyle &&
                 mPowers[ i ].level > MIN_FOLLOW_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 93 ) {
@@ -131,7 +133,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                     // keep existing level number
 
                     behaviorPicked = true;
-                    follow = true;
+                    moveStyle = true;
                     }
                 }
 
@@ -164,6 +166,23 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                     fast = true;
                     }
                 }
+
+            // random and follow block each other
+            if( !behaviorPicked && ! moveStyle &&
+                mPowers[ i ].level > MIN_RANDOM_LEVEL ) {
+            
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
+                
+                    // stick a follow in this spot
+                    mPowers[ i ].powerType = enemyBehaviorRandom;
+                    mPowers[ i ].behavior = true;
+                    // keep existing level number
+
+                    behaviorPicked = true;
+                    moveStyle = true;
+                    }
+                }
+
             }
         }
     }

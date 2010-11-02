@@ -1325,6 +1325,7 @@ void Level::step() {
         // search for behaviors
         char follow = false;
         char dodge = false;
+        char random = false;
         
         double moveSpeed = maxEnemySpeed;
         
@@ -1340,6 +1341,9 @@ void Level::step() {
                     break;
                 case enemyBehaviorFast:
                     moveSpeed *= 2;
+                case enemyBehaviorRandom:
+                    random = true;
+                    break;
                 default:
                     break;
                 }
@@ -1485,7 +1489,7 @@ void Level::step() {
         // get actual velocity, taking wall collision into account
         e->velocity = sub( e->position, oldPos );
             
-        if( !follow ) {
+        if( random ) {
             // random accel
             e->velocity = add( e->velocity, e->accel );
 

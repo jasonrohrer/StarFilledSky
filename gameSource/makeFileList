@@ -56,6 +56,7 @@ graphics/bullet7.tga \
 graphics/enemyBehaviorFollow.tga \
 graphics/enemyBehaviorDodge.tga \
 graphics/enemyBehaviorFast.tga \
+graphics/enemyBehaviorRandom.tga \
 
 
 
