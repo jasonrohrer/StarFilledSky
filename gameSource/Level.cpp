@@ -522,13 +522,19 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
             
             if( distance( spot, playerSpot ) > 20 ) {
                 
+                // random starting velocity
+                doublePair baseMoveDirection = 
+                    { randSource.getRandomBoundedDouble( -1, 1 ), 
+                      randSource.getRandomBoundedDouble( -1, 1 ) };
+                baseMoveDirection = normalize( baseMoveDirection );
+                
                 doublePair v = { 0, 0 };
                 doublePair a = { 0, 0 };
                 
 
                 PowerUpSet *p = new PowerUpSet( mLevelNumber - 1, true );
                 
-                Enemy e = { spot, v, a, 20, 
+                Enemy e = { spot, v, a, baseMoveDirection, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
                             p,
@@ -1486,10 +1492,19 @@ void Level::step() {
         e->position = stopMoveWithWall( e->position,
                                         e->velocity );
         
-        // get actual velocity, taking wall collision into account
-        e->velocity = sub( e->position, oldPos );
-            
+        doublePair desiredPosition = add( oldPos, e->velocity );
+        
+        char hitWall = false;
+        if( !equal( desiredPosition, e->position ) ) {
+            hitWall = true;
+            }
+        
+        
+
         if( random ) {
+            // get actual velocity, taking wall collision into account
+            e->velocity = sub( e->position, oldPos );
+
             // random accel
             e->velocity = add( e->velocity, e->accel );
 
@@ -1511,6 +1526,20 @@ void Level::step() {
             // random adjustment to acceleration
             e->accel.x = randSource.getRandomBoundedDouble( -0.01, 0.01 );
             e->accel.y = randSource.getRandomBoundedDouble( -0.01, 0.01 );
+            }
+        else {
+            // standard move, back and forth between walls    
+            if( hitWall ) {
+                e->baseMoveDirection = mult( e->baseMoveDirection, -1 );
+                }
+            
+            // move speed might change as power ups change
+            e->velocity = mult( e->baseMoveDirection, moveSpeed );
+
+            if( hitWall ) {
+                // bounce off
+                e->position = stopMoveWithWall( oldPos, e->velocity );
+                }                
             }
         
         

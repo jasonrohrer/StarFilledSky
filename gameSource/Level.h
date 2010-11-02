@@ -53,6 +53,7 @@ typedef struct Enemy {
         doublePair position;
         doublePair velocity;
         doublePair accel;
+        doublePair baseMoveDirection;
         int stepsBetweenBullets;
         int stepsTilNextBullet;
         EnemySprite *sprite;

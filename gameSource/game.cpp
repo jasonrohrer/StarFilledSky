@@ -114,7 +114,7 @@ const char *getWindowTitle() {
     }
 
 
-int levelNumber = 400;
+int levelNumber = 10;
 
 Level *currentLevel;
 
