@@ -156,7 +156,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 mPowers[ i ].level > MIN_FAST_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 90 ) {
-                
+                                
                     // stick a fast in this spot
                     mPowers[ i ].powerType = enemyBehaviorFast;
                     mPowers[ i ].behavior = true;
@@ -173,7 +173,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
                 
-                    // stick a follow in this spot
+                    // stick a random move token in this spot
                     mPowers[ i ].powerType = enemyBehaviorRandom;
                     mPowers[ i ].behavior = true;
                     // keep existing level number

@@ -528,7 +528,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                       randSource.getRandomBoundedDouble( -1, 1 ) };
                 baseMoveDirection = normalize( baseMoveDirection );
                 
-                doublePair v = { 0, 0 };
+                // start off with basic speed
+                doublePair v = mult( baseMoveDirection, maxEnemySpeed );
                 doublePair a = { 0, 0 };
                 
 
@@ -1332,7 +1333,8 @@ void Level::step() {
         char follow = false;
         char dodge = false;
         char random = false;
-        
+        char moveStyle = false;
+
         double moveSpeed = maxEnemySpeed;
         
         for( int p=0; p<POWER_SET_SIZE; p++ ) {
@@ -1347,6 +1349,7 @@ void Level::step() {
                     break;
                 case enemyBehaviorFast:
                     moveSpeed *= 2;
+                    break;
                 case enemyBehaviorRandom:
                     random = true;
                     break;
@@ -1354,7 +1357,9 @@ void Level::step() {
                     break;
                 }
             }
-
+        
+        moveStyle = random || follow;
+        
 
         // temporarily disable follow during dodge
         if( follow && e->dodgeBullet == NULL ) {
@@ -1393,11 +1398,7 @@ void Level::step() {
             e->velocity = mult( e->velocity, 0.7 );
             e->velocity = add( e->velocity, weightedFollow );
             
-            // handle this in normal move phase below
-            /*
-            e->position = stopMoveWithWall( e->position,
-                                            e->velocity );
-            */
+            // handle position update in normal move phase below
             }
         if( dodge ) {
             
@@ -1478,10 +1479,6 @@ void Level::step() {
                 
                     // don't update position here, do it in normal move phase
                     // below
-                    /*
-                      e->position = stopMoveWithWall( e->position,
-                      e->velocity );
-                    */
                     }
                 }
             }
@@ -1527,14 +1524,18 @@ void Level::step() {
             e->accel.x = randSource.getRandomBoundedDouble( -0.01, 0.01 );
             e->accel.y = randSource.getRandomBoundedDouble( -0.01, 0.01 );
             }
-        else {
+        
+        if( !moveStyle ) {
             // standard move, back and forth between walls    
             if( hitWall ) {
                 e->baseMoveDirection = mult( e->baseMoveDirection, -1 );
+                
+                // only update this when hit wall (otherwise, interferes
+                // with dodge)
+                // move speed might change as power ups change
+                e->velocity = mult( e->baseMoveDirection, moveSpeed );
                 }
             
-            // move speed might change as power ups change
-            e->velocity = mult( e->baseMoveDirection, moveSpeed );
 
             if( hitWall ) {
                 // bounce off
