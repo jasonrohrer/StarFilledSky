@@ -1016,7 +1016,8 @@ void Level::step() {
             }
         
 
-
+        doublePair oldBulletPos = b->position;
+        
         b->position = add( b->position, b->velocity );        
         
         b->distanceLeft -= b->speed;
@@ -1051,6 +1052,10 @@ void Level::step() {
                 if( b->bouncesLeft == 0 ) {
                     
                     hit = true;
+                    // stop bullet at wall boundary to prevent tunneling
+                    // of explosion sub bullets through thin walls
+                    b->position = stopMoveWithWall( oldBulletPos, 
+                                                    b->velocity );
                     }
                 else {
                     b->bouncesLeft --;
@@ -1273,13 +1278,6 @@ void Level::step() {
                     Bullet subBullet = explosionTemplate;
                     subBullet.velocity = rotate( subBullet.velocity,
                                                  startAngle + s * sepAngle );
-                    
-                    if( hit ) {
-                        // take first step here to back bullet out of
-                        // whatever was hit
-                        subBullet.position = add( subBullet.position, 
-                                                  subBullet.velocity );
-                        }
                     
                     mBullets.push_back( subBullet );
                     }
