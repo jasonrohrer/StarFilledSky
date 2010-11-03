@@ -11,7 +11,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+
+//#define USE_MALLINFO
+
+#ifdef USE_MALLINFO
 #include <malloc.h>
+#endif
 
 
 #include "minorGems/graphics/Color.h"
@@ -438,10 +443,12 @@ void drawFrame() {
             zoomProgress = 0;
             zoomDirection = 1;
             
+#ifdef USE_MALLINFO
             struct mallinfo meminfo = mallinfo();
     
             int oldAllocedBytes = meminfo.uordblks;
-            
+#endif
+
             ColorScheme c = 
                 currentLevel->getEnteringPointColors( mousePos, enteringType );
 
@@ -454,11 +461,13 @@ void drawFrame() {
             
             currentLevel = new Level( NULL, &c, subLevelNumber,
                                       symmetrical );
-            
+
+#ifdef USE_MALLINFO            
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,
                     meminfo.uordblks / 1024 );
+#endif
 
             if( symmetrical ) {
                 playerPos.x = -0.5;
@@ -837,19 +846,19 @@ void drawFrame() {
         zoomProgress += zoomSpeed * zoomDirection;
         
         if( zoomProgress >= 1 && zoomDirection == 1) {
-            
+#ifdef USE_MALLINFO
             struct mallinfo meminfo = mallinfo();
     
             int oldAllocedBytes = meminfo.uordblks;
-            
+#endif
             // going down, compact it first
             lastLevel->compactLevel();
-
+#ifdef USE_MALLINFO
             meminfo = mallinfo();
             printf( "Level compaction used %d kbytes (%d tot)\n",
                     (meminfo.uordblks - oldAllocedBytes ) / 1024,
                     meminfo.uordblks / 1024 );
-
+#endif
             lastLevel = NULL;
 
             // go with current level
@@ -1222,9 +1231,11 @@ void keyDown( unsigned char inASCII ) {
             break;
         case 'm':
         case 'M': {
+#ifdef USE_MALLINFO
             struct mallinfo meminfo = mallinfo();
             printf( "Mem alloc: %d\n",
                     meminfo.uordblks / 1024 );
+#endif
             }
             break;
         }
