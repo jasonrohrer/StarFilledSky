@@ -15,9 +15,10 @@ doublePair Level::sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
 
 extern CustomRandomSource randSource;
 
+extern double frameRateFactor;
 
-double maxEnemySpeed = 0.10;
-double enemyBulletSpeed = 0.2;
+
+double maxEnemySpeed = 0.05;
 
 
 
@@ -349,7 +350,8 @@ void Level::generateReproducibleData() {
     mColorMixDelta = new float[ mNumUsedSquares ];
     for( int i=0; i<mNumUsedSquares; i++ ) {
         mColorMix[i] = randSource.getRandomBoundedDouble( 0, 1 );
-        mColorMixDelta[i] = randSource.getRandomBoundedDouble( 0.01, 0.02 );
+        mColorMixDelta[i] = 
+            randSource.getRandomBoundedDouble( 0.005, 0.01 ) * frameRateFactor;
         }
 
 
@@ -529,7 +531,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 baseMoveDirection = normalize( baseMoveDirection );
                 
                 // start off with basic speed
-                doublePair v = mult( baseMoveDirection, maxEnemySpeed );
+                doublePair v = mult( baseMoveDirection, 
+                                     maxEnemySpeed * frameRateFactor );
                 doublePair a = { 0, 0 };
                 
 
@@ -1306,7 +1309,7 @@ void Level::step() {
     for( i=0; i<mSmokeClouds.size(); i++ ) {
         HitSmoke *s = mSmokeClouds.getElement( i );
         
-        s->progress += 0.0625;
+        s->progress += 0.03125 * frameRateFactor;
         if( s->progress > 1 ) {
             
             mSmokeClouds.deleteElement( i );
@@ -1333,7 +1336,7 @@ void Level::step() {
         char random = false;
         char moveStyle = false;
 
-        double moveSpeed = maxEnemySpeed;
+        double moveSpeed = maxEnemySpeed * frameRateFactor;
         
         for( int p=0; p<POWER_SET_SIZE; p++ ) {
             spriteID powerType =e-> powers->mPowers[p].powerType;
@@ -1573,6 +1576,7 @@ void Level::step() {
 
 
     // step square colors
+    float dampingFactor = 0.025 * frameRateFactor;
     for( int i=0; i<mNumUsedSquares; i++ ) {
         mColorMix[i] += mColorMixDelta[i];
         
@@ -1590,8 +1594,8 @@ void Level::step() {
         float counterMix = 1 - mix;
 
         // average our grid color with the current target mix
-        mix *= 0.05;
-        counterMix *= 0.05;
+        mix *= dampingFactor;
+        counterMix *= dampingFactor;
         mGridColors[i].r += 
             mHardGridColors[i].r * mix 
             + mSoftGridColors[i].r * counterMix;
@@ -1602,10 +1606,11 @@ void Level::step() {
             mHardGridColors[i].b * mix 
             + mSoftGridColors[i].b * counterMix;
         
+        float totalWeight = 1 + dampingFactor;
         
-        mGridColors[i].r /= 1.05;
-        mGridColors[i].g /= 1.05;
-        mGridColors[i].b /= 1.05;
+        mGridColors[i].r /= totalWeight;
+        mGridColors[i].g /= totalWeight;
+        mGridColors[i].b /= totalWeight;
         }
 
     }

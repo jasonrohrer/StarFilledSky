@@ -2,6 +2,10 @@
 #include "bulletSizeSet.h"
 
 
+extern double frameRateFactor;
+
+
+
 static int getTotalLevel( PowerUpSet *inSet, 
                           spriteID inPowerType ) {
     
@@ -63,11 +67,13 @@ float getBulletSpeed( PowerUpSet *inSet ) {
     // first bound to 0:1
     float boundedSpeed = totalLevel / ( totalLevel + bulletParam );
 
-    // bound to 0.3 : 0.8
-    boundedSpeed *= ( 0.5 );
+    // bound to 0.15 : 0.4
+    boundedSpeed *= ( 0.25 );
     
-    boundedSpeed += 0.3;
+    boundedSpeed += 0.15;
     
+    boundedSpeed *= frameRateFactor;
+
     return boundedSpeed;
     }
 

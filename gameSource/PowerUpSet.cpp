@@ -7,6 +7,8 @@
 
 extern CustomRandomSource randSource;
 
+extern double frameRateFactor;
+
 
 
 void drawPowerUpBorder( doublePair inPosition, double inFade ) {
@@ -384,7 +386,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
 
     if( mPushing ) {
         // speed up as stack of waiting power-ups gets taller
-        mPushProgress += 0.05 + 0.05 * mPushStackSize;
+        mPushProgress += ( 0.025 + 0.025 * mPushStackSize ) * frameRateFactor;
         if( mPushProgress >= 1 ) {
             mPushing = false;
 

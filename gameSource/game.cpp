@@ -146,7 +146,7 @@ double lastLevelCurrentViewSize;
 
 
 double zoomProgress = 0;
-double zoomSpeed = 0.02;
+double zoomSpeed = 0.01;
 double zoomDirection = 1;
 
 
@@ -572,7 +572,7 @@ void drawFrame() {
         // this creates aliasing glitches in player position
         //double componentVelocity = sqrt( (moveSpeed * moveSpeed)/2 );
         
-        // use closest fraction of 32 pixels:  3/32
+        // use closest fraction of 32 screen pixels:  3/32
         double componentVelocity = 0.09375 * frameRateFactor;
 
         velocity.x = velocity.x / moveSpeed * componentVelocity;
@@ -655,19 +655,19 @@ void drawFrame() {
         // since we stop moving when player inside center box, this eliminates
         // jerky micro-movements.
         double correctionSpeedX = 
-            0.005 * 
+            0.0025 * 
             pow(
                 (screenCenterDistanceFromPlayerX - 0),
                 2 );
         double correctionSpeedY = 
-            0.005 *
+            0.0025 *
             pow(
                 (screenCenterDistanceFromPlayerY - 0) 
                 / tweakedViewHeightFraction,
                 2 );
         
-        screenMoveDelta.x *= correctionSpeedX;
-        screenMoveDelta.y *= correctionSpeedY;
+        screenMoveDelta.x *= correctionSpeedX * frameRateFactor;
+        screenMoveDelta.y *= correctionSpeedY * frameRateFactor;
 
         /*
           // not actually seeing any round-off errors.
@@ -851,7 +851,7 @@ void drawFrame() {
 
         // step zoom and check for zoom end
 
-        zoomProgress += zoomSpeed * zoomDirection;
+        zoomProgress += zoomSpeed * zoomDirection * frameRateFactor;
         
         if( zoomProgress >= 1 && zoomDirection == 1) {
 #ifdef USE_MALLINFO
