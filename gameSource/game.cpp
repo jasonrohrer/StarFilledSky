@@ -548,7 +548,16 @@ void drawFrame() {
 
         PowerUp p = currentLevel->getPowerUp( playerPos );
         
-        Level *nextAbove = getNextAbove();
+
+        
+        Level *nextAbove;
+        if( lastLevel != NULL ) {
+            // zooming
+            nextAbove = lastLevel;
+            }
+        else {
+            nextAbove = getNextAbove();
+            }
         
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
