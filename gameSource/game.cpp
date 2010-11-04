@@ -97,7 +97,10 @@ float mouseSpeed;
 double velocityX = 0;
 double velocityY = 0;
 
-double moveSpeed = 0.25;
+double moveSpeed = 0.125;
+
+double frameRateFactor = 1;
+
 
 
 unsigned int randSeed = 1285702441;//time( NULL );
@@ -107,8 +110,6 @@ CustomRandomSource randSource(randSeed);
 char shooting = false;
 int stepsTilNextBullet = 0;
 int stepsBetweenBullets = 5;
-double bulletSpeed = 0.5;
-
 
 char entering = false;
 
@@ -200,9 +201,16 @@ static void populateLevelRiseStack() {
 
 
 
-void initFrameDrawer( int inWidth, int inHeight ) {
+void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     screenW = inWidth;
     screenH = inHeight;
+    
+    if( inTargetFrameRate != 60 ) {
+        frameRateFactor = (double)60 / (double)inTargetFrameRate;
+        }
+    
+    moveSpeed *= frameRateFactor;
+
     
     printf( "Rand seed = %d\n", randSeed );
     
@@ -564,8 +572,8 @@ void drawFrame() {
         // this creates aliasing glitches in player position
         //double componentVelocity = sqrt( (moveSpeed * moveSpeed)/2 );
         
-        // use closest fraction of 16 pixels:  3/16
-        double componentVelocity = 0.1875;
+        // use closest fraction of 32 pixels:  3/32
+        double componentVelocity = 0.09375 * frameRateFactor;
 
         velocity.x = velocity.x / moveSpeed * componentVelocity;
         velocity.y = velocity.y / moveSpeed * componentVelocity;
@@ -698,7 +706,7 @@ void drawFrame() {
             PowerUpSet *playerPowers = currentLevel->getPlayerPowers();
             
             // set speed
-            bulletSpeed = getBulletSpeed( playerPowers );
+            double bulletSpeed = getBulletSpeed( playerPowers );
 
             
             currentLevel->addBullet( playerPos, mousePos, 

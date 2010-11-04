@@ -2349,10 +2349,10 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
 
             int intY = (int)rint( xMoveAlone.y );
             if( velocityY > 0 ) {
-                xMoveAlone.y = intY + 0.375;
+                xMoveAlone.y = intY + 0.4375;
                 }
             else {
-                xMoveAlone.y = intY - 0.375;
+                xMoveAlone.y = intY - 0.4375;
                 }
             
             newPos = xMoveAlone;
@@ -2368,10 +2368,10 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
             
                 int intX = (int)rint( yMoveAlone.x );
                 if( velocityX > 0 ) {
-                    yMoveAlone.x = intX + 0.375;
+                    yMoveAlone.x = intX + 0.4375;
                     }
                 else {
-                    yMoveAlone.x = intX - 0.375;
+                    yMoveAlone.x = intX - 0.4375;
                     }
 
 
