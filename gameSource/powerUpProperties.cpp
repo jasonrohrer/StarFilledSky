@@ -55,8 +55,10 @@ float bulletStepParam = 5;
 int getStepsBetweenBullets( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpRapidFire );
 
-    // max = 20, min = 2
-    return (int)( 20 - 18 * totalLevel / ( totalLevel + bulletStepParam ) );
+    // max = 40, min = 4
+    return (int)( 
+        ( 40 - 36 * totalLevel / ( totalLevel + bulletStepParam ) ) 
+        / frameRateFactor );
     }
 
 
