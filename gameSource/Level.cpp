@@ -545,7 +545,9 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             getEnemyMaxHealth( p ),
                             0,
                             spot,
-                            NULL };
+                            NULL,
+                            false,
+                            randSource.getRandomBoundedDouble( 0.1, 0.8 ) };
                         
                 mEnemies.push_back( e );
                 hit = true;
@@ -1334,6 +1336,7 @@ void Level::step() {
         char follow = false;
         char dodge = false;
         char random = false;
+        char circle = false;
         char moveStyle = false;
 
         double moveSpeed = maxEnemySpeed * frameRateFactor;
@@ -1354,12 +1357,15 @@ void Level::step() {
                 case enemyBehaviorRandom:
                     random = true;
                     break;
+                case enemyBehaviorCircle:
+                    circle = true;
+                    break;
                 default:
                     break;
                 }
             }
         
-        moveStyle = random || follow;
+        moveStyle = random || follow || circle;
         
 
         // temporarily disable follow during dodge
@@ -1522,9 +1528,39 @@ void Level::step() {
         
         
             // random adjustment to acceleration
-            e->accel.x = randSource.getRandomBoundedDouble( -0.01, 0.01 );
-            e->accel.y = randSource.getRandomBoundedDouble( -0.01, 0.01 );
+            e->accel.x = frameRateFactor * 
+                randSource.getRandomBoundedDouble( -0.005, 0.005 );
+            e->accel.y = frameRateFactor *
+                randSource.getRandomBoundedDouble( -0.005, 0.005 );
             }
+
+        if( circle ) {
+
+            if( hitWall ) {
+                e->circleDirection = ! e->circleDirection;
+                e->velocity = mult( e->velocity, -1 );
+                
+                // bounce off
+                e->position = oldPos;
+                }
+                
+            // accel toward center of circle
+            doublePair accel = { e->velocity.y,
+                                 -e->velocity.x };
+            if( e->circleDirection ) {
+                accel = mult( accel, -1 );
+                }
+            
+            accel = mult( accel, 
+                          e->circleRadiusFactor * 
+                          moveSpeed );
+            
+            e->velocity = mult( normalize( add( e->velocity, accel ) ),
+                                    moveSpeed );
+            }
+        
+                
+
         
         if( !moveStyle ) {
             // standard move, back and forth between walls    
@@ -1535,13 +1571,10 @@ void Level::step() {
                 // with dodge)
                 // move speed might change as power ups change
                 e->velocity = mult( e->baseMoveDirection, moveSpeed );
-                }
             
-
-            if( hitWall ) {
                 // bounce off
-                e->position = stopMoveWithWall( oldPos, e->velocity );
-                }                
+                e->position = oldPos;                
+                }
             }
         
         

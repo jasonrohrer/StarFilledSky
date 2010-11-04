@@ -91,6 +91,7 @@ void PowerUpSet::fillDefaultSet() {
 #define MIN_DODGE_LEVEL 5
 #define MIN_RANDOM_LEVEL 5
 #define MIN_FAST_LEVEL 10
+#define MIN_CIRCLE_LEVEL 3
 
 
 
@@ -169,7 +170,6 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                     }
                 }
 
-            // random and follow block each other
             if( !behaviorPicked && ! moveStyle &&
                 mPowers[ i ].level > MIN_RANDOM_LEVEL ) {
             
@@ -177,6 +177,21 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 
                     // stick a random move token in this spot
                     mPowers[ i ].powerType = enemyBehaviorRandom;
+                    mPowers[ i ].behavior = true;
+                    // keep existing level number
+
+                    behaviorPicked = true;
+                    moveStyle = true;
+                    }
+                }
+
+            if( !behaviorPicked && ! moveStyle &&
+                mPowers[ i ].level > MIN_CIRCLE_LEVEL ) {
+            
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
+                
+                    // stick a random move token in this spot
+                    mPowers[ i ].powerType = enemyBehaviorCircle;
                     mPowers[ i ].behavior = true;
                     // keep existing level number
 
