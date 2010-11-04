@@ -126,9 +126,8 @@ float getHeatSeek( PowerUpSet *inSet ) {
     // first bound to 0:1
     float boundedHeatSeek = totalLevel / ( totalLevel + heatSeekParam );
 
-    // bound to 0:0.1
-    boundedHeatSeek *= 0.1;
-
+    // bound to 0:0.05
+    boundedHeatSeek *= 0.05 * frameRateFactor;
     
     return boundedHeatSeek;
     }
