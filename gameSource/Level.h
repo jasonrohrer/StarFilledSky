@@ -8,7 +8,7 @@
 #include "ColorScheme.h"
 #include "PowerUpSet.h"
 #include "PowerUpSprite.h"
-
+#include "GridPos.h"
 
 #define MAX_LEVEL_W  400
 #define MAX_LEVEL_H  400
@@ -84,10 +84,6 @@ typedef struct WindowPosition {
 
 
 
-typedef struct GridPos {
-        int x;
-        int y;
-    } GridPos;
 
 
 

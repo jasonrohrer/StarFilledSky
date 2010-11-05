@@ -24,6 +24,8 @@ numerals.cpp \
 PowerUpSprite.cpp \
 powerUpProperties.cpp \
 bulletSizeSet.cpp \
+BasicRandomWalker.cpp \
+
 
 
 GAME_GRAPHICS = \
