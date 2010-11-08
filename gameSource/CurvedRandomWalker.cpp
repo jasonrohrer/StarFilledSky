@@ -118,14 +118,7 @@ GridPos CurvedRandomWalker::getNextStep( GridPos inCurrentPos ) {
 
 
     GridPos p = { x, y };
-    //GridPos p = inCurrentPos;
-    
-    printf( "Step %d,%d", x, y );
-    if( hitEdge ) {
-        printf( "   hit" );
-        }
-    printf( "\n" );
-    
+
     return p;
     }
 
