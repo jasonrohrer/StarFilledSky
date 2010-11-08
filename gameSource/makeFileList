@@ -26,7 +26,7 @@ powerUpProperties.cpp \
 bulletSizeSet.cpp \
 BasicRandomWalker.cpp \
 StraightRandomWalker.cpp \
-
+CurvedRandomWalker.cpp \
 
 
 GAME_GRAPHICS = \

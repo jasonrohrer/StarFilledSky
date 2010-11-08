@@ -5,6 +5,7 @@
 #include "bulletSizeSet.h"
 #include "BasicRandomWalker.h"
 #include "StraightRandomWalker.h"
+#include "CurvedRandomWalker.h"
 
 
 #include "minorGems/game/gameGraphics.h"
@@ -111,10 +112,10 @@ void Level::generateReproducibleData() {
     // limit in number of random steps taken (for time) or
     // number of floor squares generated
 
-    StraightRandomWalker walker( xLimit, 
-                              3, 
-                              MAX_LEVEL_W - 3,
-                              MAX_LEVEL_H - 3 );
+    CurvedRandomWalker walker( xLimit, 
+                               3, 
+                               MAX_LEVEL_W - 3,
+                               MAX_LEVEL_H - 3 );
     
     
     for( int i=0; i<stepLimit && mNumFloorSquares < numFloorSquaresMax; i++ ) {
