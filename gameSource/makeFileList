@@ -11,6 +11,7 @@ APP_NAME = gameApp
 LAYER_SOURCE = \
 game.cpp \
 drawUtils.cpp \
+GridPos.cpp \
 Level.cpp \
 fixedSpriteBank.cpp \
 BorderSprite.cpp \
@@ -27,6 +28,7 @@ bulletSizeSet.cpp \
 BasicRandomWalker.cpp \
 StraightRandomWalker.cpp \
 CurvedRandomWalker.cpp \
+RoundPodRandomWalker.cpp \
 
 
 GAME_GRAPHICS = \
