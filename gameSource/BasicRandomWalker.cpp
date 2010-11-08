@@ -11,12 +11,6 @@ BasicRandomWalker::BasicRandomWalker( int inLowX, int inLowY,
         : RandomWalker( inLowX, inLowY, inHighX, inHighY ) {
 
     }
-
-
-        
-BasicRandomWalker::~BasicRandomWalker() {
-    }
-
         
         
 GridPos BasicRandomWalker::getNextStep( GridPos inCurrentPos ) {
@@ -35,13 +29,14 @@ GridPos BasicRandomWalker::getNextStep( GridPos inCurrentPos ) {
     if( x > mHigh.x ) {
         x = mHigh.x;
         }
-    if( x < mLow.x ) {
+    else if( x < mLow.x ) {
         x = mLow.x;
         }
+
     if( y > mHigh.y ) {
         y = mHigh.y;
         }
-    if( y < mLow.y ) {
+    else if( y < mLow.y ) {
         y = mLow.y;
         }    
 

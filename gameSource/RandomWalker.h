@@ -1,3 +1,7 @@
+#ifndef RANDOM_WALKER_INCLUDED
+#define RANDOM_WALKER_INCLUDED
+
+
 #include "GridPos.h"
 
 
@@ -29,3 +33,6 @@ class RandomWalker {
         
     };
 
+
+
+#endif

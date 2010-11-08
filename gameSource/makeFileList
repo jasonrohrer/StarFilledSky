@@ -25,6 +25,7 @@ PowerUpSprite.cpp \
 powerUpProperties.cpp \
 bulletSizeSet.cpp \
 BasicRandomWalker.cpp \
+StraightRandomWalker.cpp \
 
 
 
