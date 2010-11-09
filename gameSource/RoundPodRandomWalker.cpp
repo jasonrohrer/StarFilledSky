@@ -63,10 +63,6 @@ void RoundPodRandomWalker::startNewPod( GridPos inIncludePos ) {
         }
 
     /*
-    mNextBranchPoint = 
-        *( edgePoints.getElement(
-               randSource.getRandomBoundedInt( 0,
-                                               edgePoints.size() - 1 ) ) );
     */
 
     double angle = randSource.getRandomBoundedDouble( -0.5, 0.5 );
@@ -74,6 +70,22 @@ void RoundPodRandomWalker::startNewPod( GridPos inIncludePos ) {
     centerOffsetVector = rotate( centerOffsetVector, angle );    
     
     mNextBranchPoint = add( center, centerOffsetVector );
+
+    // make sure in bounds
+
+    if( mNextBranchPoint.x < mLow.x ||
+        mNextBranchPoint.y < mLow.y ||
+        mNextBranchPoint.x > mHigh.x ||
+        mNextBranchPoint.y > mHigh.y ) {
+        
+        // pick random edge point instead
+        mNextBranchPoint = 
+            *( edgePoints.getElement(
+                   randSource.getRandomBoundedInt( 0,
+                                                   edgePoints.size() - 1 ) ) );
+        }
+    
+
 
     mNextBranchDirection.x =
         mNextBranchPoint.x - center.x;
