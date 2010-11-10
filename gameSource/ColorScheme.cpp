@@ -113,6 +113,8 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
                                                specialSat,
                                                secondaryValue );
     special = *newColor;
+
+    delete newColor;
     }
 
     
