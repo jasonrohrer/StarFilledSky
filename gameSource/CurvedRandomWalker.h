@@ -33,9 +33,7 @@ class CurvedRandomWalker : public RandomWalker {
         
         
         int mStepsLeft;
-        
 
-        char mStartPosSet;
         
     };
 

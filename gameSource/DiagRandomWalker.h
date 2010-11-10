@@ -32,7 +32,6 @@ class DiagRandomWalker : public RandomWalker {
         int mStepsLeft;
         
 
-        char mStartPosSet;
         
     };
 

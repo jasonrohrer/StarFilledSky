@@ -25,17 +25,17 @@ DiagRandomWalker::DiagRandomWalker( int inLowX, int inLowY,
 
     mPos.x = 0;
     mPos.y = 0;
-    mStartPosSet = false;
-    
+        
     pickNewDir();
     }
         
         
 GridPos DiagRandomWalker::getNextStep( GridPos inCurrentPos ) {
-    if( !mStartPosSet ) {
+    if( rint( mPos.x ) != inCurrentPos.x || 
+        rint( mPos.y ) != inCurrentPos.y ) {
+    
         mPos.x = inCurrentPos.x;
         mPos.y = inCurrentPos.y;
-        mStartPosSet = true;
         }
 
     mPos = add( mPos, mVelocity );    

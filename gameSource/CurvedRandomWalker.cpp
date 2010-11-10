@@ -25,7 +25,6 @@ CurvedRandomWalker::CurvedRandomWalker( int inLowX, int inLowY,
 
     mPos.x = 0;
     mPos.y = 0;
-    mStartPosSet = false;
     
     mVelocity.x = randSource.getRandomBoundedDouble( -1, 1 );
     mVelocity.y = randSource.getRandomBoundedDouble( -1, 1 );
@@ -39,10 +38,11 @@ CurvedRandomWalker::CurvedRandomWalker( int inLowX, int inLowY,
         
         
 GridPos CurvedRandomWalker::getNextStep( GridPos inCurrentPos ) {
-    if( !mStartPosSet ) {
+    if( rint( mPos.x ) != inCurrentPos.x || 
+        rint( mPos.y ) != inCurrentPos.y ) {
+        
         mPos.x = inCurrentPos.x;
         mPos.y = inCurrentPos.y;
-        mStartPosSet = true;
         }
 
     mPos = add( mPos, mVelocity );
