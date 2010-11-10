@@ -8,6 +8,7 @@
 #include "CurvedRandomWalker.h"
 #include "RoundPodRandomWalker.h"
 #include "RectPodRandomWalker.h"
+#include "DiagRandomWalker.h"
 
 
 #include "minorGems/game/gameGraphics.h"
@@ -114,7 +115,7 @@ void Level::generateReproducibleData() {
     // limit in number of random steps taken (for time) or
     // number of floor squares generated
 
-    RectPodRandomWalker walker( xLimit, 
+    DiagRandomWalker walker( xLimit, 
                                3, 
                                MAX_LEVEL_W - 3,
                                MAX_LEVEL_H - 3 );
