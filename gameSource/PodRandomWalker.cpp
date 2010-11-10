@@ -25,13 +25,18 @@ GridPos PodRandomWalker::getNextStep( GridPos inCurrentPos ) {
     if( mCurrentPodPoints.size() == 0 ) {
         startNewPod( inCurrentPos );
         }
+
+    GridPos p;
     
 
-    GridPos p = *( mCurrentPodPoints.getElement( mNextPointIndex ) );
+    if( mNextPointIndex < mCurrentPodPoints.size() ) {
+        p = *( mCurrentPodPoints.getElement( mNextPointIndex ) );
+        mNextPointIndex ++;
+        }
+    else {
+        // final point, next branch point
+        p = mNextBranchPoint;
 
-    mNextPointIndex ++;
-    
-    if( mNextPointIndex >= mCurrentPodPoints.size() ) {
         mCurrentPodPoints.deleteAll();
 
         // branch off existing pod

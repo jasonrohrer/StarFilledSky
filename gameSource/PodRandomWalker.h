@@ -19,7 +19,14 @@ class PodRandomWalker : public RandomWalker {
         virtual GridPos getNextStep( GridPos inCurrentPos );
         
         virtual int getStepsLeftInBatch() {
-            return mCurrentPodPoints.size() - mNextPointIndex;
+            if( mCurrentPodPoints.size() > 0 ) {
+                // one extra point to return last in batch:
+                // the next branch point
+                return mCurrentPodPoints.size() - mNextPointIndex + 1;
+                }
+            else {
+                return 0;
+                }
             }
 
 
