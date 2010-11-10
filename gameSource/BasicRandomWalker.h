@@ -10,6 +10,10 @@ class BasicRandomWalker : public RandomWalker {
         
         virtual GridPos getNextStep( GridPos inCurrentPos );
         
+
+        virtual int getStepsLeftInBatch() {
+            return 0;
+            }
     };
 
 
