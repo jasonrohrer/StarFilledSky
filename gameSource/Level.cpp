@@ -2377,8 +2377,9 @@ RandomWalkerSet Level::getEnteringPointWalkerSet( doublePair inPosition,
             if( isPowerUp( inPosition, &i ) ) {
                 PowerUpToken *t = mPowerUpTokens.getElement( i );
                 
-                // FIXME
-                printf( "ENTERING POWER TOKEN, NO WALKER SPECIFIED\n" );
+                RandomWalkerSet set( t->power.powerType );
+                
+                return set;
                 }
             }
             break;            

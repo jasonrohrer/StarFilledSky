@@ -26,6 +26,52 @@ RandomWalkerSet::RandomWalkerSet() {
 
 
 
+
+RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
+    switch( inPowerType ) {
+        case powerUpEmpty:
+        case powerUpBulletSize:
+        case powerUpRapidFire:
+        case powerUpBulletDistance:
+            mWalkers[0] = straight;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = straight;
+            break;
+        case powerUpHeart:
+            mWalkers[0] = curved;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = roundPod;
+            break;
+        case powerUpAccuracy:
+        case powerUpBulletSpeed:
+        case powerUpBounce:
+            mWalkers[0] = diagonal;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = diagonal;
+            break;
+        case powerUpSpread:
+        case powerUpExplode:
+            mWalkers[0] = diagonal;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = straight;
+            break;
+        case powerUpHeatSeek:
+            mWalkers[0] = curved;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = diagonal;
+            break;
+        default:
+            mWalkers[0] = straight;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = straight;
+            break;
+        }
+    
+    }
+
+
+
+
 RandomWalker *RandomWalkerSet::pickWalker( int inLowX, int inLowY, 
                                            int inHighX, int inHighY ) {
     int pick = randSource.getRandomBoundedInt( 0, WALKER_SET_SIZE - 1 );

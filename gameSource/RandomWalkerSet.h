@@ -3,6 +3,7 @@
 
 
 #include "RandomWalker.h"
+#include "fixedSpriteBank.h"
 
 
 enum walkerType{ basic = 0,
@@ -24,6 +25,9 @@ class RandomWalkerSet {
         
         // totally random set
         RandomWalkerSet();
+      
+        // set specific to a power up token type
+        RandomWalkerSet( spriteID inPowerType );
         
         
         // picks a walker from set at random
