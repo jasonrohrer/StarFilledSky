@@ -12,8 +12,12 @@ class BasicRandomWalker : public RandomWalker {
         
 
         virtual int getStepsLeftInBatch() {
-            return 0;
+            return mStepsLeft;
             }
+
+    protected:
+        int mStepsLeft;
+
     };
 
 

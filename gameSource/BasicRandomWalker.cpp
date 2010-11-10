@@ -10,6 +10,7 @@ BasicRandomWalker::BasicRandomWalker( int inLowX, int inLowY,
                                       int inHighX, int inHighY )
         : RandomWalker( inLowX, inLowY, inHighX, inHighY ) {
 
+    mStepsLeft = randSource.getRandomBoundedInt( 5, 30 );
     }
         
         
@@ -39,6 +40,12 @@ GridPos BasicRandomWalker::getNextStep( GridPos inCurrentPos ) {
     else if( y < mLow.y ) {
         y = mLow.y;
         }    
+
+    mStepsLeft--;
+    
+    if( mStepsLeft <= 0 ) {
+        mStepsLeft = randSource.getRandomBoundedInt( 5, 30 );
+        }
 
     GridPos p = { x, y };
     
