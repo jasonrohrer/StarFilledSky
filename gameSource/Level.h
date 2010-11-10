@@ -9,6 +9,7 @@
 #include "PowerUpSet.h"
 #include "PowerUpSprite.h"
 #include "GridPos.h"
+#include "RandomWalkerSet.h"
 
 #define MAX_LEVEL_W  400
 #define MAX_LEVEL_H  400
@@ -64,6 +65,7 @@ typedef struct Enemy {
         Bullet *dodgeBullet;
         char circleDirection;
         double circleRadiusFactor;
+        RandomWalkerSet walkerSet;
     } Enemy;
 
 
@@ -104,10 +106,11 @@ class Level {
 
     public:
 
-        // Pass NULL to generate a fresh scheme
+        // Pass NULL to generate a fresh scheme and walker set
         // destroyed by caller
         Level( ColorScheme *inPlayerColors=NULL,
-               ColorScheme *inColors=NULL, 
+               ColorScheme *inColors=NULL,
+               RandomWalkerSet *inWalkerSet=NULL,
                int inLevelNumber = 0,
                char inSymmetrical=true );
 
@@ -171,6 +174,9 @@ class Level {
         // 1 enemy
         ColorScheme getEnteringPointColors( doublePair inPosition,
                                             itemType inType );
+
+        RandomWalkerSet getEnteringPointWalkerSet( doublePair inPosition,
+                                                   itemType inType );
         
         // level number of subLevel if entered here
         int getEnteringPointSubLevel( doublePair inPosition,
@@ -324,6 +330,7 @@ class Level {
 
         PlayerSprite mPlayerSprite;
         PowerUpSet *mPlayerPowers;
+        RandomWalkerSet mPlayerWalkerSet;
         
         int mPlayerHealth;
         
@@ -331,6 +338,8 @@ class Level {
 
         //TileSet mTileSet;
         ColorScheme mColors;
+        
+        RandomWalkerSet mWalkerSet;
         
 
         BorderSprite *mLastEnterPointSprite;

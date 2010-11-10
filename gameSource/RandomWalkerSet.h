@@ -1,3 +1,7 @@
+#ifndef RANDOM_WALKER_SET_INCLUDED
+#define RANDOM_WALKER_SET_INCLUDED
+
+
 #include "RandomWalker.h"
 
 
@@ -34,3 +38,5 @@ class RandomWalkerSet {
 
     };
 
+
+#endif

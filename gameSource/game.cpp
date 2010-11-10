@@ -47,6 +47,7 @@
 #include "numerals.h"
 #include "bulletSizeSet.h"
 #include "powerUpProperties.h"
+#include "RandomWalkerSet.h"
 
 
 // globals
@@ -159,7 +160,10 @@ static void populateLevelRiseStack() {
         // push one on to rise into
         ColorScheme c = currentLevel->getLevelColors();
         ColorScheme freshColors;
+        RandomWalkerSet freshSet;
+
         levelRiseStack.push_back( new Level( &c, &freshColors,
+                                             &freshSet,
                                              levelNumber + 1 ) );
         
         // center player in symmetrical level
@@ -176,7 +180,10 @@ static void populateLevelRiseStack() {
 
         ColorScheme c = nextAbove->getLevelColors();
         ColorScheme freshColors;
+        RandomWalkerSet freshSet;
+        
         levelRiseStack.push_back( new Level( &c, &freshColors,
+                                             &freshSet,
                                              levelNumber + 1 ) );
         
         levelRiseStack.push_back( nextAbove );
@@ -241,7 +248,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initNumerals( "numerals.tga" );
     
 
-    currentLevel = new Level( NULL, NULL, levelNumber );
+    currentLevel = new Level( NULL, NULL, NULL, levelNumber );
     
     populateLevelRiseStack();
     
@@ -470,13 +477,18 @@ void drawFrame() {
             ColorScheme c = 
                 currentLevel->getEnteringPointColors( mousePos, enteringType );
 
+            RandomWalkerSet walkerSet =
+                currentLevel->getEnteringPointWalkerSet( mousePos,
+                                                         enteringType );
+
             int subLevelNumber =
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
 
             
             
-            currentLevel = new Level( NULL, &c, subLevelNumber,
+            currentLevel = new Level( NULL, &c, &walkerSet,
+                                      subLevelNumber,
                                       symmetrical );
 
 #ifdef USE_MALLINFO            

@@ -9,7 +9,6 @@
 #include "RoundPodRandomWalker.h"
 #include "RectPodRandomWalker.h"
 #include "DiagRandomWalker.h"
-#include "RandomWalkerSet.h"
 
 
 #include "minorGems/game/gameGraphics.h"
@@ -117,18 +116,12 @@ void Level::generateReproducibleData() {
     // number of floor squares generated
 
     
-    /*
-    DiagRandomWalker walker( xLimit, 
-                             3, 
-                             MAX_LEVEL_W - 3,
-                             MAX_LEVEL_H - 3 );
-    */
-    RandomWalkerSet walkerSet;
-    
-    RandomWalker *walker = walkerSet.pickWalker( xLimit, 
-                                                 3, 
-                                                 MAX_LEVEL_W - 3,
-                                                 MAX_LEVEL_H - 3 );
+
+
+    RandomWalker *walker = mWalkerSet.pickWalker( xLimit, 
+                                                  3, 
+                                                  MAX_LEVEL_W - 3,
+                                                  MAX_LEVEL_H - 3 );
     
 
     char done = false;
@@ -182,10 +175,10 @@ void Level::generateReproducibleData() {
         else if( batchDone ) {
             // can switch walkers
             delete walker;
-            walker = walkerSet.pickWalker( xLimit, 
-                                           3, 
-                                           MAX_LEVEL_W - 3,
-                                           MAX_LEVEL_H - 3 );
+            walker = mWalkerSet.pickWalker( xLimit, 
+                                            3, 
+                                            MAX_LEVEL_W - 3,
+                                            MAX_LEVEL_H - 3 );
             }
         
 
@@ -498,6 +491,7 @@ void Level::freeReproducibleData() {
 
 
 Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
+              RandomWalkerSet *inWalkerSet,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
@@ -539,6 +533,12 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
         mColors = *( inColors );
         }
     // else use randomly-generated mColors from stack
+    
+
+    if( inWalkerSet != NULL ) {
+        mWalkerSet = *( inWalkerSet );
+        }
+    // else use randomly-generated walker set from stack
 
 
     mFrozen = false;
@@ -2347,6 +2347,46 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
     // default
     ColorScheme c;
     return c;
+    }
+
+
+
+
+
+RandomWalkerSet Level::getEnteringPointWalkerSet( doublePair inPosition,
+                                                  itemType inType ) {
+    switch( inType ) {
+        case player: {
+
+            return mPlayerWalkerSet;
+            }
+            break;
+        case enemy: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                return e->walkerSet;
+                }
+            }
+            break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                PowerUpToken *t = mPowerUpTokens.getElement( i );
+                
+                // FIXME
+                printf( "ENTERING POWER TOKEN, NO WALKER SPECIFIED\n" );
+                }
+            }
+            break;            
+        }
+    
+    // default
+    RandomWalkerSet w;
+    return w;
     }
 
 
