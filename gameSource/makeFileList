@@ -28,6 +28,7 @@ bulletSizeSet.cpp \
 BasicRandomWalker.cpp \
 StraightRandomWalker.cpp \
 CurvedRandomWalker.cpp \
+PodRandomWalker.cpp \
 RoundPodRandomWalker.cpp \
 
 

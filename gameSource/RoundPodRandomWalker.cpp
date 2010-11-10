@@ -13,8 +13,6 @@ void RoundPodRandomWalker::startNewPod( GridPos inIncludePos ) {
     
     int radius = randSource.getRandomBoundedInt( 3, 7 );
     
-    double centerOffset = randSource.getRandomBoundedDouble( 0, radius - 1 );
-    
     doublePair centerOffsetVector = mNextBranchDirection;
     centerOffsetVector = forceLength( centerOffsetVector, radius - 1 );
     
@@ -100,34 +98,6 @@ void RoundPodRandomWalker::startNewPod( GridPos inIncludePos ) {
 
 RoundPodRandomWalker::RoundPodRandomWalker( int inLowX, int inLowY, 
                                             int inHighX, int inHighY )
-        : RandomWalker( inLowX, inLowY, inHighX, inHighY ) {
+        : PodRandomWalker( inLowX, inLowY, inHighX, inHighY ) {
+    }    
     
-    mNextPointIndex = 0;
-    
-    mNextBranchDirection.x = randSource.getRandomBoundedDouble( -1, 1 );
-    mNextBranchDirection.y = randSource.getRandomBoundedDouble( -1, 1 );
-    }
-
-        
-        
-GridPos RoundPodRandomWalker::getNextStep( GridPos inCurrentPos ) {
-    
-    if( mCurrentPodPoints.size() == 0 ) {
-        startNewPod( inCurrentPos );
-        }
-    
-
-    GridPos p = *( mCurrentPodPoints.getElement( mNextPointIndex ) );
-
-    mNextPointIndex ++;
-    
-    if( mNextPointIndex >= mCurrentPodPoints.size() ) {
-        mCurrentPodPoints.deleteAll();
-
-        // branch off existing pod
-        startNewPod( mNextBranchPoint );
-        }
-    
-    return p;
-    }
-
