@@ -11,8 +11,14 @@ extern CustomRandomSource randSource;
 
 void RectPodRandomWalker::startNewPod( GridPos inIncludePos ) {
     
-    int radius = randSource.getRandomBoundedInt( 3, 7 );
+    int hRadius = randSource.getRandomBoundedInt( 2, 7 );
+    int vRadius = randSource.getRandomBoundedInt( 2, 7 );
     
+    int radius = hRadius;
+    if( vRadius < hRadius ) {
+        radius = vRadius;
+        }
+
     doublePair centerOffsetVector = mNextBranchDirection;
     centerOffsetVector = forceLength( centerOffsetVector, radius - 1 );
     
@@ -20,11 +26,11 @@ void RectPodRandomWalker::startNewPod( GridPos inIncludePos ) {
     GridPos center = add( inIncludePos, centerOffsetVector );
     
     // box arect circle
-    int lowX = center.x - radius;
-    int highX = center.x + radius;
+    int lowX = center.x - hRadius;
+    int highX = center.x + hRadius;
 
-    int lowY = center.y - radius;
-    int highY = center.y + radius;
+    int lowY = center.y - vRadius;
+    int highY = center.y + vRadius;
 
     // cut off at edges of allowed region
     if( lowX < mLow.x ) {
