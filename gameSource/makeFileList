@@ -30,6 +30,8 @@ StraightRandomWalker.cpp \
 CurvedRandomWalker.cpp \
 PodRandomWalker.cpp \
 RoundPodRandomWalker.cpp \
+RectPodRandomWalker.cpp \
+
 
 
 GAME_GRAPHICS = \

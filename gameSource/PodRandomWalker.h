@@ -1,3 +1,7 @@
+#ifndef POD_RANDOM_WALKER_INCLUDED
+#define POD_RANDOM_WALKER_INCLUDED
+
+
 #include "RandomWalker.h"
 
 #include "minorGems/game/doublePair.h"
@@ -33,5 +37,7 @@ class PodRandomWalker : public RandomWalker {
                 
     };
 
+
+#endif
 
           
