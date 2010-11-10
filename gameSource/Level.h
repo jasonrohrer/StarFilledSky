@@ -156,6 +156,9 @@ class Level {
       
         char isPowerUp( doublePair inPos, int *outPowerUpIndex = NULL );
 
+
+        PowerUp peekPowerUp( doublePair inPos );
+
         // removes it from world
         PowerUp getPowerUp( doublePair inPos );
         

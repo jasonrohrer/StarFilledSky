@@ -415,24 +415,34 @@ void drawFrame() {
         doublePair enteringPos;
         char enteringHit = false;
         itemType enteringType = player;
-        
+        char symmetrical = true;
+
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
             
             enteringPos = currentLevel->getEnemyCenter( itemIndex );
             enteringHit = true;
             enteringType = enemy;
+            symmetrical = false;
             }
         else if( playerHealth == 0 ||
                  currentLevel->isPlayer( mousePos ) ) {
             enteringPos = playerPos;
             enteringHit = true;
             enteringType = player;
+            symmetrical = true;
             }
         else if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
             enteringPos = currentLevel->getPowerUpCenter( itemIndex );
             enteringHit = true;
             enteringType = power;
+            symmetrical = false;
+
+            if( currentLevel->peekPowerUp( mousePos ).powerType == 
+                powerUpEmpty ) {
+                
+                symmetrical = true;
+                }
             }
         
 
@@ -464,8 +474,7 @@ void drawFrame() {
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
 
-            char symmetrical = ( enteringType == player || 
-                                 enteringType == power );
+            
             
             currentLevel = new Level( NULL, &c, subLevelNumber,
                                       symmetrical );

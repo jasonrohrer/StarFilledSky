@@ -2267,6 +2267,24 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
 
 
 
+PowerUp Level::peekPowerUp( doublePair inPos ) {
+    for( int j=0; j<mPowerUpTokens.size(); j++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( j );
+        
+        if( distance( t->position, inPos ) < 0.5 ) {
+            
+            PowerUp p = t->power;
+
+            return p;
+            }
+        }
+    
+    printf( "WARNING:  Level::peekPowerUp failed\n" );
+    return getRandomPowerUp( mLevelNumber / POWER_SET_SIZE );
+    }
+
+
+
 
 ColorScheme Level::getLevelColors() {
     return mColors;
