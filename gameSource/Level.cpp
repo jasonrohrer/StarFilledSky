@@ -9,6 +9,7 @@
 #include "RoundPodRandomWalker.h"
 #include "RectPodRandomWalker.h"
 #include "DiagRandomWalker.h"
+#include "RandomWalkerSet.h"
 
 
 #include "minorGems/game/gameGraphics.h"
@@ -115,11 +116,21 @@ void Level::generateReproducibleData() {
     // limit in number of random steps taken (for time) or
     // number of floor squares generated
 
-    DiagRandomWalker walker( xLimit, 
-                               3, 
-                               MAX_LEVEL_W - 3,
-                               MAX_LEVEL_H - 3 );
     
+    /*
+    DiagRandomWalker walker( xLimit, 
+                             3, 
+                             MAX_LEVEL_W - 3,
+                             MAX_LEVEL_H - 3 );
+    */
+    RandomWalkerSet walkerSet;
+    
+    RandomWalker *walker = walkerSet.pickWalker( xLimit, 
+                                                 3, 
+                                                 MAX_LEVEL_W - 3,
+                                                 MAX_LEVEL_H - 3 );
+    
+
     char done = false;
 
     for( int i=0; 
@@ -150,12 +161,16 @@ void Level::generateReproducibleData() {
         
         GridPos p = { x, y };
         
-        p = walker.getNextStep( p );
+        int batchSize = walker->getStepsLeftInBatch();
+
+        p = walker->getNextStep( p );
         x = p.x;
         y = p.y;
+        
+        char batchDone = ( batchSize == 1 );
 
         
-        int batchSize = walker.getStepsLeftInBatch();
+        batchSize = walker->getStepsLeftInBatch();
 
         if( mNumUsedSquares +  batchSize >= numFloorSquaresMax 
             ||
@@ -164,7 +179,16 @@ void Level::generateReproducibleData() {
             // stop w/out adding any of this new batch
             done = true;
             }
+        else if( batchDone ) {
+            // can switch walkers
+            delete walker;
+            walker = walkerSet.pickWalker( xLimit, 
+                                           3, 
+                                           MAX_LEVEL_W - 3,
+                                           MAX_LEVEL_H - 3 );
+            }
         
+
         /*
         // move only in x or y, not both
         if( randSource.getRandomBoolean() ) {
@@ -189,6 +213,9 @@ void Level::generateReproducibleData() {
         */
         
         }
+
+    delete walker;
+    
 
 
     if( mSymmetrical ) {

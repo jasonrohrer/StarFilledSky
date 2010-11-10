@@ -32,6 +32,7 @@ PodRandomWalker.cpp \
 RoundPodRandomWalker.cpp \
 RectPodRandomWalker.cpp \
 DiagRandomWalker.cpp \
+RandomWalkerSet.cpp \
 
 
 
