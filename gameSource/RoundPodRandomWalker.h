@@ -14,6 +14,10 @@ class RoundPodRandomWalker : public RandomWalker {
         
         virtual GridPos getNextStep( GridPos inCurrentPos );
         
+        virtual int getStepsLeftInBatch() {
+            return mCurrentPodPoints.size() - mNextPointIndex;
+            }
+
 
     protected:
 

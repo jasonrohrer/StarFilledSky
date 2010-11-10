@@ -12,7 +12,12 @@ class CurvedRandomWalker : public RandomWalker {
 
         
         virtual GridPos getNextStep( GridPos inCurrentPos );
+
         
+        virtual int getStepsLeftInBatch() {
+            return mStepsLeft;
+            }
+
 
     protected:
         

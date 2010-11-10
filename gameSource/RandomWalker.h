@@ -24,7 +24,10 @@ class RandomWalker {
         
         
         virtual GridPos getNextStep( GridPos inCurrentPos ) = 0;
+        
 
+        virtual int getStepsLeftInBatch() = 0;
+        
 
     protected:
         

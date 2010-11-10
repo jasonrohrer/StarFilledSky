@@ -118,8 +118,14 @@ void Level::generateReproducibleData() {
                                MAX_LEVEL_W - 3,
                                MAX_LEVEL_H - 3 );
     
-    
-    for( int i=0; i<stepLimit && mNumFloorSquares < numFloorSquaresMax; i++ ) {
+    char done = false;
+
+    for( int i=0; 
+         i<stepLimit && 
+             mNumFloorSquares < numFloorSquaresMax &&
+             !done; 
+         i++ ) {
+
         if( mWallFlags[y][x] != 1 ) {
             mNumFloorSquares++;
 
@@ -136,6 +142,8 @@ void Level::generateReproducibleData() {
             floorColorIndex = (floorColorIndex + 1) % 3;
             }
         
+        
+
         mWallFlags[y][x] = 1;
         
         GridPos p = { x, y };
@@ -143,6 +151,17 @@ void Level::generateReproducibleData() {
         p = walker.getNextStep( p );
         x = p.x;
         y = p.y;
+
+        
+        int batchSize = walker.getStepsLeftInBatch();
+
+        if( mNumUsedSquares +  batchSize >= numFloorSquaresMax 
+            ||
+            i + batchSize >= stepLimit ) {
+            
+            // stop w/out adding any of this new batch
+            done = true;
+            }
         
         /*
         // move only in x or y, not both
