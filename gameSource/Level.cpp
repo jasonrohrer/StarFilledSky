@@ -405,7 +405,6 @@ void Level::generateReproducibleData() {
 
     // actual, working grid colors
     mGridColors = new Color[ mNumUsedSquares ];
-    memcpy( mGridColors, mSoftGridColors, sizeof( Color ) * mNumUsedSquares );
     
     mColorMix = new float[ mNumUsedSquares ];
     mColorMixDelta = new float[ mNumUsedSquares ];
@@ -413,6 +412,23 @@ void Level::generateReproducibleData() {
         mColorMix[i] = randSource.getRandomBoundedDouble( 0, 1 );
         mColorMixDelta[i] = 
             randSource.getRandomBoundedDouble( 0.005, 0.01 ) * frameRateFactor;
+        
+        // set starting point mix, different from target mix, so
+        // that color shimmer starts right away
+        float startMix = randSource.getRandomBoundedDouble( 0, 1 );
+        float mix = startMix * 0.4;
+        float counterMix = 1 - mix;
+
+        mGridColors[i].r = 
+            mHardGridColors[i].r * mix 
+            + mSoftGridColors[i].r * counterMix;
+        mGridColors[i].g = 
+            mHardGridColors[i].g * mix 
+            + mSoftGridColors[i].g * counterMix;
+        mGridColors[i].b = 
+            mHardGridColors[i].b * mix 
+            + mSoftGridColors[i].b * counterMix;
+
         }
 
 

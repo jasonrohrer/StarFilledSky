@@ -50,28 +50,6 @@
 #include "RandomWalkerSet.h"
 
 
-// globals
-
-
-// used for picking a "slice" from various noise functions
-double globalRandomSeed = 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // height of dashboard at top of screen
 double dashHeight = 1;
