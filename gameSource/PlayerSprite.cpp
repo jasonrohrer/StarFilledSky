@@ -8,12 +8,15 @@ extern CustomRandomSource randSource;
 
 
 
-PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
-
-    if( inColors != NULL ) {
-        mColors = *inColors;
+void PlayerSprite::generateReproducibleData() {
+    if( mDataGenerated ) {
+        // already generated
+        return;
         }
-    
+
+    randSource.restoreFromSavedState( mRandSeedState );
+
+
 
     Image centerImage( 16, 16, 4, true );
     
@@ -195,11 +198,53 @@ PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
     
 
     mBorderSprite = fillSprite( &borderImage );
+
+    mDataGenerated = true;
     }
+
+
+
+void PlayerSprite::freeReproducibleData() {
+    if( mDataGenerated ) {
+        freeSprite( mBorderSprite );
+        mBorderSprite = NULL;
+        freeSprite( mCenterSprite );
+        mCenterSprite = NULL;
+        }
+    mDataGenerated = false;
+    }
+
+
+
+PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
+
+    if( inColors != NULL ) {
+        mColors = *inColors;
+        }
+    
+
+    mDataGenerated = false;
+    randSource.saveState();
+    mRandSeedState = randSource.getSavedState();
+
+    generateReproducibleData();
+    }
+
+
 
 
 
 ColorScheme PlayerSprite::getColors() {
     return mColors;
+    }
+
+
+void PlayerSprite::compactSprite() {
+    freeReproducibleData();
+    }
+
+        
+void PlayerSprite::decompactSprite() {
+    generateReproducibleData();
     }
 

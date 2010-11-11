@@ -498,9 +498,13 @@ void Level::freeReproducibleData() {
 
         for( int i=0; i<mEnemies.size(); i++ ) {
             Enemy *e = mEnemies.getElement( i );
-            e->sprite->compactSprite();
-            }        
-
+            if( e->sprite != mLastEnterPointSprite ) {
+                e->sprite->compactSprite();
+                }
+            }    
+        if( &mPlayerSprite != mLastEnterPointSprite ) {
+            mPlayerSprite.compactSprite();
+            }
         mDataGenerated = false;
         }
     
@@ -786,6 +790,7 @@ void Level::decompactLevel() {
         Enemy *e = mEnemies.getElement( i );
         e->sprite->decompactSprite();
         }
+    mPlayerSprite.decompactSprite();
     }
 
 
