@@ -496,8 +496,14 @@ void Level::freeReproducibleData() {
         delete [] mIndexToGridMap;
         delete [] mGridWorldSpots;
 
+        for( int i=0; i<mEnemies.size(); i++ ) {
+            Enemy *e = mEnemies.getElement( i );
+            e->sprite->compactSprite();
+            }        
+
         mDataGenerated = false;
         }
+    
     }
 
 
@@ -775,6 +781,11 @@ void Level::compactLevel() {
         
 void Level::decompactLevel() {
     generateReproducibleData();
+
+    for( int i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        e->sprite->decompactSprite();
+        }
     }
 
 

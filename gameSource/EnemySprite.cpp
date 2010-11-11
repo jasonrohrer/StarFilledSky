@@ -8,7 +8,14 @@ extern CustomRandomSource randSource;
 
 
 
-EnemySprite::EnemySprite() {
+void EnemySprite::generateReproducibleData() {
+
+    if( mDataGenerated ) {
+        // already generated
+        return;
+        }
+
+    randSource.restoreFromSavedState( mRandSeedState );
 
     Image centerImage( 16, 16, 4, true );
     
@@ -167,11 +174,44 @@ EnemySprite::EnemySprite() {
     
 
     mBorderSprite = fillSprite( &borderImage );
+
+    mDataGenerated = true;
+    }
+
+
+void EnemySprite::freeReproducibleData() {
+    if( mDataGenerated ) {
+        freeSprite( mBorderSprite );
+        mBorderSprite = NULL;
+        freeSprite( mCenterSprite );
+        mCenterSprite = NULL;
+        }
+    mDataGenerated = false;
+    }
+
+
+EnemySprite::EnemySprite() {
+
+    mDataGenerated = false;
+    randSource.saveState();
+    mRandSeedState = randSource.getSavedState();
+
+    generateReproducibleData();
     }
 
 
 
 ColorScheme EnemySprite::getColors() {
     return mColors;
+    }
+
+
+void EnemySprite::compactSprite() {
+    freeReproducibleData();
+    }
+
+        
+void EnemySprite::decompactSprite() {
+    generateReproducibleData();
     }
 
