@@ -378,6 +378,13 @@ void drawFrame() {
         // at the tail end of lastLevel's freeze right before
         // it becomes the current level, so the hiccup is hidden
         populateLevelRiseStack();
+
+        // also do decompaction of next up in stack here, to hide
+        // decompaction time in lastLevel's final freeze frame
+        Level *nextUp = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        
+        nextUp->decompactLevel();
         }
     
 
@@ -522,7 +529,8 @@ void drawFrame() {
         levelRisePositionInfoStack.deleteElement( 
             levelRisePositionInfoStack.size() - 1 );
         
-        lastLevel->decompactLevel();
+        // already sitting on stack decompacted
+        // from last frame of previous rise-up
 
         lastLevel->freezeLevel( true );
         if( lastLevel->getLastEnterPointSprite() == 
@@ -867,8 +875,13 @@ void drawFrame() {
     
             int oldAllocedBytes = meminfo.uordblks;
 #endif
-            // going down, compact it first
-            lastLevel->compactLevel();
+            if( levelRiseStack.size() >= 2 ) {
+                // compact next above last level
+                Level *nextUp = *( levelRiseStack.getElement(
+                                       levelRiseStack.size() - 2 ) );
+                nextUp->compactLevel();
+                }
+            
 #ifdef USE_MALLINFO
             meminfo = mallinfo();
             printf( "Level compaction used %d kbytes (%d tot)\n",
