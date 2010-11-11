@@ -1914,7 +1914,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     if( xVisEnd >= MAX_LEVEL_W ) {
         xVisEnd = MAX_LEVEL_W - 1;
         }
+
     
+
+    // mignt be outside sGridWorldSpots, compute world-coord visual boundaries
+    // from scratch
+    doublePair visStart;
+    doublePair visEnd;
+    
+    visStart.x = xVisStart - MAX_LEVEL_W/2;
+    visStart.y = yVisStart - MAX_LEVEL_H/2;
+
+    visEnd.x = xVisEnd - MAX_LEVEL_W/2;
+    visEnd.y = yVisEnd - MAX_LEVEL_H/2;
+    
+
 
 
     // draw walls
@@ -2044,7 +2058,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
-        drawPowerUp( p->power, p->position );        
+        doublePair pos = p->position;
+        
+        if( pos.x >= visStart.x && pos.y >= visStart.y &&
+            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+            drawPowerUp( p->power, p->position );
+            }
         }
     
     
@@ -2054,20 +2073,27 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         Bullet *b = mBullets.getElement( i );
 
-        float fade = 1;
+        doublePair pos = b->position;
         
-        if( b->explode == 0 && b->distanceLeft < 2 ) {
-            fade = b->distanceLeft * 0.5;
-            }
+        if( pos.x >= visStart.x && pos.y >= visStart.y &&
+            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+        
+            float fade = 1;
+        
+            if( b->explode == 0 && b->distanceLeft < 2 ) {
+                fade = b->distanceLeft * 0.5;
+                }
 
+            
+            if( b->playerFlag ) {
+                setDrawColor( 1, 1, 1, fade );
+                }
+            else {
+                setDrawColor( 0.35, 0.35, 0.35, fade );
+                }
+            drawBullet( b->size, b->position, fade );
+            }
         
-        if( b->playerFlag ) {
-            setDrawColor( 1, 1, 1, fade );
-            }
-        else {
-            setDrawColor( 0.35, 0.35, 0.35, fade );
-            }
-        drawBullet( b->size, b->position, fade );
         }
 
 
@@ -2076,40 +2102,47 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     // draw enemies
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
-        e->sprite->draw( e->position, 1 );
+
+        doublePair pos = e->position;
         
-        if( e->healthBarFade > 0 ) {
-            
-            doublePair pos = e->position;
-            
-            // hold at full vis until half-way through fade
-            float fade = 1;
+        if( pos.x >= visStart.x && pos.y >= visStart.y &&
+            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
 
-            if( e->healthBarFade < 0.5 ) {
-                // from held at 1 to sin fade out
-                fade = sin( e->healthBarFade * M_PI );
-                }
+            e->sprite->draw( e->position, 1 );
+        
+            if( e->healthBarFade > 0 ) {
+            
+                doublePair pos = e->position;
+            
+                // hold at full vis until half-way through fade
+                float fade = 1;
+
+                if( e->healthBarFade < 0.5 ) {
+                    // from held at 1 to sin fade out
+                    fade = sin( e->healthBarFade * M_PI );
+                    }
             
 
-            setDrawColor( 0.25, 0.25, 0.25, fade );
-            drawRect( pos.x - 0.5, pos.y + 0.5, 
-                      pos.x + 0.5, pos.y + 0.25 );
+                setDrawColor( 0.25, 0.25, 0.25, fade );
+                drawRect( pos.x - 0.5, pos.y + 0.5, 
+                          pos.x + 0.5, pos.y + 0.25 );
             
-            float healthFraction = e->health / 
-                (float)getEnemyMaxHealth( e->powers );
+                float healthFraction = e->health / 
+                    (float)getEnemyMaxHealth( e->powers );
             
-            setDrawColor( 0, 0, 0, fade );
-            drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
-                      pos.y + 0.4375, 
-                      pos.x + 0.4375, 
-                      pos.y + 0.3125 );
+                setDrawColor( 0, 0, 0, fade );
+                drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
+                          pos.y + 0.4375, 
+                          pos.x + 0.4375, 
+                          pos.y + 0.3125 );
             
     
-            setDrawColor( 1, 0, 0, fade );
-            drawRect( pos.x -0.4375, 
-                      pos.y + 0.4375,
-                      pos.x - 0.4375 + 0.875 * healthFraction, 
-                      pos.y + 0.3125 );
+                setDrawColor( 1, 0, 0, fade );
+                drawRect( pos.x -0.4375, 
+                          pos.y + 0.4375,
+                          pos.x - 0.4375 + 0.875 * healthFraction, 
+                          pos.y + 0.3125 );
+                }
             }
         }
     
