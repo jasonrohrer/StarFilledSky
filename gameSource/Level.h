@@ -231,7 +231,7 @@ class Level {
     protected:
         
         
-        void step();
+        void step( doublePair inViewCenter, double inViewSize );
         
         void drawPlayer( double inFade );
         void drawMouse( double inFade );

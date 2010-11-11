@@ -1057,7 +1057,44 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
 
 
-void Level::step() {
+void Level::step( doublePair inViewCenter, double inViewSize ) {
+    
+    
+    // opt:  for certain steppable things,
+    // don't step all of them, just visible portion
+    
+    int yVisStart = (int)( inViewCenter.y - inViewSize / 2 + MAX_LEVEL_H / 2 );
+    int yVisEnd = (int)( inViewCenter.y + inViewSize / 2 + MAX_LEVEL_H / 2 );
+    
+    // bit extra
+    yVisStart --;
+    yVisEnd ++;
+
+    if( yVisStart < 0 ) {
+        yVisStart = 0;
+        }
+    if( yVisEnd >= MAX_LEVEL_H ) {
+        yVisEnd = MAX_LEVEL_H - 1;
+        }
+
+    int xVisStart = (int)( inViewCenter.x - inViewSize / 2 + MAX_LEVEL_W / 2 );
+    int xVisEnd = (int)( inViewCenter.x + inViewSize / 2 + MAX_LEVEL_W / 2 );
+    
+    // bit extra
+    xVisStart --;
+    xVisEnd ++;
+
+    if( xVisStart < 0 ) {
+        xVisStart = 0;
+        }
+    if( xVisEnd >= MAX_LEVEL_W ) {
+        xVisEnd = MAX_LEVEL_W - 1;
+        }
+
+    
+
+
+
     int i;
     
     // step bullets
@@ -1709,43 +1746,51 @@ void Level::step() {
 
 
     // step square colors
+
     float dampingFactor = 0.025 * frameRateFactor;
-    for( int i=0; i<mNumUsedSquares; i++ ) {
-        mColorMix[i] += mColorMixDelta[i];
-        
-        if( mColorMix[i] > 1 ) {
-            mColorMix[i] = 1;
-            mColorMixDelta[i] *= -1;
-            }
-        else if( mColorMix[i] < 0 ) {
-            mColorMix[i] = 0;
-            mColorMixDelta[i] *= -1;
-            }
-        
-        // never go fully hard
-        float mix = mColorMix[i] * 0.4;
-        float counterMix = 1 - mix;
+    float totalWeight = 1 + dampingFactor;
 
-        // average our grid color with the current target mix
-        mix *= dampingFactor;
-        counterMix *= dampingFactor;
-        mGridColors[i].r += 
-            mHardGridColors[i].r * mix 
-            + mSoftGridColors[i].r * counterMix;
-        mGridColors[i].g += 
-            mHardGridColors[i].g * mix 
-            + mSoftGridColors[i].g * counterMix;
-        mGridColors[i].b += 
-            mHardGridColors[i].b * mix 
-            + mSoftGridColors[i].b * counterMix;
+    // opt:  only step visible ones
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+            if( mWallFlags[y][x] > 0 ) {
+                int i = mSquareIndices[y][x];
+                
+                mColorMix[i] += mColorMixDelta[i];
         
-        float totalWeight = 1 + dampingFactor;
+                if( mColorMix[i] > 1 ) {
+                    mColorMix[i] = 1;
+                    mColorMixDelta[i] *= -1;
+                    }
+                else if( mColorMix[i] < 0 ) {
+                    mColorMix[i] = 0;
+                    mColorMixDelta[i] *= -1;
+                    }
         
-        mGridColors[i].r /= totalWeight;
-        mGridColors[i].g /= totalWeight;
-        mGridColors[i].b /= totalWeight;
+                // never go fully hard
+                float mix = mColorMix[i] * 0.4;
+                float counterMix = 1 - mix;
+
+                // average our grid color with the current target mix
+                mix *= dampingFactor;
+                counterMix *= dampingFactor;
+                mGridColors[i].r += 
+                    mHardGridColors[i].r * mix 
+                    + mSoftGridColors[i].r * counterMix;
+                mGridColors[i].g += 
+                    mHardGridColors[i].g * mix 
+                    + mSoftGridColors[i].g * counterMix;
+                mGridColors[i].b += 
+                    mHardGridColors[i].b * mix 
+                    + mSoftGridColors[i].b * counterMix;
+        
+        
+                mGridColors[i].r /= totalWeight;
+                mGridColors[i].g /= totalWeight;
+                mGridColors[i].b /= totalWeight;        
+                }
+            }
         }
-
     }
 
 
@@ -1811,7 +1856,7 @@ void Level::drawSmoke( double inFade ) {
 void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     if( !mFrozen ) {
-        step();
+        step( inViewCenter, inViewSize );
         }
     else {
         // frozen, but keep any token that was sub-level entry point updated
