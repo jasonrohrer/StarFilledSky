@@ -1054,6 +1054,59 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
 
 
+void Level::generateEnemyDestructionSmoke( Enemy *inE ) {
+
+    ColorScheme colors = inE->sprite->getColors();
+    
+    Color borderColor = colors.primary.elements[3];
+                                
+    // big smoke for border, dead center
+    HitSmoke s = { inE->position, 0, 0.75, 3, 
+                   borderColor };
+                                
+    mSmokeClouds.push_back( s );
+                                
+
+    // one extra small puff for each other color
+    for( int i=0; i<3; i++ ) {
+        doublePair pos = inE->position;
+                                    
+        pos.x += 
+            randSource.getRandomBoundedDouble(
+                -0.25, 0.25 );
+        pos.y += 
+            randSource.getRandomBoundedDouble(
+                -0.25, 0.25 );
+                                    
+                                    
+        Color primary = colors.primary.elements[i];
+        HitSmoke s2 = { pos, 0, 0.5, 3, 
+                        primary };
+                                
+        mSmokeClouds.push_back( s2 );
+                                
+
+
+        pos = inE->position;
+                                    
+        pos.x += 
+            randSource.getRandomBoundedDouble(
+                -0.25, 0.25 );
+        pos.y += 
+            randSource.getRandomBoundedDouble(
+                -0.25, 0.25 );
+
+        Color secondary = 
+            colors.secondary.elements[i];
+        HitSmoke s3 = { pos, 0, 0.5, 3, 
+                        secondary };
+                                
+        mSmokeClouds.push_back( s3 );
+        }
+    }
+
+
+
 
 
 
@@ -1092,6 +1145,17 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         }
 
     
+    // mignt be outside sGridWorldSpots, compute world-coord visual boundaries
+    // from scratch
+    doublePair visStart;
+    doublePair visEnd;
+    
+    visStart.x = xVisStart - MAX_LEVEL_W/2;
+    visStart.y = yVisStart - MAX_LEVEL_H/2;
+
+    visEnd.x = xVisEnd - MAX_LEVEL_W/2;
+    visEnd.y = yVisEnd - MAX_LEVEL_H/2;
+
 
 
 
@@ -1172,6 +1236,18 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         char damage = false;
         char destroyed = false;
         
+        // opt:  don't create smoke clouds for
+        // stuff happening off screen
+        doublePair pos = b->position;
+        char bulletOnScreen = false;
+        if( pos.x >= visStart.x && 
+            pos.y >= visStart.y &&
+            pos.x <= visEnd.x && 
+            pos.y <= visEnd.y ) {
+            
+            bulletOnScreen = true;
+            }
+
 
         // first make sure it's in bounds of sparse world tiles
         
@@ -1267,60 +1343,12 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
                             e->health --;
                             if( e->health == 0 ) {
-
-                                // add hit smoke at enemy center
-                                
-                                ColorScheme colors = e->sprite->getColors();
-                                
-                                Color borderColor = colors.primary.elements[3];
-                                
-                                // big smoke for border, dead center
-                                HitSmoke s = { e->position, 0, 0.75, 3, 
-                                               borderColor };
-                                
-                                mSmokeClouds.push_back( s );
-                                
-
-                                // one extra small puff for each other color
-                                for( int i=0; i<3; i++ ) {
-                                    doublePair pos = e->position;
+                                if( bulletOnScreen ) {
                                     
-                                    pos.x += 
-                                        randSource.getRandomBoundedDouble(
-                                            -0.25, 0.25 );
-                                    pos.y += 
-                                        randSource.getRandomBoundedDouble(
-                                            -0.25, 0.25 );
-                                    
-                                    
-                                    Color primary = colors.primary.elements[i];
-                                    HitSmoke s2 = { pos, 0, 0.5, 3, 
-                                                    primary };
-                                
-                                    mSmokeClouds.push_back( s2 );
-                                
-
-
-                                    pos = e->position;
-                                    
-                                    pos.x += 
-                                        randSource.getRandomBoundedDouble(
-                                            -0.25, 0.25 );
-                                    pos.y += 
-                                        randSource.getRandomBoundedDouble(
-                                            -0.25, 0.25 );
-
-                                    Color secondary = 
-                                        colors.secondary.elements[i];
-                                    HitSmoke s3 = { pos, 0, 0.5, 3, 
-                                                    secondary };
-                                
-                                    mSmokeClouds.push_back( s3 );
+                                    // add hit smoke at enemy center
+                                    generateEnemyDestructionSmoke( e );
                                     }
-                                
-                                
-
-                                
+                                                                
                                 // don't generate other hit smoke
                                 destroyed = true;
                                 
@@ -1360,7 +1388,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         if( hit || b->distanceLeft <= 0 ) {
             // bullet done
             
-            if( ( hit || b->explode > 0 ) && 
+            if( bulletOnScreen &&
+                ( hit || b->explode > 0 ) && 
                 ( !destroyed || ! b->playerFlag ) ) {
                 // target not destroyed by hit, or player destroyed, 
                 // draw smoke

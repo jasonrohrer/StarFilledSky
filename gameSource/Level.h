@@ -243,6 +243,8 @@ class Level {
                           GridPos inGoal,
                           double inMoveSpeed );
         
+        void generateEnemyDestructionSmoke( Enemy *inE );
+        
 
 
         // generate data that can be reproduced from the seed
