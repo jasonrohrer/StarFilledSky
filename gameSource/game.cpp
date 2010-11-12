@@ -1302,6 +1302,12 @@ void keyDown( unsigned char inASCII ) {
 #endif
             }
             break;
+
+        case 't':
+        case 'T':
+        case '?':
+            resetTutorial();
+            break;            
         }
     }
 

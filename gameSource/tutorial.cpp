@@ -53,14 +53,38 @@ void initTutorial() {
         tutorialCompletedCount = readCount;
         }
 
-    if( tutorialCompletedCount >= 3 ) {
+    if( tutorialCompletedCount >= 2 ) {
         currentTut = -1;
         }
     }
 
 
-
 void freeTutorial() {
+    }
+
+
+void resetTutorial() {
+    if( currentTut == -1 ) {
+        // not running;
+        
+
+        for( int i=0; i<numTut; i++ ) {
+            tutorialsDone[i] = false;
+            }
+        
+
+        finalStepFrameCount = 0;
+
+
+        for( int i=0; i<4; i++ ) {
+            moveKeysPressed[i] = false;
+            }
+        
+        tutorialOffset = 0;
+        tutorialFade = 0;
+
+        currentTut = 0;
+        }
     }
 
 

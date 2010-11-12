@@ -19,3 +19,8 @@ void tutorialEnemyDestroyed();
 
 // report enter function used
 void tutorialSomethingEntered();
+
+
+
+// has no effect in middle of running tutorial
+void resetTutorial();
