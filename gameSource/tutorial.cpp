@@ -27,6 +27,9 @@ static const char *tutorialKeys[ numTut ] =
 
 static char tutorialsDone[ numTut ] = { false, false, false, false };
 
+int finalStepFrameCount = 0;
+
+
 static char moveKeysPressed[ 4 ] = { false, false, false, false };
 
 
@@ -140,6 +143,17 @@ void drawTutorial( doublePair inScreenCenter ) {
             }
         }
     
+
+    // show final until 2 things entered, or until enough time passes
+    if( currentTut == numTut - 1 ) {
+        finalStepFrameCount ++;
+    
+        if( finalStepFrameCount > 600 / frameRateFactor ) {
+            tutorialsDone[ currentTut ] = true;
+            }
+        }
+    
+
     }
 
 
