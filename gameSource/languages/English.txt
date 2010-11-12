@@ -5,4 +5,4 @@ tutorial_shoot "MOUSE  to shoot"
 
 tutorial_enter1 "SPACE  to enter things"
 
-tutorial_enter2 "Enter anything"
+tutorial_enter2 "Enter anything..."

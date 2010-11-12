@@ -5,6 +5,7 @@
 #include "drawUtils.h"
 
 
+#include <math.h>
 
 
 
@@ -55,7 +56,9 @@ void drawTutorial( doublePair inScreenCenter ) {
 
 
         doublePair tutorialPos = inScreenCenter;
-        tutorialPos.y -= tutorialOffset;
+        double sineSmooth = 0.5 * sin( ( tutorialOffset - 0.5 ) * M_PI ) + 0.5;
+        
+        tutorialPos.y -= sineSmooth * offsetLimit;
 
         double messageWidth = mainFont2->measureString( tutMessage );
     
@@ -68,7 +71,7 @@ void drawTutorial( doublePair inScreenCenter ) {
         mainFont2->drawString( tutMessage, 
                                tutorialPos, alignCenter );
 
-        if( tutorialOffset < offsetLimit ) {
+        if( tutorialOffset < 1 ) {
         
             tutorialFade += 0.01 * frameRateFactor;
     
@@ -106,10 +109,10 @@ void drawTutorial( doublePair inScreenCenter ) {
     
         if( tutorialFade == 1 ) {
         
-            tutorialOffset += 0.125 * frameRateFactor;
+            tutorialOffset += 0.0125 * frameRateFactor;
         
-            if( tutorialOffset > offsetLimit ) {
-                tutorialOffset = offsetLimit;
+            if( tutorialOffset > 1 ) {
+                tutorialOffset = 1;
                 }
             }
         }
