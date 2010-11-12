@@ -1999,7 +1999,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             }
-        else {
+        else if( mEdgeFadeIn > 0 ) {
             
             double fade = mEdgeFadeIn;
             
