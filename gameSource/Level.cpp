@@ -9,6 +9,7 @@
 #include "RoundPodRandomWalker.h"
 #include "RectPodRandomWalker.h"
 #include "DiagRandomWalker.h"
+#include "tutorial.h"
 
 
 #include "minorGems/game/gameGraphics.h"
@@ -1357,6 +1358,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                 delete e->powers;
                                 
                                 mEnemies.deleteElement( j );
+                                tutorialEnemyDestroyed();
                                 }
                             else {
                                 // redisplay health bar

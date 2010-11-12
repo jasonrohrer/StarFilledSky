@@ -450,6 +450,13 @@ void drawFrame() {
         
 
         if( enteringHit ) {
+            
+            if( playerHealth > 0 ) {
+                // don't count forced entering
+                tutorialSomethingEntered();
+                }
+            
+            
             levelRiseStack.push_back( currentLevel );
             // enemy or player is entry position
             LevelPositionInfo info = 
@@ -1206,9 +1213,11 @@ static void movementKeyChange() {
     // new presses
     if( movementKeysDown[0] && ! lastMovementKeysDown[0] ) {
         velocityY = moveSpeed;
+        tutorialKeyPressed( 0 );
         }
     else if( movementKeysDown[1] && ! lastMovementKeysDown[1] ) {
         velocityY = -moveSpeed;
+        tutorialKeyPressed( 1 );
         }
     // releases?
     else if( movementKeysDown[0] && ! movementKeysDown[1] ) {
@@ -1225,9 +1234,11 @@ static void movementKeyChange() {
     // new presses
     if( movementKeysDown[2] && ! lastMovementKeysDown[2] ) {
         velocityX = moveSpeed;
+        tutorialKeyPressed( 2 );
         }
     else if( movementKeysDown[3] && ! lastMovementKeysDown[3] ) {
         velocityX = -moveSpeed;
+        tutorialKeyPressed( 3 );
         }
     // releases?
     else if( movementKeysDown[2] && ! movementKeysDown[3] ) {
