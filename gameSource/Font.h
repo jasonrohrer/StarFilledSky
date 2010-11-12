@@ -18,7 +18,8 @@ class Font {
         
         // file contains TGA with 16x16 ascii table
         Font( const char *inFileName, int inCharSpacing, int inSpaceWidth,
-              char inFixedWidth );
+              char inFixedWidth,
+              double inScaleFactor = 1.0 );
         
         ~Font();
         
@@ -36,6 +37,8 @@ class Font {
         // returns x coordinate to right of drawn character
         double drawCharacter( char inC, doublePair inPosition );
         
+        
+        double mScaleFactor;
         
         
         int mCharSpacing;

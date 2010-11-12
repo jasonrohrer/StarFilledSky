@@ -23,8 +23,9 @@ typedef union rgbaColor {
 
 
 Font::Font( const char *inFileName, int inCharSpacing, int inSpaceWidth,
-            char inFixedWidth )
-        : mCharSpacing( inCharSpacing ), mSpaceWidth( inSpaceWidth ),
+            char inFixedWidth, double inScaleFactor )
+        : mScaleFactor( inScaleFactor ),
+          mCharSpacing( inCharSpacing ), mSpaceWidth( inSpaceWidth ),
           mFixedWidth( inFixedWidth ) {
 
 
@@ -200,19 +201,21 @@ Font::~Font() {
     }
 
 // double pixel size
-//static double scaleFactor = 1.0 / 16;
-static double scaleFactor = 1.0 / 8;
+static double scaleFactor = 1.0 / 16;
+//static double scaleFactor = 1.0 / 8;
 
 
 
 double Font::drawString( const char *inString, doublePair inPosition,
                          TextAlignment inAlign ) {
+    double scale = scaleFactor * mScaleFactor;
+    
     unsigned int numChars = strlen( inString );
     
     double x = inPosition.x;
     
     // compensate for extra headspace in accent-equipped font files
-    double y = inPosition.y + scaleFactor * mSpriteHeight / 4;
+    double y = inPosition.y + scale * mSpriteHeight / 4;
     
     double stringWidth = 0;
     
@@ -235,11 +238,11 @@ double Font::drawString( const char *inString, doublePair inPosition,
     // character sprites are drawn on their centers, so the alignment
     // adjustments above aren't quite right.
     if( !mFixedWidth ) {        
-        x += scaleFactor * mCharWidth[ (int)( inString[0] ) ] / 2 +
-            scaleFactor * mCharLeftEdgeOffset[ (int)( inString[0] ) ];
+        x += scale * mCharWidth[ (int)( inString[0] ) ] / 2 +
+            scale * mCharLeftEdgeOffset[ (int)( inString[0] ) ];
         }
     else {
-        x += scaleFactor * mSpriteWidth / 2;
+        x += scale * mSpriteWidth / 2;
         }
     
 
@@ -247,10 +250,10 @@ double Font::drawString( const char *inString, doublePair inPosition,
         doublePair charPos = { x, y };
         
         double charWidth = drawCharacter( inString[i], charPos );
-        x += charWidth + mCharSpacing * scaleFactor;
+        x += charWidth + mCharSpacing * scale;
         }
     // no spacing after last character
-    x -= mCharSpacing * scaleFactor;
+    x -= mCharSpacing * scale;
 
     return x;
     }
@@ -260,31 +263,35 @@ double Font::drawString( const char *inString, doublePair inPosition,
 
 
 double Font::drawCharacter( char inC, doublePair inPosition ) {
+    double scale = scaleFactor * mScaleFactor;
+
     if( inC == ' ' ) {
-        return mSpaceWidth * scaleFactor;
+        return mSpaceWidth * scale;
         }
 
     if( !mFixedWidth ) {
-        inPosition.x -= mCharLeftEdgeOffset[ (int)inC ] * scaleFactor;
+        inPosition.x -= mCharLeftEdgeOffset[ (int)inC ] * scale;
         }
     
     SpriteHandle spriteID = mSpriteMap[ (int)inC ];
     
     if( spriteID != NULL ) {
-        drawSprite( mSpriteMap[ (int)inC ], inPosition, scaleFactor );
+        drawSprite( mSpriteMap[ (int)inC ], inPosition, scale );
         }
     
     if( mFixedWidth ) {
-        return mSpriteWidth * scaleFactor;
+        return mSpriteWidth * scale;
         }
     else {
-        return mCharWidth[ (int)inC ] * scaleFactor;
+        return mCharWidth[ (int)inC ] * scale;
         }
     }
 
 
 
 double Font::measureString( const char *inString ) {
+    double scale = scaleFactor * mScaleFactor;
+
     unsigned int numChars = strlen( inString );
 
     double width = 0;
@@ -293,20 +300,20 @@ double Font::measureString( const char *inString ) {
         char c = inString[i];
         
         if( c == ' ' ) {
-            width += mSpaceWidth * scaleFactor;
+            width += mSpaceWidth * scale;
             }
         else if( mFixedWidth ) {
-            width += mSpriteWidth * scaleFactor;
+            width += mSpriteWidth * scale;
             }
         else {
-            width += mCharWidth[ (int)c ] * scaleFactor;
+            width += mCharWidth[ (int)c ] * scale;
             }
     
-        width += mCharSpacing * scaleFactor;
+        width += mCharSpacing * scale;
         }
 
     // no extra space at end 
-    width -= mCharSpacing * scaleFactor;
+    width -= mCharSpacing * scale;
     
     return width;
     }

@@ -60,6 +60,9 @@ doublePair playerPos = {-0.5, 0};
 // up a bit to account for dashboard
 doublePair lastScreenViewCenter = {-0.5, 0.5 * dashHeight };
 
+double tutorialOffset = 0;
+double tutorialFade = 0;
+
 
 // world with of one view
 double viewWidth = 20;
@@ -130,6 +133,8 @@ double zoomDirection = 1;
 
 
 Font *mainFont;
+
+Font *mainFont2;
 
 
 
@@ -221,7 +226,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initSpriteBank();
     initBulletSizeSet();
     
-    mainFont = new Font( "font_8_16.tga", -2, 4, true );
+    mainFont = new Font( "font_8_16.tga", -2, 4, true, 2.0 );
+
+    mainFont2 = new Font( "font_8_16.tga", 1, 4, false );
     
     initNumerals( "numerals.tga" );
     
@@ -1117,6 +1124,56 @@ void drawFrame() {
         drawHealthBar( barPos, playerHealthFraction, zoomProgress, false );
         }
 
+
+
+
+    // tutorial text
+    const char *tutMessage = translate( "tutorial_move" );
+    
+    double offsetLimit = viewWidth * viewHeightFraction / 2 - 0.5;
+
+
+    doublePair tutorialPos = lastScreenViewCenter;
+    tutorialPos.y -= tutorialOffset;
+
+    double messageWidth = mainFont2->measureString( tutMessage );
+    
+    setDrawColor( 0, 0, 0, 0.5 * tutorialFade );
+    drawRect( tutorialPos.x - messageWidth / 2 - 0.25, 
+              tutorialPos.y - 0.5, 
+              tutorialPos.x + messageWidth / 2 + 0.25, 
+              tutorialPos.y + 0.5 );
+    setDrawColor( 1, 1, 1, tutorialFade );
+    mainFont2->drawString( translate( "tutorial_move" ), 
+                          tutorialPos, alignCenter );
+
+    if( tutorialOffset < offsetLimit ) {
+        
+        tutorialFade += 0.01 * frameRateFactor;
+    
+        if( tutorialFade > 1 ) {
+            tutorialFade = 1;
+            }
+        }
+    else {
+        tutorialFade -= 0.01 * frameRateFactor;
+        
+        if( tutorialFade < 0 ) {
+            tutorialFade = 0;
+            }
+        }
+    
+    
+    if( tutorialFade == 1 ) {
+        
+        tutorialOffset += 0.1 * frameRateFactor;
+        
+        if( tutorialOffset > offsetLimit ) {
+            tutorialOffset = offsetLimit;
+            }
+        }
+    
+    
     }
 
 
