@@ -1067,7 +1067,7 @@ void drawFrame() {
     PowerUpSet *playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
-    setPos.x -= zoomProgress * (viewWidth /2 - 3.5);
+    setPos.x -= sin( zoomProgress * M_PI * 0.5 ) * (viewWidth /2 - 3.5);
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
     spritePos = setPos;
