@@ -1237,25 +1237,34 @@ void keyDown( unsigned char inASCII ) {
     switch( inASCII ) {
         case 'w':
         case 'W':
+        case 'i':
+        case 'I':
             movementKeysDown[0] = true;
             movementKeyChange();
             break;
         case 's':
         case 'S':
+        case 'k':
+        case 'K':
             movementKeysDown[1] = true;
             movementKeyChange();
             break;
         case 'd':
         case 'D':
+        case 'l':
+        case 'L':
             movementKeysDown[2] = true;
             movementKeyChange();
             break;
         case 'a':
         case 'A':
+        case 'j':
+        case 'J':
             movementKeysDown[3] = true;
             movementKeyChange();
             break;
         case ' ':
+        case 13:  // enter
             entering = true;
             break;
         case 'm':
@@ -1275,25 +1284,34 @@ void keyUp( unsigned char inASCII ) {
     switch( inASCII ) {
         case 'w':
         case 'W':
+        case 'i':
+        case 'I':
             movementKeysDown[0] = false;
             movementKeyChange();
             break;
         case 's':
         case 'S':
+        case 'k':
+        case 'K':
             movementKeysDown[1] = false;
             movementKeyChange();
             break;
         case 'd':
         case 'D':
+        case 'l':
+        case 'L':
             movementKeysDown[2] = false;
             movementKeyChange();
             break;
         case 'a':
         case 'A':
+        case 'j':
+        case 'J':
             movementKeysDown[3] = false;
             movementKeyChange();
             break;
         case ' ':
+        case 13:  // enter
             entering = false;
             break;
         }
@@ -1325,6 +1343,10 @@ void specialKeyDown( int inKey ) {
             movementKeysDown[3] = true;
             movementKeyChange();
             break;
+        case MG_KEY_LSHIFT:
+        case MG_KEY_RSHIFT:
+            entering = true;
+            break;
         }
 
 	}
@@ -1348,6 +1370,10 @@ void specialKeyUp( int inKey ) {
         case MG_KEY_LEFT:
             movementKeysDown[3] = false;
             movementKeyChange();
+            break;
+        case MG_KEY_LSHIFT:
+        case MG_KEY_RSHIFT:
+            entering = false;
             break;
         }
 
