@@ -1,6 +1,9 @@
 #include "tutorial.h"
+
 #include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/util/SettingsManager.h"
+
 #include "Font.h"
 #include "drawUtils.h"
 
@@ -32,9 +35,24 @@ static double tutorialFade = 0;
 
 static int currentTut = -1;
 
+static int tutorialCompletedCount = 0;
+
+
 
 void initTutorial() {
     currentTut = 0;
+
+    char countFound = false;
+    int readCount = SettingsManager::getIntSetting( "tutorialCompletedCount", 
+                                                    &countFound );
+    
+    if( countFound && readCount > 0 ) {
+        tutorialCompletedCount = readCount;
+        }
+
+    if( tutorialCompletedCount >= 3 ) {
+        currentTut = -1;
+        }
     }
 
 
@@ -102,6 +120,11 @@ void drawTutorial( doublePair inScreenCenter ) {
                 else {
                     // totally done
                     currentTut = -1;
+
+                    tutorialCompletedCount ++;
+                    
+                    SettingsManager::setSetting( "tutorialCompletedCount",
+                                                 tutorialCompletedCount );
                     }
                 }
             }
