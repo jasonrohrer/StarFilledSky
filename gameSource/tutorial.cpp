@@ -155,5 +155,12 @@ void tutorialSomethingEntered() {
     else {
         tutorialsDone[3] = true;
         }
+
+    if( !tutorialsDone[1] ) {
+        // entered before shooting used
+        // assume they know how to enter, and don't show dangling final
+        // enter tip by itself
+        tutorialsDone[3] = true;
+        }
     }
 
