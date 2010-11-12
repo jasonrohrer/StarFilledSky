@@ -1999,7 +1999,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             }
-        else if( mEdgeFadeIn > 0 ) {
+        else {
             
             double fade = mEdgeFadeIn;
             
@@ -2018,39 +2018,44 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             
-
-            // use stencil to draw transparent floor edge w/out overlap 
-            // artifacts
-        
-            startAddingToStencil( false, true );
             
-            for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    if( mWallFlags[y][x] == 1 &&
-                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+            if( fade > 0 ) {
+                
+                // use stencil to draw transparent floor edge w/out overlap 
+                // artifacts
+        
+                startAddingToStencil( false, true );
+            
+                for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                    for( int x=xVisStart; x<=xVisEnd; x++ ) {
+                        if( mWallFlags[y][x] == 1 &&
+                            mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
                         
-                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                            drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                            }
                         }
                     }
+            
+                startDrawingThroughStencil();
+            
+                setDrawColor( c.r,
+                              c.g,
+                              c.b, fade );
+            
+                drawRect( inViewCenter.x - inViewSize/2, 
+                          inViewCenter.y - inViewSize/2, 
+                          inViewCenter.x + inViewSize/2, 
+                          inViewCenter.y + inViewSize/2 );
+            
+            
+            
+                stopStencil();
+            
                 }
-            
-            startDrawingThroughStencil();
-            
-            setDrawColor( c.r,
-                          c.g,
-                          c.b, fade );
-            
-            drawRect( inViewCenter.x - inViewSize/2, 
-                      inViewCenter.y - inViewSize/2, 
-                      inViewCenter.x + inViewSize/2, 
-                      inViewCenter.y + inViewSize/2 );
-            
             
             if( mEdgeFadeIn < 1 ) {    
-                mEdgeFadeIn += 0.01;
+                mEdgeFadeIn += 0.01 * frameRateFactor;
                 }
-            
-            stopStencil();
             }
         
         }
