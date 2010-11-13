@@ -966,23 +966,31 @@ void drawFrame() {
     
 
     drawRect( lastScreenViewCenter.x - viewWidth /2,
-              lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 ,
+              // off top, just in case
+              lastScreenViewCenter.y + viewWidth /2,
               lastScreenViewCenter.x + viewWidth /2,
               lastScreenViewCenter.y + 
                 viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
 
     // body of panel
     setDrawColor( 0, 0, 0, 1 );
-    
-    
+
 
     drawRect( lastScreenViewCenter.x - viewWidth /2,
-              lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 ,
+              // off top, just in case
+              lastScreenViewCenter.y + viewWidth /2,
               lastScreenViewCenter.x + viewWidth /2,
               lastScreenViewCenter.y + 
                 viewHeightFraction * viewWidth /2 - dashHeight );
+    
+
+    // cover up bottom too, in case too much is shown
+    drawRect( lastScreenViewCenter.x - viewWidth /2,
+              // off top, just in case
+              lastScreenViewCenter.y - viewHeightFraction * viewWidth /2,
+              lastScreenViewCenter.x + viewWidth /2,
+              lastScreenViewCenter.y - viewWidth / 2 );
+
 
 
     // level number display on dash
