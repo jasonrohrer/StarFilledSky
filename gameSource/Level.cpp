@@ -1773,6 +1773,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 e->healthBarFade = 0;
                 }
             }
+
+        doublePair lookDir = normalize( sub( mPlayerPos, e->position ) );
+        
+        e->sprite->setLookVector( lookDir );
         }
 
 

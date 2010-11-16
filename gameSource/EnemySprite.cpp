@@ -1,10 +1,16 @@
 #include "EnemySprite.h"
+#include "fixedSpriteBank.h"
+
+#include <math.h>
+
 
 #include "minorGems/graphics/filters/BoxBlurFilter.h"
 
 #include "minorGems/util/random/CustomRandomSource.h"
 
 extern CustomRandomSource randSource;
+
+extern double frameRateFactor;
 
 
 
@@ -88,6 +94,12 @@ void EnemySprite::generateReproducibleData() {
 
     centerImage.filter( &filter );
     
+    for( int y=0; y<16; y++ ) {
+        for( int x=0; x<16; x++ ) {
+            mFillMap[y][x] = false;
+            }
+        }
+    
 
     // start random walks in center to lay out alpha
     for( int r=0; r<15; r++ ) {
@@ -97,6 +109,7 @@ void EnemySprite::generateReproducibleData() {
 
         for( int s=0; s<30; s++ ) {    
             channels[3][ y * 16 + x ] = 1;
+            mFillMap[y][x] = true;
 
             if( randSource.getRandomBoolean() ) {
                 x += randSource.getRandomBoundedInt( -1, 1 );
@@ -191,12 +204,15 @@ void EnemySprite::freeReproducibleData() {
 
 
 EnemySprite::EnemySprite() {
-
+    
     mDataGenerated = false;
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
 
     generateReproducibleData();
+    
+    mEyeOffset.x = 0;
+    mEyeOffset.y = 0;
     }
 
 
@@ -214,4 +230,96 @@ void EnemySprite::compactSprite() {
 void EnemySprite::decompactSprite() {
     generateReproducibleData();
     }
+
+
+static double scaleFactor = 1.0 / 16;
+
+
+void EnemySprite::drawCenter( doublePair inPosition, double inFade ) {
+    setDrawColor( 1, 1, 1, inFade );
+    drawSprite( mCenterSprite, inPosition, scaleFactor );
+    
+    setDrawColor( mColors.special.r,
+                  mColors.special.g,
+                  mColors.special.b, inFade );
+
+    // round to single-pixel move
+    mEyeOffset = mult( mEyeOffset, 1 / scaleFactor );
+    mEyeOffset.x = rint( mEyeOffset.x );
+    mEyeOffset.y = rint( mEyeOffset.y );
+    mEyeOffset = mult( mEyeOffset, scaleFactor );
+    
+    doublePair eyePos = add( inPosition, mEyeOffset );
+    
+    drawSprite( riseEye, eyePos );                  
+    }
+
+
+
+#define eyeLow 6
+#define eyeHigh 9
+
+void EnemySprite::setLookVector( doublePair inLookDir ) {
+    doublePair oldEyeOffset = mEyeOffset;
+    
+    
+    inLookDir = mult( inLookDir, scaleFactor * frameRateFactor * 0.5 );
+    
+
+    mEyeOffset = add( mEyeOffset, inLookDir );
+
+    // out of bounds?
+    int y = (int)( ( - mEyeOffset.y + 0.5 ) / scaleFactor );
+    int x = (int)( ( mEyeOffset.x + 0.5 ) / scaleFactor );
+
+    char inBounds = false;
+    
+    if( y >= eyeLow && y <= eyeHigh && x >= eyeLow && x <= eyeHigh ) {
+    
+        if( mFillMap[y][x] ) {
+            inBounds = true;
+            }
+        }
+    
+    if( !inBounds ) {
+        
+        // try y move alone
+
+        int yAloneX = (int)( ( oldEyeOffset.x + 0.5 ) / scaleFactor );
+    
+        if( y >= eyeLow && y <= eyeHigh && 
+            yAloneX >= eyeLow && yAloneX <= eyeHigh ) {
+    
+            if( mFillMap[y][yAloneX] ) {
+                inBounds = true;
+                mEyeOffset.x = oldEyeOffset.x;
+                }
+            }
+        }
+
+
+    if( !inBounds ) {
+        
+        // try x move alone
+        
+        int xAloneY = (int)( ( oldEyeOffset.y + 0.5 ) / scaleFactor );
+        
+        if( xAloneY >= eyeLow && xAloneY <= eyeHigh && 
+            x >= eyeLow && x <= eyeHigh ) {
+            
+            if( mFillMap[xAloneY][x] ) {
+                inBounds = true;
+                mEyeOffset.y = oldEyeOffset.y;
+                }
+            }
+        }
+    
+
+    // stop at edge
+    if( !inBounds ) {
+        mEyeOffset = oldEyeOffset;
+        }
+    }
+
+
 

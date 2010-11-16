@@ -19,6 +19,15 @@ class EnemySprite : public BorderSprite {
 
         ColorScheme getColors();
 
+
+        // override
+        virtual void drawCenter( doublePair inPosition, double inFade = 1 );
+
+
+        // must be normalized
+        void setLookVector( doublePair inLookDir );
+        
+
     protected:
 
         void generateReproducibleData();
@@ -33,5 +42,10 @@ class EnemySprite : public BorderSprite {
         unsigned int mRandSeedState;
 
         char mDataGenerated;
+
+
+        doublePair mEyeOffset;
+        
+        char mFillMap[16][16];
         
     };
