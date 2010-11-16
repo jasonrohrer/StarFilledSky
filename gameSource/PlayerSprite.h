@@ -15,6 +15,9 @@ class PlayerSprite : public EyeBorderSprite {
         
         void decompactSprite();
         
+        
+        // override to draw two eyes
+        virtual void drawCenter( doublePair inPosition, double inFade = 1 );
 
 
     protected:

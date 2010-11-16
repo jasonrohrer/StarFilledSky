@@ -1,8 +1,11 @@
 #include "PlayerSprite.h"
+#include "fixedSpriteBank.h"
 
 #include "minorGems/graphics/filters/BoxBlurFilter.h"
 
 #include "minorGems/util/random/CustomRandomSource.h"
+
+#include <math.h>
 
 extern CustomRandomSource randSource;
 
@@ -243,3 +246,43 @@ void PlayerSprite::decompactSprite() {
     generateReproducibleData();
     }
 
+
+
+
+static double scaleFactor = 1.0 / 16;
+
+void PlayerSprite::drawCenter( doublePair inPosition, double inFade ) {
+    setDrawColor( 1, 1, 1, inFade );
+    drawSprite( mCenterSprite, inPosition, scaleFactor );
+    
+    setDrawColor( mColors.special.r,
+                  mColors.special.g,
+                  mColors.special.b, inFade );
+
+    // round to single-pixel move
+    doublePair roundedOffset = mult( mEyeOffset, 1 / scaleFactor );
+    roundedOffset.x = rint( roundedOffset.x );
+    roundedOffset.y = rint( roundedOffset.y );
+    roundedOffset = mult( roundedOffset, scaleFactor );
+    
+    doublePair leftOffset = roundedOffset;
+    
+    if( leftOffset.x > -scaleFactor ) {
+        leftOffset.x = -scaleFactor;
+        }
+    doublePair rightOffset = roundedOffset;
+    
+    if( rightOffset.x < scaleFactor ) {
+        rightOffset.x = scaleFactor;
+        }
+    
+
+    doublePair eyePos = add( inPosition, leftOffset );
+    
+    drawSprite( riseEyeLeft, eyePos );                  
+
+
+    eyePos = add( inPosition, rightOffset );
+    
+    drawSprite( riseEye, eyePos );                  
+    }
