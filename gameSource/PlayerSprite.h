@@ -1,8 +1,7 @@
-#include "BorderSprite.h"
-#include "ColorScheme.h"
+#include "EyeBorderSprite.h"
 
 
-class PlayerSprite : public BorderSprite {
+class PlayerSprite : public EyeBorderSprite {
         
 
     public:
@@ -17,7 +16,6 @@ class PlayerSprite : public BorderSprite {
         void decompactSprite();
         
 
-        ColorScheme getColors();
 
     protected:
         
@@ -26,8 +24,6 @@ class PlayerSprite : public BorderSprite {
         // free up memory consumed by reproducible data
         void freeReproducibleData();
 
-        
-        ColorScheme mColors;
         
         // random generator state that generated this sprite
         unsigned int mRandSeedState;

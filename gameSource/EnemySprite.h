@@ -1,8 +1,8 @@
-#include "BorderSprite.h"
+#include "EyeBorderSprite.h"
 #include "ColorScheme.h"
 
 
-class EnemySprite : public BorderSprite {
+class EnemySprite : public EyeBorderSprite {
         
 
     public:
@@ -17,15 +17,7 @@ class EnemySprite : public BorderSprite {
         void decompactSprite();
         
 
-        ColorScheme getColors();
 
-
-        // override
-        virtual void drawCenter( doublePair inPosition, double inFade = 1 );
-
-
-        // must be normalized
-        void setLookVector( doublePair inLookDir );
         
 
     protected:
@@ -36,7 +28,6 @@ class EnemySprite : public BorderSprite {
         void freeReproducibleData();
 
         
-        ColorScheme mColors;
         
         // random generator state that generated this sprite
         unsigned int mRandSeedState;
@@ -44,8 +35,5 @@ class EnemySprite : public BorderSprite {
         char mDataGenerated;
 
 
-        doublePair mEyeOffset;
-        
-        char mFillMap[16][16];
         
     };

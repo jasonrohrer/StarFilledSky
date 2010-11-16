@@ -108,6 +108,7 @@ void PlayerSprite::generateReproducibleData() {
 
         for( int s=0; s<30; s++ ) {    
             channels[3][ y * 16 + x ] = 1;
+            mFillMap[y][x] = true;
 
             if( randSource.getRandomBoolean() ) {
                 x += randSource.getRandomBoundedInt( -1, 1 );
@@ -136,6 +137,7 @@ void PlayerSprite::generateReproducibleData() {
         for( int x=8; x<16; x++ ) {
             channels[3][ y * 16 + x ] =
                 channels[3][ y * 16 + (16 - x - 1) ];
+            mFillMap[y][x] = mFillMap[ y ][ 16 - x - 1 ];
             }       
         }
     
@@ -230,13 +232,6 @@ PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
     generateReproducibleData();
     }
 
-
-
-
-
-ColorScheme PlayerSprite::getColors() {
-    return mColors;
-    }
 
 
 void PlayerSprite::compactSprite() {

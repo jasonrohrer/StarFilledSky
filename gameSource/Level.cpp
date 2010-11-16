@@ -1779,6 +1779,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         e->sprite->setLookVector( lookDir );
         }
 
+    
+    // player look
+    doublePair lookDir = normalize( sub( mMousePos, mPlayerPos ) );
+    mPlayerSprite.setLookVector( lookDir );
+    
 
     // step square colors
 

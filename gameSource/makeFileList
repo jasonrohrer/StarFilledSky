@@ -15,6 +15,7 @@ GridPos.cpp \
 Level.cpp \
 fixedSpriteBank.cpp \
 BorderSprite.cpp \
+EyeBorderSprite.cpp \
 PlayerSprite.cpp \
 TileSet.cpp \
 ColorScheme.cpp \
