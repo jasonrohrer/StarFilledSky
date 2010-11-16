@@ -244,12 +244,12 @@ void EnemySprite::drawCenter( doublePair inPosition, double inFade ) {
                   mColors.special.b, inFade );
 
     // round to single-pixel move
-    mEyeOffset = mult( mEyeOffset, 1 / scaleFactor );
-    mEyeOffset.x = rint( mEyeOffset.x );
-    mEyeOffset.y = rint( mEyeOffset.y );
-    mEyeOffset = mult( mEyeOffset, scaleFactor );
+    doublePair roundedOffset = mult( mEyeOffset, 1 / scaleFactor );
+    roundedOffset.x = rint( roundedOffset.x );
+    roundedOffset.y = rint( roundedOffset.y );
+    roundedOffset = mult( roundedOffset, scaleFactor );
     
-    doublePair eyePos = add( inPosition, mEyeOffset );
+    doublePair eyePos = add( inPosition, roundedOffset );
     
     drawSprite( riseEye, eyePos );                  
     }
@@ -263,61 +263,46 @@ void EnemySprite::setLookVector( doublePair inLookDir ) {
     doublePair oldEyeOffset = mEyeOffset;
     
     
-    inLookDir = mult( inLookDir, scaleFactor * frameRateFactor * 0.5 );
+    inLookDir = mult( inLookDir, scaleFactor );
     
+    // walk from center out along look dir until we hit edge
+    double yD = 0;
+    double xD = 0;
+    double lastXD = xD;
+    double lastYD = yD;
 
-    mEyeOffset = add( mEyeOffset, inLookDir );
-
-    // out of bounds?
-    int y = (int)( ( - mEyeOffset.y + 0.5 ) / scaleFactor );
-    int x = (int)( ( mEyeOffset.x + 0.5 ) / scaleFactor );
-
-    char inBounds = false;
+    int y = (int)( (-yD + 0.5) / scaleFactor );
+    int x = (int)( (xD + 0.5) / scaleFactor );
     
-    if( y >= eyeLow && y <= eyeHigh && x >= eyeLow && x <= eyeHigh ) {
-    
-        if( mFillMap[y][x] ) {
-            inBounds = true;
-            }
+    while( y >=0 && y <=15 && x >= 0 && x <= 15 &&
+           mFillMap[y][x] ) {
+        
+        lastXD = xD;
+        lastYD = yD;
+        
+        xD += inLookDir.x;
+        yD += inLookDir.y;
+        
+        y = (int)( (-yD + 0.5) / scaleFactor );
+        x = (int)( (xD + 0.5) / scaleFactor );
         }
     
-    if( !inBounds ) {
+    doublePair desiredOffset = { lastXD, lastYD };
+    
+    doublePair deltaOffset = sub( desiredOffset, mEyeOffset );
+    
+    double stepSize = scaleFactor * frameRateFactor * 0.0675;
+    
+    if( length( deltaOffset ) >  stepSize ) {
         
-        // try y move alone
-
-        int yAloneX = (int)( ( oldEyeOffset.x + 0.5 ) / scaleFactor );
+        deltaOffset = mult( normalize( deltaOffset ), 
+                            stepSize );
     
-        if( y >= eyeLow && y <= eyeHigh && 
-            yAloneX >= eyeLow && yAloneX <= eyeHigh ) {
-    
-            if( mFillMap[y][yAloneX] ) {
-                inBounds = true;
-                mEyeOffset.x = oldEyeOffset.x;
-                }
-            }
+        mEyeOffset = add( mEyeOffset, deltaOffset );
         }
-
-
-    if( !inBounds ) {
-        
-        // try x move alone
-        
-        int xAloneY = (int)( ( oldEyeOffset.y + 0.5 ) / scaleFactor );
-        
-        if( xAloneY >= eyeLow && xAloneY <= eyeHigh && 
-            x >= eyeLow && x <= eyeHigh ) {
-            
-            if( mFillMap[xAloneY][x] ) {
-                inBounds = true;
-                mEyeOffset.y = oldEyeOffset.y;
-                }
-            }
-        }
-    
-
-    // stop at edge
-    if( !inBounds ) {
-        mEyeOffset = oldEyeOffset;
+    else {
+        // too close for one more step
+        mEyeOffset = desiredOffset;
         }
     }
 
