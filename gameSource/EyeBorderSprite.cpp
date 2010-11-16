@@ -16,6 +16,8 @@ EyeBorderSprite::EyeBorderSprite() {
             mFillMap[y][x] = false;
             }
         }
+    
+    mSquintTimeLeft = 0;
     }
 
 
@@ -44,7 +46,13 @@ void EyeBorderSprite::drawCenter( doublePair inPosition, double inFade ) {
     
     doublePair eyePos = add( inPosition, roundedOffset );
     
-    drawSprite( riseEye, eyePos );                  
+    if( mSquintTimeLeft > 0 ) {
+        drawSprite( riseEyeSquint, eyePos );
+        }
+    else {
+        drawSprite( riseEye, eyePos );
+        }
+    
     }
 
 
@@ -97,4 +105,14 @@ void EyeBorderSprite::setLookVector( doublePair inLookDir ) {
         // too close for one more step
         mEyeOffset = desiredOffset;
         }
+
+    mSquintTimeLeft -= 0.01 * frameRateFactor;
+    if( mSquintTimeLeft < 0 ) {
+        mSquintTimeLeft = 0;
+        }
+    }
+
+
+void EyeBorderSprite::startSquint() {
+    mSquintTimeLeft = 0.5;
     }

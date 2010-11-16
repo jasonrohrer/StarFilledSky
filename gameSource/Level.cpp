@@ -1343,6 +1343,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                 }
 
                             e->health --;
+                            e->sprite->startSquint();
+                            
                             if( e->health == 0 ) {
                                 if( bulletOnScreen ) {
                                     
@@ -1373,6 +1375,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         hit = true;
                         damage = true;
                         mPlayerHealth -= 1;
+                        mPlayerSprite.startSquint();
+
                         if( mPlayerHealth < 0 ) {
                             mPlayerHealth = 0;
                             }

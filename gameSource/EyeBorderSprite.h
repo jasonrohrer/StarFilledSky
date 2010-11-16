@@ -21,6 +21,7 @@ class EyeBorderSprite : public BorderSprite {
         // must be normalized
         void setLookVector( doublePair inLookDir );
       
+        void startSquint();
         
         ColorScheme getColors();
 
@@ -31,6 +32,8 @@ class EyeBorderSprite : public BorderSprite {
         doublePair mEyeOffset;
         
         char mFillMap[16][16];
+
+        double mSquintTimeLeft;
     };
 
 
