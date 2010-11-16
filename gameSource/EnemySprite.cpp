@@ -234,7 +234,6 @@ void EnemySprite::decompactSprite() {
 
 static double scaleFactor = 1.0 / 16;
 
-
 void EnemySprite::drawCenter( doublePair inPosition, double inFade ) {
     setDrawColor( 1, 1, 1, inFade );
     drawSprite( mCenterSprite, inPosition, scaleFactor );
@@ -274,7 +273,7 @@ void EnemySprite::setLookVector( doublePair inLookDir ) {
     int y = (int)( (-yD + 0.5) / scaleFactor );
     int x = (int)( (xD + 0.5) / scaleFactor );
     
-    while( y >=0 && y <=15 && x >= 0 && x <= 15 &&
+    while( y >=eyeLow && y <=eyeHigh && x >= eyeLow && x <= eyeHigh &&
            mFillMap[y][x] ) {
         
         lastXD = xD;
@@ -291,7 +290,7 @@ void EnemySprite::setLookVector( doublePair inLookDir ) {
     
     doublePair deltaOffset = sub( desiredOffset, mEyeOffset );
     
-    double stepSize = scaleFactor * frameRateFactor * 0.0675;
+    double stepSize = scaleFactor * frameRateFactor * 0.25;
     
     if( length( deltaOffset ) >  stepSize ) {
         
