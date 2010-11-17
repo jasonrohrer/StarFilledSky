@@ -315,6 +315,7 @@ class Level {
 
 
         GridPos mRisePosition;
+        char mDoubleRisePositions;
         
         char mFrozen;
         

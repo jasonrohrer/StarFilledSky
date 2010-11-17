@@ -669,6 +669,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
             mRisePosition.y = y;
             }
         }
+
+    mDoubleRisePositions = inSymmetrical;
     
 
     
@@ -693,6 +695,9 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
             GridPos pickPos = mIndexToGridMap[ floorPick ];
 
             if( mRisePosition.x != pickPos.x
+                &&
+                // in case of double rise spot
+                mRisePosition.x != - pickPos.x
                 &&
                 mRisePosition.y != pickPos.y ) {
                 
@@ -1928,6 +1933,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
                             mRisePosition.y - MAX_LEVEL_H/2 };
 
+    doublePair riseSpot2 = riseSpot;
+    riseSpot2.x = - riseSpot2.x - 1;
+
 
     // opt:  don't draw whole grid, just visible part
     
@@ -2001,7 +2009,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         double dist = distance( mPlayerPos, riseSpot );
         
-        if( mEdgeFadeIn >= 1 && dist > maxDistance ) {
+        double dist2 = DBL_MAX;
+        if( mDoubleRisePositions ) {
+            dist2 = distance( mPlayerPos, riseSpot2 );
+            }
+
+        if( mEdgeFadeIn >= 1 && dist > maxDistance && dist2 > maxDistance ) {
             
             // draw floor edges
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
@@ -2018,9 +2031,14 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             double fade = mEdgeFadeIn;
             
-            if( dist <= maxDistance ) {
-                if( dist > 1 ) {
-                    fade = (dist - 1) / (maxDistance-1);
+            if( dist <= maxDistance || dist2 <= maxDistance ) {
+                double smallestDist = dist;
+                if( dist2 < smallestDist ) {
+                    smallestDist = dist2;
+                    }
+                
+                if( smallestDist > 1 ) {
+                    fade = (smallestDist - 1) / (maxDistance-1);
 
                     if( fade > mEdgeFadeIn ) {
                         // not done fading in yet, don't let
@@ -2101,7 +2119,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                   c->g,
                   c->b, 1 );
     drawSprite( riseMarker, riseSpot );
-
+    
+    if( mDoubleRisePositions ) {
+        drawSprite( riseMarker, riseSpot2 );
+        }
 
     // draw power-ups
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
@@ -2322,17 +2343,21 @@ char Level::isRiseSpot( doublePair inPos ) {
     int x = (int)( rint( inPos.x ) );
     int y = (int)( rint( inPos.y ) );
     
+    int x2 = (int)( rint( -inPos.x - 1 ) );
+
     x += MAX_LEVEL_W/2;
     y += MAX_LEVEL_H/2;
+    x2 += MAX_LEVEL_W/2;
     
-    if( x < 0 || x >= MAX_LEVEL_W ||
-        y < 0 || y >= MAX_LEVEL_H ) {
-        // out of bounds
-        return false;
-        }
-    
+    // no need to check if in-bounds, since we're not indexing with x and y
         
-    return ( mRisePosition.x == x && mRisePosition.y == y );
+    if( !mDoubleRisePositions ) {
+        return ( mRisePosition.x == x && mRisePosition.y == y );
+        }
+    else {
+        return ( ( mRisePosition.x == x || mRisePosition.x == x2 )
+                 && mRisePosition.y == y );
+        }
     }
 
 
