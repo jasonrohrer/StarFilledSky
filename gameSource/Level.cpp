@@ -657,16 +657,25 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     
     
     // place rise marker in random floor spot
+    // also away from player
     char placed = false;
 
     while( !placed ) {
         int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
         int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
-        
+
         if( mWallFlags[y][x] == 1 ) {
-            placed = true;
-            mRisePosition.x = x;
-            mRisePosition.y = y;
+        
+            doublePair spot = sGridWorldSpots[y][x];
+            
+            doublePair playerSpot = {0,0};
+            
+            if( distance( spot, playerSpot ) > 5 ) {
+
+                placed = true;
+                mRisePosition.x = x;
+                mRisePosition.y = y;
+                }
             }
         }
 
