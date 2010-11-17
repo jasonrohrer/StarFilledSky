@@ -2311,22 +2311,10 @@ GridPos Level::getGridPos( doublePair inWorldPos ) {
 
 
 char Level::isWall( doublePair inPos ) {
-    /*
-    int x = (int)( rint( inPos.x ) );
-    int y = (int)( rint( inPos.y ) );
-    
-    x += MAX_LEVEL_W/2;
-    y += MAX_LEVEL_H/2;
-    
-    if( x < 0 || x >= MAX_LEVEL_W ||
-        y < 0 || y >= MAX_LEVEL_H ) {
-        // out of bounds
-        return false;
-        }
-    */
     GridPos p = getGridPos( inPos );
-        
-    return ( mWallFlags[p.y][p.x] == 2 );
+    
+    // include completely out-of-bounds areas as wall, too 
+    return ( mWallFlags[p.y][p.x] != 1 );
     }
 
 
