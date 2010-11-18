@@ -83,8 +83,8 @@ double moveSpeed = 0.125;
 double frameRateFactor = 1;
 
 
-
-unsigned int randSeed = 1285702441;//time( NULL );
+char forceRepeatRandSeed = false;
+unsigned int randSeed = 1285702441;
 CustomRandomSource randSource(randSeed);
 
 
@@ -200,6 +200,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     
     moveSpeed *= frameRateFactor;
 
+
+    if( !forceRepeatRandSeed ) {
+        randSeed = getRandSeed();
+        
+        CustomRandomSource newRandSource( randSeed );
+        randSource = newRandSource;
+        }
+    
     
     printf( "Rand seed = %d\n", randSeed );
     
