@@ -1359,6 +1359,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             e->health --;
                             e->sprite->startSquint();
                             
+                            tutorialEnemyHit();
+
                             if( e->health == 0 ) {
                                 if( bulletOnScreen ) {
                                     
@@ -1374,7 +1376,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                 delete e->powers;
                                 
                                 mEnemies.deleteElement( j );
-                                tutorialEnemyDestroyed();
                                 }
                             else {
                                 // redisplay health bar

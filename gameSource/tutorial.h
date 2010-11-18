@@ -14,7 +14,7 @@ void drawTutorial( doublePair inScreenCenter );
 void tutorialKeyPressed( int inKeyNum );
 
 // report mouse shooting used
-void tutorialEnemyDestroyed();
+void tutorialEnemyHit();
 
 
 // report enter function used

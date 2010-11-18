@@ -223,7 +223,7 @@ void tutorialKeyPressed( int inKeyNum ) {
 
 
 // report mouse shooting used
-void tutorialEnemyDestroyed() {
+void tutorialEnemyHit() {
     tutorialsDone[1] = true;
     }
 
