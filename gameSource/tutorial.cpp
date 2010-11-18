@@ -3,6 +3,7 @@
 #include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/util/SettingsManager.h"
+#include "minorGems/util/stringUtils.h"
 
 #include "Font.h"
 #include "drawUtils.h"
@@ -17,6 +18,8 @@ extern double viewHeightFraction;
 extern double frameRateFactor;
 
 extern Font *mainFont2;
+
+extern char *tutorialMoveKeys;
 
 
 
@@ -41,8 +44,18 @@ static int currentTut = -1;
 static int tutorialCompletedCount = 0;
 
 
+static char *modifiedMoveTutorial = NULL;
+
 
 void initTutorial() {
+
+    const char *tutMessage = translate( tutorialKeys[ 0 ] );
+    
+    char found;
+    modifiedMoveTutorial = replaceOnce( tutMessage, "W A S D",
+                                        tutorialMoveKeys,
+                                        &found );
+
     currentTut = 0;
 
     char countFound = false;
@@ -60,6 +73,8 @@ void initTutorial() {
 
 
 void freeTutorial() {
+    delete [] modifiedMoveTutorial;
+    modifiedMoveTutorial = NULL;
     }
 
 
@@ -97,6 +112,12 @@ void drawTutorial( doublePair inScreenCenter ) {
         // tutorial text
         const char *tutMessage = translate( tutorialKeys[ currentTut ] );
     
+        if( currentTut == 0 ) {
+            // override
+            tutMessage = modifiedMoveTutorial;
+            }
+        
+
         double offsetLimit = viewWidth * viewHeightFraction / 2 - 0.5;
 
 

@@ -137,6 +137,9 @@ Font *mainFont;
 Font *mainFont2;
 
 
+char *tutorialMoveKeys;
+
+
 
 static void populateLevelRiseStack() {
     if( levelRiseStack.size() == 0 ) {
@@ -202,6 +205,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     moveSpeed *= frameRateFactor;
 
 
+    tutorialMoveKeys = stringDuplicate( "W A S D" );
+
+
     if( !forceRepeatRandSeed ) {
         randSeed = getRandSeed();
         
@@ -229,6 +235,16 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
             mapKey( moveKeyMapping[1], 'a' );
             mapKey( moveKeyMapping[2], 's' );
             mapKey( moveKeyMapping[3], 'd' );
+
+            // replace in tutorial text, too
+            tutorialMoveKeys[0] = moveKeyMapping[0];
+            tutorialMoveKeys[2] = moveKeyMapping[1];
+            tutorialMoveKeys[4] = moveKeyMapping[2];
+            tutorialMoveKeys[6] = moveKeyMapping[3];
+
+            temp = stringToUpperCase( tutorialMoveKeys );
+            delete [] tutorialMoveKeys;
+            tutorialMoveKeys = temp;
             }
         delete [] moveKeyMapping;
         }
@@ -291,6 +307,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 void freeFrameDrawer() {
     delete currentLevel;
     
+    delete [] tutorialMoveKeys;
+    
+
     freeSpriteBank();
     freeBulletSizeSet();
     
