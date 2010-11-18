@@ -26,6 +26,7 @@
 
 #include "minorGems/util/SimpleVector.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 
 
@@ -211,6 +212,28 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     
     printf( "Rand seed = %d\n", randSeed );
     
+
+    char *moveKeyMapping = 
+        SettingsManager::getStringSetting( "upLeftDownRightKeys" );
+    
+    if( moveKeyMapping != NULL ) {
+        char *temp = stringToLowerCase( moveKeyMapping );
+        delete [] moveKeyMapping;
+        moveKeyMapping = temp;
+        
+        if( strlen( moveKeyMapping ) == 4 &&
+            strcmp( moveKeyMapping, "wasd" ) != 0 ) {
+            // different assignment
+
+            mapKey( moveKeyMapping[0], 'w' );
+            mapKey( moveKeyMapping[1], 'a' );
+            mapKey( moveKeyMapping[2], 's' );
+            mapKey( moveKeyMapping[3], 'd' );
+            }
+        delete [] moveKeyMapping;
+        }
+    
+
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
     setViewSize( viewWidth );
