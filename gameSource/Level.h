@@ -49,6 +49,13 @@ typedef struct HitSmoke {
 
 
 
+typedef struct BloodStain {
+        int floorIndex;
+        float blendFactor;
+    } BloodStain;
+
+
+
 
 typedef struct Enemy {
         doublePair position;
@@ -312,7 +319,9 @@ class Level {
         SimpleVector<Enemy> mEnemies;
         
         SimpleVector<PowerUpToken> mPowerUpTokens;
-
+        
+        SimpleVector<BloodStain> mBloodStains;
+        
 
         GridPos mRisePosition;
         char mDoubleRisePositions;

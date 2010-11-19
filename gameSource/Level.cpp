@@ -1359,6 +1359,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             e->health --;
                             e->sprite->startSquint();
                             
+
                             tutorialEnemyHit();
 
                             if( e->health == 0 ) {
@@ -1434,6 +1435,38 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 HitSmoke s = { b->position, progress, 0.5, type, c };
                 
                 mSmokeClouds.push_back( s );
+
+
+                if( type == 2 && mWallFlags[p.y][p.x] == 1 ) {
+                    // in bounds, safe to look up
+                    int squareIndex = mSquareIndices[p.y][p.x];
+
+                    // leave blood on floor
+                    char found = false;
+                    BloodStain *stain = NULL;
+                    for( int s=0; 
+                         s<mBloodStains.size() && !found; s++ ) {
+                    
+                        stain = mBloodStains.getElement( s );
+                        if( stain->floorIndex == squareIndex ) {
+                            found = true;
+                            }
+                        }
+
+                    if( !found ) {
+                        // new one
+                        BloodStain s = { squareIndex, 0 };
+                        mBloodStains.push_back( s );
+                                
+                        stain = mBloodStains.getElement( 
+                            mBloodStains.size() - 1 );
+                        }
+                            
+                    stain->blendFactor += 0.05;
+                    if( stain->blendFactor > 0.6 ) {
+                        stain->blendFactor = 0.6;
+                        }
+                    }
                 }
             
             if( b->explode > 0 ) {
@@ -2118,6 +2151,15 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+    // blood stains
+    for( int s=0; s<mBloodStains.size(); s++ ) {
+        BloodStain *stain = mBloodStains.getElement( s );
+        setDrawColor( 0.80, 0, 0, stain->blendFactor );
+        
+        drawSquare( *( mGridWorldSpots[ stain->floorIndex ] ), 0.5 );
+        }
+    
+
 
     // draw rise marker
     // color same as floor tile
