@@ -301,6 +301,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
         exit(0);
         }
     
+
+    setSoundPlaying( true );
     }
 
 
@@ -1468,6 +1470,81 @@ void specialKeyUp( int inKey ) {
         }
 
 	} 
+
+
+
+
+char getUsesSound() {
+    return true;
+    }
+
+
+
+// gets the next buffer-full of sound samples from the game engine
+// inBuffer should be filled with stereo Sint16 samples, little endian,
+//    left-right left-right ....
+// NOTE:  may not be called by the same thread that calls drawFrame,
+//        depending on platform implementation
+int totalFrameNumber = 0;
+
+#define waveTableSize 50
+float waveTable[ waveTableSize ];
+char waveTableReady = false;
+
+
+
+void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
+
+    if( !waveTableReady ) {
+        int sampleRate = getSampleRate();
+        float sinFactor = 2 * M_PI * 441 / sampleRate;
+        for( int i=0; i<waveTableSize; i++ ) {
+            waveTable[i] = sin( i * sinFactor );
+            }
+        waveTableReady = true;
+        }
+    
+        
+    //printf( "Audio callback\n" );
+    
+    // 2 16-bit samples per frame
+    int numFrames = inLengthToFillInBytes / 4;
+    
+    
+
+    float *leftMix = new float[ numFrames ];
+    float *rightMix = new float[ numFrames ];
+    
+    int f;
+
+    
+    for( f=0; f!=numFrames; f++ ) {
+        leftMix[f] = waveTable[ totalFrameNumber % waveTableSize ];
+        rightMix[f] = leftMix[f];
+        totalFrameNumber++;
+        }
+
+    #define Sint16Max 32767
+
+    // now copy samples into Uint8 buffer (converting them to Sint16s)
+    int streamPosition = 0;
+    for( f=0; f != numFrames; f++ ) {
+        Sint16 intSampleL = (Sint16)( leftMix[f] * Sint16Max );
+        Sint16 intSampleR = (Sint16)( rightMix[f] * Sint16Max );
+        //printf( "Outputting samples %d, %d\n", intSampleL, intSampleR );
+
+        inBuffer[ streamPosition ] = (Uint8)( intSampleL & 0xFF );
+        inBuffer[ streamPosition + 1 ] = (Uint8)( ( intSampleL >> 8 ) & 0xFF );
+        
+        inBuffer[ streamPosition + 2 ] = (Uint8)( intSampleR & 0xFF );
+        inBuffer[ streamPosition + 3 ] = (Uint8)( ( intSampleR >> 8 ) & 0xFF );
+        
+        streamPosition += 4;
+        }
+    
+    delete [] leftMix;
+    delete [] rightMix;
+    }
 
 
 
