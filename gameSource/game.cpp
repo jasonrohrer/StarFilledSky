@@ -1491,10 +1491,11 @@ int totalFrameNumber = 0;
 float waveTable[ waveTableSize ];
 char waveTableReady = false;
 
-
+#include "minorGems/system/Thread.h"
 
 void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
-
+    //printf( "Asking for %d bytes\n", inLengthToFillInBytes );
+    
     if( !waveTableReady ) {
         int sampleRate = getSampleRate();
         float sinFactor = 2 * M_PI * 441 / sampleRate;
@@ -1504,7 +1505,7 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
         waveTableReady = true;
         }
     
-        
+    
     //printf( "Audio callback\n" );
     
     // 2 16-bit samples per frame
