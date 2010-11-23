@@ -2282,7 +2282,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     else if( mWindowSet && mWindowPosition.type == player ) {
         drawMouse( 1 );
-        drawPlayer( 1 );
         
         startAddingToStencil( false, true );
         mPlayerSprite.draw( mPlayerPos );
