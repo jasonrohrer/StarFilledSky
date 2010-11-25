@@ -755,16 +755,18 @@ void drawFrame() {
         screenMoveDelta.x *= correctionSpeedX * frameRateFactor;
         screenMoveDelta.y *= correctionSpeedY * frameRateFactor;
 
-        /*
-          // not actually seeing any round-off errors.
-          // hold off on doing this for now
         
+        // not actually seeing any round-off errors.
+        // hold off on doing this for now
+        
+        // seeing round-off errors when drawing full-level bitmap overlay
+
         // round to closest 1/32 (16 pixels per world square, double size)
         screenMoveDelta.y *= 32;
         screenMoveDelta.y = round( screenMoveDelta.y ) / 32;
         screenMoveDelta.x *= 32;
         screenMoveDelta.x = round( screenMoveDelta.x ) / 32;
-        */
+        
 
         lastScreenViewCenter = add( lastScreenViewCenter, screenMoveDelta );
         
