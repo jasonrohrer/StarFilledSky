@@ -16,6 +16,7 @@
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/system/Time.h"
+#include "minorGems/graphics/filters/BoxBlurFilter.h"
 
 #include <math.h>
 
@@ -428,14 +429,14 @@ void Level::generateReproducibleData() {
 
         
     
-#ifdef OUTPUT_LEVEL_TGA_FILES    
+    //#ifdef OUTPUT_LEVEL_TGA_FILES    
     Image fullGridImage( imageSize, imageSize, 4, true );
     
     double *fullGridChannels[4];
     for( int c=0; c<4; c++ ) {
         fullGridChannels[c] = fullGridImage.getChannel( c );
         }
-#endif
+    //#endif
 
 
 
@@ -471,12 +472,12 @@ void Level::generateReproducibleData() {
             p.x + imageXOffset;
         
         
-#ifdef OUTPUT_LEVEL_TGA_FILES
+        //#ifdef OUTPUT_LEVEL_TGA_FILES
         fullGridChannels[0][imageIndex] = mGridColors[i].r;
         fullGridChannels[1][imageIndex] = mGridColors[i].g;
         fullGridChannels[2][imageIndex] = mGridColors[i].b;
         fullGridChannels[3][imageIndex] = 1;
-#endif
+        //#endif
         
         imageIndex *= 4;
         
@@ -486,7 +487,18 @@ void Level::generateReproducibleData() {
         imageRGBA[ imageIndex++ ] = 255;        
         }
 
-    mFullMapSprite = fillSprite( imageRGBA, imageSize, imageSize );
+    //mFullMapSprite = fillSprite( imageRGBA, imageSize, imageSize );
+    BoxBlurFilter filter( 1 );
+    fullGridImage.filter( &filter );
+    
+    // threshold the alpha channel
+    for( int p=0; p<imagePixels; p++ ) {
+        if( fullGridChannels[3][p] > 0 ) {
+            fullGridChannels[3][p] = 1;
+            }
+        }
+    
+    mFullMapSprite = fillSprite( &fullGridImage, false );
     
     delete [] imageRGBA;
     
