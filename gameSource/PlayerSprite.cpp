@@ -275,24 +275,48 @@ void PlayerSprite::drawCenter( doublePair inPosition, double inFade ) {
     if( rightOffset.x < scaleFactor ) {
         rightOffset.x = scaleFactor;
         }
-    
 
-    doublePair eyePos = add( inPosition, leftOffset );
-    
-    if( mSquintTimeLeft > 0 ) {
-        drawSprite( eyeLeftSquint, eyePos );
+    // eyes are touching?
+    if( rightOffset.x - leftOffset.x < 3 * scaleFactor ) {
+        
+        // use single sprite showing them together
+        // avoids artifact of gap between them during zoom-in 
+        // (round-off errors)
+        // Drawing them together as one sprite prevents gap
+
+        // center double-eye sprite between eyes
+        doublePair eyePos = add( leftOffset, rightOffset );
+        eyePos = mult( eyePos, 0.5 );
+        eyePos = add( inPosition, eyePos );
+        
+        if( mSquintTimeLeft > 0 ) {
+            drawSprite( eyesTogetherSquint, eyePos );
+            }
+        else {
+            drawSprite( eyesTogether, eyePos );
+            }
         }
     else {
-        drawSprite( eyeLeft, eyePos );
+        // draw eyes as separate sprites
+
+        doublePair eyePos = add( inPosition, leftOffset );
+    
+        if( mSquintTimeLeft > 0 ) {
+            drawSprite( eyeLeftSquint, eyePos );
+            }
+        else {
+            drawSprite( eyeLeft, eyePos );
+            }
+        
+        eyePos = add( inPosition, rightOffset );
+    
+        if( mSquintTimeLeft > 0 ) {
+            drawSprite( eyeSquint, eyePos );                  
+            }
+        else {
+            drawSprite( eye, eyePos );                  
+            }
         }
     
-    eyePos = add( inPosition, rightOffset );
-    
-    if( mSquintTimeLeft > 0 ) {
-        drawSprite( eyeSquint, eyePos );                  
-        }
-    else {
-        drawSprite( eye, eyePos );                  
-        }
     }
 

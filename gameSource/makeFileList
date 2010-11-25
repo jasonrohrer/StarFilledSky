@@ -48,6 +48,8 @@ graphics/eye.tga \
 graphics/eyeLeft.tga \
 graphics/eyeSquint.tga \
 graphics/eyeLeftSquint.tga \
+graphics/eyesTogether.tga \
+graphics/eyesTogetherSquint.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
 graphics/powerUpSlot.tga \

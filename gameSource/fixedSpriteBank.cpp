@@ -20,6 +20,8 @@ void initSpriteBank() {
     spriteBank[ eyeLeft ] = loadSprite( "eyeLeft.tga" );
     spriteBank[ eyeSquint ] = loadSprite( "eyeSquint.tga" );
     spriteBank[ eyeLeftSquint ] = loadSprite( "eyeLeftSquint.tga" );
+    spriteBank[ eyesTogether ] = loadSprite( "eyesTogether.tga" );
+    spriteBank[ eyesTogetherSquint ] = loadSprite( "eyesTogetherSquint.tga" );
     spriteBank[ crosshair ] = loadSprite( "crosshair.tga" );
     spriteBank[ enterCrosshair ] = loadSprite( "enterCrosshair.tga" );
     spriteBank[ powerUpSlot ] = loadSprite( "powerUpSlot.tga" );
