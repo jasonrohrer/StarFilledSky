@@ -14,8 +14,13 @@
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/util/random/CustomRandomSource.h"
+#include "minorGems/util/stringUtils.h"
+#include "minorGems/system/Time.h"
 
 #include <math.h>
+
+
+//#define OUTPUT_LEVEL_TGA_FILES
 
 
 char Level::sGridWorldSpotsComputed;
@@ -404,6 +409,42 @@ void Level::generateReproducibleData() {
         mSoftGridColors[ i ] = mGridColorsBlurred[ i ];
         }
 
+    
+    // get ready to fill in static grid image (one pixel per square)
+    int imageSize = 2;
+    while( imageSize < MAX_LEVEL_W || imageSize < MAX_LEVEL_H ) {
+        imageSize *= 2;
+        }
+    int imageXOffset = ( imageSize - MAX_LEVEL_W ) / 2;
+    int imageYOffset = ( imageSize - MAX_LEVEL_H ) / 2;
+   
+
+
+
+    double startTime = Time::getCurrentTime();
+
+    int imagePixels = imageSize * imageSize;
+    
+    unsigned char *imageRGBA = new unsigned char[ imagePixels * 4 ];
+    
+    memset( imageRGBA, 0, imagePixels * 4 );
+    
+
+        
+    
+    #ifdef OUTPUT_LEVEL_TGA_FILES
+    
+    Image fullGridImage( imageSize, imageSize, 4, true );
+    
+    double *fullGridChannels[4];
+    for( int c=0; c<4; c++ ) {
+        fullGridChannels[c] = fullGridImage.getChannel( c );
+        }
+    
+    #endif
+
+
+
     // actual, working grid colors
     mGridColors = new Color[ mNumUsedSquares ];
     
@@ -429,15 +470,44 @@ void Level::generateReproducibleData() {
         mGridColors[i].b = 
             mHardGridColors[i].b * mix 
             + mSoftGridColors[i].b * counterMix;
-
+        
+        GridPos p = mIndexToGridMap[i];
+        int imageIndex = 
+            ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+            p.x + imageXOffset;
+        
+        
+        #ifdef OUTPUT_LEVEL_TGA_FILES
+        fullGridChannels[0][imageIndex] = mGridColors[i].r;
+        fullGridChannels[1][imageIndex] = mGridColors[i].g;
+        fullGridChannels[2][imageIndex] = mGridColors[i].b;
+        fullGridChannels[3][imageIndex] = 1;
+        #endif
+        
+        imageIndex *= 4;
+        
+        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].r * 255 );
+        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].g * 255 );
+        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].b * 255 );
+        imageRGBA[ imageIndex++ ] = 255;        
         }
-
-
+    double partialTime = Time::getCurrentTime() - startTime;
     
-
-
-
+    //mFullMapSprite = fillSprite( &fullGridImage, false );
+    mFullMapSprite = fillSprite( imageRGBA, imageSize, imageSize );
     
+    delete [] imageRGBA;
+    
+    if( false )printf( "making image %f ms (partial %f ms )\n", 
+            1000 * (Time::getCurrentTime() - startTime ), 1000 *partialTime );
+    
+    
+    #ifdef OUTPUT_LEVEL_TGA_FILES
+    char *fileName = autoSprintf( "map_%d_%d.tga", MAX_LEVEL_W, mLevelNumber );
+    writeTGAFile( fileName, &fullGridImage );
+    delete [] fileName;
+    #endif
+
 
 
     // now compute which walls should have edges
@@ -507,6 +577,8 @@ void Level::freeReproducibleData() {
             mPlayerSprite.compactSprite();
             }
         mDataGenerated = false;
+
+        freeSprite( mFullMapSprite );
         }
     
     }
@@ -1966,7 +2038,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
         
-
+    double startTime = Time::getCurrentTime();
+    
 
     int i;
     
@@ -2025,8 +2098,19 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
+    if( !mDrawFloorEdges ) {
+        doublePair pos = { -.5, 0.5 };
+        
+        setDrawColor( 1, 1, 1, 1 );
+        
+        
+        drawSprite( mFullMapSprite, pos );
+        }
+    
+
 
     // draw walls
+    if( mDrawFloorEdges )
     for( int y=yVisStart; y<=yVisEnd; y++ ) {
         for( int x=xVisStart; x<=xVisEnd; x++ ) {
             if( mWallFlags[y][x] == 2 ) {
@@ -2137,6 +2221,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
     // draw floor
+    if( mDrawFloorEdges )
     for( int y=yVisStart; y<=yVisEnd; y++ ) {
         for( int x=xVisStart; x<=xVisEnd; x++ ) {
             if( mWallFlags[y][x] == 1 ) {
@@ -2309,7 +2394,13 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         startDrawingThroughStencil();
         }
     
+    if( !mDrawFloorEdges ) {
+        double netTime = Time::getCurrentTime() - startTime;
+        
+        //printf( "Draw time %fms\n", netTime * 1000 );
+        }
     
+
     }
 
 

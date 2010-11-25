@@ -11,8 +11,8 @@
 #include "GridPos.h"
 #include "RandomWalkerSet.h"
 
-#define MAX_LEVEL_W  400
-#define MAX_LEVEL_H  400
+#define MAX_LEVEL_W  128
+#define MAX_LEVEL_H  MAX_LEVEL_W
 
 #define MAX_FLOOR_SQUARES 1000
 // 1000 max floor squares, plus max of 2 wall tiles per floor square, plus 6
@@ -305,6 +305,10 @@ class Level {
         GridPos *mIndexToGridMap;
         doublePair **mGridWorldSpots;
         
+        
+        // to speed-up drawing of zoom-in,
+        // when map doesn't have to be interactive anyway
+        SpriteHandle mFullMapSprite;
         
 
         // static to save RAM
