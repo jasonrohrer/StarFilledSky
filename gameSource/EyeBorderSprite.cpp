@@ -63,8 +63,9 @@ void EyeBorderSprite::drawCenter( doublePair inPosition, double inFade ) {
 void EyeBorderSprite::setLookVector( doublePair inLookDir ) {
     doublePair oldEyeOffset = mEyeOffset;
     
-    
-    inLookDir = mult( inLookDir, scaleFactor );
+    // half-pixel steps to avoid jerkiness caused by round-off errors
+    // as we step
+    inLookDir = mult( inLookDir, scaleFactor / 2 );
     
     // walk from center out along look dir until we hit edge
     double yD = 0;
@@ -81,8 +82,8 @@ void EyeBorderSprite::setLookVector( doublePair inLookDir ) {
         lastXD = xD;
         lastYD = yD;
         
-        xD += inLookDir.x;
-        yD += inLookDir.y;
+        xD += inLookDir.x / 2;
+        yD += inLookDir.y / 2;
         
         y = (int)( (-yD + 0.5) / scaleFactor );
         x = (int)( (xD + 0.5) / scaleFactor );
