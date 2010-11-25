@@ -2121,19 +2121,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
         if( mEdgeFadeIn >= 1 && dist > maxDistance && dist2 > maxDistance ) {
-            
             edgeFade = 1;
-            
-            // draw floor edges
-            for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    if( mWallFlags[y][x] == 1 &&
-                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
-                        
-                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
-                        }
-                    }
-                }
             }
         else {
             
@@ -2159,50 +2147,30 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             
-            
-            if( fade > 0 ) {
-                
-                edgeFade = fade;
+            edgeFade = fade;
 
-                // use stencil to draw transparent floor edge w/out overlap 
-                // artifacts
-        
-                startAddingToStencil( false, true );
-            
-                for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                    for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                        if( mWallFlags[y][x] == 1 &&
-                            mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
-                        
-                            drawSquare( sGridWorldSpots[y][x], 0.5625 );
-                            }
-                        }
-                    }
-            
-                startDrawingThroughStencil();
-            
-                setDrawColor( c.r,
-                              c.g,
-                              c.b, fade );
-            
-                drawRect( inViewCenter.x - inViewSize/2, 
-                          inViewCenter.y - inViewSize/2, 
-                          inViewCenter.x + inViewSize/2, 
-                          inViewCenter.y + inViewSize/2 );
-            
-            
-            
-                stopStencil();
-            
-                }
-            
             if( mEdgeFadeIn < 1 ) {    
                 mEdgeFadeIn += 0.01 * frameRateFactor;
                 }
             }
-        
+
+        if( edgeFade > 0 ) {
+            // draw edges at full opacity
+            // we draw bitmap below over top to cause edges to fade in
+            // draw floor edges
+            for( int y=yVisStart; y<=yVisEnd; y++ ) {
+                for( int x=xVisStart; x<=xVisEnd; x++ ) {
+                    if( mWallFlags[y][x] == 1 &&
+                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                        
+                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                        }
+                    }
+                }
+            }
         }
     
+
     // draw floor
     if( mDrawFloorEdges )
     for( int y=yVisStart; y<=yVisEnd; y++ ) {
