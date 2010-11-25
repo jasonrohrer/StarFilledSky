@@ -14,7 +14,9 @@ const char *fixedSpriteFileNames[] = {
 
 
 
-static SpriteHandle spriteBank[ 100 ];
+static SpriteHandle spriteBank[ endSpriteID ];
+static Color blurredColors[ endSpriteID ];
+
 
 
 int firstPowerUpID = powerUpEmpty;
@@ -25,11 +27,42 @@ int lastBehaviorID = enemyBehaviorCircle;
 
 
 void initSpriteBank() {
+    // special case, no transparency
     spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );
 
+    // rest are identical
     for( int i = riseIcon; i < endSpriteID; i++ ) {
-        spriteBank[ i ] = loadSprite( fixedSpriteFileNames[ i ] );
+        spriteBank[ i ] = loadSprite( fixedSpriteFileNames[i] );
         }
+
+    // compute average colors of each
+    for( int i = riseMarker; i < endSpriteID; i++ ) {
+    
+        Image *spriteImage = readTGAFile( fixedSpriteFileNames[i] );
+        
+        if( spriteImage != NULL ) {
+            int numPixels = spriteImage->getWidth() * 
+                spriteImage->getHeight();
+            double sums[3] = {0,0,0};
+            
+            // FIXME:  take sprite mask into account here...
+            // how to do this easily?  Corner color?  What about
+            // for rise marker?
+
+            for( int c=0; c<3; c++ ) {
+                double *channel = spriteImage->getChannel( c );
+
+                for( int p=0; p<numPixels; p++ ) {
+                    sums[c] += channel[p];
+                    }
+                blurredColors[i][c] = sums[c] / numPixels;
+                }
+            
+            delete spriteImage;
+            }
+        
+        }
+    
     }
 
 
@@ -47,4 +80,10 @@ void drawSprite( spriteID inID, doublePair inCenter ) {
     drawSprite( spriteBank[ inID ], inCenter, 1.0/16 );
     
     }
+
+
+Color getBlurredColor( spriteID inID ) {
+    return blurredColors[ inID ];
+    }
+
 

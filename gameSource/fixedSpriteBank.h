@@ -3,6 +3,7 @@
 
 
 #include "minorGems/game/doublePair.h"
+#include "minorGems/graphics/Color.h"
 
 
 void initSpriteBank();
@@ -80,6 +81,9 @@ extern int lastBehaviorID;
 //  drawSprite( enemyBehaviorCircle, position );
 //
 void drawSprite( spriteID inID, doublePair inCenter );
+
+
+Color getBlurredColor( spriteID inID );
 
 
 #endif

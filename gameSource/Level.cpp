@@ -2245,6 +2245,28 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawSprite( riseMarker, riseSpot2 );
         }
 
+    if( edgeFade < 1 ) {
+        Color c2 = getBlurredColor( riseMarker );
+        
+        setDrawColor( c2.r * c->r,
+                      c2.g * c->g,
+                      c2.b * c->b, 1 - edgeFade );
+                
+        drawSquare( riseSpot, 0.5 );
+        
+        setDrawFade( 0.25 * ( 1 - edgeFade ) );
+        drawSquare( riseSpot, 1.5 );
+
+        if( mDoubleRisePositions ) {
+            setDrawFade( 1 - edgeFade );
+            drawSquare( riseSpot2, 0.5 ); 
+            
+            setDrawFade( 0.25 * ( 1 - edgeFade ) );
+            drawSquare( riseSpot2, 1.5 );
+            }
+        }
+    
+
     // draw power-ups
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
