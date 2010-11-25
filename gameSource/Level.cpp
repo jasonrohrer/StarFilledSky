@@ -2389,23 +2389,23 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
         double overlieFade = (inFade - 0.63) / 0.37;
 
         if( mWindowPosition.type == player ) {
-            mPlayerSprite.drawCenter( mPlayerPos, inFade );
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
+            mPlayerSprite.drawCenter( mPlayerPos, inFade );
             
             // mouse drawn under player
             }
         else {
             if( mWindowPosition.type == enemy ) {    
                 Enemy *e = mEnemies.getElement( mWindowPosition.index );
-                e->sprite->drawCenter( e->position, inFade );
                 e->sprite->drawBorder( e->position, inFrameFade );
+                e->sprite->drawCenter( e->position, inFade );
                 }
             else if( mWindowPosition.type == power ) {    
                 PowerUpToken *t = 
                     mPowerUpTokens.getElement( mWindowPosition.index );
                 
-                drawPowerUpCenter( t->power, t->position, inFade );
                 drawPowerUpBorder( t->position, inFrameFade );
+                drawPowerUpCenter( t->power, t->position, inFade );
                 }
             
 
