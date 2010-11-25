@@ -280,19 +280,19 @@ void PlayerSprite::drawCenter( doublePair inPosition, double inFade ) {
     doublePair eyePos = add( inPosition, leftOffset );
     
     if( mSquintTimeLeft > 0 ) {
-        drawSprite( riseEyeLeftSquint, eyePos );
+        drawSprite( eyeLeftSquint, eyePos );
         }
     else {
-        drawSprite( riseEyeLeft, eyePos );
+        drawSprite( eyeLeft, eyePos );
         }
     
     eyePos = add( inPosition, rightOffset );
     
     if( mSquintTimeLeft > 0 ) {
-        drawSprite( riseEyeSquint, eyePos );                  
+        drawSprite( eyeSquint, eyePos );                  
         }
     else {
-        drawSprite( riseEye, eyePos );                  
+        drawSprite( eye, eyePos );                  
         }
     }
 

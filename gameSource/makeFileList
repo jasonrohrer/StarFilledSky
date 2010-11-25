@@ -44,10 +44,10 @@ graphics/font_8_16.tga \
 graphics/numerals.tga \
 graphics/riseMarker.tga \
 graphics/riseIcon.tga \
-graphics/riseEye.tga \
-graphics/riseEyeLeft.tga \
-graphics/riseEyeSquint.tga \
-graphics/riseEyeLeftSquint.tga \
+graphics/eye.tga \
+graphics/eyeLeft.tga \
+graphics/eyeSquint.tga \
+graphics/eyeLeftSquint.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
 graphics/powerUpSlot.tga \

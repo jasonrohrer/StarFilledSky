@@ -47,10 +47,10 @@ void EyeBorderSprite::drawCenter( doublePair inPosition, double inFade ) {
     doublePair eyePos = add( inPosition, roundedOffset );
     
     if( mSquintTimeLeft > 0 ) {
-        drawSprite( riseEyeSquint, eyePos );
+        drawSprite( eyeSquint, eyePos );
         }
     else {
-        drawSprite( riseEye, eyePos );
+        drawSprite( eye, eyePos );
         }
     
     }

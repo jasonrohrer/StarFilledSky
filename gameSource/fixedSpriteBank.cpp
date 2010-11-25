@@ -16,10 +16,10 @@ int lastBehaviorID = enemyBehaviorCircle;
 void initSpriteBank() {
     spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );
     spriteBank[ riseIcon ] = loadSprite( "riseIcon.tga" );
-    spriteBank[ riseEye ] = loadSprite( "riseEye.tga" );
-    spriteBank[ riseEyeLeft ] = loadSprite( "riseEyeLeft.tga" );
-    spriteBank[ riseEyeSquint ] = loadSprite( "riseEyeSquint.tga" );
-    spriteBank[ riseEyeLeftSquint ] = loadSprite( "riseEyeLeftSquint.tga" );
+    spriteBank[ eye ] = loadSprite( "eye.tga" );
+    spriteBank[ eyeLeft ] = loadSprite( "eyeLeft.tga" );
+    spriteBank[ eyeSquint ] = loadSprite( "eyeSquint.tga" );
+    spriteBank[ eyeLeftSquint ] = loadSprite( "eyeLeftSquint.tga" );
     spriteBank[ crosshair ] = loadSprite( "crosshair.tga" );
     spriteBank[ enterCrosshair ] = loadSprite( "enterCrosshair.tga" );
     spriteBank[ powerUpSlot ] = loadSprite( "powerUpSlot.tga" );
