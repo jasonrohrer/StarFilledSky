@@ -2,6 +2,18 @@
 #include "minorGems/game/gameGraphics.h"
 
 
+
+// redefine F so that it expands each name into a file-name string
+// constant
+#undef F
+#define F(inName) #inName ".tga"
+
+const char *fixedSpriteFileNames[] = {
+	FIXED_SPRITE_NAMES
+    };
+
+
+
 static SpriteHandle spriteBank[ 100 ];
 
 
@@ -12,40 +24,12 @@ int firstBehaviorID = enemyBehaviorFollow;
 int lastBehaviorID = enemyBehaviorCircle;
 
 
-
 void initSpriteBank() {
     spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );
-    spriteBank[ riseIcon ] = loadSprite( "riseIcon.tga" );
-    spriteBank[ eye ] = loadSprite( "eye.tga" );
-    spriteBank[ eyeLeft ] = loadSprite( "eyeLeft.tga" );
-    spriteBank[ eyeSquint ] = loadSprite( "eyeSquint.tga" );
-    spriteBank[ eyeLeftSquint ] = loadSprite( "eyeLeftSquint.tga" );
-    spriteBank[ eyesTogether ] = loadSprite( "eyesTogether.tga" );
-    spriteBank[ eyesTogetherSquint ] = loadSprite( "eyesTogetherSquint.tga" );
-    spriteBank[ crosshair ] = loadSprite( "crosshair.tga" );
-    spriteBank[ enterCrosshair ] = loadSprite( "enterCrosshair.tga" );
-    spriteBank[ powerUpSlot ] = loadSprite( "powerUpSlot.tga" );
-    spriteBank[ powerUpBorder ] = loadSprite( "powerUpBorder.tga" );
-    spriteBank[ powerUpEmpty ] = loadSprite( "powerUpEmpty.tga" );
-    spriteBank[ powerUpHeart ] = loadSprite( "powerUpHeart.tga" );
-    spriteBank[ powerUpBulletSize ] = loadSprite( "powerUpBulletSize.tga" ); 
-    spriteBank[ powerUpRapidFire ] = loadSprite( "powerUpRapidFire.tga" );
-    spriteBank[ powerUpBulletSpeed ] = loadSprite( "powerUpBulletSpeed.tga" );
-    spriteBank[ powerUpAccuracy ] = loadSprite( "powerUpAccuracy.tga" );
-    spriteBank[ powerUpSpread ] = loadSprite( "powerUpSpread.tga" );
-    spriteBank[ powerUpHeatSeek ] = loadSprite( "powerUpHeatSeek.tga" );
-    spriteBank[ powerUpBulletDistance ] = 
-        loadSprite( "powerUpBulletDistance.tga" );
-    spriteBank[ powerUpBounce ] = loadSprite( "powerUpBounce.tga" );
-    spriteBank[ powerUpExplode ] = loadSprite( "powerUpExplode.tga" );
-    spriteBank[ enemyBehaviorFollow ] = 
-        loadSprite( "enemyBehaviorFollow.tga" );
-    spriteBank[ enemyBehaviorDodge ] = loadSprite( "enemyBehaviorDodge.tga" );
-    spriteBank[ enemyBehaviorFast ] = loadSprite( "enemyBehaviorFast.tga" );
-    spriteBank[ enemyBehaviorRandom ] = 
-        loadSprite( "enemyBehaviorRandom.tga" );
-    spriteBank[ enemyBehaviorCircle ] = 
-        loadSprite( "enemyBehaviorCircle.tga" );
+
+    for( int i = riseIcon; i < endSpriteID; i++ ) {
+        spriteBank[ i ] = loadSprite( fixedSpriteFileNames[ i ] );
+        }
     }
 
 
