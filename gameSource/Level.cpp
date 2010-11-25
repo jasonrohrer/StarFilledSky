@@ -417,11 +417,7 @@ void Level::generateReproducibleData() {
         }
     int imageXOffset = ( imageSize - MAX_LEVEL_W ) / 2;
     int imageYOffset = ( imageSize - MAX_LEVEL_H ) / 2;
-   
 
-
-
-    double startTime = Time::getCurrentTime();
 
     int imagePixels = imageSize * imageSize;
     
@@ -432,16 +428,14 @@ void Level::generateReproducibleData() {
 
         
     
-    #ifdef OUTPUT_LEVEL_TGA_FILES
-    
+#ifdef OUTPUT_LEVEL_TGA_FILES    
     Image fullGridImage( imageSize, imageSize, 4, true );
     
     double *fullGridChannels[4];
     for( int c=0; c<4; c++ ) {
         fullGridChannels[c] = fullGridImage.getChannel( c );
         }
-    
-    #endif
+#endif
 
 
 
@@ -477,12 +471,12 @@ void Level::generateReproducibleData() {
             p.x + imageXOffset;
         
         
-        #ifdef OUTPUT_LEVEL_TGA_FILES
+#ifdef OUTPUT_LEVEL_TGA_FILES
         fullGridChannels[0][imageIndex] = mGridColors[i].r;
         fullGridChannels[1][imageIndex] = mGridColors[i].g;
         fullGridChannels[2][imageIndex] = mGridColors[i].b;
         fullGridChannels[3][imageIndex] = 1;
-        #endif
+#endif
         
         imageIndex *= 4;
         
@@ -491,22 +485,17 @@ void Level::generateReproducibleData() {
         imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].b * 255 );
         imageRGBA[ imageIndex++ ] = 255;        
         }
-    double partialTime = Time::getCurrentTime() - startTime;
-    
-    //mFullMapSprite = fillSprite( &fullGridImage, false );
+
     mFullMapSprite = fillSprite( imageRGBA, imageSize, imageSize );
     
     delete [] imageRGBA;
     
-    if( false )printf( "making image %f ms (partial %f ms )\n", 
-            1000 * (Time::getCurrentTime() - startTime ), 1000 *partialTime );
     
-    
-    #ifdef OUTPUT_LEVEL_TGA_FILES
+#ifdef OUTPUT_LEVEL_TGA_FILES
     char *fileName = autoSprintf( "map_%d_%d.tga", MAX_LEVEL_W, mLevelNumber );
     writeTGAFile( fileName, &fullGridImage );
     delete [] fileName;
-    #endif
+#endif
 
 
 
@@ -2038,12 +2027,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
         
-    double startTime = Time::getCurrentTime();
-    
-
     int i;
-    
-    //mTileSet.startDrawingWalls();
 
 
     doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
@@ -2098,14 +2082,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    if( !mDrawFloorEdges ) {
-        doublePair pos = { -.5, 0.5 };
-        
-        setDrawColor( 1, 1, 1, 1 );
-        
-        
-        drawSprite( mFullMapSprite, pos );
-        }
     
 
 
@@ -2125,6 +2101,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+
+    double edgeFade = 0;
+    
     
     if( mDrawFloorEdges ) {
         Color c = mColors.primary.elements[3];
@@ -2142,6 +2121,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
         if( mEdgeFadeIn >= 1 && dist > maxDistance && dist2 > maxDistance ) {
+            
+            edgeFade = 1;
             
             // draw floor edges
             for( int y=yVisStart; y<=yVisEnd; y++ ) {
@@ -2181,6 +2162,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             if( fade > 0 ) {
                 
+                edgeFade = fade;
+
                 // use stencil to draw transparent floor edge w/out overlap 
                 // artifacts
         
@@ -2235,6 +2218,27 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         }
+
+
+    if( !mDrawFloorEdges ) {
+        doublePair pos = { -.5, 0.5 };
+        
+        setDrawColor( 1, 1, 1, 1 );
+        
+        
+        drawSprite( mFullMapSprite, pos );
+        }
+    else if( edgeFade < 1 ) {
+        // fade this in over top as edges fade in
+        doublePair pos = { -.5, 0.5 };
+        
+        setDrawColor( 1, 1, 1, 1 - edgeFade );
+        
+        
+        drawSprite( mFullMapSprite, pos );
+        }
+    
+
     
     // blood stains
     for( int s=0; s<mBloodStains.size(); s++ ) {
@@ -2392,14 +2396,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     if( mWindowSet ) {
         startDrawingThroughStencil();
-        }
-    
-    if( !mDrawFloorEdges ) {
-        double netTime = Time::getCurrentTime() - startTime;
-        
-        //printf( "Draw time %fms\n", netTime * 1000 );
-        }
-    
+        }    
 
     }
 
