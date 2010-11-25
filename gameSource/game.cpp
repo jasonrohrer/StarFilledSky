@@ -560,7 +560,9 @@ void drawFrame() {
                 mousePos.y = 0;
 
                 lastScreenViewCenter.x = -0.5;
-                lastScreenViewCenter.y = 0;
+                // a little lower than player to line up with 
+                // super-level sprite pixels
+                lastScreenViewCenter.y = -0.5;
                 }
             else {
                 // safe, since -0.5 might be out of bounds
@@ -569,8 +571,10 @@ void drawFrame() {
                 mousePos.x = 0;
                 mousePos.y = 0;
 
-                lastScreenViewCenter.x = 0;
-                lastScreenViewCenter.y = 0;
+                // a little lower than player to line up with 
+                // super-level sprite pixels
+                lastScreenViewCenter.x = -0.5;
+                lastScreenViewCenter.y = -0.5;
                 }
             
             setViewCenterPosition( 0, 0 );
@@ -825,11 +829,16 @@ void drawFrame() {
     double zoomFactor = 1;
     double viewSize = viewWidth;
     
+    // even multiple of 16
+    // each pixel in portal sprite maps to 4x4 block of tiles in sub-level
+    double zoomScale = 63;
+    double zoomScaleTweaked = zoomScale + 1;
+    
     if( lastLevel != NULL ) {
         //zoomFactor = ( 1 + 50 * pow( zoomProgress, 2 ) );
         zoomFactor = 
             (sin( (zoomProgress * 2 - 1) * M_PI/2 ) * 0.5 + 0.5 ) 
-            * 70 + 1;
+            * zoomScale + 1;
         
         
 
@@ -839,7 +848,9 @@ void drawFrame() {
         lastLevelCurrentViewSize = viewSize;
         
         // move toward entry point as we zoom in
-        double moveFraction = 1 - 1/zoomFactor + ( zoomProgress * 1/ 71 );
+        double moveFraction = 1 - 1/zoomFactor + 
+            ( zoomProgress * 1/ zoomScaleTweaked );
+        
         doublePair center = lastLevelPosition.lastScreenViewCenter;
         
         center.x *= ( 1 - moveFraction );
@@ -874,8 +885,8 @@ void drawFrame() {
         center.y *= 1 - moveFraction;
         center.x *= -1;
         center.y *= -1;
-        center.x *= 71;
-        center.y *= 71;
+        center.x *= zoomScaleTweaked;
+        center.y *= zoomScaleTweaked;
         
         center = add( center, lastScreenViewCenter );
         /*
@@ -891,7 +902,7 @@ void drawFrame() {
         drawSquare( center, viewWidth );
 
 
-        viewSize = 71 * viewWidth / zoomFactor;        
+        viewSize = zoomScaleTweaked * viewWidth / zoomFactor;        
         setViewSize( viewSize );
         }
     else {
