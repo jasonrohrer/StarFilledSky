@@ -244,6 +244,11 @@ class Level {
         void drawMouse( double inFade );
         void drawSmoke( double inFade );
 
+        void drawBlurSquare( Color inColor, float inFade,
+                             GridPos inGridPosition, doublePair inWorldPos );
+        
+        
+
         GridPos getGridPos( doublePair inWorldPos );
 
         GridPos pathFind( GridPos inStart, doublePair inStartWorld,

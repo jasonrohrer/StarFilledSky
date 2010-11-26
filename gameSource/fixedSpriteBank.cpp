@@ -17,6 +17,7 @@ const char *fixedSpriteFileNames[] = {
 static SpriteHandle spriteBank[ endSpriteID ];
 static Color blurredColors[ endSpriteID ];
 
+static char transparentLowerLeftCorner[ endSpriteID ];
 
 
 int firstPowerUpID = powerUpEmpty;
@@ -27,12 +28,16 @@ int lastBehaviorID = enemyBehaviorCircle;
 
 
 void initSpriteBank() {
+    for( int i = riseMarker; i < endSpriteID; i++ ) {
+        transparentLowerLeftCorner[ i ] =  true;
+        }
     // special case, no transparency
-    spriteBank[ riseMarker ] = loadSprite( "riseMarker.tga", false );
+    transparentLowerLeftCorner[ riseMarker ] = false;
 
-    // rest are identical
-    for( int i = riseIcon; i < endSpriteID; i++ ) {
-        spriteBank[ i ] = loadSprite( fixedSpriteFileNames[i] );
+
+    for( int i = riseMarker; i < endSpriteID; i++ ) {
+        spriteBank[ i ] = loadSprite( fixedSpriteFileNames[i],
+                                      transparentLowerLeftCorner[i] );
         }
 
     // compute average colors of each
@@ -41,21 +46,42 @@ void initSpriteBank() {
         Image *spriteImage = readTGAFile( fixedSpriteFileNames[i] );
         
         if( spriteImage != NULL ) {
-            int numPixels = spriteImage->getWidth() * 
-                spriteImage->getHeight();
+            int w = spriteImage->getWidth();
+            int h = spriteImage->getHeight();
+            
+            int numPixels = w * h;
+            
             double sums[3] = {0,0,0};
             
-            // FIXME:  take sprite mask into account here...
-            // how to do this easily?  Corner color?  What about
-            // for rise marker?
+            int cornerIndex = (h-1) * w;
+            
+            double *channels[3] = { spriteImage->getChannel(0),
+                                    spriteImage->getChannel(1),
+                                    spriteImage->getChannel(2) };
+            
+            double cornerColor[3] = { channels[0][cornerIndex],
+                                      channels[1][cornerIndex],
+                                      channels[2][cornerIndex] };
+            
 
-            for( int c=0; c<3; c++ ) {
-                double *channel = spriteImage->getChannel( c );
+            int numFullPixels = 0;
 
-                for( int p=0; p<numPixels; p++ ) {
-                    sums[c] += channel[p];
+            for( int p=0; p<numPixels; p++ ) {
+            
+                if( ! transparentLowerLeftCorner[i] ||
+                    channels[0][p] != cornerColor[0] ||
+                    channels[1][p] != cornerColor[1] ||
+                    channels[2][p] != cornerColor[2] ) {
+                    
+                    for( int c=0; c<3; c++ ) {
+                        sums[c] += channels[c][p];
+                        }
+                    numFullPixels ++;
                     }
-                blurredColors[i][c] = sums[c] / numPixels;
+                }
+            
+            for( int c=0; c<3; c++ ) {
+                blurredColors[i][c] = sums[c] / numFullPixels;
                 }
             
             delete spriteImage;

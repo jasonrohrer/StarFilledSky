@@ -24,6 +24,9 @@ void drawPowerUp( PowerUp inPower,
                   doublePair inPosition, double inFade=1 );
 
 
+Color getBlurredColor( PowerUp inPower );
+
+
 PowerUp getRandomPowerUp( int inMaxLevel );
 
 

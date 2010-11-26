@@ -2017,6 +2017,32 @@ void Level::drawSmoke( double inFade ) {
     }
 
 
+
+void Level::drawBlurSquare( Color inColor, float inFade,
+                            GridPos inGridPosition, doublePair inWorldPos ) {
+    
+    int squareIndex = 
+        mSquareIndices[ inGridPosition.y ][ inGridPosition.x ];
+
+    Color squareC = mGridColors[ squareIndex ];
+
+    Color *blendC = Color::linearSum( &inColor, &squareC,
+                                      0.5 );
+
+    setDrawColor( blendC->r, blendC->g, blendC->b, inFade );
+                
+    delete blendC;
+                
+
+    drawSquare( inWorldPos, 0.5 );
+                
+    setDrawFade( 0.25 * inFade );
+    drawSquare( inWorldPos, 1.5 );                
+    }
+
+        
+
+
         
 void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
@@ -2231,10 +2257,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     // draw rise marker
-    // color same as floor tile
-    /*Color *c = 
-        &( mGridColors[mSquareIndices[mRisePosition.y][mRisePosition.x]] );
-    */
     Color *c = &( mColors.special );
     setDrawColor( c->r,
                   c->g,
@@ -2245,24 +2267,23 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawSprite( riseMarker, riseSpot2 );
         }
 
-    if( edgeFade < 1 ) {
-        Color c2 = getBlurredColor( riseMarker );
-        
-        setDrawColor( c2.r * c->r,
-                      c2.g * c->g,
-                      c2.b * c->b, 1 - edgeFade );
-                
-        drawSquare( riseSpot, 0.5 );
-        
-        setDrawFade( 0.25 * ( 1 - edgeFade ) );
-        drawSquare( riseSpot, 1.5 );
 
+    if( edgeFade < 1 ) {
+        // "blur" rise marker
+        Color c2 = getBlurredColor( riseMarker );
+
+        // rise sprite is gray
+        c2.r *= c->r;
+        c2.g *= c->g;
+        c2.b *= c->b;
+        
+        
+        drawBlurSquare( c2, 1 - edgeFade, getGridPos( riseSpot ), riseSpot );
+        
+        
         if( mDoubleRisePositions ) {
-            setDrawFade( 1 - edgeFade );
-            drawSquare( riseSpot2, 0.5 ); 
-            
-            setDrawFade( 0.25 * ( 1 - edgeFade ) );
-            drawSquare( riseSpot2, 1.5 );
+            drawBlurSquare( c2, 1 - edgeFade, getGridPos( riseSpot2 ), 
+                            riseSpot2 );
             }
         }
     
@@ -2276,9 +2297,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
             drawPowerUp( p->power, p->position );
+            
+            if( edgeFade < 1 ) {
+                // "blur" it
+                Color c = getBlurredColor( p->power );
+                
+                drawBlurSquare( c, 1 - edgeFade, 
+                                p->gridPosition, p->position );
+                }
             }
         }
-    
+        
     
 
     // draw bullets

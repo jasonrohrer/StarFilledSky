@@ -46,6 +46,13 @@ void drawPowerUp( PowerUp inPower,
 
 
 
+Color getBlurredColor( PowerUp inPower ) {
+    return getBlurredColor( inPower.powerType );
+    }
+
+
+
+
 PowerUp getRandomPowerUp( int inMaxLevel ) {
     if( inMaxLevel <= 0 ) {
         PowerUp p = { powerUpEmpty, 0, false };
