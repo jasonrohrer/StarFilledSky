@@ -2366,6 +2366,82 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawSprite( mFullMapSprite, pos );
         }
     else if( edgeFade < 1 ) {
+        // use stencil to avoid double-drawing of blurred squares
+        // don't use stencil if NOT drawing floor edges because
+        // 1) it isn't needed
+        // 2) a stencil is already active for our zoom portal
+        
+        startAddingToStencil( true, true );
+        }
+    
+
+    if( edgeFade < 1 ) {
+        // draw all blurred squares around sprites
+        
+        // "blur" rise marker
+        Color c = mColors.special;
+        Color c2 = getBlurredColor( riseMarker );
+
+        // rise sprite is gray
+        c2.r *= c.r;
+        c2.g *= c.g;
+        c2.b *= c.b;
+        
+        
+        drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            
+            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
+            }
+
+
+        // blur power-ups
+        for( i=0; i<mPowerUpTokens.size(); i++ ) {
+            PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+            doublePair pos = p->position;
+            
+            if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                
+                Color c = getBlurredColor( p->power );
+                
+                drawBlurSquareOffCenter( c, 1 - edgeFade, p->position );
+                }
+            }
+
+
+        // enemy blur unerlyment
+        for( i=0; i<mEnemies.size(); i++ ) {
+            Enemy *e = mEnemies.getElement( i );
+
+            doublePair pos = e->position;
+        
+            if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                
+                Color c = e->sprite->getColors().primary.elements[0];
+                
+                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
+                }
+            }
+
+        
+        // player blur underlyment
+        c = mPlayerSprite.getColors().primary.elements[0];
+                
+        drawBlurSquareOffCenter( c, 1 - edgeFade, mPlayerPos );
+
+        }
+    
+
+    if( edgeFade < 1 ) {
+        
+        if( mDrawFloorEdges ) {
+            startDrawingThroughStencil( true );
+            }
+        
         // fade this in over top as edges fade in
         doublePair pos = { -.5, 0.5 };
         
@@ -2373,6 +2449,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         
         drawSprite( mFullMapSprite, pos );
+        
+        if( mDrawFloorEdges ) {
+            stopStencil();
+            }
         }
     
 
@@ -2391,7 +2471,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     Color *c = &( mColors.special );
     setDrawColor( c->r,
                   c->g,
-                  c->b, 1 );
+                  c->b, edgeFade );
     drawSprite( riseMarker, mRiseWorldPos );
     
     if( mDoubleRisePositions ) {
@@ -2399,23 +2479,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    if( edgeFade < 1 ) {
-        // "blur" rise marker
-        Color c2 = getBlurredColor( riseMarker );
-
-        // rise sprite is gray
-        c2.r *= c->r;
-        c2.g *= c->g;
-        c2.b *= c->b;
-        
-        
-        drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );
-        
-        if( mDoubleRisePositions ) {
-            
-            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
-            }
-        }
     
 
     // draw power-ups
@@ -2426,44 +2489,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-            drawPowerUp( p->power, p->position );
-            
-            if( edgeFade < 1 ) {
-                // "blur" it
-                Color c = getBlurredColor( p->power );
-                
-                drawBlurSquareOffCenter( c, 1 - edgeFade, p->position );
-                }
+
+            drawPowerUp( p->power, p->position, edgeFade );
             }
         }
-        
-
-    
-    // draw player blur underlyment
-    if( edgeFade < 1 ) {
-        
-        Color c = mPlayerSprite.getColors().primary.elements[0];
-                
-        drawBlurSquareOffCenter( c, 1 - edgeFade, mPlayerPos );
-        }
-
-    // draw enemy blur underlyment
-    if( edgeFade < 1 ) {
-        for( i=0; i<mEnemies.size(); i++ ) {
-            Enemy *e = mEnemies.getElement( i );
-
-            doublePair pos = e->position;
-        
-            if( pos.x >= visStart.x && pos.y >= visStart.y &&
-                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-                
-                Color c = e->sprite->getColors().primary.elements[0];
-                
-                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
-                }
-            }
-        }
-
 
     
 
