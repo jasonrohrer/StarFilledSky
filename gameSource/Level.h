@@ -240,7 +240,7 @@ class Level {
         
         void step( doublePair inViewCenter, double inViewSize );
         
-        void drawPlayer( double inFade, double inEdgeFadeFactor = 1 );
+        void drawPlayer( double inFade );
         void drawMouse( double inFade );
         void drawSmoke( double inFade );
 

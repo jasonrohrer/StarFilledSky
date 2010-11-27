@@ -1982,18 +1982,9 @@ void Level::drawMouse( double inFade ) {
 
 
 
-void Level::drawPlayer( double inFade, double inEdgeFadeFactor ) {
+void Level::drawPlayer( double inFade ) {
     // player
-    //setDrawColor( 1, 0, 0, inFade );
-    //drawSquare( mPlayerPos, 0.25 );
     mPlayerSprite.draw( mPlayerPos, inFade );
-
-    if( inEdgeFadeFactor < 1 ) {
-
-        Color c = mPlayerSprite.getColors().primary.elements[0];
-                
-        drawBlurSquareOffCenter( c, 1 - inEdgeFadeFactor, mPlayerPos );
-        }
     }
 
 
@@ -2446,6 +2437,34 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
         
+
+    
+    // draw player blur underlyment
+    if( edgeFade < 1 ) {
+        
+        Color c = mPlayerSprite.getColors().primary.elements[0];
+                
+        drawBlurSquareOffCenter( c, 1 - edgeFade, mPlayerPos );
+        }
+
+    // draw enemy blur underlyment
+    if( edgeFade < 1 ) {
+        for( i=0; i<mEnemies.size(); i++ ) {
+            Enemy *e = mEnemies.getElement( i );
+
+            doublePair pos = e->position;
+        
+            if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                
+                Color c = e->sprite->getColors().primary.elements[0];
+                
+                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
+                }
+            }
+        }
+
+
     
 
     // draw bullets
@@ -2488,7 +2507,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
 
-            e->sprite->draw( pos, 1 );
+            e->sprite->draw( pos, edgeFade );
         
             if( e->healthBarFade > 0 ) {
                 // hold at full vis until half-way through fade
@@ -2519,13 +2538,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                           pos.y + 0.4375,
                           pos.x - 0.4375 + 0.875 * healthFraction, 
                           pos.y + 0.3125 );
-                }
-
-            if( edgeFade < 1 ) {
-                
-                Color c = e->sprite->getColors().primary.elements[0];
-                
-                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
                 }
             }
         }
@@ -2559,7 +2571,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     if( !mWindowSet ) {
         drawMouse( 1 );
-        drawPlayer( 1, edgeFade );
+        drawPlayer( edgeFade );
 
         drawSmoke( 1 );
         }
