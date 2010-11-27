@@ -2436,7 +2436,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
 
-    if( edgeFade < 1 ) {
+    if( mDrawFloorEdges && edgeFade < 1 ) {
         
         if( mDrawFloorEdges ) {
             startDrawingThroughStencil( true );
