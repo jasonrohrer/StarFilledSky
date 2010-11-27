@@ -2134,18 +2134,56 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
                         baseC = mColors.special;
                         }
                     else if( equal( p2, getGridPos( mPlayerPos ) ) ) {
-                        baseC =  mPlayerSprite.getColors().primary.elements[0];
+                        
+                        // weight based on how close player is to center
+                        // of square
+                        doublePair squareWorldPos = 
+                            sGridWorldSpots[p2.y][p2.x];
+            
+                        double dist = distance( squareWorldPos, mPlayerPos );
+            
+                        Color playerColor = 
+                            mPlayerSprite.getColors().primary.elements[0];
+
+                        Color *drawColor = 
+                            Color::linearSum( &baseC, 
+                                              &playerColor,
+                                              dist / (dist + 0.5) );
+                        
+                        baseC.r = drawColor->r;
+                        baseC.g = drawColor->g;
+                        baseC.b = drawColor->b;
+                        
+                        delete [] drawColor;
                         }
                     else {
-                        
                         // check for enemies
                         
                         for( int k=0; k<mEnemies.size(); k++ ) {
                             Enemy *e = mEnemies.getElement( k );
                             
                             if( equal( p2, getGridPos( e->position ) ) ) {
-                                baseC =
+                                // weight based on how close player is to 
+                                // center of square
+                                doublePair squareWorldPos = 
+                                    sGridWorldSpots[p2.y][p2.x];
+            
+                                double dist = distance( squareWorldPos, 
+                                                        e->position );
+            
+                                Color eColor = 
                                     e->sprite->getColors().primary.elements[0];
+                        
+                                Color *drawColor = 
+                                    Color::linearSum( &baseC, 
+                                                      &eColor,
+                                                      dist / (dist + 0.5) );
+                        
+                                baseC.r = drawColor->r;
+                                baseC.g = drawColor->g;
+                                baseC.b = drawColor->b;
+                                
+                                delete [] drawColor;
                                 }
                             }
                         
@@ -2160,14 +2198,12 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
                                 }
                             }
                         }
-                    
-
-                    
-
+                
                     cSum[0] += baseC.r;
                     cSum[1] += baseC.g;
                     cSum[2] += baseC.b;
                     }
+                
                 // even count black, out-of-bounds squares
                 cCount ++;
                 }
@@ -2175,43 +2211,7 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
             cSum[0] /= cCount;
             cSum[1] /= cCount;
             cSum[2] /= cCount;
-            
-                
 
-            /*
-            int squareIndex = mSquareIndices[p.y][p.x];
-            
-            // use extra-blurred colors as base
-            Color baseC = mOverlaySpriteColors[squareIndex];
-            
-            doublePair squareWorldPos = sGridWorldSpots[p.y][p.x];
-            
-            double dist = distance( squareWorldPos, inWorldPos );
-            
-            Color *drawColor = Color::linearSum( &baseC, &inColor,
-                                                 dist / (dist + 0.5) );
-            
-            if( equal( pWorld, mRiseWorldPos ) ||
-                ( mDoubleRisePositions && equal( pWorld, mRiseWorldPos2 ) ) ) {
-                
-                Color *temp = drawColor;
-                
-                drawColor = Color::linearSum( drawColor, &( mColors.special ),
-                                              0.5 );
-                delete temp;
-                }
-                
-
-            double fullFade = inFade;
-            if( false && !equal( p, centerPos ) ) {
-                // let under-colors bleed through on edge squares
-                fullFade *= 0.25;
-                }
-                
-
-            setDrawColor( drawColor->r, drawColor->g, drawColor->b,
-                          fullFade );
-            */
             
             setDrawColor( cSum[0], cSum[1], cSum[2],
                           inFade );
@@ -2458,20 +2458,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         
         drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );
-
-        /*
-        drawBlurSquare( c2, 1 - edgeFade, 
-                        getGridPos( mRiseWorldPos ), mRiseWorldPos );
-        */
         
         if( mDoubleRisePositions ) {
             
             drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
-            
-            /*
-            drawBlurSquare( c2, 1 - edgeFade, getGridPos( mRiseWorldPos2 ), 
-                            mRiseWorldPos2 );
-            */
             }
         }
     
@@ -2491,10 +2481,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 Color c = getBlurredColor( p->power );
                 
                 drawBlurSquareOffCenter( c, 1 - edgeFade, p->position );
-                /*
-                drawBlurSquare( c, 1 - edgeFade, 
-                                p->gridPosition, p->position );
-                */
                 }
             }
         }
