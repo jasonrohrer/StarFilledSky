@@ -500,21 +500,6 @@ void Level::generateReproducibleData() {
         }
 
     mFullMapSprite = fillSprite( &fullGridImage, false );
-
-    // save the colors
-    mOverlaySpriteColors = new Color[ mNumUsedSquares ];
-    for( int i=0; i<mNumUsedSquares; i++ ) {
-        GridPos p = mIndexToGridMap[i];
-        int imageIndex = 
-            ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
-            p.x + imageXOffset;
-
-        mOverlaySpriteColors[i].r = fullGridChannels[0][imageIndex];
-        mOverlaySpriteColors[i].g = fullGridChannels[1][imageIndex];
-        mOverlaySpriteColors[i].b = fullGridChannels[2][imageIndex];
-        }
-    
-
     
     delete [] imageRGBA;
     
@@ -596,7 +581,6 @@ void Level::freeReproducibleData() {
         mDataGenerated = false;
 
         freeSprite( mFullMapSprite );
-        delete [] mOverlaySpriteColors;
         }
     
     }
@@ -2048,29 +2032,6 @@ void Level::drawSmoke( double inFade ) {
 
     }
 
-
-
-void Level::drawBlurSquare( Color inColor, float inFade,
-                            GridPos inGridPosition, doublePair inWorldPos ) {
-    
-    int squareIndex = 
-        mSquareIndices[ inGridPosition.y ][ inGridPosition.x ];
-
-    Color squareC = mGridColors[ squareIndex ];
-
-    Color *blendC = Color::linearSum( &inColor, &squareC,
-                                      0.5 );
-
-    setDrawColor( blendC->r, blendC->g, blendC->b, inFade );
-                
-    delete blendC;
-                
-
-    drawSquare( inWorldPos, 0.5 );
-                
-    setDrawFade( 0.25 * inFade );
-    drawSquare( inWorldPos, 1.5 );                
-    }
 
 
 

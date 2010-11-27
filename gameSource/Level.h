@@ -244,9 +244,6 @@ class Level {
         void drawMouse( double inFade );
         void drawSmoke( double inFade );
 
-        void drawBlurSquare( Color inColor, float inFade,
-                             GridPos inGridPosition, doublePair inWorldPos );
-        
         void drawBlurSquareOffCenter( Color inColor, float inFade,
                                       doublePair inWorldPos );
         
@@ -319,8 +316,6 @@ class Level {
         // to speed-up drawing of zoom-in,
         // when map doesn't have to be interactive anyway
         SpriteHandle mFullMapSprite;
-        
-        Color *mOverlaySpriteColors;
         
 
         // static to save RAM
