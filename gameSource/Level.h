@@ -339,7 +339,7 @@ class Level {
         SimpleVector<BloodStain> mBloodStains;
         
 
-        GridPos mRisePosition;
+        GridPos mRisePosition, mRisePosition2;
         doublePair mRiseWorldPos, mRiseWorldPos2;
         char mDoubleRisePositions;
         

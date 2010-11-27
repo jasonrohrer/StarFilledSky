@@ -771,6 +771,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
                 mRiseWorldPos2 = mRiseWorldPos;
                 mRiseWorldPos2.x = - mRiseWorldPos2.x - 1;
+
+                mRisePosition2 = getGridPos( mRiseWorldPos2 );
                 }
             }
         }
@@ -2097,7 +2099,86 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
             
             doublePair pWorld = sGridWorldSpots[p.y][p.x];
             
+            
+            // do true box blur based on neighbors
+            
+            GridPos neighbors[9] =
+                {  {p.x - 1, p.y - 1},
+                   {p.x, p.y - 1},
+                   {p.x + 1, p.y - 1},
+                   
+                   {p.x - 1, p.y},
+                   {p.x, p.y},
+                   {p.x + 1, p.y},
+                   
+                   {p.x - 1, p.y + 1},
+                   {p.x, p.y + 1},
+                   {p.x + 1, p.y + 1}   };
 
+            float cSum[3] = { 0, 0, 0 };
+            float cCount = 0;
+            
+            for( int n=0; n<9; n++ ) {
+                
+                GridPos p2 = neighbors[n];
+                
+                if( mWallFlags[p2.y][p2.x] > 0 ) {
+            
+                    int squareIndex = mSquareIndices[p2.y][p2.x];
+                    
+                    Color baseC = mGridColors[squareIndex];
+
+                    // check if something else is there
+                    if( equal( p2, mRisePosition ) ||
+                        equal( p2, mRisePosition2 ) ) {
+                        baseC = mColors.special;
+                        }
+                    else if( equal( p2, getGridPos( mPlayerPos ) ) ) {
+                        baseC =  mPlayerSprite.getColors().primary.elements[0];
+                        }
+                    else {
+                        
+                        // check for enemies
+                        
+                        for( int k=0; k<mEnemies.size(); k++ ) {
+                            Enemy *e = mEnemies.getElement( k );
+                            
+                            if( equal( p2, getGridPos( e->position ) ) ) {
+                                baseC =
+                                    e->sprite->getColors().primary.elements[0];
+                                }
+                            }
+                        
+                        // check for power-ups
+                        for( int k=0; k<mPowerUpTokens.size(); k++ ) {
+                            PowerUpToken *token = 
+                                mPowerUpTokens.getElement( k );
+        
+                            if( equal( p2, token->gridPosition ) ) {
+                                
+                                baseC = getBlurredColor( token->power );
+                                }
+                            }
+                        }
+                    
+
+                    
+
+                    cSum[0] += baseC.r;
+                    cSum[1] += baseC.g;
+                    cSum[2] += baseC.b;
+                    
+                    cCount ++;
+                    }
+                }
+            
+            cSum[0] /= cCount;
+            cSum[1] /= cCount;
+            cSum[2] /= cCount;
+            
+                
+
+            /*
             int squareIndex = mSquareIndices[p.y][p.x];
             
             // use extra-blurred colors as base
@@ -2130,6 +2211,10 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
 
             setDrawColor( drawColor->r, drawColor->g, drawColor->b,
                           fullFade );
+            */
+            
+            setDrawColor( cSum[0], cSum[1], cSum[2],
+                          inFade );
             
             drawSquare( pWorld, 0.5 );
             }
@@ -2372,13 +2457,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         c2.b *= c->b;
         
         
+        drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );
+
+        /*
         drawBlurSquare( c2, 1 - edgeFade, 
                         getGridPos( mRiseWorldPos ), mRiseWorldPos );
-        
+        */
         
         if( mDoubleRisePositions ) {
+            
+            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
+            
+            /*
             drawBlurSquare( c2, 1 - edgeFade, getGridPos( mRiseWorldPos2 ), 
                             mRiseWorldPos2 );
+            */
             }
         }
     
@@ -2397,8 +2490,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 // "blur" it
                 Color c = getBlurredColor( p->power );
                 
+                drawBlurSquareOffCenter( c, 1 - edgeFade, p->position );
+                /*
                 drawBlurSquare( c, 1 - edgeFade, 
                                 p->gridPosition, p->position );
+                */
                 }
             }
         }
