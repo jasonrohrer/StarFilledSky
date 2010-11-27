@@ -2571,7 +2571,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     if( !mWindowSet ) {
         drawMouse( 1 );
-        drawPlayer( edgeFade );
+        drawPlayer( 1 );
 
         drawSmoke( 1 );
         }
