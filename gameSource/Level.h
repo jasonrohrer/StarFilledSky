@@ -240,13 +240,17 @@ class Level {
         
         void step( doublePair inViewCenter, double inViewSize );
         
-        void drawPlayer( double inFade );
+        void drawPlayer( double inFade, double inEdgeFadeFactor = 1 );
         void drawMouse( double inFade );
         void drawSmoke( double inFade );
 
         void drawBlurSquare( Color inColor, float inFade,
                              GridPos inGridPosition, doublePair inWorldPos );
         
+        void drawBlurSquareOffCenter( Color inColor, float inFade,
+                                      doublePair inWorldPos );
+        
+
         
 
         GridPos getGridPos( doublePair inWorldPos );
@@ -281,6 +285,7 @@ class Level {
 
         // need these for quick wall collision detection
         //char mWallFlags[MAX_LEVEL_H][MAX_LEVEL_W];
+        // 0 = empty, 1 = floor, 2 = wall
         char **mWallFlags;
 
         // save ram, because grid is a sparse matrix
@@ -315,6 +320,8 @@ class Level {
         // when map doesn't have to be interactive anyway
         SpriteHandle mFullMapSprite;
         
+        Color *mOverlaySpriteColors;
+        
 
         // static to save RAM
         // maps each grid spot to world coordinates
@@ -333,6 +340,7 @@ class Level {
         
 
         GridPos mRisePosition;
+        doublePair mRiseWorldPos, mRiseWorldPos2;
         char mDoubleRisePositions;
         
         char mFrozen;

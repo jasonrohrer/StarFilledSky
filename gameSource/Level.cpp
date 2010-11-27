@@ -445,6 +445,7 @@ void Level::generateReproducibleData() {
     
     mColorMix = new float[ mNumUsedSquares ];
     mColorMixDelta = new float[ mNumUsedSquares ];
+
     for( int i=0; i<mNumUsedSquares; i++ ) {
         mColorMix[i] = randSource.getRandomBoundedDouble( 0, 1 );
         mColorMixDelta[i] = 
@@ -497,8 +498,23 @@ void Level::generateReproducibleData() {
             fullGridChannels[3][p] = 1;
             }
         }
-    
+
     mFullMapSprite = fillSprite( &fullGridImage, false );
+
+    // save the colors
+    mOverlaySpriteColors = new Color[ mNumUsedSquares ];
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        GridPos p = mIndexToGridMap[i];
+        int imageIndex = 
+            ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+            p.x + imageXOffset;
+
+        mOverlaySpriteColors[i].r = fullGridChannels[0][imageIndex];
+        mOverlaySpriteColors[i].g = fullGridChannels[1][imageIndex];
+        mOverlaySpriteColors[i].b = fullGridChannels[2][imageIndex];
+        }
+    
+
     
     delete [] imageRGBA;
     
@@ -580,6 +596,7 @@ void Level::freeReproducibleData() {
         mDataGenerated = false;
 
         freeSprite( mFullMapSprite );
+        delete [] mOverlaySpriteColors;
         }
     
     }
@@ -748,6 +765,12 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                 placed = true;
                 mRisePosition.x = x;
                 mRisePosition.y = y;
+
+                mRiseWorldPos.x = mRisePosition.x - MAX_LEVEL_W/2;
+                mRiseWorldPos.y = mRisePosition.y - MAX_LEVEL_H/2;
+
+                mRiseWorldPos2 = mRiseWorldPos;
+                mRiseWorldPos2.x = - mRiseWorldPos2.x - 1;
                 }
             }
         }
@@ -1973,11 +1996,18 @@ void Level::drawMouse( double inFade ) {
 
 
 
-void Level::drawPlayer( double inFade ) {
+void Level::drawPlayer( double inFade, double inEdgeFadeFactor ) {
     // player
     //setDrawColor( 1, 0, 0, inFade );
     //drawSquare( mPlayerPos, 0.25 );
     mPlayerSprite.draw( mPlayerPos, inFade );
+
+    if( inEdgeFadeFactor < 1 ) {
+
+        Color c = mPlayerSprite.getColors().primary.elements[0];
+                
+        drawBlurSquareOffCenter( c, 1 - inEdgeFadeFactor, mPlayerPos );
+        }
     }
 
 
@@ -2040,6 +2070,75 @@ void Level::drawBlurSquare( Color inColor, float inFade,
     drawSquare( inWorldPos, 1.5 );                
     }
 
+
+
+void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
+                                     doublePair inWorldPos ) {
+    GridPos centerPos = getGridPos( inWorldPos );
+    
+    GridPos allSquarePos[9] =
+        {  {centerPos.x - 1, centerPos.y - 1},
+           {centerPos.x, centerPos.y - 1},
+           {centerPos.x + 1, centerPos.y - 1},
+           
+           {centerPos.x - 1, centerPos.y},
+           {centerPos.x, centerPos.y},
+           {centerPos.x + 1, centerPos.y},
+           
+           {centerPos.x - 1, centerPos.y + 1},
+           {centerPos.x, centerPos.y + 1},
+           {centerPos.x + 1, centerPos.y + 1}   };
+    
+    
+    for( int i=0; i<9; i++ ) {
+        GridPos p = allSquarePos[i];
+        
+        if( mWallFlags[p.y][p.x] > 0 ) {
+            
+            doublePair pWorld = sGridWorldSpots[p.y][p.x];
+            
+
+            int squareIndex = mSquareIndices[p.y][p.x];
+            
+            // use extra-blurred colors as base
+            Color baseC = mOverlaySpriteColors[squareIndex];
+            
+            doublePair squareWorldPos = sGridWorldSpots[p.y][p.x];
+            
+            double dist = distance( squareWorldPos, inWorldPos );
+            
+            Color *drawColor = Color::linearSum( &baseC, &inColor,
+                                                 dist / (dist + 0.5) );
+            
+            if( equal( pWorld, mRiseWorldPos ) ||
+                ( mDoubleRisePositions && equal( pWorld, mRiseWorldPos2 ) ) ) {
+                
+                Color *temp = drawColor;
+                
+                drawColor = Color::linearSum( drawColor, &( mColors.special ),
+                                              0.5 );
+                delete temp;
+                }
+                
+
+            double fullFade = inFade;
+            if( false && !equal( p, centerPos ) ) {
+                // let under-colors bleed through on edge squares
+                fullFade *= 0.25;
+                }
+                
+
+            setDrawColor( drawColor->r, drawColor->g, drawColor->b,
+                          fullFade );
+            
+            drawSquare( pWorld, 0.5 );
+            }
+        }
+    
+        
+    }
+
+        
         
 
 
@@ -2068,11 +2167,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     int i;
 
 
-    doublePair riseSpot = { mRisePosition.x - MAX_LEVEL_W/2,
-                            mRisePosition.y - MAX_LEVEL_H/2 };
-
-    doublePair riseSpot2 = riseSpot;
-    riseSpot2.x = - riseSpot2.x - 1;
 
 
     // opt:  don't draw whole grid, just visible part
@@ -2151,11 +2245,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         double maxDistance = 5;
         
-        double dist = distance( mPlayerPos, riseSpot );
+        double dist = distance( mPlayerPos, mRiseWorldPos );
         
         double dist2 = DBL_MAX;
         if( mDoubleRisePositions ) {
-            dist2 = distance( mPlayerPos, riseSpot2 );
+            dist2 = distance( mPlayerPos, mRiseWorldPos2 );
             }
 
         if( mEdgeFadeIn >= 1 && dist > maxDistance && dist2 > maxDistance ) {
@@ -2261,10 +2355,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     setDrawColor( c->r,
                   c->g,
                   c->b, 1 );
-    drawSprite( riseMarker, riseSpot );
+    drawSprite( riseMarker, mRiseWorldPos );
     
     if( mDoubleRisePositions ) {
-        drawSprite( riseMarker, riseSpot2 );
+        drawSprite( riseMarker, mRiseWorldPos2 );
         }
 
 
@@ -2278,12 +2372,13 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         c2.b *= c->b;
         
         
-        drawBlurSquare( c2, 1 - edgeFade, getGridPos( riseSpot ), riseSpot );
+        drawBlurSquare( c2, 1 - edgeFade, 
+                        getGridPos( mRiseWorldPos ), mRiseWorldPos );
         
         
         if( mDoubleRisePositions ) {
-            drawBlurSquare( c2, 1 - edgeFade, getGridPos( riseSpot2 ), 
-                            riseSpot2 );
+            drawBlurSquare( c2, 1 - edgeFade, getGridPos( mRiseWorldPos2 ), 
+                            mRiseWorldPos2 );
             }
         }
     
@@ -2350,12 +2445,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
 
-            e->sprite->draw( e->position, 1 );
+            e->sprite->draw( pos, 1 );
         
             if( e->healthBarFade > 0 ) {
-            
-                doublePair pos = e->position;
-            
                 // hold at full vis until half-way through fade
                 float fade = 1;
 
@@ -2384,6 +2476,13 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                           pos.y + 0.4375,
                           pos.x - 0.4375 + 0.875 * healthFraction, 
                           pos.y + 0.3125 );
+                }
+
+            if( edgeFade < 1 ) {
+                
+                Color c = e->sprite->getColors().primary.elements[0];
+                
+                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
                 }
             }
         }
@@ -2417,7 +2516,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     if( !mWindowSet ) {
         drawMouse( 1 );
-        drawPlayer( 1 );
+        drawPlayer( 1, edgeFade );
 
         drawSmoke( 1 );
         }
