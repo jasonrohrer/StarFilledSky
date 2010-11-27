@@ -2167,9 +2167,9 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
                     cSum[0] += baseC.r;
                     cSum[1] += baseC.g;
                     cSum[2] += baseC.b;
-                    
-                    cCount ++;
                     }
+                // even count black, out-of-bounds squares
+                cCount ++;
                 }
             
             cSum[0] /= cCount;
