@@ -9,6 +9,9 @@
 #define PARTS 12
 
 
+extern char noteToggles[PARTS][N][N];
+
+
 void initMusicPlayer();
 void freeMusicPlayer();
 

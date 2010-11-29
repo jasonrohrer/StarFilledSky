@@ -303,6 +303,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     
     initMusicPlayer();
 
+
+    // demo:  fill grid with random
+    for( int i=0; i<20; i++ ) {
+        int p = randSource.getRandomBoundedInt( 0, PARTS - 1 );
+        int y = randSource.getRandomBoundedInt( 0, N - 1 );
+        int x = randSource.getRandomBoundedInt( 0, N - 1 );
+        noteToggles[p][y][x] = true;
+        }
+    
     setSoundPlaying( true );
     }
 
