@@ -462,23 +462,15 @@ void Level::generateReproducibleData() {
     int imageYOffset = ( imageSize - MAX_LEVEL_H ) / 2;
 
 
-    int imagePixels = imageSize * imageSize;
-    
-    unsigned char *imageRGBA = new unsigned char[ imagePixels * 4 ];
-    
-    memset( imageRGBA, 0, imagePixels * 4 );
-    
+    int imagePixels = imageSize * imageSize;    
 
-        
     
-    //#ifdef OUTPUT_LEVEL_TGA_FILES    
     Image fullGridImage( imageSize, imageSize, 4, true );
     
     double *fullGridChannels[4];
     for( int c=0; c<4; c++ ) {
         fullGridChannels[c] = fullGridImage.getChannel( c );
         }
-    //#endif
 
 
 
@@ -515,19 +507,10 @@ void Level::generateReproducibleData() {
             p.x + imageXOffset;
         
         
-        //#ifdef OUTPUT_LEVEL_TGA_FILES
         fullGridChannels[0][imageIndex] = mGridColors[i].r;
         fullGridChannels[1][imageIndex] = mGridColors[i].g;
         fullGridChannels[2][imageIndex] = mGridColors[i].b;
         fullGridChannels[3][imageIndex] = 1;
-        //#endif
-        
-        imageIndex *= 4;
-        
-        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].r * 255 );
-        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].g * 255 );
-        imageRGBA[ imageIndex++ ] = (unsigned char)( mGridColors[i].b * 255 );
-        imageRGBA[ imageIndex++ ] = 255;        
         }
 
     
@@ -537,6 +520,8 @@ void Level::generateReproducibleData() {
 
 
     // fill in rise position colors, box around rise marker
+    // post-blur so that these blurry rise marker boxes correspond somewhat
+    // to creature eyes
     for( int dy=-1; dy<=1; dy++ ) {
         for( int dx=-1; dx<=1; dx++ ) {
 
@@ -609,8 +594,6 @@ void Level::generateReproducibleData() {
         }
 
     mFullMapSprite = fillSprite( &fullGridImage, false );
-    
-    delete [] imageRGBA;
     
     
 #ifdef OUTPUT_LEVEL_TGA_FILES
