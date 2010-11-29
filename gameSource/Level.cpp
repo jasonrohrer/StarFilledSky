@@ -2357,7 +2357,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    if( !mDrawFloorEdges ) {
+    if( !mDrawFloorEdges || edgeFade == 0) {
         doublePair pos = { -.5, 0.5 };
         
         setDrawColor( 1, 1, 1, 1 );
@@ -2436,11 +2436,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
     
 
-    if( mDrawFloorEdges && edgeFade < 1 ) {
+    if( mDrawFloorEdges && edgeFade < 1  && edgeFade > 0 ) {
         
-        if( mDrawFloorEdges ) {
-            startDrawingThroughStencil( true );
-            }
+        startDrawingThroughStencil( true );
         
         // fade this in over top as edges fade in
         doublePair pos = { -.5, 0.5 };
@@ -2450,9 +2448,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         drawSprite( mFullMapSprite, pos );
         
-        if( mDrawFloorEdges ) {
-            stopStencil();
-            }
+        stopStencil();
         }
     
 
