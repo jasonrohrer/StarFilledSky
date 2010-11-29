@@ -50,7 +50,7 @@
 #include "powerUpProperties.h"
 #include "RandomWalkerSet.h"
 #include "tutorial.h"
-
+#include "musicPlayer.h"
 
 
 // height of dashboard at top of screen
@@ -301,6 +301,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
         exit(0);
         }
     
+    initMusicPlayer();
 
     setSoundPlaying( true );
     }
@@ -329,6 +330,8 @@ void freeFrameDrawer() {
         }
     levelRiseStack.deleteAll();    
     levelRisePositionInfoStack.deleteAll();
+
+    freeMusicPlayer();
     }
 
 
@@ -1493,6 +1496,7 @@ char getUsesSound() {
 
 
 
+/*
 // gets the next buffer-full of sound samples from the game engine
 // inBuffer should be filled with stereo Sint16 samples, little endian,
 //    left-right left-right ....
@@ -1559,7 +1563,7 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     delete [] leftMix;
     delete [] rightMix;
     }
-
+*/
 
 
 
