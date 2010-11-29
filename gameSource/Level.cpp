@@ -2178,34 +2178,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    
-
-
-    // draw walls
-    if( mDrawFloorEdges )
-    for( int y=yVisStart; y<=yVisEnd; y++ ) {
-        for( int x=xVisStart; x<=xVisEnd; x++ ) {
-            if( mWallFlags[y][x] == 2 ) {
-                Color *c = &( mGridColors[mSquareIndices[y][x]] );
-                
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-            
-                drawSquare( sGridWorldSpots[y][x], 0.5 );
-                }
-            }
-        }
-    
 
     double edgeFade = 0;
     
     
     if( mDrawFloorEdges ) {
-        Color c = mColors.primary.elements[3];
-        setDrawColor( c.r,
-                      c.g,
-                      c.b, 1 );
         
         double maxDistance = 5;
         
@@ -2249,26 +2226,53 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 mEdgeFadeIn += 0.01 * frameRateFactor;
                 }
             }
+        }
+    
+    
 
-        if( edgeFade > 0 ) {
-            // draw edges at full opacity
-            // we draw bitmap below over top to cause edges to fade in
-            // draw floor edges
-            for( int y=yVisStart; y<=yVisEnd; y++ ) {
-                for( int x=xVisStart; x<=xVisEnd; x++ ) {
-                    if( mWallFlags[y][x] == 1 &&
-                        mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
-                        
-                        drawSquare( sGridWorldSpots[y][x], 0.5625 );
-                        }
-                    }
+
+    // draw walls
+    if( edgeFade > 0 )
+    for( int y=yVisStart; y<=yVisEnd; y++ ) {
+        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+            if( mWallFlags[y][x] == 2 ) {
+                Color *c = &( mGridColors[mSquareIndices[y][x]] );
+                
+                setDrawColor( c->r,
+                              c->g,
+                              c->b, 1 );
+            
+                drawSquare( sGridWorldSpots[y][x], 0.5 );
                 }
             }
         }
     
 
+
+    if( edgeFade > 0 ) {
+        // draw edges at full opacity
+        // we draw bitmap below over top to cause edges to fade in
+
+        Color c = mColors.primary.elements[3];
+        setDrawColor( c.r,
+                      c.g,
+                      c.b, 1 );
+        
+        for( int y=yVisStart; y<=yVisEnd; y++ ) {
+            for( int x=xVisStart; x<=xVisEnd; x++ ) {
+                if( mWallFlags[y][x] == 1 &&
+                    mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
+                    
+                    drawSquare( sGridWorldSpots[y][x], 0.5625 );
+                    }
+                }
+            }
+        }
+    
+    
+
     // draw floor
-    if( mDrawFloorEdges )
+    if( edgeFade > 0 )
     for( int y=yVisStart; y<=yVisEnd; y++ ) {
         for( int x=xVisStart; x<=xVisEnd; x++ ) {
             if( mWallFlags[y][x] == 1 ) {
@@ -2284,7 +2288,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    if( !mDrawFloorEdges || edgeFade < 1 ) {
+    if( edgeFade < 1 ) {
         // fade this in over top as edges fade in
         doublePair pos = { -.5, 0.5 };
         
@@ -2307,20 +2311,24 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     // draw rise marker
-    Color *c = &( mColors.special );
-    setDrawColor( c->r,
-                  c->g,
-                  c->b, edgeFade );
-    drawSprite( riseMarker, mRiseWorldPos );
-    
-    if( mDoubleRisePositions ) {
-        drawSprite( riseMarker, mRiseWorldPos2 );
+    if( edgeFade > 0 ) {
+        Color *c = &( mColors.special );
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, edgeFade );
+        drawSprite( riseMarker, mRiseWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            drawSprite( riseMarker, mRiseWorldPos2 );
+            }
         }
+    
 
 
     
 
     // draw power-ups
+    if( edgeFade > 0 )
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
@@ -2332,10 +2340,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             drawPowerUp( p->power, p->position, edgeFade );
             }
         }
-
+    
     
 
-    // draw bullets
+    // draw bullets (even if in blur mode)
     for( i=0; i<mBullets.size(); i++ ) {
         
         Bullet *b = mBullets.getElement( i );
@@ -2367,6 +2375,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     // draw enemies
+    if( edgeFade > 0 )
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
 
