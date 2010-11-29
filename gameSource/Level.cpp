@@ -32,6 +32,13 @@ extern CustomRandomSource randSource;
 extern double frameRateFactor;
 
 
+// track as both a full array, for fast lookup, and as
+// a vector of entries, for fast clearing
+static char blurHitMap[MAX_LEVEL_H][MAX_LEVEL_W];
+static SimpleVector<GridPos> blurHitEntries;
+
+
+
 double maxEnemySpeed = 0.05;
 
 
@@ -611,13 +618,16 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     if( !sGridWorldSpotsComputed ) {
         
         // precompute to-world coord mapping
+        // also clear blur hit map
         for( int y=0; y<MAX_LEVEL_H; y++ ) {
             for( int x=0; x<MAX_LEVEL_W; x++ ) {
                 
                 sGridWorldSpots[y][x].x = x - MAX_LEVEL_W/2;
                 sGridWorldSpots[y][x].y = y - MAX_LEVEL_H/2;
+                blurHitMap[y][x] = false;
                 }
             }
+
         sGridWorldSpotsComputed = true;
         }
 
@@ -2025,9 +2035,13 @@ void Level::drawSmoke( double inFade ) {
 
 
 
+static int blurCallCount;
+
 
 void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
                                      doublePair inWorldPos ) {
+
+    blurCallCount++;
     GridPos centerPos = getGridPos( inWorldPos );
     
     GridPos allSquarePos[9] =
@@ -2047,8 +2061,12 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
     for( int i=0; i<9; i++ ) {
         GridPos p = allSquarePos[i];
         
-        if( mWallFlags[p.y][p.x] > 0 ) {
+        if( mWallFlags[p.y][p.x] > 0 &&
+            !blurHitMap[p.y][p.x] ) {
             
+            blurHitMap[p.y][p.x] = true;
+            blurHitEntries.push_back( p );
+
             doublePair pWorld = sGridWorldSpots[p.y][p.x];
             
             
@@ -2070,6 +2088,7 @@ void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
             float cSum[3] = { 0, 0, 0 };
             float cCount = 0;
             
+
             for( int n=0; n<9; n++ ) {
                 
                 GridPos p2 = neighbors[n];
@@ -2376,6 +2395,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
     if( edgeFade < 1 ) {
+        double startTime = Time::getCurrentTime();
+        
         // draw all blurred squares around sprites
         
         // "blur" rise marker
@@ -2388,12 +2409,24 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         c2.b *= c.b;
         
         
-        drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );
+        blurCallCount = 0;
+
+        if( mRiseWorldPos.x >= visStart.x && mRiseWorldPos.y >= visStart.y &&
+            mRiseWorldPos.x <= visEnd.x && mRiseWorldPos.y <= visEnd.y ) {
+            
+            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );    
+            }
         
         if( mDoubleRisePositions ) {
+            if( mRiseWorldPos2.x >= visStart.x && 
+                mRiseWorldPos2.y >= visStart.y &&
+                mRiseWorldPos2.x <= visEnd.x && 
+                mRiseWorldPos2.y <= visEnd.y ) {
             
-            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
+                drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
+                }
             }
+        
 
 
         // blur power-ups
@@ -2433,6 +2466,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 
         drawBlurSquareOffCenter( c, 1 - edgeFade, mPlayerPos );
 
+        printf( "%d blur calls took %f ms\n", blurCallCount,
+                1000 * ( Time::getCurrentTime() - startTime ) );
+
+        // clear blur hit map for next time
+        for( int h=0; h<blurHitEntries.size(); h++ ) {
+            GridPos hPos = *( blurHitEntries.getElement( h ) );
+        
+            blurHitMap[ hPos.y ][ hPos.x ] = false;
+            }
+        blurHitEntries.deleteAll();
+        
         }
     
 
