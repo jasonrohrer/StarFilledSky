@@ -345,6 +345,41 @@ void Level::generateReproducibleData() {
         }
     
 
+    // place rise marker in random floor spot
+    // also away from player
+    char placed = false;
+
+    while( !placed ) {
+        int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
+        int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+
+        if( mWallFlags[y][x] == 1 ) {
+        
+            doublePair spot = sGridWorldSpots[y][x];
+            
+            doublePair playerSpot = {0,0};
+            
+            if( distance( spot, playerSpot ) > 5 ) {
+
+                placed = true;
+                mRisePosition.x = x;
+                mRisePosition.y = y;
+
+                mRiseWorldPos.x = mRisePosition.x - MAX_LEVEL_W/2;
+                mRiseWorldPos.y = mRisePosition.y - MAX_LEVEL_H/2;
+
+                mRiseWorldPos2 = mRiseWorldPos;
+                mRiseWorldPos2.x = - mRiseWorldPos2.x - 1;
+
+                mRisePosition2 = getGridPos( mRiseWorldPos2 );
+                }
+            }
+        }
+
+    mDoubleRisePositions = mSymmetrical;
+
+
+
 
 
     // make indexed versions of these for quick looping later
@@ -495,9 +530,76 @@ void Level::generateReproducibleData() {
         imageRGBA[ imageIndex++ ] = 255;        
         }
 
-    //mFullMapSprite = fillSprite( imageRGBA, imageSize, imageSize );
+    
     BoxBlurFilter filter( 1 );
     fullGridImage.filter( &filter );
+
+
+
+    // fill in rise position colors, box around rise marker
+    for( int dy=-1; dy<=1; dy++ ) {
+        for( int dx=-1; dx<=1; dx++ ) {
+
+            GridPos p = mRisePosition;
+            p.y += dy;
+            p.x += dx;
+            
+            int imageIndex = 
+                ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+                p.x + imageXOffset;
+    
+            fullGridChannels[0][imageIndex] += mColors.special.r;
+            fullGridChannels[0][imageIndex] /= 2;
+            fullGridChannels[1][imageIndex] += mColors.special.g;
+            fullGridChannels[1][imageIndex] /= 2;
+            fullGridChannels[2][imageIndex] += mColors.special.b;
+            fullGridChannels[2][imageIndex] /= 2;
+            
+            if( mDoubleRisePositions ) {
+                p = mRisePosition2;
+                p.y += dy;
+                p.x += dx;
+                
+                int imageIndex = 
+                    ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+                    p.x + imageXOffset;
+                
+                fullGridChannels[0][imageIndex] += mColors.special.r;
+                fullGridChannels[0][imageIndex] /= 2;
+                fullGridChannels[1][imageIndex] += mColors.special.g;
+                fullGridChannels[1][imageIndex] /= 2;
+                fullGridChannels[2][imageIndex] += mColors.special.b;
+                fullGridChannels[2][imageIndex] /= 2;
+                }
+            }
+        }
+
+    // centers over rise markers
+    GridPos p = mRisePosition;
+            
+    int imageIndex = 
+        ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+        p.x + imageXOffset;
+    
+    fullGridChannels[0][imageIndex] = mColors.special.r;
+    fullGridChannels[1][imageIndex] = mColors.special.g;
+    fullGridChannels[2][imageIndex] = mColors.special.b;
+                
+    if( mDoubleRisePositions ) {
+        p = mRisePosition2;
+        
+        int imageIndex = 
+            ( imageSize - (p.y + imageYOffset ) ) * imageSize + 
+            p.x + imageXOffset;
+        
+        fullGridChannels[0][imageIndex] = mColors.special.r;
+        fullGridChannels[1][imageIndex] = mColors.special.g;
+        fullGridChannels[2][imageIndex] = mColors.special.b;
+        }
+    
+
+        
+
     
     // threshold the alpha channel
     for( int p=0; p<imagePixels; p++ ) {
@@ -740,38 +842,6 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
         }
     
     
-    // place rise marker in random floor spot
-    // also away from player
-    char placed = false;
-
-    while( !placed ) {
-        int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
-        int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
-
-        if( mWallFlags[y][x] == 1 ) {
-        
-            doublePair spot = sGridWorldSpots[y][x];
-            
-            doublePair playerSpot = {0,0};
-            
-            if( distance( spot, playerSpot ) > 5 ) {
-
-                placed = true;
-                mRisePosition.x = x;
-                mRisePosition.y = y;
-
-                mRiseWorldPos.x = mRisePosition.x - MAX_LEVEL_W/2;
-                mRiseWorldPos.y = mRisePosition.y - MAX_LEVEL_H/2;
-
-                mRiseWorldPos2 = mRiseWorldPos;
-                mRiseWorldPos2.x = - mRiseWorldPos2.x - 1;
-
-                mRisePosition2 = getGridPos( mRiseWorldPos2 );
-                }
-            }
-        }
-
-    mDoubleRisePositions = inSymmetrical;
     
 
     
@@ -2035,168 +2105,6 @@ void Level::drawSmoke( double inFade ) {
 
 
 
-static int blurCallCount;
-
-
-void Level::drawBlurSquareOffCenter( Color inColor, float inFade,
-                                     doublePair inWorldPos ) {
-
-    blurCallCount++;
-    GridPos centerPos = getGridPos( inWorldPos );
-    
-    GridPos allSquarePos[9] =
-        {  {centerPos.x - 1, centerPos.y - 1},
-           {centerPos.x, centerPos.y - 1},
-           {centerPos.x + 1, centerPos.y - 1},
-           
-           {centerPos.x - 1, centerPos.y},
-           {centerPos.x, centerPos.y},
-           {centerPos.x + 1, centerPos.y},
-           
-           {centerPos.x - 1, centerPos.y + 1},
-           {centerPos.x, centerPos.y + 1},
-           {centerPos.x + 1, centerPos.y + 1}   };
-    
-    
-    for( int i=0; i<9; i++ ) {
-        GridPos p = allSquarePos[i];
-        
-        if( mWallFlags[p.y][p.x] > 0 &&
-            !blurHitMap[p.y][p.x] ) {
-            
-            blurHitMap[p.y][p.x] = true;
-            blurHitEntries.push_back( p );
-
-            doublePair pWorld = sGridWorldSpots[p.y][p.x];
-            
-            
-            // do true box blur based on neighbors
-            
-            GridPos neighbors[9] =
-                {  {p.x - 1, p.y - 1},
-                   {p.x, p.y - 1},
-                   {p.x + 1, p.y - 1},
-                   
-                   {p.x - 1, p.y},
-                   {p.x, p.y},
-                   {p.x + 1, p.y},
-                   
-                   {p.x - 1, p.y + 1},
-                   {p.x, p.y + 1},
-                   {p.x + 1, p.y + 1}   };
-
-            float cSum[3] = { 0, 0, 0 };
-            float cCount = 0;
-            
-
-            for( int n=0; n<9; n++ ) {
-                
-                GridPos p2 = neighbors[n];
-                
-                if( mWallFlags[p2.y][p2.x] > 0 ) {
-            
-                    int squareIndex = mSquareIndices[p2.y][p2.x];
-                    
-                    Color baseC = mGridColors[squareIndex];
-
-                    // check if something else is there
-                    if( equal( p2, mRisePosition ) ||
-                        equal( p2, mRisePosition2 ) ) {
-                        baseC = mColors.special;
-                        }
-                    else if( equal( p2, getGridPos( mPlayerPos ) ) ) {
-                        
-                        // weight based on how close player is to center
-                        // of square
-                        doublePair squareWorldPos = 
-                            sGridWorldSpots[p2.y][p2.x];
-            
-                        double dist = distance( squareWorldPos, mPlayerPos );
-            
-                        Color playerColor = 
-                            mPlayerSprite.getColors().primary.elements[0];
-
-                        Color *drawColor = 
-                            Color::linearSum( &baseC, 
-                                              &playerColor,
-                                              dist / (dist + 0.5) );
-                        
-                        baseC.r = drawColor->r;
-                        baseC.g = drawColor->g;
-                        baseC.b = drawColor->b;
-                        
-                        delete [] drawColor;
-                        }
-                    else {
-                        // check for enemies
-                        
-                        for( int k=0; k<mEnemies.size(); k++ ) {
-                            Enemy *e = mEnemies.getElement( k );
-                            
-                            if( equal( p2, getGridPos( e->position ) ) ) {
-                                // weight based on how close player is to 
-                                // center of square
-                                doublePair squareWorldPos = 
-                                    sGridWorldSpots[p2.y][p2.x];
-            
-                                double dist = distance( squareWorldPos, 
-                                                        e->position );
-            
-                                Color eColor = 
-                                    e->sprite->getColors().primary.elements[0];
-                        
-                                Color *drawColor = 
-                                    Color::linearSum( &baseC, 
-                                                      &eColor,
-                                                      dist / (dist + 0.5) );
-                        
-                                baseC.r = drawColor->r;
-                                baseC.g = drawColor->g;
-                                baseC.b = drawColor->b;
-                                
-                                delete [] drawColor;
-                                }
-                            }
-                        
-                        // check for power-ups
-                        for( int k=0; k<mPowerUpTokens.size(); k++ ) {
-                            PowerUpToken *token = 
-                                mPowerUpTokens.getElement( k );
-        
-                            if( equal( p2, token->gridPosition ) ) {
-                                
-                                baseC = getBlurredColor( token->power );
-                                }
-                            }
-                        }
-                
-                    cSum[0] += baseC.r;
-                    cSum[1] += baseC.g;
-                    cSum[2] += baseC.b;
-                    }
-                
-                // even count black, out-of-bounds squares
-                cCount ++;
-                }
-            
-            cSum[0] /= cCount;
-            cSum[1] /= cCount;
-            cSum[2] /= cCount;
-
-            
-            setDrawColor( cSum[0], cSum[1], cSum[2],
-                          inFade );
-            
-            drawSquare( pWorld, 0.5 );
-            }
-        }
-    
-        
-    }
-
-        
-        
-
 
         
 void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
@@ -2376,114 +2284,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    if( !mDrawFloorEdges || edgeFade == 0) {
-        doublePair pos = { -.5, 0.5 };
-        
-        setDrawColor( 1, 1, 1, 1 );
-        
-        
-        drawSprite( mFullMapSprite, pos );
-        }
-    else if( edgeFade < 1 ) {
-        // use stencil to avoid double-drawing of blurred squares
-        // don't use stencil if NOT drawing floor edges because
-        // 1) it isn't needed
-        // 2) a stencil is already active for our zoom portal
-        
-        startAddingToStencil( true, true );
-        }
-    
-
-    if( edgeFade < 1 ) {
-        double startTime = Time::getCurrentTime();
-        
-        // draw all blurred squares around sprites
-        
-        // "blur" rise marker
-        Color c = mColors.special;
-        Color c2 = getBlurredColor( riseMarker );
-
-        // rise sprite is gray
-        c2.r *= c.r;
-        c2.g *= c.g;
-        c2.b *= c.b;
-        
-        
-        blurCallCount = 0;
-
-        if( mRiseWorldPos.x >= visStart.x && mRiseWorldPos.y >= visStart.y &&
-            mRiseWorldPos.x <= visEnd.x && mRiseWorldPos.y <= visEnd.y ) {
-            
-            drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos );    
-            }
-        
-        if( mDoubleRisePositions ) {
-            if( mRiseWorldPos2.x >= visStart.x && 
-                mRiseWorldPos2.y >= visStart.y &&
-                mRiseWorldPos2.x <= visEnd.x && 
-                mRiseWorldPos2.y <= visEnd.y ) {
-            
-                drawBlurSquareOffCenter( c2, 1 - edgeFade, mRiseWorldPos2 );
-                }
-            }
-        
-
-
-        // blur power-ups
-        for( i=0; i<mPowerUpTokens.size(); i++ ) {
-            PowerUpToken *p = mPowerUpTokens.getElement( i );
-        
-            doublePair pos = p->position;
-            
-            if( pos.x >= visStart.x && pos.y >= visStart.y &&
-                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-                
-                Color c = getBlurredColor( p->power );
-                
-                drawBlurSquareOffCenter( c, 1 - edgeFade, p->position );
-                }
-            }
-
-
-        // enemy blur unerlyment
-        for( i=0; i<mEnemies.size(); i++ ) {
-            Enemy *e = mEnemies.getElement( i );
-
-            doublePair pos = e->position;
-        
-            if( pos.x >= visStart.x && pos.y >= visStart.y &&
-                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-                
-                Color c = e->sprite->getColors().primary.elements[0];
-                
-                drawBlurSquareOffCenter( c, 1 - edgeFade, pos );
-                }
-            }
-
-        
-        // player blur underlyment
-        c = mPlayerSprite.getColors().primary.elements[0];
-                
-        drawBlurSquareOffCenter( c, 1 - edgeFade, mPlayerPos );
-
-        printf( "%d blur calls took %f ms\n", blurCallCount,
-                1000 * ( Time::getCurrentTime() - startTime ) );
-
-        // clear blur hit map for next time
-        for( int h=0; h<blurHitEntries.size(); h++ ) {
-            GridPos hPos = *( blurHitEntries.getElement( h ) );
-        
-            blurHitMap[ hPos.y ][ hPos.x ] = false;
-            }
-        blurHitEntries.deleteAll();
-        
-        }
-    
-
-    if( mDrawFloorEdges && edgeFade < 1  && edgeFade > 0 ) {
-        
-        startDrawingThroughStencil( true );
-        
+    if( !mDrawFloorEdges || edgeFade < 1 ) {
         // fade this in over top as edges fade in
         doublePair pos = { -.5, 0.5 };
         
@@ -2491,8 +2292,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         
         drawSprite( mFullMapSprite, pos );
-        
-        stopStencil();
         }
     
 

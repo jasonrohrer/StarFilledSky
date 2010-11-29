@@ -242,11 +242,7 @@ class Level {
         
         void drawPlayer( double inFade );
         void drawMouse( double inFade );
-        void drawSmoke( double inFade );
-
-        void drawBlurSquareOffCenter( Color inColor, float inFade,
-                                      doublePair inWorldPos );
-        
+        void drawSmoke( double inFade );        
 
         
 
