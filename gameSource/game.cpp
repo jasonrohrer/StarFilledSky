@@ -305,11 +305,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 
 
     // demo:  fill grid with random
-    for( int i=0; i<200; i++ ) {
-        int p = randSource.getRandomBoundedInt( 0, PARTS - 1 );
-        int y = randSource.getRandomBoundedInt( 0, N - 1 );
-        int x = randSource.getRandomBoundedInt( 0, N - 1 );
-        noteToggles[p][y][x] = true;
+    for( int p=0; p<PARTS; p++ ) {
+        for( int x=0; x<N; x++ ) {
+            if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {        
+                // at most one note in each timbre-column
+                int y = randSource.getRandomBoundedInt( 0, N - 1 );
+                noteToggles[p][y][x] = true;
+                }
+            }
+        
         }
     
     setSoundPlaying( true );

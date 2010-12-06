@@ -747,7 +747,10 @@ void setDefaultMusicSounds() {
 
    
     // divide loudness amoung timbres to avoid clipping
-    double loudnessPerTimbre = 1.0 / maxNoteLoudnessInAColumn;
+    // for now, assume at most one simultaneous note per part
+    // double loudnessPerTimbre = 1.0 / maxNoteLoudnessInAColumn;
+    double loudnessPerTimbre = 1.0 / PARTS;// / maxNoteLoudnessInAColumn;
+    
     
     // further adjust loudness per channel here as we construct
     // each timbre.
