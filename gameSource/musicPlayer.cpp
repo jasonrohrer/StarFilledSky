@@ -742,7 +742,7 @@ void setDefaultMusicSounds() {
 
     // possible for all notes in a column to be on at user's request
     // and notes are 3 long at max (decays), so consider overlap
-    double  maxNoteLoudnessInAColumn = h * 3;
+    //double  maxNoteLoudnessInAColumn = h * 3;
     
 
    
@@ -757,7 +757,56 @@ void setDefaultMusicSounds() {
 
     //double t = Time::getCurrentTime();
     
-    
+    /*
+    musicTimbres[0] = new Timbre( sampleRate, 0.4 * loudnessPerTimbre,
+                                  keyFrequency / 2,
+                                  heightPerTimbre, sin );   
+ 
+    musicTimbres[1] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, harmonicSine );
+
+    musicTimbres[2] = new Timbre( sampleRate, 0.2 * loudnessPerTimbre,
+                                  keyFrequency * 2,
+                                  heightPerTimbre, sin );
+
+    musicTimbres[3] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
+
+    musicTimbres[4] = new Timbre( sampleRate, loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
+
+    musicTimbres[5] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+                                  keyFrequency / 4,
+                                  heightPerTimbre, harmonicSaw );
+
+
+    musicTimbres[6] = new Timbre( sampleRate, 0.4 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, harmonicSaw );
+
+    musicTimbres[7] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
+
+    musicTimbres[8] = new Timbre( sampleRate, 0.4 *   loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sawWave );
+    */
+
+    for( int i=0; i<PARTS-1; i++ ) {
+        musicTimbres[i] = new Timbre( sampleRate, 0.65 * loudnessPerTimbre,
+                                      keyFrequency/2,
+                                      heightPerTimbre, harmonicSine );
+        }
+    musicTimbres[PARTS-1] = new Timbre( sampleRate, 1 *   loudnessPerTimbre,
+                                        keyFrequency / 4,
+                                        heightPerTimbre, harmonicSaw );
+
+
+    /*
     // load defaults into first 3 banks.
     musicTimbres[0] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
                                   keyFrequency / 4,
@@ -772,13 +821,14 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre + 1, harmonicSine );
     
-
+                                  
     for( int i=3; i<PARTS; i++ ) {
         musicTimbres[i] = new Timbre( sampleRate, 0.65 * loudnessPerTimbre,
                                       keyFrequency/2,
                                       heightPerTimbre, harmonicSine );
         }
-    
+    */
+
     //exit( 0 );
     
     
@@ -793,6 +843,7 @@ void setDefaultMusicSounds() {
         "Max note length in song = %d\n", maxNoteLength );
 
 
+    /*
     // load defaults into first 3 banks.
     musicEnvelopes[0] = new Envelope( 0.02, 0.98, 0, 0,
                                       maxNoteLength,
@@ -816,6 +867,69 @@ void setDefaultMusicSounds() {
             maxNoteLength,
             gridStepDurationInSamples );
         }
+    */
+
+
+    musicEnvelopes[0] = new Envelope( 0.02, 0.98, 0, 0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[1] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[2] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[3] = new Envelope( 0.02, 0.98, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[4] = new Envelope( 0.9, 0.0, 1.0, 0.1,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[5] = new Envelope( 0.25, 0.5, 1.0, 0.25,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[6] = new Envelope( 0.25, 0.7, 1.0, 0.05,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[7] = new Envelope( 0.02, 0.98, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+    musicEnvelopes[8] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      gridStepDurationInSamples );
+
+
+    for( int i=9; i<PARTS-1; i++ ) {
+        musicEnvelopes[i] = new Envelope( //0.5, 0.5, 0.0, 0.0,
+            0.01, 0.99, 0.0, 0.0,
+            maxNoteLength,
+            maxNoteLength,
+            gridStepDurationInSamples );
+        }
+    
+    musicEnvelopes[PARTS-1] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                            maxNoteLength,
+                                            maxNoteLength,
+                                            gridStepDurationInSamples );
+
+
 
 
     for( int i=0; i<PARTS; i++ ) {
