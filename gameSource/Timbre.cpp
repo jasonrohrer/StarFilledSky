@@ -31,14 +31,21 @@ void setDefaultScale() {
     usedScaleNotes = 5;
     // major pentatonic
     //int halfstepMap[ SCALE_SIZE ] = { 0, 2, 4, 7, 9 };
+    halfstepMap[0] = 0;
+    halfstepMap[1] = 2;
+    halfstepMap[2] = 4;
+    halfstepMap[3] = 7;
+    halfstepMap[4] = 9;
     
     // minor pentatonic
     //int halfstepMap[ SCALE_SIZE ] = { 0, 3, 5, 7, 10 };
+    /*
     halfstepMap[0] = 0;
     halfstepMap[1] = 3;
     halfstepMap[2] = 5;
     halfstepMap[3] = 7;
     halfstepMap[4] = 10;
+    */
     }
 
 
@@ -207,6 +214,7 @@ Timbre::Timbre( int inSampleRate,
             
             // convert to int
             mWaveTable[i][s] = (Sint16)( 32767 * waveValue );
+            printf( "Wave table value %d\n", mWaveTable[i][s] );
             }
         
         delete [] tempTable;

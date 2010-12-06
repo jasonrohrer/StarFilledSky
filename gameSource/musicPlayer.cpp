@@ -35,8 +35,7 @@ int lastNoteColumnPlayed;
 
 
 
-int sampleRate = 22050;
-//int sampleRate = 11025;
+int sampleRate;
 
 
 
@@ -62,8 +61,8 @@ double musicLoudness = 1.0;
 
 
 // one grid step in seconds
-double gridStepDuration = 0.5;
-int gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
+double gridStepDuration;
+int gridStepDurationInSamples;
 
 
 void setSpeed( int inSpeed ) {
@@ -98,20 +97,14 @@ void setSpeed( int inSpeed ) {
 
 
 // c
-double v13KeyFrequency = 261.63;
+//double keyFrequency = 261.63;
 
 // actually, can't support high notes in the key of c w/out round-off errors
 // because this is a wavetable implementation, and when the tables get short,
 // the errors get huge
 // THIS, however, evenly divides our sample rate (22050)
 // which means that we get perfect, whole-number wave tables at octaves
-double v14KeyFrequency = 172.265625;
-
-double keyFrequency = v13KeyFrequency;
-
-// sets v13 frequency by default, UNTIL a timbre is changed (because only 
-// a v14 game would do that).
-// Thus, v13 music, when we're player, still sounds right.
+double keyFrequency = 172.265625;
 
 
 
@@ -611,11 +604,7 @@ double coefficientMix( double inT ) {
 
 void setTimbre( int inTimbreNumber,
                 double *inPartialCoefficients, int numCoefficients,
-                int inOctavesDown ) {
-    
-    // this must be a v14 game
-    keyFrequency = v14KeyFrequency;
-    
+                int inOctavesDown ) {    
 
     // set up coefficients used by mix function above
     numCoefficientsToUse = numCoefficients;
@@ -715,13 +704,6 @@ void setEnvelope( int inTimbreNumber,
 
 
 void setDefaultMusicSounds() {
-    // back to v13 default
-    keyFrequency = v13KeyFrequency;
-    
-
-    gridStepDuration = 0.5;
-    gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
-
 
     setDefaultScale();
     
@@ -774,8 +756,6 @@ void setDefaultMusicSounds() {
     
     
     // load defaults into first 3 banks.
-    // thus, music sent from v13 and earlier (if we'r Player) will
-    // play correctly
     musicTimbres[0] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
                                   keyFrequency / 4,
                                   heightPerTimbre, sawWave );   
@@ -811,9 +791,6 @@ void setDefaultMusicSounds() {
 
 
     // load defaults into first 3 banks.
-    // thus, music sent from v13 and earlier (if we'r Player) will
-    // play correctly
-
     musicEnvelopes[0] = new Envelope( 0.02, 0.98, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
@@ -878,11 +855,18 @@ void initMusicPlayer() {
 
     //entireGridDuraton = gridStepDuration * w;
     
+    sampleRate = getSampleRate();
+
+    
+    gridStepDuration = 0.25;
+    gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
+
+
+
 
     // jump ahead in stream, if needed
     streamSamples += gridStartOffset * gridStepDurationInSamples;
-    
-    
+
     int heightPerTimbre = h;
 
     AppLog::getLog()->logPrintf( 

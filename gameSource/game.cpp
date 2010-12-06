@@ -84,8 +84,8 @@ double moveSpeed = 0.125;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = false;
-unsigned int randSeed = 1285702441;
+char forceRepeatRandSeed = true;
+unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
 
@@ -305,7 +305,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 
 
     // demo:  fill grid with random
-    for( int i=0; i<20; i++ ) {
+    for( int i=0; i<200; i++ ) {
         int p = randSource.getRandomBoundedInt( 0, PARTS - 1 );
         int y = randSource.getRandomBoundedInt( 0, N - 1 );
         int x = randSource.getRandomBoundedInt( 0, N - 1 );
