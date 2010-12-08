@@ -28,6 +28,10 @@ char noteToggles[PARTS][N][N];
 int partLenghts[PARTS];
 
 
+double partStepDurations[PARTS];
+int partStepDurationsInSamples[PARTS];
+
+
 double partLoudness[PARTS];
 double partStereo[PARTS];
 
@@ -266,34 +270,39 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     int i;
 
 
-    // hop through all grid steps that *start* in this stream buffer
-    // add notes that start during this stream buffer
+    // for each part
+    for( int si=0; si<PARTS; si++ ) {
 
-    // how far into stream buffer before we hit our first grid step? 
-    int startOfFirstGridStep = streamSamples % gridStepDurationInSamples;
-    
-    if( startOfFirstGridStep != 0 ) {
-        startOfFirstGridStep = 
-            gridStepDurationInSamples - startOfFirstGridStep;
-        }
-    
 
-    // hop from start of grid step to start of next grid step
-    // ignore samples in between, since notes don't start there,
-    // and all we're doing right now is finding notes that start
-    for( i=startOfFirstGridStep; 
-         i<numSamples; 
-         i += gridStepDurationInSamples ) {
+        // hop through all grid steps that *start* in this stream buffer
+        // add notes that start during this stream buffer
         
-        // start of new grid position
-
-        // check for new notes that are starting
+        // how far into stream buffer before we hit our first grid step? 
+        int startOfFirstGridStep = 
+            streamSamples % partStepDurationsInSamples[si];
         
-        // map into our music image:
-        int x = ( streamSamples + i ) / gridStepDurationInSamples;
+        if( startOfFirstGridStep != 0 ) {
+            startOfFirstGridStep = 
+                partStepDurationsInSamples[si] - startOfFirstGridStep;
+            }
+    
+
+
+
+        // hop from start of grid step to start of next grid step
+        // ignore samples in between, since notes don't start there,
+        // and all we're doing right now is finding notes that start
+        for( i=startOfFirstGridStep; 
+             i<numSamples; 
+             i += partStepDurationsInSamples[si] ) {
+        
+            // start of new grid position
+            
+            // check for new notes that are starting
+            
+            // map into our music image:
+            int x = ( streamSamples + i ) / partStepDurationsInSamples[si];
           
-        // for each part
-        for( int si=0; si<PARTS; si++ ) {
                                 
                 
             // step in tone matrix for that part-step
@@ -370,7 +379,6 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     
 
     // loop over all current notes and add their samples to buffer
-        
     for( int n=0; n<currentlyPlayingNotes.size(); n++ ) {
             
         Note *note = *( currentlyPlayingNotes.getElement( n ) );
@@ -803,7 +811,7 @@ void setDefaultMusicSounds() {
                                       keyFrequency/2,
                                       heightPerTimbre, harmonicSine );
         }
-    musicTimbres[PARTS-1] = new Timbre( sampleRate, 1 *   loudnessPerTimbre,
+    musicTimbres[PARTS-1] = new Timbre( sampleRate, 0.65 *   loudnessPerTimbre,
                                         keyFrequency / 4,
                                         heightPerTimbre, harmonicSaw );
 
@@ -875,47 +883,47 @@ void setDefaultMusicSounds() {
     musicEnvelopes[0] = new Envelope( 0.02, 0.98, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[0] );
 
     musicEnvelopes[1] = new Envelope( 0.1, 0.9, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[1] );
 
     musicEnvelopes[2] = new Envelope( 0.5, 0.5, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[2] );
 
     musicEnvelopes[3] = new Envelope( 0.02, 0.98, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[3] );
 
     musicEnvelopes[4] = new Envelope( 0.9, 0.0, 1.0, 0.1,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[4] );
 
     musicEnvelopes[5] = new Envelope( 0.25, 0.5, 1.0, 0.25,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[5] );
 
     musicEnvelopes[6] = new Envelope( 0.25, 0.7, 1.0, 0.05,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[6] );
 
     musicEnvelopes[7] = new Envelope( 0.02, 0.98, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[7] );
 
     musicEnvelopes[8] = new Envelope( 0.1, 0.9, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      gridStepDurationInSamples );
+                                      partStepDurationsInSamples[8] );
 
 
     for( int i=9; i<PARTS-1; i++ ) {
@@ -923,14 +931,15 @@ void setDefaultMusicSounds() {
             0.01, 0.99, 0.0, 0.0,
             maxNoteLength,
             maxNoteLength,
-            gridStepDurationInSamples );
+            partStepDurationsInSamples[i] );
         }
     
-    musicEnvelopes[PARTS-1] = new Envelope( 0.1, 0.9, 0.0, 0.0,
-                                            maxNoteLength,
-                                            maxNoteLength,
-                                            gridStepDurationInSamples );
-
+    musicEnvelopes[PARTS-1] = 
+        new Envelope( 0.01, 0.99, 0.0, 0.0,
+                      maxNoteLength,
+                      maxNoteLength,
+                      partStepDurationsInSamples[PARTS-1] );
+    
 
 
 
@@ -983,6 +992,16 @@ void initMusicPlayer() {
     
     gridStepDuration = 0.25;
     gridStepDurationInSamples = (int)( gridStepDuration * sampleRate );
+
+    // set special durations for parts
+    for( int i=0; i<PARTS; i++ ) {
+        partStepDurations[i] = gridStepDuration;
+        partStepDurationsInSamples[i] = gridStepDurationInSamples;
+        }
+    // last part is special
+    partStepDurations[PARTS - 1] *= 4;
+    partStepDurationsInSamples[PARTS - 1] *= 4;
+    
 
 
 
