@@ -214,7 +214,6 @@ Timbre::Timbre( int inSampleRate,
             
             // convert to int
             mWaveTable[i][s] = (Sint16)( 32767 * waveValue );
-            printf( "Wave table value %d\n", mWaveTable[i][s] );
             }
         
         delete [] tempTable;
