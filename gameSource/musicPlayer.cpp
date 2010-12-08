@@ -759,7 +759,7 @@ void setDefaultMusicSounds() {
 
     //double t = Time::getCurrentTime();
     
-    /*
+    
     musicTimbres[0] = new Timbre( sampleRate, 0.4 * loudnessPerTimbre,
                                   keyFrequency / 2,
                                   heightPerTimbre, sin );   
@@ -796,9 +796,9 @@ void setDefaultMusicSounds() {
     musicTimbres[8] = new Timbre( sampleRate, 0.4 *   loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, sawWave );
-    */
+    
 
-    for( int i=0; i<PARTS-1; i++ ) {
+    for( int i=9; i<PARTS-1; i++ ) {
         musicTimbres[i] = new Timbre( sampleRate, 0.65 * loudnessPerTimbre,
                                       keyFrequency/2,
                                       heightPerTimbre, harmonicSine );
