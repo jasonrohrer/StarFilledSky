@@ -46,6 +46,30 @@ void setDefaultScale() {
     halfstepMap[3] = 7;
     halfstepMap[4] = 10;
     */
+
+    /*
+    // major
+    usedScaleNotes = 7;
+    halfstepMap[0] = 0;
+    halfstepMap[1] = 2;
+    halfstepMap[2] = 4;
+    halfstepMap[3] = 5;
+    halfstepMap[4] = 7;
+    halfstepMap[5] = 9;
+    halfstepMap[6] = 11;
+    */
+ 
+    /*
+    // minor
+    usedScaleNotes = 7;
+    halfstepMap[0] = 0;
+    halfstepMap[1] = 2;
+    halfstepMap[2] = 3;
+    halfstepMap[3] = 5;
+    halfstepMap[4] = 7;
+    halfstepMap[5] = 8;
+    halfstepMap[6] = 10;
+    */
     }
 
 

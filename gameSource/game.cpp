@@ -306,15 +306,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 
     // demo:  fill grid with random
     for( int p=0; p<PARTS; p++ ) {
-        for( int x=0; x<N; x++ ) {
-            if( //p==4 &&
-                randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {        
-                // at most one note in each timbre-column
-                int y = randSource.getRandomBoundedInt( 0, N - 1 );
-                noteToggles[p][y][x] = true;
+        partLenghts[p] = randSource.getRandomBoundedInt( 5, N );
+
+        int numNotesInPart = 0;
+        while( numNotesInPart < 2 ) {
+            for( int x=0; x<partLenghts[p]; x++ ) {
+                if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {        
+                    // at most one note in each timbre-column
+                    int y = randSource.getRandomBoundedInt( 0, N - 1 );
+                    noteToggles[p][y][x] = true;
+                    numNotesInPart++;
+                    }
                 }
             }
-        
+            
         }
     
     setSoundPlaying( true );

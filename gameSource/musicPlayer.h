@@ -10,6 +10,7 @@
 
 
 extern char noteToggles[PARTS][N][N];
+extern int partLenghts[PARTS];
 
 
 void initMusicPlayer();

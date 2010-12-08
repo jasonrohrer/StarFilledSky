@@ -23,13 +23,15 @@
 
 char noteToggles[PARTS][N][N];
 
+// some parts loop sooner or have silence at end (longer than N), 
+// allowing phase cycles between parts
+int partLenghts[PARTS];
+
 
 double partLoudness[PARTS];
 double partStereo[PARTS];
 
 
-// last column of notes that sounded within each current tone matrix
-int lastNoteColumnPlayed;
 
 
 
@@ -295,10 +297,10 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
                                 
                 
             // step in tone matrix for that part-step
-            int matrixX = x % w;
+            int matrixX = x % partLenghts[si];
             
-            lastNoteColumnPlayed = matrixX;
-            
+            // else silence when we go past end of matrix
+            if( matrixX < w )
             for( int y=0; y<h; y++ ) {
                     
                 Note *note = noteGrid[si][y][matrixX];
@@ -924,7 +926,7 @@ void setDefaultMusicSounds() {
             gridStepDurationInSamples );
         }
     
-    musicEnvelopes[PARTS-1] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+    musicEnvelopes[PARTS-1] = new Envelope( 0.1, 0.9, 0.0, 0.0,
                                             maxNoteLength,
                                             maxNoteLength,
                                             gridStepDurationInSamples );
@@ -1089,8 +1091,8 @@ void initMusicPlayer() {
                 noteToggles[i][y][x] = false;
                 }
             }
+        partLenghts[i] = w;
         }
-    lastNoteColumnPlayed = 0;
     
         
     // test
