@@ -935,9 +935,13 @@ void setDefaultMusicSounds() {
 
 
     for( int i=0; i<PARTS; i++ ) {
-        partLoudness[i] = 1;
+        partLoudness[i] = 0;
         partStereo[i] = 0.5;
         }
+    // player part and super-part
+    partLoudness[PARTS - 1] = 1;
+    partLoudness[PARTS - 2] = 1;
+    
     
 
     

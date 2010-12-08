@@ -10,9 +10,11 @@
 #include "RectPodRandomWalker.h"
 #include "DiagRandomWalker.h"
 #include "tutorial.h"
+#include "musicPlayer.h"
 
 
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/game/game.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/system/Time.h"
@@ -765,7 +767,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     
 
     // place enemies in random floor spots
-
+    int musicPartIndex = 0;
+    
     for( int i=0; i<10; i++ ) {
         
         // pick random floor spot until found one away from player
@@ -802,6 +805,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
 
                 PowerUpSet *p = new PowerUpSet( mLevelNumber - 1, true );
                 
+                RandomWalkerSet walkerSet;
+                
                 Enemy e = { spot, v, a, baseMoveDirection, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
@@ -811,8 +816,12 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             spot,
                             NULL,
                             false,
-                            randSource.getRandomBoundedDouble( 0.1, 0.8 ) };
-                        
+                            randSource.getRandomBoundedDouble( 0.1, 0.8 ),
+                            walkerSet,
+                            musicPartIndex };
+                
+                musicPartIndex ++;
+                
                 mEnemies.push_back( e );
                 hit = true;
                 }
@@ -1273,6 +1282,8 @@ void Level::generateEnemyDestructionSmoke( Enemy *inE ) {
 void Level::step( doublePair inViewCenter, double inViewSize ) {
     
     
+
+    
     // opt:  for certain steppable things,
     // don't step all of them, just visible portion
     
@@ -1692,6 +1703,14 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         }
     
 
+
+    lockAudio();
+    // zero-out parts to account for destroyed enemies
+    for( int p=0; p<PARTS-2; p++ ) {
+        partLoudness[p] = 0;
+        }
+    
+
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
@@ -1974,7 +1993,20 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         doublePair lookDir = normalize( sub( mPlayerPos, e->position ) );
         
         e->sprite->setLookVector( lookDir );
+
+        // music loudness for enemy part
+        double playerDist = distance( mPlayerPos, e->position );
+        if( playerDist < 8 ) {
+            partLoudness[ e->musicPartIndex ] = 1;
+            }
+        else {
+            playerDist -= 8;
+            partLoudness[ e->musicPartIndex ] = 
+                100.0 / ( 100 + playerDist * playerDist );
+            }
         }
+
+    unlockAudio();
 
     
     // player look

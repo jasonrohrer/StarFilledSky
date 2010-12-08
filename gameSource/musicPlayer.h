@@ -5,12 +5,16 @@
 
 
 // instrument parts
-// one extra part (SI) for when the phrase editor is open
+// one for each enemy, one for player, and one for whatever we're inside
 #define PARTS 12
 
 
 extern char noteToggles[PARTS][N][N];
 extern int partLenghts[PARTS];
+
+extern double partLoudness[PARTS];
+
+
 
 
 void initMusicPlayer();

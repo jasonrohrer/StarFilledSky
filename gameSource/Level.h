@@ -73,6 +73,7 @@ typedef struct Enemy {
         char circleDirection;
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;
+        int musicPartIndex;
     } Enemy;
 
 
