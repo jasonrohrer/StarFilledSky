@@ -999,8 +999,8 @@ void initMusicPlayer() {
         partStepDurationsInSamples[i] = gridStepDurationInSamples;
         }
     // last part is special
-    partStepDurations[PARTS - 1] *= 4;
-    partStepDurationsInSamples[PARTS - 1] *= 4;
+    partStepDurations[PARTS - 1] *= 2;
+    partStepDurationsInSamples[PARTS - 1] *= 2;
     
 
 

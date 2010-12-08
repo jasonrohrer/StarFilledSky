@@ -742,6 +742,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     mFrozen = false;
     mDrawFloorEdges = true;
     mEdgeFadeIn = 0.0f;
+    mLastComputedEdgeFade = 0.0f;
     
     mWindowSet = false;
     
@@ -2006,6 +2007,18 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         }
 
+    // further weight loudness based on edge fade, except for super-part
+    // and player part
+    
+    // first, set player part
+    partLoudness[PARTS-2] = 1;
+    
+    // now weight them all
+    for( int p=0; p<PARTS-1; p++ ) {
+        partLoudness[p] *= mLastComputedEdgeFade;
+        }
+
+
     unlockAudio();
 
     
@@ -2243,6 +2256,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+    mLastComputedEdgeFade = edgeFade;
     
 
 

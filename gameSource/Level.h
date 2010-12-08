@@ -341,6 +341,9 @@ class Level {
         float mEdgeFadeIn;
         
 
+        float mLastComputedEdgeFade;
+        
+
         char mWindowSet;
         WindowPosition mWindowPosition;
 
