@@ -897,19 +897,10 @@ void setDefaultMusicSounds() {
         }
 
 
-    // harmony part
+    // harmony part, copied
 
-    musicTimbres[PARTS-1] = new Timbre( sampleRate, 0.65 *   loudnessPerTimbre,
-                                        keyFrequency / 4,
-                                        heightPerTimbre, harmonicSaw );
-    
-    musicEnvelopes[PARTS-1] = 
-        new Envelope( 0.01, 0.99, 0.0, 0.0,
-                      maxNoteLength,
-                      maxNoteLength,
-                      partStepDurationsInSamples[PARTS-1] );
-    
-
+    musicTimbres[PARTS-1] = musicTimbres[PARTS-2];
+    musicEnvelopes[PARTS-1] = musicEnvelopes[PARTS-2];
 
 
     for( int i=0; i<PARTS; i++ ) {
@@ -1116,10 +1107,11 @@ void freeMusicPlayer() {
     
     int i;
     
-    for( i=0; i<numTimbres; i++ ) {
+    // last ones are pointers to previous envelopes/timbres, don't delete
+    for( i=0; i<numTimbres-1; i++ ) {
         delete musicTimbres[i];
         }
-    for( i=0; i<numEnvelopes; i++ ) {
+    for( i=0; i<numEnvelopes-1; i++ ) {
         delete musicEnvelopes[i];
         }
 
@@ -1139,4 +1131,12 @@ void freeMusicPlayer() {
     
     }
 
+
+
+
+void setCopiedPart( int inPartIndex ) {
     
+    musicTimbres[PARTS-1] = musicTimbres[inPartIndex];
+    musicEnvelopes[PARTS-1] = musicEnvelopes[inPartIndex];    
+    }
+

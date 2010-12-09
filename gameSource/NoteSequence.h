@@ -6,11 +6,12 @@
 typedef struct NoteSequence {
         char noteYIndex[ N ];
         unsigned char partLength;
+        int partIndex;
     } NoteSequence;
 
 
-NoteSequence generateRandomNoteSequence();
+NoteSequence generateRandomNoteSequence( int inPartIndex );
 
 
-// applies a sequence to a part number in the musicPlayer
-void setNoteSequence( NoteSequence inSequence, int inPartNumber );
+// applies a sequence to its part number in the musicPlayer
+void setNoteSequence( NoteSequence inSequence );

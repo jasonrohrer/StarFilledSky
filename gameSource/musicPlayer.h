@@ -9,7 +9,8 @@
 // one for player, and one for whatever we're inside
 #define PARTS 22
 
-
+// last part (PARTS-1) doesn't have its own timbre/envelope, but instead
+// uses pointers to one of other part's timber/envelope
 extern char noteToggles[PARTS][N][N];
 extern int partLengths[PARTS];
 
@@ -20,6 +21,11 @@ extern double partLoudness[PARTS];
 
 void initMusicPlayer();
 void freeMusicPlayer();
+
+
+// sets the part that the last part copies for timbre/envelope
+void setCopiedPart( int inPartIndex );
+
 
 
 

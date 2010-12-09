@@ -145,11 +145,14 @@ static void populateLevelRiseStack() {
     if( levelRiseStack.size() == 0 ) {
         // push one on to rise into
         ColorScheme c = currentLevel->getLevelColors();
+        NoteSequence s = currentLevel->getLevelNoteSequence();
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
-        NoteSequence freshNotes = generateRandomNoteSequence();
+        // copy player part's timbre/envelope
+        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2 );
         
-        levelRiseStack.push_back( new Level( &c, &freshColors,
+        levelRiseStack.push_back( new Level( &c, &s, 
+                                             &freshColors,
                                              &freshSet,
                                              &freshNotes,
                                              levelNumber + 1 ) );
@@ -167,11 +170,14 @@ static void populateLevelRiseStack() {
         levelRiseStack.deleteAll();
 
         ColorScheme c = nextAbove->getLevelColors();
+        NoteSequence s = nextAbove->getLevelNoteSequence();
+
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
-        NoteSequence freshNotes = generateRandomNoteSequence();
+        // copy player part's timbre/envelope
+        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2 );
         
-        levelRiseStack.push_back( new Level( &c, &freshColors,
+        levelRiseStack.push_back( new Level( &c, &s, &freshColors,
                                              &freshSet,
                                              &freshNotes,
                                              levelNumber + 1 ) );
@@ -285,7 +291,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initTutorial();
     
 
-    currentLevel = new Level( NULL, NULL, NULL, NULL, levelNumber );
+    currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );
     
     populateLevelRiseStack();
     
@@ -330,7 +336,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
         }
     */
     // load current level's music
-    currentLevel->pushAllMusicIntoPlayer( 0 );
+    currentLevel->pushAllMusicIntoPlayer();
 
     setSoundPlaying( true );
     }
@@ -572,18 +578,21 @@ void drawFrame() {
                 currentLevel->getEnteringPointNoteSequence( mousePos,
                                                             enteringType );
 
+            printf( "Entering sub-level that should have music part %d\n",
+                    musicNotes.partIndex );
+            
             int subLevelNumber =
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
 
             
             
-            currentLevel = new Level( NULL, &c, &walkerSet,
+            currentLevel = new Level( NULL, NULL, &c, &walkerSet,
                                       &musicNotes,
                                       subLevelNumber,
                                       symmetrical );
             
-            currentLevel->pushAllMusicIntoPlayer( 0 );
+            currentLevel->pushAllMusicIntoPlayer();
             
 #ifdef USE_MALLINFO            
             meminfo = mallinfo();
@@ -1029,7 +1038,7 @@ void drawFrame() {
             
             // switch to last level (zooming out)
             currentLevel = lastLevel;
-            currentLevel->pushAllMusicIntoPlayer( 0 );
+            currentLevel->pushAllMusicIntoPlayer();
             
             // don't unfreeze yet, still drawing final zoom-out frames
             //currentLevel->freezeLevel( false );

@@ -77,7 +77,6 @@ typedef struct Enemy {
         char circleDirection;
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;
-        int musicPartIndex;
         NoteSequence musicNotes;
     } Enemy;
 
@@ -109,7 +108,6 @@ typedef struct PowerUpToken {
         doublePair position;
         PowerUpSprite *sprite;
         PowerUpSet *subPowers;
-        int musicPartIndex;
         NoteSequence musicNotes;
     };
 
@@ -124,6 +122,7 @@ class Level {
         // Pass NULL to generate a fresh scheme and walker set and notes
         // destroyed by caller
         Level( ColorScheme *inPlayerColors=NULL,
+               NoteSequence *inPlayerMusicNotes = NULL,
                ColorScheme *inColors=NULL,
                RandomWalkerSet *inWalkerSet=NULL,
                NoteSequence *inMusicNotes=NULL,
@@ -185,6 +184,8 @@ class Level {
 
         ColorScheme getLevelColors();
         
+        NoteSequence getLevelNoteSequence();
+        
         
         // 0 player
         // 1 enemy
@@ -213,6 +214,8 @@ class Level {
         PlayerSprite *getPlayerSprite();
         
         PowerUpSet *getPlayerPowers();
+        
+        NoteSequence *getPlayerNoteSequence();
         
         
         void getPlayerHealth( int *outValue, int *outMax );
@@ -247,7 +250,7 @@ class Level {
                         int inEnemyIndex = -1 );
 
 
-        void pushAllMusicIntoPlayer( int inPartIndexOffset );
+        void pushAllMusicIntoPlayer();
         
 
 
@@ -291,11 +294,7 @@ class Level {
 
 
         // background notes for this level
-        NoteSequence mHarmonyNotes;
-        
-        // where our music parts are set in player
-        int mMusicPartIndexOffset;
-        
+        NoteSequence mHarmonyNotes;        
 
 
 

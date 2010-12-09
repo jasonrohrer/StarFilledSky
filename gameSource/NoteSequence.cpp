@@ -9,8 +9,9 @@ extern CustomRandomSource randSource;
 
 
 
-NoteSequence generateRandomNoteSequence() {
+NoteSequence generateRandomNoteSequence( int inPartIndex ) {
     NoteSequence s;
+    s.partIndex = inPartIndex;
     
     // s.partLength = randSource.getRandomBoundedInt( 5, N );
     
@@ -38,23 +39,23 @@ NoteSequence generateRandomNoteSequence() {
 
 
 // applies a sequence to a part number in the musicPlayer
-void setNoteSequence( NoteSequence inSequence, int inPartNumber ) {
+void setNoteSequence( NoteSequence inSequence ) {
     
     for( int x=0; x<N; x++ ) {
         
         // clear out existing notes in column
         for( int y=0; y<N; y++ ) {        
-            noteToggles[inPartNumber][y][x] = false;
+            noteToggles[inSequence.partIndex][y][x] = false;
             }
         
         if( inSequence.noteYIndex[x] != -1 ) {
             noteToggles
-                [inPartNumber]
+                [inSequence.partIndex]
                 [ (int)( inSequence.noteYIndex[x] ) ]
                 [x] = true;
             }            
         }
 
-    partLengths[inPartNumber] = inSequence.partLength;
+    partLengths[inSequence.partIndex] = inSequence.partLength;
     }
 

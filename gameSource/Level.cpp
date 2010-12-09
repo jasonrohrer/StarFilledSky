@@ -685,14 +685,14 @@ void Level::freeReproducibleData() {
 
 
 
-Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
+Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
+              ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
               NoteSequence *inMusicNotes,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ),
-          mPlayerMusicNotes( generateRandomNoteSequence() ) {
+          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ) {
 
     int health, max;
     getPlayerHealth( &health, &max );
@@ -743,11 +743,20 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
     if( inMusicNotes != NULL ) {
         mHarmonyNotes = *( inMusicNotes );
         }
-    // else randomly-generated notes
-    mHarmonyNotes = generateRandomNoteSequence();
-
-    mMusicPartIndexOffset = 0;
+    else {    
+        // else randomly-generated notes
+        // copy player timbre
+        mHarmonyNotes = generateRandomNoteSequence( PARTS - 2 );
+        }
     
+    if( inPlayerMusicNotes != NULL ) {
+        mPlayerMusicNotes = *( inPlayerMusicNotes );
+        }
+    else {
+        
+        // else randomly-generated notes
+        mPlayerMusicNotes = generateRandomNoteSequence( PARTS - 2 );
+        }    
 
 
     mFrozen = false;
@@ -830,8 +839,7 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             false,
                             randSource.getRandomBoundedDouble( 0.1, 0.8 ),
                             walkerSet,
-                            musicPartIndex,
-                            generateRandomNoteSequence() };
+                            generateRandomNoteSequence( musicPartIndex ) };
                 
                 musicPartIndex ++;
                 
@@ -917,8 +925,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                                                       subPowers,
                                                       startedEmpty ),
                                    subPowers,
-                                   musicPartIndex,
-                                   generateRandomNoteSequence() };
+                                   generateRandomNoteSequence( 
+                                       musicPartIndex ) };
                 
                 musicPartIndex++;
 
@@ -2015,11 +2023,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         // music loudness for enemy part
         double playerDist = distance( mPlayerPos, e->position );
         if( playerDist < 4 ) {
-            partLoudness[ e->musicPartIndex ] = 1;
+            partLoudness[ e->musicNotes.partIndex ] = 1;
             }
         else {
             playerDist -= 4;
-            partLoudness[ e->musicPartIndex ] = 
+            partLoudness[ e->musicNotes.partIndex ] = 
                 100.0 / ( 100 + playerDist * playerDist );
             }
         }
@@ -2031,11 +2039,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         double playerDist = distance( mPlayerPos, p->position );
         if( playerDist < 4 ) {
-            partLoudness[ p->musicPartIndex ] = 1;
+            partLoudness[ p->musicNotes.partIndex ] = 1;
             }
         else {
             playerDist -= 4;
-            partLoudness[ p->musicPartIndex ] = 
+            partLoudness[ p->musicNotes.partIndex ] = 
                 100.0 / ( 100 + playerDist * playerDist );
             }
         }
@@ -2727,6 +2735,11 @@ ColorScheme Level::getLevelColors() {
     }
 
 
+NoteSequence Level::getLevelNoteSequence() {
+    return mHarmonyNotes;
+    }
+
+
 
 ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                                            itemType inType ) {
@@ -2860,7 +2873,7 @@ NoteSequence Level::getEnteringPointNoteSequence( doublePair inPosition,
         }
     
     // default
-    return generateRandomNoteSequence();
+    return generateRandomNoteSequence( 0 );
     }
 
 
@@ -2928,6 +2941,13 @@ PlayerSprite *Level::getPlayerSprite() {
 PowerUpSet *Level::getPlayerPowers() {
     return mPlayerPowers;
     }
+
+
+
+NoteSequence *Level::getPlayerNoteSequence() {
+    return &mPlayerMusicNotes;
+    }
+
 
 
 
@@ -3262,26 +3282,37 @@ void Level::addBullet( doublePair inPosition,
 
 
 
-void Level::pushAllMusicIntoPlayer( int inPartIndexOffset ) {
-    mMusicPartIndexOffset = inPartIndexOffset;
-    
+void Level::pushAllMusicIntoPlayer() {
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         
-        setNoteSequence( e->musicNotes, 
-                         e->musicPartIndex + inPartIndexOffset );
+        setNoteSequence( e->musicNotes );
         }
 
     for( int i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( i );
         
-        setNoteSequence( t->musicNotes, 
-                         t->musicPartIndex + inPartIndexOffset );
+        setNoteSequence( t->musicNotes );
         }
 
 
-    setNoteSequence( mPlayerMusicNotes, 20 + inPartIndexOffset );
-    setNoteSequence( mHarmonyNotes, 21 + inPartIndexOffset );
+    setNoteSequence( mPlayerMusicNotes );
+    
+
+    if( mHarmonyNotes.partIndex != PARTS - 1 ) {
+        printf( "Copying timbre from %d into harmony slot\n", 
+                mHarmonyNotes.partIndex );
+        
+        // this is a reference to some other part
+        // copy timbre into harmony slot
+        setCopiedPart( mHarmonyNotes.partIndex );
+    
+        // now that we've done this once, set the harmony to its proper
+        // part index
+        mHarmonyNotes.partIndex = PARTS - 1;
+        }
+    
+    setNoteSequence( mHarmonyNotes );
     }
 
     
