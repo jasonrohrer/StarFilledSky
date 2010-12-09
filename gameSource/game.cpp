@@ -803,7 +803,7 @@ void drawFrame() {
         setViewCenterPosition( lastScreenViewCenter.x, 
                                lastScreenViewCenter.y );
 
-        if( ! shooting ) {
+        if( ! shooting && ! entering ) {
             // move mouse with screen
             mousePos.x += screenMoveDelta.x;
             mousePos.y += screenMoveDelta.y;
