@@ -2001,11 +2001,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
         // music loudness for enemy part
         double playerDist = distance( mPlayerPos, e->position );
-        if( playerDist < 8 ) {
+        if( playerDist < 4 ) {
             partLoudness[ e->musicPartIndex ] = 1;
             }
         else {
-            playerDist -= 8;
+            playerDist -= 4;
             partLoudness[ e->musicPartIndex ] = 
                 100.0 / ( 100 + playerDist * playerDist );
             }
@@ -2017,11 +2017,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
         double playerDist = distance( mPlayerPos, p->position );
-        if( playerDist < 8 ) {
+        if( playerDist < 4 ) {
             partLoudness[ p->musicPartIndex ] = 1;
             }
         else {
-            playerDist -= 8;
+            playerDist -= 4;
             partLoudness[ p->musicPartIndex ] = 
                 100.0 / ( 100 + playerDist * playerDist );
             }
