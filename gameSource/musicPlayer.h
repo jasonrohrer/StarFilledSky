@@ -11,7 +11,7 @@
 
 
 extern char noteToggles[PARTS][N][N];
-extern int partLenghts[PARTS];
+extern int partLengths[PARTS];
 
 extern double partLoudness[PARTS];
 

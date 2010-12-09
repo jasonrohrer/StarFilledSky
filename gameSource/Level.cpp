@@ -687,10 +687,12 @@ void Level::freeReproducibleData() {
 
 Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
+              NoteSequence *inMusicNotes,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ) {
+          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ),
+          mPlayerMusicNotes( generateRandomNoteSequence() ) {
 
     int health, max;
     getPlayerHealth( &health, &max );
@@ -737,6 +739,15 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
         mWalkerSet = *( inWalkerSet );
         }
     // else use randomly-generated walker set from stack
+
+    if( inMusicNotes != NULL ) {
+        mHarmonyNotes = *( inMusicNotes );
+        }
+    // else randomly-generated notes
+    mHarmonyNotes = generateRandomNoteSequence();
+
+    mMusicPartIndexOffset = 0;
+    
 
 
     mFrozen = false;
@@ -819,7 +830,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                             false,
                             randSource.getRandomBoundedDouble( 0.1, 0.8 ),
                             walkerSet,
-                            musicPartIndex };
+                            musicPartIndex,
+                            generateRandomNoteSequence() };
                 
                 musicPartIndex ++;
                 
@@ -905,7 +917,8 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                                                       subPowers,
                                                       startedEmpty ),
                                    subPowers,
-                                   musicPartIndex };
+                                   musicPartIndex,
+                                   generateRandomNoteSequence() };
                 
                 musicPartIndex++;
 
@@ -2815,6 +2828,43 @@ RandomWalkerSet Level::getEnteringPointWalkerSet( doublePair inPosition,
 
 
 
+
+NoteSequence Level::getEnteringPointNoteSequence( doublePair inPosition,
+                                                  itemType inType ) {
+    switch( inType ) {
+        case player: {
+
+            return mPlayerMusicNotes;
+            }
+            break;
+        case enemy: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                return e->musicNotes;
+                }
+            }
+            break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                PowerUpToken *t = mPowerUpTokens.getElement( i );
+                
+                return t->musicNotes;
+                }
+            }
+            break;            
+        }
+    
+    // default
+    return generateRandomNoteSequence();
+    }
+
+
+
 int Level::getEnteringPointSubLevel( doublePair inPosition,
                                      itemType inType ) {
     switch( inType ) {
@@ -3206,6 +3256,32 @@ void Level::addBullet( doublePair inPosition,
     mBullets.push_back( b );
     
 
+    }
+
+
+
+
+
+void Level::pushAllMusicIntoPlayer( int inPartIndexOffset ) {
+    mMusicPartIndexOffset = inPartIndexOffset;
+    
+    for( int i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        
+        setNoteSequence( e->musicNotes, 
+                         e->musicPartIndex + inPartIndexOffset );
+        }
+
+    for( int i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( i );
+        
+        setNoteSequence( t->musicNotes, 
+                         t->musicPartIndex + inPartIndexOffset );
+        }
+
+
+    setNoteSequence( mPlayerMusicNotes, 20 + inPartIndexOffset );
+    setNoteSequence( mHarmonyNotes, 21 + inPartIndexOffset );
     }
 
     

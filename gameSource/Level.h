@@ -10,6 +10,8 @@
 #include "PowerUpSprite.h"
 #include "GridPos.h"
 #include "RandomWalkerSet.h"
+#include "NoteSequence.h"
+
 
 #define MAX_LEVEL_W  128
 #define MAX_LEVEL_H  MAX_LEVEL_W
@@ -57,6 +59,8 @@ typedef struct BloodStain {
 
 
 
+
+
 typedef struct Enemy {
         doublePair position;
         doublePair velocity;
@@ -74,6 +78,7 @@ typedef struct Enemy {
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;
         int musicPartIndex;
+        NoteSequence musicNotes;
     } Enemy;
 
 
@@ -105,6 +110,7 @@ typedef struct PowerUpToken {
         PowerUpSprite *sprite;
         PowerUpSet *subPowers;
         int musicPartIndex;
+        NoteSequence musicNotes;
     };
 
 
@@ -115,11 +121,12 @@ class Level {
 
     public:
 
-        // Pass NULL to generate a fresh scheme and walker set
+        // Pass NULL to generate a fresh scheme and walker set and notes
         // destroyed by caller
         Level( ColorScheme *inPlayerColors=NULL,
                ColorScheme *inColors=NULL,
                RandomWalkerSet *inWalkerSet=NULL,
+               NoteSequence *inMusicNotes=NULL,
                int inLevelNumber = 0,
                char inSymmetrical=true );
 
@@ -187,6 +194,9 @@ class Level {
         RandomWalkerSet getEnteringPointWalkerSet( doublePair inPosition,
                                                    itemType inType );
         
+        NoteSequence getEnteringPointNoteSequence( doublePair inPosition,
+                                                   itemType inType );
+
         // level number of subLevel if entered here
         int getEnteringPointSubLevel( doublePair inPosition,
                                       itemType inType );
@@ -237,6 +247,10 @@ class Level {
                         int inEnemyIndex = -1 );
 
 
+        void pushAllMusicIntoPlayer( int inPartIndexOffset );
+        
+
+
     protected:
         
         
@@ -274,7 +288,16 @@ class Level {
         int mLevelNumber;
 
         char mSymmetrical;
+
+
+        // background notes for this level
+        NoteSequence mHarmonyNotes;
         
+        // where our music parts are set in player
+        int mMusicPartIndexOffset;
+        
+
+
 
         // dynamically allocate these to make them compactable
 
@@ -356,6 +379,7 @@ class Level {
         PlayerSprite mPlayerSprite;
         PowerUpSet *mPlayerPowers;
         RandomWalkerSet mPlayerWalkerSet;
+        NoteSequence mPlayerMusicNotes;
         
         int mPlayerHealth;
         

@@ -38,6 +38,7 @@ tutorial.cpp \
 musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
+NoteSequence.cpp \
 
 
 

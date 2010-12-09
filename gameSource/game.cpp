@@ -147,9 +147,11 @@ static void populateLevelRiseStack() {
         ColorScheme c = currentLevel->getLevelColors();
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
-
+        NoteSequence freshNotes = generateRandomNoteSequence();
+        
         levelRiseStack.push_back( new Level( &c, &freshColors,
                                              &freshSet,
+                                             &freshNotes,
                                              levelNumber + 1 ) );
         
         // center player in symmetrical level
@@ -167,9 +169,11 @@ static void populateLevelRiseStack() {
         ColorScheme c = nextAbove->getLevelColors();
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
+        NoteSequence freshNotes = generateRandomNoteSequence();
         
         levelRiseStack.push_back( new Level( &c, &freshColors,
                                              &freshSet,
+                                             &freshNotes,
                                              levelNumber + 1 ) );
         
         levelRiseStack.push_back( nextAbove );
@@ -281,7 +285,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initTutorial();
     
 
-    currentLevel = new Level( NULL, NULL, NULL, levelNumber );
+    currentLevel = new Level( NULL, NULL, NULL, NULL, levelNumber );
     
     populateLevelRiseStack();
     
@@ -304,15 +308,16 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initMusicPlayer();
 
 
+    /*
     // demo:  fill grid with random
     for( int p=0; p<PARTS; p++ ) {
-        //partLenghts[p] = randSource.getRandomBoundedInt( 5, N );
+        //partLengths[p] = randSource.getRandomBoundedInt( 5, N );
         // try no phase shifting...
-        partLenghts[p] = N;
+        partLengths[p] = N;
 
         int numNotesInPart = 0;
         while( numNotesInPart < 2 ) {
-            for( int x=0; x<partLenghts[p]; x++ ) {
+            for( int x=0; x<partLengths[p]; x++ ) {
                 if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {        
                     // at most one note in each timbre-column
                     int y = randSource.getRandomBoundedInt( 0, N - 1 );
@@ -323,7 +328,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
             }
             
         }
-    
+    */
+    // load current level's music
+    currentLevel->pushAllMusicIntoPlayer( 0 );
+
     setSoundPlaying( true );
     }
 
@@ -560,6 +568,10 @@ void drawFrame() {
                 currentLevel->getEnteringPointWalkerSet( mousePos,
                                                          enteringType );
 
+            NoteSequence musicNotes =
+                currentLevel->getEnteringPointNoteSequence( mousePos,
+                                                            enteringType );
+
             int subLevelNumber =
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
@@ -567,9 +579,12 @@ void drawFrame() {
             
             
             currentLevel = new Level( NULL, &c, &walkerSet,
+                                      &musicNotes,
                                       subLevelNumber,
                                       symmetrical );
-
+            
+            currentLevel->pushAllMusicIntoPlayer( 0 );
+            
 #ifdef USE_MALLINFO            
             meminfo = mallinfo();
             printf( "Level construction used %d kbytes (%d tot)\n",
@@ -1014,6 +1029,7 @@ void drawFrame() {
             
             // switch to last level (zooming out)
             currentLevel = lastLevel;
+            currentLevel->pushAllMusicIntoPlayer( 0 );
             
             // don't unfreeze yet, still drawing final zoom-out frames
             //currentLevel->freezeLevel( false );
