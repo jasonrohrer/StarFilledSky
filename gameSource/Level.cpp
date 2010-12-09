@@ -904,8 +904,11 @@ Level::Level( ColorScheme *inPlayerColors, ColorScheme *inColors,
                                    new PowerUpSprite( mainPower, 
                                                       subPowers,
                                                       startedEmpty ),
-                                   subPowers };
+                                   subPowers,
+                                   musicPartIndex };
                 
+                musicPartIndex++;
+
                 mPowerUpTokens.push_back( t );
                 }
             else {
@@ -1706,7 +1709,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
 
     lockAudio();
-    // zero-out parts to account for destroyed enemies
+    // zero-out parts to account for destroyed enemies and picked-up power
+    // tokens
     for( int p=0; p<PARTS-2; p++ ) {
         partLoudness[p] = 0;
         }
@@ -2007,6 +2011,23 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         }
 
+    
+    // set loudness for tokens, too
+    for( i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+        double playerDist = distance( mPlayerPos, p->position );
+        if( playerDist < 8 ) {
+            partLoudness[ p->musicPartIndex ] = 1;
+            }
+        else {
+            playerDist -= 8;
+            partLoudness[ p->musicPartIndex ] = 
+                100.0 / ( 100 + playerDist * playerDist );
+            }
+        }
+    
+    
     // further weight loudness based on edge fade, except for super-part
     // and player part
     

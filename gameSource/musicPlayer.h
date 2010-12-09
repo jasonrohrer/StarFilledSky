@@ -5,8 +5,9 @@
 
 
 // instrument parts
-// one for each enemy, one for player, and one for whatever we're inside
-#define PARTS 12
+// one for each enemy, one for each power-up token, 
+// one for player, and one for whatever we're inside
+#define PARTS 22
 
 
 extern char noteToggles[PARTS][N][N];

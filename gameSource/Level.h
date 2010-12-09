@@ -104,6 +104,7 @@ typedef struct PowerUpToken {
         doublePair position;
         PowerUpSprite *sprite;
         PowerUpSet *subPowers;
+        int musicPartIndex;
     };
 
 

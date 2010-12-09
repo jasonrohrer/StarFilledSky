@@ -306,7 +306,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 
     // demo:  fill grid with random
     for( int p=0; p<PARTS; p++ ) {
-        partLenghts[p] = randSource.getRandomBoundedInt( 5, N );
+        //partLenghts[p] = randSource.getRandomBoundedInt( 5, N );
+        // try no phase shifting...
+        partLenghts[p] = N;
 
         int numNotesInPart = 0;
         while( numNotesInPart < 2 ) {
