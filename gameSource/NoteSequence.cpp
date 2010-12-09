@@ -23,7 +23,7 @@ NoteSequence generateRandomNoteSequence() {
     int numNotesInPart = 0;
     while( numNotesInPart < 2 ) {
         for( int x=0; x<s.partLength; x++ ) {
-            if( randSource.getRandomBoundedInt( 0, 10 ) > 8 ) {        
+            if( randSource.getRandomBoundedInt( 0, 10 ) > 6 ) {        
                 // at most one note in each timbre-column
                 int y = randSource.getRandomBoundedInt( 0, N - 1 );
                 s.noteYIndex[x] = y;
