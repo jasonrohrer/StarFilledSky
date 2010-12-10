@@ -3282,7 +3282,9 @@ void Level::addBullet( doublePair inPosition,
 
 
 
-void Level::pushAllMusicIntoPlayer() {
+void Level::pushAllMusicIntoPlayer() {    
+    lockAudio();
+    
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         
@@ -3313,6 +3315,8 @@ void Level::pushAllMusicIntoPlayer() {
         }
     
     setNoteSequence( mHarmonyNotes );
+    
+    unlockAudio();    
     }
 
     

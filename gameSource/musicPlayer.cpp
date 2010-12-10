@@ -468,22 +468,40 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
             note->mTimbrePointer->mActiveNoteCount --;
             note->mEnvelopePointer->mActiveNoteCount --;
             
-            if( note->mTimbrePointer->mActiveNoteCount == 0 &&
-                musicTimbres[ note->mTimbreNumber ] != note->mTimbrePointer ) {
-                // this timbre is no longer used
-
-                oldTimbres.deleteElementEqualTo( note->mTimbrePointer );
-                delete note->mTimbrePointer;
+            if( note->mTimbrePointer->mActiveNoteCount == 0 ) {
                 
+                char stillUsed = false;
+                for( int i=0; i<numTimbres && !stillUsed; i++ ) {
+                    if( musicTimbres[ i ] == note->mTimbrePointer ) {
+                        stillUsed = true;
+                        }
+                    }
+
+                if( !stillUsed ) {
+                    // this timbre is no longer used
+
+                    oldTimbres.deleteElementEqualTo( note->mTimbrePointer );
+                    delete note->mTimbrePointer;
+                    }
                 }
 
-            if( note->mEnvelopePointer->mActiveNoteCount == 0 &&
-                musicEnvelopes[ note->mEnvelopeNumber ] != 
-                note->mEnvelopePointer ) {
-                // this envelope is no longer used
+            if( note->mEnvelopePointer->mActiveNoteCount == 0 ) {
+                
+                char stillUsed = false;
+                for( int i=0; i<numEnvelopes && !stillUsed; i++ ) {
+                    if( musicEnvelopes[ i ] == note->mEnvelopePointer ) {
+                        stillUsed = true;
+                        }
+                    }
 
-                oldEnvelopes.deleteElementEqualTo( note->mEnvelopePointer );
-                delete note->mEnvelopePointer;
+                if( !stillUsed ) {
+                    // this envelope is no longer used
+                    oldEnvelopes.deleteElementEqualTo( 
+                        note->mEnvelopePointer );
+                    
+                    delete note->mEnvelopePointer;
+                    }
+                
                 }
 
             // this was a copy
