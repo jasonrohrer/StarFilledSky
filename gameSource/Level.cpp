@@ -2052,11 +2052,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // further weight loudness based on edge fade, except for super-part
     // and player part
     
-    // first, set player part
-    partLoudness[PARTS-2] = 1;
     
-    // now weight them all
-    for( int p=0; p<PARTS-1; p++ ) {
+    // now weight them all, except player part and harmony part
+    for( int p=0; p<PARTS-2; p++ ) {
         partLoudness[p] *= mLastComputedEdgeFade;
         }
 
