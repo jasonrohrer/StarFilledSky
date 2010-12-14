@@ -89,7 +89,7 @@ double moveSpeed = 0.125;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = true;
+char forceRepeatRandSeed = false;
 unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
@@ -185,7 +185,7 @@ static void populateLevelRiseStack() {
         levelRiseStack.push_back( new Level( &c, &s, &freshColors,
                                              &freshSet,
                                              &freshNotes,
-                                             levelNumber + 1 ) );
+                                             levelNumber + 2 ) );
         
         levelRiseStack.push_back( nextAbove );
         
