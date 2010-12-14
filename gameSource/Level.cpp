@@ -18,6 +18,7 @@
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/system/Time.h"
+#include "minorGems/io/file/File.h"
 #include "minorGems/graphics/filters/BoxBlurFilter.h"
 
 #include <math.h>
@@ -516,11 +517,37 @@ void Level::generateReproducibleData() {
         }
 
 
+
     if( outputMapImages ) {
-        char *fileName = 
-            autoSprintf( "map_%d_%d.tga", MAX_LEVEL_W, mLevelNumber );
-        writeTGAFile( fileName, &fullGridImage );
-        delete [] fileName;
+        File mapImageDir( NULL, "mapImages" );
+    
+        if( !mapImageDir.exists() ) {
+            mapImageDir.makeDirectory();
+            }
+
+        // find next event recording file
+        int fileNumber = 0;
+        
+        char hit = true;
+
+        while( hit ) {
+            fileNumber++;
+            char *fileName = autoSprintf( "map%05d.tga", 
+                                          fileNumber );
+            File *file = mapImageDir.getChildFile( fileName );
+            
+            delete [] fileName;
+            
+            if( !file->exists() ) {
+                hit = false;
+            
+                char *fullFileName = file->getFullFileName();
+        
+                writeTGAFile( fullFileName, &fullGridImage );
+                delete [] fullFileName;
+                }
+            delete file;
+            }
         }
     
 
