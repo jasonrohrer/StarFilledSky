@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>A Table Made of Green Stone</title>
+<title>Inside a Star-filled Sky</title>
 </head>
 
 <body bgcolor="#000000" text="#FFFFFF"

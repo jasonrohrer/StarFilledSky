@@ -14,8 +14,14 @@ include( "header.php" );
 
 ?>
 
-
-Game info here...
+<br>
+<center>
+<font size=6>Inside a Star-filled Sky</font><br>
+a recursive game for one player by
+<a href="http://hcsoftware.sf.net/jason-rohrer">Jason Rohrer</a><br>
+<br>
+<br>
+Coming soon as a <i>Name Your Donation</i> download for Windows, Mac, and GNU/Linux.
 
 
 <?php include( "footer.php" ); ?>
