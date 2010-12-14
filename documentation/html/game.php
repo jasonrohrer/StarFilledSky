@@ -26,8 +26,7 @@ Coming soon as a <i>Name Your Donation</i> download for Windows, Mac, and GNU/Li
 
 <?php
 
-$mapFiles = glob( "map_*.png" );
-
+$mapFiles = glob( "maps/map*.png" );
 
 foreach( $mapFiles as $f ) {
     echo "<img width=\"512\" height=\"512\" src=\"$f\"><br>\n";
