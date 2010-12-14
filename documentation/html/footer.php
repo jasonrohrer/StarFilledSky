@@ -24,11 +24,11 @@ if( ! $nocounter ) {
 ?>
 
 <!-- Site Meter -->
-<script type="text/javascript" src="http://s34.sitemeter.com/js/counter.js?site=s34sleepisdeathmain">
+<script type="text/javascript" src="http://s34.sitemeter.com/js/counter.js?site=s47insideastarfilledskymain">
 </script>
 <noscript>
-<a href="http://s34.sitemeter.com/stats.asp?site=s34sleepisdeathmain" target="_top">
-<img src="http://s34.sitemeter.com/meter.asp?site=s34sleepisdeathmain" alt="Site Meter" border="0"/></a>
+<a href="http://s34.sitemeter.com/stats.asp?site=s47insideastarfilledskymain" target="_top">
+<img src="http://s34.sitemeter.com/meter.asp?site=s47insideastarfilledskymain" alt="Site Meter" border="0"/></a>
 </noscript>
 <!-- Copyright (c)2009 Site Meter -->
 
