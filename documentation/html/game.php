@@ -33,4 +33,11 @@ foreach( $mapFiles as $f ) {
     }
 ?>
 
+
+<br>
+
+[<a href="enter.zip">enter.zip</a>]
+
+</center>
+
 <?php include( "footer.php" ); ?>
