@@ -1,0 +1,1 @@
+mogrify -format png -filter point -resize 400% map*.tga

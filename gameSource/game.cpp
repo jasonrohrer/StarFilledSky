@@ -53,6 +53,11 @@
 #include "musicPlayer.h"
 
 
+// should we output level maps as images?
+char outputMapImages = false;
+
+
+
 // height of dashboard at top of screen
 double dashHeight = 1;
 
@@ -228,6 +233,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     
     printf( "Rand seed = %d\n", randSeed );
     
+
+    int outputMapsSetting = 
+        SettingsManager::getIntSetting( "outputMapImages", 0 );
+    
+    if( outputMapsSetting == 1 ) {
+        outputMapImages = true;
+        }
+    
+
 
     char *moveKeyMapping = 
         SettingsManager::getStringSetting( "upLeftDownRightKeys" );

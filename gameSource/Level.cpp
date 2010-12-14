@@ -23,7 +23,7 @@
 #include <math.h>
 
 
-//#define OUTPUT_LEVEL_TGA_FILES
+extern char outputMapImages;
 
 
 char Level::sGridWorldSpotsComputed;
@@ -515,6 +515,15 @@ void Level::generateReproducibleData() {
         fullGridChannels[3][imageIndex] = 1;
         }
 
+
+    if( outputMapImages ) {
+        char *fileName = 
+            autoSprintf( "map_%d_%d.tga", MAX_LEVEL_W, mLevelNumber );
+        writeTGAFile( fileName, &fullGridImage );
+        delete [] fileName;
+        }
+    
+
     
     BoxBlurFilter filter( 1 );
     fullGridImage.filter( &filter );
@@ -598,11 +607,6 @@ void Level::generateReproducibleData() {
     mFullMapSprite = fillSprite( &fullGridImage, false );
     
     
-#ifdef OUTPUT_LEVEL_TGA_FILES
-    char *fileName = autoSprintf( "map_%d_%d.tga", MAX_LEVEL_W, mLevelNumber );
-    writeTGAFile( fileName, &fullGridImage );
-    delete [] fileName;
-#endif
 
 
 

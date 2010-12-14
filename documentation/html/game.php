@@ -24,4 +24,14 @@ a recursive game for one player by
 Coming soon as a <i>Name Your Donation</i> download for Windows, Mac, and GNU/Linux.
 
 
+<?php
+
+$mapFiles = glob( "map_*.png" );
+
+
+foreach( $mapFiles as $f ) {
+    echo "<img width=\"512\" height=\"512\" src=\"$f\"><br>\n";
+    }
+?>
+
 <?php include( "footer.php" ); ?>
