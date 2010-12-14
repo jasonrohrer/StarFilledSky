@@ -57,6 +57,41 @@ static int getEnemyMaxHealth( PowerUpSet *inSet ) {
 
 
 
+static void outputLevelMapImage( Image *inMapImage ) {
+    File mapImageDir( NULL, "mapImages" );
+    
+    if( !mapImageDir.exists() ) {
+        mapImageDir.makeDirectory();
+        }
+
+    // find next event recording file
+    int fileNumber = 0;
+        
+    char hit = true;
+
+    while( hit ) {
+        fileNumber++;
+        char *fileName = autoSprintf( "map%05d.tga", 
+                                      fileNumber );
+        File *file = mapImageDir.getChildFile( fileName );
+            
+        delete [] fileName;
+            
+        if( !file->exists() ) {
+            hit = false;
+            
+            char *fullFileName = file->getFullFileName();
+        
+            writeTGAFile( fullFileName, inMapImage );
+            delete [] fullFileName;
+            }
+        delete file;
+        }
+    }
+
+
+
+
 void Level::generateReproducibleData() {
 
     if( mDataGenerated ) {
@@ -518,42 +553,18 @@ void Level::generateReproducibleData() {
 
 
 
-    if( outputMapImages ) {
-        File mapImageDir( NULL, "mapImages" );
-    
-        if( !mapImageDir.exists() ) {
-            mapImageDir.makeDirectory();
-            }
-
-        // find next event recording file
-        int fileNumber = 0;
-        
-        char hit = true;
-
-        while( hit ) {
-            fileNumber++;
-            char *fileName = autoSprintf( "map%05d.tga", 
-                                          fileNumber );
-            File *file = mapImageDir.getChildFile( fileName );
-            
-            delete [] fileName;
-            
-            if( !file->exists() ) {
-                hit = false;
-            
-                char *fullFileName = file->getFullFileName();
-        
-                writeTGAFile( fullFileName, &fullGridImage );
-                delete [] fullFileName;
-                }
-            delete file;
-            }
-        }
     
 
     
     BoxBlurFilter filter( 1 );
     fullGridImage.filter( &filter );
+
+
+    
+    // no eye version
+    if( outputMapImages ) {
+        outputLevelMapImage( &fullGridImage );
+        }
 
 
 
@@ -620,6 +631,12 @@ void Level::generateReproducibleData() {
         fullGridChannels[2][imageIndex] = mColors.special.b;
         }
     
+    
+    // eye version (not as interesting looking)
+    // leave soft edges before alpha threshold
+    //if( outputMapImages ) {
+    //    outputLevelMapImage( &fullGridImage );
+    //    }
 
         
 
