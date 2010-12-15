@@ -21,13 +21,12 @@ foreach( $screenFiles as $f ) {
 ?>
 
 
-
 <!-- Site Meter -->
-<script type="text/javascript" src="http://s47.sitemeter.com/js/counter.js?site=s47insideastarfilledskymain">
+<script type="text/javascript" src="http://s48.sitemeter.com/js/counter.js?site=s48insideastarfilledskyscreens">
 </script>
 <noscript>
-<a href="http://s47.sitemeter.com/stats.asp?site=s47insideastarfilledskymain" target="_top">
-<img src="http://s47.sitemeter.com/meter.asp?site=s47insideastarfilledskymain" alt="Site Meter" border="0"/></a>
+<a href="http://s48.sitemeter.com/stats.asp?site=s48insideastarfilledskyscreens" target="_top">
+<img src="http://s48.sitemeter.com/meter.asp?site=s48insideastarfilledskyscreens" alt="Site Meter" border="0"/></a>
 </noscript>
 <!-- Copyright (c)2009 Site Meter -->
 
