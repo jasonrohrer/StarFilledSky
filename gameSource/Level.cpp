@@ -2942,7 +2942,14 @@ int Level::getEnteringPointSubLevel( doublePair inPosition,
                     
                     powerSum += e->powers->mPowers[j].level;
                     }
-                return powerSum;
+
+                // ensure that level number always decrements
+                if( powerSum <= mLevelNumber - 1 ) {
+                    return powerSum;
+                    }
+                else {
+                    return mLevelNumber - 1;
+                    }
                 }
             }
             break;
@@ -2950,7 +2957,15 @@ int Level::getEnteringPointSubLevel( doublePair inPosition,
             int i;
     
             if( isPowerUp( inPosition, &i ) ) {
-                return mLevelNumber / POWER_SET_SIZE;
+                int returnValue = mLevelNumber / POWER_SET_SIZE;
+
+                // ensure that level number always decrements
+                if( returnValue <= mLevelNumber - 1 ) {
+                    return returnValue;
+                    }
+                else {
+                    return mLevelNumber - 1;
+                    }
                 }
             }
             break;            
