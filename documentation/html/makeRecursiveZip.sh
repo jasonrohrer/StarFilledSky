@@ -22,7 +22,10 @@ for(( i=${#MyString}; i>=1; i-- ))
   mkdir $char
   cp $nextFileToZip $char/
 
+  
+
   if [ $removeFileAfterZipping -eq 1 ]; then
+	  echo "next" > $char/next.txt
 	  rm $nextFileToZip
   fi
 
@@ -39,6 +42,7 @@ done
 
 mkdir enter
 cp $nextFileToZip enter/
+echo "next" > enter/next.txt
 
 if [ $removeFileAfterZipping -eq 1 ]; then
 	  rm $nextFileToZip
