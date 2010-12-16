@@ -94,7 +94,7 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
     float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.65 );
 
     secondary = makeColorSet( inSecondaryHue, secondarySaturation,
-                              secondaryValue, 0.25, 0.125 );
+                              secondaryValue, 0.35, 1.0f / 12 );
                               
 
     // half way between
