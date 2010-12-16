@@ -148,7 +148,13 @@ void Level::generateReproducibleData() {
     
     SimpleVector<Color> gridColorsWorking;
 
-    int xLimit = 2;
+
+    int numWallLayers = 3;
+    
+    // leave extra room for blur checking
+    int floorSeparationFromEdge = numWallLayers + 1;
+
+    int xLimit = floorSeparationFromEdge;
     int numFloorSquaresMax = MAX_FLOOR_SQUARES;
     int stepLimit = 4000;
     if( mSymmetrical ) {
@@ -170,10 +176,11 @@ void Level::generateReproducibleData() {
     
 
 
-    RandomWalker *walker = mWalkerSet.pickWalker( xLimit, 
-                                                  3, 
-                                                  MAX_LEVEL_W - 3,
-                                                  MAX_LEVEL_H - 3 );
+    RandomWalker *walker = 
+        mWalkerSet.pickWalker( xLimit, 
+                               floorSeparationFromEdge, 
+                               MAX_LEVEL_W - 1 - floorSeparationFromEdge,
+                               MAX_LEVEL_H - 1 - floorSeparationFromEdge );
     
 
     char done = false;
@@ -227,10 +234,11 @@ void Level::generateReproducibleData() {
         else if( batchDone ) {
             // can switch walkers
             delete walker;
-            walker = mWalkerSet.pickWalker( xLimit, 
-                                            3, 
-                                            MAX_LEVEL_W - 3,
-                                            MAX_LEVEL_H - 3 );
+            walker = mWalkerSet.pickWalker( 
+                xLimit, 
+                floorSeparationFromEdge, 
+                MAX_LEVEL_W - 1 - floorSeparationFromEdge,
+                MAX_LEVEL_H - 1 - floorSeparationFromEdge );
             }
         
 
@@ -296,7 +304,7 @@ void Level::generateReproducibleData() {
 
 
     // now walls around floor
-    // set loop boundaries so it's safe to check neighbors
+    // set loop boundaries above so it's safe to check all floor neighbors
     int wallColorIndex = 0;
 
     mNumWallSquares = 0;
@@ -349,6 +357,64 @@ void Level::generateReproducibleData() {
         }
 
 
+
+    // extra wall layers darker and darker
+    float darkFactor = 1;
+    
+    // one layer already created above
+    for( int r=0; r<numWallLayers-1; r++ ){
+        darkFactor *= 0.5;
+        
+        // now grow all walls by 1 unit thickness, expanding each wall into
+        // any empty neighbors
+        int wallNeighborsX[4] = { 1, -1, 0,  0 };
+        int wallNeighborsY[4] = { 0,  0, 1, -1 };
+    
+        int lastRoundWallSquares = mNumWallSquares;
+
+        for( int i=mNumFloorSquares; 
+             i<mNumFloorSquares + lastRoundWallSquares; i++ ) {
+        
+            int x = mIndexToGridMap[i].x;
+            int y = mIndexToGridMap[i].y;
+
+            for( int n=0; n<4; n++ ) {
+            
+                int nx = x + wallNeighborsX[n];
+                int ny = y + wallNeighborsY[n];
+            
+                if( mWallFlags[ny][nx] == 0 ) {
+                    // empty spot adjacent to this wall square
+                    
+                    // not accross sym line
+                    if( nx >= xStart || !mSymmetrical ) {
+
+                        mWallFlags[ny][nx] = 2;
+                    
+                        mSquareIndices[ny][nx] = mNumUsedSquares;
+                        mIndexToGridMap[mNumUsedSquares].x = nx;
+                        mIndexToGridMap[mNumUsedSquares].y = ny;
+                    
+                        mNumUsedSquares++;
+                    
+                        Color c = mColors.primary.elements[wallColorIndex];
+                        //c.r *= darkFactor;
+                        //c.g *= darkFactor;
+                        //c.b *= darkFactor;
+                        c.a *= darkFactor;
+                    
+                        gridColorsWorking.push_back( 
+                            c );
+                        wallColorIndex = (wallColorIndex + 1) % 3;
+                        
+                        mNumWallSquares ++;
+                        }
+                    }
+                }
+            }
+        }
+    
+    
 
 
     if( mSymmetrical ) {
@@ -480,7 +546,11 @@ void Level::generateReproducibleData() {
             mGridColorsBlurred[ mSquareIndices[y][x] ][i] = 
                 cSums[i] / numInSum;
             }
-        
+
+        // keep hard alpha
+        // to preserve outer wall layer darkness
+        mGridColorsBlurred[ mSquareIndices[y][x] ].a =
+            mHardGridColors[ mSquareIndices[y][x] ].a;
         }
 
     // copy over
@@ -538,6 +608,10 @@ void Level::generateReproducibleData() {
         mGridColors[i].b = 
             mHardGridColors[i].b * mix 
             + mSoftGridColors[i].b * counterMix;
+        
+        // set (and never change) hard alpha
+        // to preserve outer wall layer darkness
+        mGridColors[i].a = mHardGridColors[i].a;
         
         GridPos p = mIndexToGridMap[i];
         int imageIndex = 
@@ -2357,7 +2431,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 
                 setDrawColor( c->r,
                               c->g,
-                              c->b, 1 );
+                              c->b, c->a );
             
                 drawSquare( sGridWorldSpots[y][x], 0.5 );
                 }

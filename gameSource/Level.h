@@ -17,9 +17,9 @@
 #define MAX_LEVEL_H  MAX_LEVEL_W
 
 #define MAX_FLOOR_SQUARES 1000
-// 1000 max floor squares, plus max of 2 wall tiles per floor square, plus 6
-// (worst case)
-#define MAX_LEVEL_SQUARES 3006
+// 1000 max floor squares, plus max of 6 wall tiles per floor square, plus 30
+// as end cap (worst case)
+#define MAX_LEVEL_SQUARES 7030
 
 typedef struct Bullet {
         doublePair position;
