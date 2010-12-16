@@ -7,11 +7,12 @@
 extern CustomRandomSource randSource;
 
 
+// defaults to hue spread for analgous colors on a 12-segment color wheel
 static colorSet makeColorSet( float inCenterHue, float inSaturation,
-                              float inValue ) {
+                              float inValue, float inValueRadius,
+                              float inHueRadius = 1.0f / 12 ) {
 
-    // for analgous colors on a 12-segment color wheel
-    float offsetFromCenter = 1.0f / 12;
+    float offsetFromCenter = inHueRadius;
 
     colorSet c;
     
@@ -31,7 +32,7 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
         }
 
 
-    float leftValue = inValue * 1.5;
+    float leftValue = inValue * ( 1 + inValueRadius );
     if( leftValue > 1 ) {
         leftValue = 1;
         }
@@ -48,7 +49,7 @@ static colorSet makeColorSet( float inCenterHue, float inSaturation,
         rightHue -= 1;
         }
 
-    float rightValue = inValue * 0.5;
+    float rightValue = inValue * ( 1 - inValueRadius );
     
     newColor = Color::makeColorFromHSV( rightHue,
                                         inSaturation,
@@ -81,7 +82,7 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
 
 
     primary = makeColorSet( inPrimaryHue, primarySaturation,
-                            primaryValue );
+                            primaryValue, 0.5, 0.125 );
 
 
     
@@ -90,11 +91,11 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
                                                                    0.45 );
 
     // brighter
-    float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.85 );
+    float secondaryValue = randSource.getRandomBoundedDouble( 0.65, 0.65 );
 
     secondary = makeColorSet( inSecondaryHue, secondarySaturation,
-                              secondaryValue );
-    
+                              secondaryValue, 0.25, 0.125 );
+                              
 
     // half way between
     float specialHue = ( inPrimaryHue + inSecondaryHue ) / 2;
