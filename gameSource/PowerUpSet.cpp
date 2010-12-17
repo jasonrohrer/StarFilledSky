@@ -39,7 +39,13 @@ void drawPowerUp( PowerUp inPower,
                   doublePair inPosition, double inFade ) {
 
     setDrawColor( 1, 1, 1, inFade );
-    drawSprite( powerUpBorder, inPosition );
+    if( inPower.behavior ) {
+        drawSprite( enemyBehaviorBorder, inPosition );
+        }
+    else {
+        drawSprite( powerUpBorder, inPosition );
+        }
+    
 
     drawPowerUpCenter( inPower, inPosition, inFade );
     }

@@ -48,6 +48,7 @@ void freeSpriteBank();
     F(powerUpBulletDistance), \
     F(powerUpBounce), \
     F(powerUpExplode), \
+    F(enemyBehaviorBorder), \
     F(enemyBehaviorFollow), \
     F(enemyBehaviorDodge), \
     F(enemyBehaviorFast), \
