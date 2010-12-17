@@ -78,7 +78,7 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
     float primarySaturation = randSource.getRandomBoundedDouble( 0.85, 1 );
     
     // dark
-    float primaryValue = randSource.getRandomBoundedDouble( 0.45, 0.65 );
+    float primaryValue = randSource.getRandomBoundedDouble( 0.35, 0.65 );
 
 
     primary = makeColorSet( inPrimaryHue, primarySaturation,
