@@ -2601,7 +2601,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                           pos.y + 0.3125 );
             
     
-                setDrawColor( 1, 0, 0, fade );
+                setDrawColor( 0.85, 0, 0, fade );
                 drawRect( pos.x -0.4375, 
                           pos.y + 0.4375,
                           pos.x - 0.4375 + 0.875 * healthFraction, 

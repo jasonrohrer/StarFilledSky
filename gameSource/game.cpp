@@ -463,7 +463,7 @@ void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
               inBarLeftEdge.y + 0.125 );
 
     
-    setDrawColor( 1, 0, 0, inFade );
+    setDrawColor( 0.85, 0, 0, inFade );
     drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y - 0.125, 
               inBarLeftEdge.x + 0.125 + 1.75 * inHealthFraction, 
               inBarLeftEdge.y + 0.125 );
