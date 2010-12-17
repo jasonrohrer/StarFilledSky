@@ -1857,7 +1857,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     for( int p=0; p<PARTS-2; p++ ) {
         partLoudness[p] = 0;
         }
-    
+    double loudnessFalloffFactor = 40;
+
+
 
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
@@ -2150,7 +2152,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         else {
             playerDist -= 4;
             partLoudness[ e->musicNotes.partIndex ] = 
-                100.0 / ( 100 + playerDist * playerDist );
+                loudnessFalloffFactor / 
+                ( loudnessFalloffFactor + playerDist * playerDist );
             }
         }
 
@@ -2166,7 +2169,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         else {
             playerDist -= 4;
             partLoudness[ p->musicNotes.partIndex ] = 
-                100.0 / ( 100 + playerDist * playerDist );
+                loudnessFalloffFactor / 
+                ( loudnessFalloffFactor + playerDist * playerDist );
             }
         }
     
