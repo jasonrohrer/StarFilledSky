@@ -82,7 +82,7 @@ void ColorScheme::populateScheme( float inPrimaryHue, float inSecondaryHue ) {
 
 
     primary = makeColorSet( inPrimaryHue, primarySaturation,
-                            primaryValue, 0.5, 0.125 );
+                            primaryValue, 0.5, 1.0f / 12 );
 
 
     
