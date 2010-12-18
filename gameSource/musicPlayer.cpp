@@ -254,7 +254,7 @@ void restartMusic() {
 // for testing timbre set
 // call from audio callback to override whatever notes/volumes external
 // program has been setting
-int startTestPart = 8;
+int startTestPart = 0;
 void setTestTones() {
     
     // let each part run for a full grid length before switching parts
@@ -262,7 +262,7 @@ void setTestTones() {
     // assume all parts are same length
     int currentTestPart = 
         startTestPart + 
-        streamSamples / ( partStepDurationsInSamples[0] * (w/2) );
+        streamSamples / ( partStepDurationsInSamples[startTestPart] * (w/2) );
     
     // wrap
     // last part is a copy slot, skip it
@@ -297,7 +297,7 @@ void setTestTones() {
 void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     
     // turn on to override externally set notes for testing
-    //setTestTones();
+    setTestTones();
     
 
     // 2 bytes for each channel of stereo sample
@@ -1018,8 +1018,8 @@ void setDefaultMusicSounds() {
 
 
     musicTimbres[3] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, sin );
+                                   keyFrequency / 4,
+                                   heightPerTimbre, harmonicSine );
 
     musicEnvelopes[3] = new Envelope( 0.02, 0.25, 0.0, 0.0,
                                       maxNoteLength,
@@ -1027,7 +1027,7 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[3] );
 
 
-    musicTimbres[4] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[4] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                    keyFrequency,
                                    heightPerTimbre, harmonicSmoothedSquare );
 
@@ -1048,7 +1048,7 @@ void setDefaultMusicSounds() {
 
 
 
-    musicTimbres[6] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+    musicTimbres[6] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                    keyFrequency,
                                    heightPerTimbre, harmonicSaw );
     
@@ -1059,7 +1059,7 @@ void setDefaultMusicSounds() {
 
 
 
-    musicTimbres[7] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[7] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                    2 * keyFrequency,
                                    heightPerTimbre, harmonicSquare );
 
@@ -1079,7 +1079,7 @@ void setDefaultMusicSounds() {
                                        partStepDurationsInSamples[8] );
     
 
-    musicTimbres[9] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[9] = new Timbre( sampleRate, 0.8 * loudnessPerTimbre,
                                    0.5 * keyFrequency,
                                    heightPerTimbre, smoothedSquareWave );
     
