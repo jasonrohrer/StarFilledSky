@@ -297,7 +297,7 @@ void setTestTones() {
 void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     
     // turn on to override externally set notes for testing
-    //setTestTones();
+    setTestTones();
     
 
     // 2 bytes for each channel of stereo sample
@@ -887,7 +887,7 @@ void setDefaultMusicSounds() {
  
 
 
-    musicTimbres[11] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+    musicTimbres[11] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, harmonicSine );
     
@@ -899,8 +899,8 @@ void setDefaultMusicSounds() {
 
 
     musicTimbres[12] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency * 2,
-                                  heightPerTimbre, sin );
+                                  keyFrequency / 2,
+                                  heightPerTimbre, harmonicSine );
 
     musicEnvelopes[12] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
@@ -908,19 +908,19 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[12] );
 
 
-    musicTimbres[13] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[13] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, sin );
 
-    musicEnvelopes[13] = new Envelope( 0.02, 0.98, 0.0, 0.0,
+    musicEnvelopes[13] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[13] );
 
 
-    musicTimbres[14] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
+    musicTimbres[14] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+                                  keyFrequency / 4,
+                                  heightPerTimbre, sawWave );
 
     musicEnvelopes[14] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
@@ -930,7 +930,7 @@ void setDefaultMusicSounds() {
 
     musicTimbres[15] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                   keyFrequency / 4,
-                                  heightPerTimbre, harmonicSaw );
+                                  heightPerTimbre, harmonicSmoothedSquare );
 
     musicEnvelopes[15] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
@@ -939,7 +939,7 @@ void setDefaultMusicSounds() {
 
 
 
-    musicTimbres[16] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+    musicTimbres[16] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, harmonicSaw );
     
@@ -951,8 +951,8 @@ void setDefaultMusicSounds() {
 
 
     musicTimbres[17] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
+                                  keyFrequency / 4,
+                                  heightPerTimbre, harmonicSine );
 
     musicEnvelopes[17] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
@@ -960,7 +960,7 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[17] );
 
 
-    musicTimbres[18] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+    musicTimbres[18] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
                                   keyFrequency,
                                   heightPerTimbre, sawWave );
     
@@ -970,7 +970,7 @@ void setDefaultMusicSounds() {
                                       partStepDurationsInSamples[18] );
 
 
-    musicTimbres[19] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[19] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
                                   0.5 * keyFrequency,
                                   heightPerTimbre, smoothedSquareWave );
     
@@ -1197,7 +1197,7 @@ void initMusicPlayer() {
     // enemies are special
     for( int i=0; i<10; i++ ) {
         partStepDurations[i] *= 0.5;
-        partStepDurationsInSamples[i] *= 0.5;
+        partStepDurationsInSamples[i] /= 2;
         }
     
     // last part is special
