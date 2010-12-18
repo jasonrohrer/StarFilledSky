@@ -1858,7 +1858,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         partLoudness[p] = 0;
         }
     double loudnessFalloffFactor = 40;
-
+    double stereoSpread = 0.1;
+    
 
 
     // step enemies
@@ -2155,6 +2156,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 loudnessFalloffFactor / 
                 ( loudnessFalloffFactor + playerDist * playerDist );
             }
+        double vectorCosine = (e->position.x - mPlayerPos.x) / playerDist;
+        partStereo[ e->musicNotes.partIndex ] = 
+            vectorCosine * stereoSpread + 0.5;
         }
 
     
@@ -2172,6 +2176,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 loudnessFalloffFactor / 
                 ( loudnessFalloffFactor + playerDist * playerDist );
             }
+        double vectorCosine = (p->position.x - mPlayerPos.x) / playerDist;
+        partStereo[ p->musicNotes.partIndex ] = 
+            vectorCosine * stereoSpread + 0.5;
         }
     
     

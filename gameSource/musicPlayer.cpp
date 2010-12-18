@@ -1133,10 +1133,13 @@ void setDefaultMusicSounds() {
         partLoudness[i] = 0;
         partStereo[i] = 0.5;
         }
+    
     // player part and super-part
+    // constant loudness, and centered
     partLoudness[PARTS - 1] = 1;
     partLoudness[PARTS - 2] = 1;
-    
+    partStereo[PARTS - 1] = 0.5;
+    partStereo[PARTS - 2] = 0.5;
     
 
     
