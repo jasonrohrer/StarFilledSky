@@ -873,224 +873,225 @@ void setDefaultMusicSounds() {
 
 
 
-    // first, enemy parts, slower and more organic
+    // first, power-up parts, slower and more organic
     
     
-    musicTimbres[0] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[10] = new Timbre( sampleRate, loudnessPerTimbre,
                                   keyFrequency / 2,
                                   heightPerTimbre, sin );   
 
-    musicEnvelopes[0] = new Envelope( 0.02, 0.98, 0, 0,
+    musicEnvelopes[10] = new Envelope( 0.02, 0.98, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
-                                      partStepDurationsInSamples[0] );
- 
-
-
-    musicTimbres[1] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, harmonicSine );
-    
-    musicEnvelopes[1] = new Envelope( 0.1, 0.9, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[1] );
-
-
-
-    musicTimbres[2] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency * 2,
-                                  heightPerTimbre, sin );
-
-    musicEnvelopes[2] = new Envelope( 0.5, 0.5, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[2] );
-
-
-    musicTimbres[3] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
-
-    musicEnvelopes[3] = new Envelope( 0.02, 0.98, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[3] );
-
-
-    musicTimbres[4] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
-
-    musicEnvelopes[4] = new Envelope( 0.9, 0.0, 1.0, 0.1,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[4] );
-
-
-    musicTimbres[5] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                  keyFrequency / 4,
-                                  heightPerTimbre, harmonicSaw );
-
-    musicEnvelopes[5] = new Envelope( 0.25, 0.5, 1.0, 0.25,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[5] );
-
-
-
-    musicTimbres[6] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, harmonicSaw );
-    
-    musicEnvelopes[6] = new Envelope( 0.25, 0.7, 1.0, 0.05,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[6] );
-
-
-
-    musicTimbres[7] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sin );
-
-    musicEnvelopes[7] = new Envelope( 0.02, 0.98, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[7] );
-
-
-    musicTimbres[8] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                  keyFrequency,
-                                  heightPerTimbre, sawWave );
-    
-    musicEnvelopes[8] = new Envelope( 0.1, 0.9, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[8] );
-
-
-    musicTimbres[9] = new Timbre( sampleRate, loudnessPerTimbre,
-                                  0.5 * keyFrequency,
-                                  heightPerTimbre, smoothedSquareWave );
-    
-    musicEnvelopes[9] = new Envelope( 0.9, 0.1, 0.0, 0.0,
-                                      maxNoteLength,
-                                      maxNoteLength,
-                                      partStepDurationsInSamples[9] );
-
-
-
-
-    // power-up parts
-    // faster and more mechanical sounding
-    
-    musicTimbres[10] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency / 2,
-                                   heightPerTimbre, sin );   
-
-    musicEnvelopes[10] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[10] );
+                                      partStepDurationsInSamples[10] );
  
 
 
     musicTimbres[11] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSine );
+                                  keyFrequency,
+                                  heightPerTimbre, harmonicSine );
     
-    musicEnvelopes[11] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[11] );
+    musicEnvelopes[11] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[11] );
 
 
 
     musicTimbres[12] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency * 2,
-                                   heightPerTimbre, sin );
+                                  keyFrequency * 2,
+                                  heightPerTimbre, sin );
 
-    musicEnvelopes[12] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[12] );
+    musicEnvelopes[12] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[12] );
 
 
     musicTimbres[13] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, sin );
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
 
-    musicEnvelopes[13] = new Envelope( 0.01, 0.125, 0.0, 0.0,
+    musicEnvelopes[13] = new Envelope( 0.02, 0.98, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[13] );
 
 
     musicTimbres[14] = new Timbre( sampleRate, loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSmoothedSquare );
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
 
-    musicEnvelopes[14] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[14] );
+    musicEnvelopes[14] = new Envelope( 0.9, 0.0, 1.0, 0.1,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[14] );
 
 
     musicTimbres[15] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
-                                   keyFrequency / 4,
-                                   heightPerTimbre, harmonicSaw );
-    
-    musicEnvelopes[15] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[15] );
+                                  keyFrequency / 4,
+                                  heightPerTimbre, harmonicSaw );
+
+    musicEnvelopes[15] = new Envelope( 0.25, 0.5, 1.0, 0.25,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[15] );
 
 
 
     musicTimbres[16] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, harmonicSaw );
+                                  keyFrequency,
+                                  heightPerTimbre, harmonicSaw );
     
-    musicEnvelopes[16] = new Envelope( 0.01, 0.125, 0, 0,
-                                       maxNoteLength,
-                                       maxNoteLength,
-                                       partStepDurationsInSamples[16] );
+    musicEnvelopes[16] = new Envelope( 0.25, 0.7, 1.0, 0.05,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[16] );
 
 
 
     musicTimbres[17] = new Timbre( sampleRate, loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sin );
+
+    musicEnvelopes[17] = new Envelope( 0.02, 0.98, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[17] );
+
+
+    musicTimbres[18] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+                                  keyFrequency,
+                                  heightPerTimbre, sawWave );
+    
+    musicEnvelopes[18] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[18] );
+
+
+    musicTimbres[19] = new Timbre( sampleRate, loudnessPerTimbre,
+                                  0.5 * keyFrequency,
+                                  heightPerTimbre, smoothedSquareWave );
+    
+    musicEnvelopes[19] = new Envelope( 0.9, 0.1, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[19] );
+
+
+
+
+    // enemy parts
+    // faster and staccato
+    
+    musicTimbres[0] = new Timbre( sampleRate, loudnessPerTimbre,
+                                   keyFrequency / 2,
+                                   heightPerTimbre, sin );   
+
+    musicEnvelopes[0] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[0] );
+ 
+
+
+    musicTimbres[1] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, harmonicSine );
+    
+    musicEnvelopes[1] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[1] );
+
+
+
+    musicTimbres[2] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+                                   keyFrequency * 2,
+                                   heightPerTimbre, sin );
+
+    musicEnvelopes[2] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[2] );
+
+
+    musicTimbres[3] = new Timbre( sampleRate, loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, sin );
+
+    musicEnvelopes[3] = new Envelope( 0.02, 0.25, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[3] );
+
+
+    musicTimbres[4] = new Timbre( sampleRate, loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, harmonicSmoothedSquare );
+
+    musicEnvelopes[4] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[4] );
+
+
+    musicTimbres[5] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+                                   keyFrequency / 4,
+                                   heightPerTimbre, harmonicSaw );
+    
+    musicEnvelopes[5] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[5] );
+
+
+
+    musicTimbres[6] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, harmonicSaw );
+    
+    musicEnvelopes[6] = new Envelope( 0.02, 0.25, 0, 0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[6] );
+
+
+
+    musicTimbres[7] = new Timbre( sampleRate, loudnessPerTimbre,
                                    2 * keyFrequency,
                                    heightPerTimbre, harmonicSquare );
 
-    musicEnvelopes[17] = new Envelope( 0.01, 0.125, 0, 0,
+    musicEnvelopes[7] = new Envelope( 0.02, 0.25, 0, 0,
                                        maxNoteLength,
                                        maxNoteLength,
-                                       partStepDurationsInSamples[17] );
+                                       partStepDurationsInSamples[7] );
     
 
-    musicTimbres[18] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
+    musicTimbres[8] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
                                    keyFrequency,
                                    heightPerTimbre, sawWave );
     
-    musicEnvelopes[18] = new Envelope( 0.01, 0.125, 0, 0,
+    musicEnvelopes[8] = new Envelope( 0.02, 0.25, 0, 0,
                                        maxNoteLength,
                                        maxNoteLength,
-                                       partStepDurationsInSamples[18] );
+                                       partStepDurationsInSamples[8] );
     
 
-    musicTimbres[19] = new Timbre( sampleRate, loudnessPerTimbre,
+    musicTimbres[9] = new Timbre( sampleRate, loudnessPerTimbre,
                                    0.5 * keyFrequency,
                                    heightPerTimbre, smoothedSquareWave );
     
-    musicEnvelopes[19] = new Envelope( 0.01, 0.125, 0, 0,
+    musicEnvelopes[9] = new Envelope( 0.02, 0.25, 0, 0,
                                        maxNoteLength,
                                        maxNoteLength,
-                                       partStepDurationsInSamples[19] );
+                                       partStepDurationsInSamples[9] );
     
 
 
     // try swapping enemy and power parts
+    if(false)
     for( int i=0; i<10; i++ ) {
         Timbre *tempTimbre = musicTimbres[i];
         Envelope *tempEnv = musicEnvelopes[i];
