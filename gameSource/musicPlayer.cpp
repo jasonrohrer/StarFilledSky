@@ -254,7 +254,7 @@ void restartMusic() {
 // for testing timbre set
 // call from audio callback to override whatever notes/volumes external
 // program has been setting
-int startTestPart = 0;
+int startTestPart = 10;
 void setTestTones() {
     
     // let each part run for a full grid length before switching parts
@@ -297,7 +297,7 @@ void setTestTones() {
 void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
     
     // turn on to override externally set notes for testing
-    setTestTones();
+    //setTestTones();
     
 
     // 2 bytes for each channel of stereo sample
@@ -880,7 +880,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency / 2,
                                   heightPerTimbre, sin );   
 
-    musicEnvelopes[10] = new Envelope( 0.02, 0.98, 0, 0,
+    musicEnvelopes[10] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[10] );
@@ -891,7 +891,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre, harmonicSine );
     
-    musicEnvelopes[11] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+    musicEnvelopes[11] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[11] );
@@ -902,7 +902,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency * 2,
                                   heightPerTimbre, sin );
 
-    musicEnvelopes[12] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+    musicEnvelopes[12] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[12] );
@@ -922,7 +922,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre, sin );
 
-    musicEnvelopes[14] = new Envelope( 0.9, 0.0, 1.0, 0.1,
+    musicEnvelopes[14] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[14] );
@@ -932,7 +932,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency / 4,
                                   heightPerTimbre, harmonicSaw );
 
-    musicEnvelopes[15] = new Envelope( 0.25, 0.5, 1.0, 0.25,
+    musicEnvelopes[15] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[15] );
@@ -943,7 +943,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre, harmonicSaw );
     
-    musicEnvelopes[16] = new Envelope( 0.25, 0.7, 1.0, 0.05,
+    musicEnvelopes[16] = new Envelope( 0.2, 0.8, 0, 0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[16] );
@@ -954,7 +954,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre, sin );
 
-    musicEnvelopes[17] = new Envelope( 0.02, 0.98, 0.0, 0.0,
+    musicEnvelopes[17] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[17] );
@@ -964,7 +964,7 @@ void setDefaultMusicSounds() {
                                   keyFrequency,
                                   heightPerTimbre, sawWave );
     
-    musicEnvelopes[18] = new Envelope( 0.1, 0.9, 0.0, 0.0,
+    musicEnvelopes[18] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[18] );
@@ -974,7 +974,7 @@ void setDefaultMusicSounds() {
                                   0.5 * keyFrequency,
                                   heightPerTimbre, smoothedSquareWave );
     
-    musicEnvelopes[19] = new Envelope( 0.9, 0.1, 0.0, 0.0,
+    musicEnvelopes[19] = new Envelope( 0.2, 0.8, 0.0, 0.0,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[19] );
