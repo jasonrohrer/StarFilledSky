@@ -2286,7 +2286,7 @@ void Level::drawSmoke( double inFade ) {
                 setDrawColor( 1, 1, 1, fade );
                 break;
             case 2:
-                setDrawColor( 1, 0, 0, fade * 2 );
+                setDrawColor( 0.85, 0, 0, fade * 2 );
                 break;
             case 3:
                 setDrawColor( s->enemyColor.r, 
