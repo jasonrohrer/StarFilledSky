@@ -166,7 +166,7 @@ class Note {
         // negative if we should wait before starting to play the note
         int mCurrentSampleNumber;
 
-        // duration in samples, set each time the note is playe
+        // duration in samples, set each time the note is played
         // incase speed changes
         int mNumSamples;
         
@@ -1379,6 +1379,14 @@ void freeMusicPlayer() {
 void setCopiedPart( int inPartIndex ) {
     
     musicTimbres[PARTS-1] = musicTimbres[inPartIndex];
-    musicEnvelopes[PARTS-1] = musicEnvelopes[inPartIndex];    
+    musicEnvelopes[PARTS-1] = musicEnvelopes[inPartIndex];  
+
+    
+    partStepDurations[PARTS-1] = partStepDurations[inPartIndex];
+    partStepDurationsInSamples[PARTS-1] = 
+        partStepDurationsInSamples[inPartIndex];
+    
+    partLengths[PARTS-1] = partLengths[inPartIndex];
+    
     }
 
