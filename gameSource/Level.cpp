@@ -1182,6 +1182,13 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                          GridPos inGoal, double inMoveSpeed ) {
     SimpleVector<pathSearchRecord> searchQueue;
     SimpleVector<pathSearchRecord> doneQueue;
+
+
+    // quick lookup of touched (either done or in search queue) squares
+    // indexed by floor square index number
+    char *touchedMap = new char[ mNumFloorSquares ];
+    memset( touchedMap, false, mNumFloorSquares );
+
             
     pathSearchRecord startRecord = 
         { inStart,
@@ -1192,6 +1199,9 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                 
     searchQueue.push_back( startRecord );
             
+
+    touchedMap[ mSquareIndices[ inStart.y ][ inStart.x ] ] = true;
+    
 
 
     char done = false;
@@ -1262,44 +1272,14 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                 if( mWallFlags[ neighbors[n].y ][ neighbors[n].x ]
                     == 1 ) {
                     // floor
-                            
-                    char foundInDone = false;
-                            
 
-                    for( int q=0; 
-                         q<doneQueue.size() && ! foundInDone; 
-                         q++ ) {
-                                
-                        pathSearchRecord *record = 
-                            doneQueue.getElement( q );
-                                
-                        if( equal( record->pos, neighbors[n] ) ) {
-                            foundInDone = true;
-                            }
-                        }
+                    int neighborSquareIndex = 
+                        mSquareIndices[ neighbors[n].y ][ neighbors[n].x ];
+                    
+                    char alreadyTouched = touchedMap[ neighborSquareIndex ];
                             
-                    char foundInSearch = false;
-                            
-                    if( !foundInDone ) {
-                                
-                        for( int q=0; 
-                             q<searchQueue.size() && 
-                                 ! foundInSearch; 
-                             q++ ) {
-                                
-                            pathSearchRecord *record = 
-                                searchQueue.getElement( q );
-                                    
-                            if( equal( record->pos, 
-                                       neighbors[n] ) ) {
-                                            
-                                foundInSearch = true;
-                                }
-                            }
-                        }
-                            
-                            
-                    if( !foundInDone && !foundInSearch ) {
+                    if( !alreadyTouched ) {
+                        
                         // add this neighbor
                         double dist = 
                             getGridDistance( neighbors[n], 
@@ -1312,6 +1292,8 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                                                      dist + cost,
                                                      predIndex };
                         searchQueue.push_back( nRecord );
+                        
+                        touchedMap[ neighborSquareIndex ] = true;
                         }
                             
                     }
@@ -1320,6 +1302,9 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
             }
         }
+
+    delete [] touchedMap;
+    
             
     // follow index to reconstruct path
     // last in done queue is best-reached goal node
@@ -1915,12 +1900,21 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 GridPos goal = getGridPos( mPlayerPos );
                 
                 if( !equal( start, goal ) ) {
-                    
+                    /*
+                    for( int t=0; t<100; t++ ) {
+
+                        GridPos targetGridPos = pathFind( start, e->position,
+                                                          goal,
+                                                          moveSpeed );
+                        }
+                    */
+                    double startTime = Time::getCurrentTime();
                     GridPos targetGridPos = pathFind( start, e->position,
                                                       goal,
                                                       moveSpeed );
+                    if( false )printf( "Path find for enemy %d took %f ms\n",
+                            i, ( Time::getCurrentTime() - startTime ) * 1000 );
                 
-                    
                     e->followNextWaypoint = 
                         sGridWorldSpots[ targetGridPos.y ]
                         [ targetGridPos.x ];
