@@ -1159,6 +1159,8 @@ typedef struct pathSearchRecord {
         // index of pred in done queue
         int predIndex;
         
+        // links to create structure of search queue
+        pathSearchRecord *nextSearchRecord;
 
     } pathSearchRecord;
 
@@ -1177,12 +1179,77 @@ char equal( GridPos inA, GridPos inB ) {
 
 
 
+typedef struct pathSearchQueue {
+        pathSearchRecord *head;
+    } pathSearchQueue;
+
+    
+
+// sorted insertion
+void insertSearchRecord( pathSearchQueue *inQueue, 
+                         pathSearchRecord *inRecordToInsert ) {
+    
+    // empty queue
+    if( inQueue->head == NULL ) {
+        inQueue->head = inRecordToInsert;
+        return;
+        }
+
+    // better than head
+    if( inQueue->head->total > inRecordToInsert->total ) {
+        inRecordToInsert->nextSearchRecord = inQueue->head;    
+        inQueue->head = inRecordToInsert;
+        return;
+        }
+    
+    // general case, search for spot to insert
+    
+    pathSearchRecord *currentRecord = inQueue->head;
+    pathSearchRecord *nextRecord = currentRecord->nextSearchRecord;
+    
+    double newRecordTotal = inRecordToInsert->total;
+
+    while( nextRecord != NULL ) {
+        
+        if( nextRecord->total > newRecordTotal ) {
+            
+            // insert here
+            inRecordToInsert->nextSearchRecord = nextRecord;
+            
+            currentRecord->nextSearchRecord = inRecordToInsert;
+            return;
+            }
+        else {
+            // keep going
+            currentRecord = nextRecord;
+            nextRecord = currentRecord->nextSearchRecord;
+            }
+        }
+    
+
+    // hit null, insert at end
+    currentRecord->nextSearchRecord = inRecordToInsert;
+    }
+
+
+
+
 
 GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld, 
                          GridPos inGoal, double inMoveSpeed ) {
-    SimpleVector<pathSearchRecord> searchQueue;
-    SimpleVector<pathSearchRecord> doneQueue;
 
+    // insertion-sorted queue of records waiting to be searched
+    pathSearchQueue recordsToSearch;
+
+    
+    // keep records here, even after we're done with them,
+    // to ensure they get deleted
+    SimpleVector<pathSearchRecord*> searchQueueRecords;
+
+
+    SimpleVector<pathSearchRecord> doneQueue;
+    
+    
 
     // quick lookup of touched (either done or in search queue) squares
     // indexed by floor square index number
@@ -1195,10 +1262,19 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
           0,
           getGridDistance( inStart, inGoal ),
           getGridDistance( inStart, inGoal ),
-          -1 };
-                
-    searchQueue.push_back( startRecord );
-            
+          -1,
+          NULL };
+
+    // can't keep pointers into a SimpleVector 
+    // (change as vector expands itself)
+    // push heap pointers into vector instead
+    pathSearchRecord *heapRecord = new pathSearchRecord( startRecord );
+    
+    searchQueueRecords.push_back( heapRecord );
+    
+    
+    recordsToSearch.head = heapRecord;
+
 
     touchedMap[ mSquareIndices[ inStart.y ][ inStart.x ] ] = true;
     
@@ -1207,24 +1283,15 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
     char done = false;
             
             
-    while( searchQueue.size() > 0 && !done ) {
-                
-        int bestIndex = -1;
-        double bestTotal = DBL_MAX;
-                
-        for( int q=0; q<searchQueue.size(); q++ ) {
-            pathSearchRecord *record = searchQueue.getElement( q );
-                    
-            if( record->total < bestTotal ) {
-                bestTotal = record->total;
-                bestIndex = q;
-                }
-            }
-                
+    //while( searchQueueRecords.size() > 0 && !done ) {
+    while( recordsToSearch.head != NULL && !done ) {
 
-        pathSearchRecord bestRecord = 
-            *( searchQueue.getElement( bestIndex ) );
-                
+        // head of queue is best
+        pathSearchRecord bestRecord = *( recordsToSearch.head );
+        
+        recordsToSearch.head = recordsToSearch.head->nextSearchRecord;
+
+
         if( false )
             printf( "Best record found:  "
                     "(%d,%d), cost %d, total %f, "
@@ -1232,16 +1299,13 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                     bestRecord.pos.x, bestRecord.pos.y,
                     bestRecord.cost, bestRecord.total,
                     bestRecord.predIndex, doneQueue.size() );
-                
 
-        searchQueue.deleteElement( bestIndex );
-                
-
+        
         doneQueue.push_back( bestRecord );
 
         int predIndex = doneQueue.size() - 1;
-                
 
+        
         if( equal( bestRecord.pos, inGoal ) ) {
             // goal record has lowest total score in queue
             done = true;
@@ -1268,7 +1332,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
             int cost = bestRecord.cost + 1;
 
             for( int n=0; n<4; n++ ) {
-                        
+                
                 if( mWallFlags[ neighbors[n].y ][ neighbors[n].x ]
                     == 1 ) {
                     // floor
@@ -1290,9 +1354,16 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                                                      cost,
                                                      dist,
                                                      dist + cost,
-                                                     predIndex };
-                        searchQueue.push_back( nRecord );
+                                                     predIndex,
+                                                     NULL };
+                        pathSearchRecord *heapRecord =
+                            new pathSearchRecord( nRecord );
                         
+                        searchQueueRecords.push_back( heapRecord );
+                        
+                        insertSearchRecord( 
+                            &recordsToSearch, heapRecord );
+
                         touchedMap[ neighborSquareIndex ] = true;
                         }
                             
@@ -1305,6 +1376,12 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
     delete [] touchedMap;
     
+    for( int i=0; i<searchQueueRecords.size(); i++ ) {
+        delete *( searchQueueRecords.getElement( i ) );
+        }
+    
+
+
             
     // follow index to reconstruct path
     // last in done queue is best-reached goal node
@@ -1900,21 +1977,23 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 GridPos goal = getGridPos( mPlayerPos );
                 
                 if( !equal( start, goal ) ) {
-                    /*
+                    
+                    double startTime = Time::getCurrentTime();
+                    
                     for( int t=0; t<100; t++ ) {
 
                         GridPos targetGridPos = pathFind( start, e->position,
                                                           goal,
                                                           moveSpeed );
                         }
-                    */
-                    double startTime = Time::getCurrentTime();
+                    printf( "100 Path finds for enemy"
+                            " %d took %f ms\n",
+                            i, ( Time::getCurrentTime() - startTime ) * 1000 );
+                
                     GridPos targetGridPos = pathFind( start, e->position,
                                                       goal,
                                                       moveSpeed );
-                    if( false )printf( "Path find for enemy %d took %f ms\n",
-                            i, ( Time::getCurrentTime() - startTime ) * 1000 );
-                
+                    
                     e->followNextWaypoint = 
                         sGridWorldSpots[ targetGridPos.y ]
                         [ targetGridPos.x ];
