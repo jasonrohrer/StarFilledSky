@@ -3331,7 +3331,22 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
                 }
             else {
                 // both hit
-                newPos = inStart;
+                
+                int intX = (int)rint( inStart.x );
+                if( velocityX > 0 ) {
+                    newPos.x = intX + 0.4375;
+                    }
+                else {
+                    newPos.x = intX - 0.4375;
+                    }
+
+                int intY = (int)rint( inStart.y );
+                if( velocityY > 0 ) {
+                    newPos.y = intY + 0.4375;
+                    }
+                else {
+                    newPos.y = intY - 0.4375;
+                    }
                 }
             }
         }
