@@ -2043,19 +2043,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 GridPos goal = getGridPos( mPlayerPos );
                 
                 if( !equal( start, goal ) ) {
-                    
-                    double startTime = Time::getCurrentTime();
-                    
-                    for( int t=0; t<100; t++ ) {
-
-                        GridPos targetGridPos = pathFind( start, e->position,
-                                                          goal,
-                                                          moveSpeed );
-                        }
-                    printf( "100 Path finds for enemy"
-                            " %d took %f ms\n",
-                            i, ( Time::getCurrentTime() - startTime ) * 1000 );
-                    
                     GridPos targetGridPos = pathFind( start, e->position,
                                                       goal,
                                                       moveSpeed );
