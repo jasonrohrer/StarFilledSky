@@ -86,6 +86,25 @@ double velocityY = 0;
 
 double moveSpeed = 0.125;
 
+// one true screen pixel (1/32)
+double moveAccel = 0.03125;
+//double moveAccel = 0.0625;
+//double moveAccel = 0.125;
+
+// as frame rate decreases, accel frames decrease, too
+// at full frame rate, we use four accel frames to reach speed
+// (reach speed on 4th frame after key press)
+// but by 1/4 framerate, we revert to instant-accel 
+//   (instant-accel means  moveAccel = moveSpeed)
+int numAccelFrames = 4;
+
+
+
+double accelX = 0;
+double accelY = 0;
+
+
+
 double frameRateFactor = 1;
 
 
@@ -218,6 +237,17 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
         }
     
     moveSpeed *= frameRateFactor;
+    
+    numAccelFrames = (int)( numAccelFrames / frameRateFactor );
+
+    if( numAccelFrames <= 0 ) {
+        numAccelFrames = 1;
+        }
+
+    moveAccel = moveSpeed / numAccelFrames;
+    
+    printf( "Player move speed = %f, acceleration = %f at framerate %d/s\n",
+            moveSpeed, moveAccel, inTargetFrameRate );
 
 
     tutorialMoveKeys = stringDuplicate( "W A S D" );
@@ -714,11 +744,51 @@ void drawFrame() {
 
 
 
+    velocityX += accelX;
+    if( velocityX > moveSpeed ) {
+        velocityX = moveSpeed;
+        }
+    else if( velocityX < -moveSpeed ) {
+        velocityX = -moveSpeed;
+        }
+    
+    if( accelX == 0 ) {
+        // slow down
+        if( velocityX > 0 ) {
+            velocityX -= moveAccel;
+            }
+        else if( velocityX < 0 ) {
+            velocityX += moveAccel;
+            }
+        }
+    
 
+
+    velocityY += accelY;
+    if( velocityY > moveSpeed ) {
+        velocityY = moveSpeed;
+        }
+    else if( velocityY < -moveSpeed ) {
+        velocityY = -moveSpeed;
+        }
+
+
+    if( accelY == 0 ) {
+        // slow down
+        if( velocityY > 0 ) {
+            velocityY -= moveAccel;
+            }
+        else if( velocityY < 0 ) {
+            velocityY += moveAccel;
+            }
+        }
+
+    
 
     doublePair velocity = { velocityX, velocityY };
     
     if( velocityX != 0 && velocityY != 0 ) {
+        
         // diagonal... slow it down so it's not faster than H or V move
         
         // this creates aliasing glitches in player position
@@ -726,9 +796,30 @@ void drawFrame() {
         
         // use closest fraction of 32 screen pixels:  3/32
         double componentVelocity = 0.09375 * frameRateFactor;
+        
 
-        velocity.x = velocity.x / moveSpeed * componentVelocity;
-        velocity.y = velocity.y / moveSpeed * componentVelocity;
+        // to avoid diagonal accel glitches, just use stronger velocity
+        // component until the other one catches up
+
+        if( fabs( velocityY ) == moveSpeed && 
+            fabs( velocityX ) == moveSpeed ) {
+            
+            velocity.x = velocity.x / moveSpeed * componentVelocity;
+            velocity.y = velocity.y / moveSpeed * componentVelocity;
+            }
+        else {
+            // leave weaker component unmodified
+            
+            if( fabs( velocityY ) > fabs( velocityX ) ) {
+                
+                velocity.y = velocity.y / moveSpeed * componentVelocity;
+                velocity.x = velocityX;
+                }
+            else {
+                velocity.x = velocity.x / moveSpeed * componentVelocity;
+                velocity.y = velocityY;
+                }
+            }        
         }
     
 
@@ -739,7 +830,7 @@ void drawFrame() {
     doublePair viewDelta = sub( newPlayerPos, playerPos );
     
     
-    //printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
+    // printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
     
     
 
@@ -1348,43 +1439,43 @@ static void movementKeyChange() {
     
     // new presses
     if( movementKeysDown[0] && ! lastMovementKeysDown[0] ) {
-        velocityY = moveSpeed;
+        accelY = moveAccel;
         tutorialKeyPressed( 0 );
         }
     else if( movementKeysDown[1] && ! lastMovementKeysDown[1] ) {
-        velocityY = -moveSpeed;
+        accelY = -moveAccel;
         tutorialKeyPressed( 1 );
         }
     // releases?
     else if( movementKeysDown[0] && ! movementKeysDown[1] ) {
-        velocityY = moveSpeed;
+        accelY = moveAccel;
         }
     else if( movementKeysDown[1] && ! movementKeysDown[0] ) {
-        velocityY = -moveSpeed;
+        accelY = -moveAccel;
         }
     else if( ! movementKeysDown[0] && ! movementKeysDown[1] ) {
-        velocityY = 0;
+        accelY = 0;
         }
     
 
     // new presses
     if( movementKeysDown[2] && ! lastMovementKeysDown[2] ) {
-        velocityX = moveSpeed;
+        accelX = moveAccel;
         tutorialKeyPressed( 2 );
         }
     else if( movementKeysDown[3] && ! lastMovementKeysDown[3] ) {
-        velocityX = -moveSpeed;
+        accelX = -moveAccel;
         tutorialKeyPressed( 3 );
         }
     // releases?
     else if( movementKeysDown[2] && ! movementKeysDown[3] ) {
-        velocityX = moveSpeed;
+        accelX = moveAccel;
         }
     else if( movementKeysDown[3] && ! movementKeysDown[2] ) {
-        velocityX = -moveSpeed;
+        accelX = -moveAccel;
         }
     else if( ! movementKeysDown[2] && ! movementKeysDown[3] ) {
-        velocityX = 0;
+        accelX = 0;
         }
 
 
