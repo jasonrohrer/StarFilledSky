@@ -1979,14 +1979,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    lockAudio();
-    // zero-out parts to account for destroyed enemies and picked-up power
-    // tokens
-    for( int p=0; p<PARTS-2; p++ ) {
-        partLoudness[p] = 0;
-        }
-    double loudnessFalloffFactor = 40;
-    double stereoSpread = 0.1;
+    
     
 
 
@@ -2280,7 +2273,26 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         doublePair lookDir = normalize( sub( mPlayerPos, e->position ) );
         
         e->sprite->setLookVector( lookDir );
+        }
 
+
+    // don't roll this into enemy behavior loop.
+    // don't want to block audio thread during enemy behavior calculations
+    lockAudio();
+
+    // zero-out parts to account for destroyed enemies and picked-up power
+    // tokens
+    for( int p=0; p<PARTS-2; p++ ) {
+        partLoudness[p] = 0;
+        }
+    double loudnessFalloffFactor = 40;
+    double stereoSpread = 0.1;
+
+    
+    // enemy loudness
+    for( i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        
         // music loudness for enemy part
         double playerDist = distance( mPlayerPos, e->position );
         if( playerDist < 4 ) {
@@ -2296,7 +2308,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         partStereo[ e->musicNotes.partIndex ] = 
             vectorCosine * stereoSpread + 0.5;
         }
-
+    
     
     // set loudness for tokens, too
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
