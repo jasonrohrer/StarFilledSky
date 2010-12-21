@@ -1423,18 +1423,27 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
     // next, walk forward through path as long as there is a straight-light,
     // unobstructed path from start pos to the path spot
 
-    // keep searching past first obstruction, because grid paths can get
-    // blocked by obstructions that straight-line paths are not blocked by
+    char stopAtFirstObstruction = true;
+    
 
-    // don't look farther than, roughly, a screen-width
-    // (not going all the way just makes path a bit jerkier, but if it's
-    //  happening off-screen, it doesn't matter)
-    int maxStepsPastFirstObstruction = 20;
+    doublePair finalGoalWorld = sGridWorldSpots[ inGoal.y ][ inGoal.x ];
+    
+    if( distance( inStartWorld, finalGoalWorld ) < 29 ) {
+        
+        // path steps are happening on-screen
+
+        // keep searching past first obstruction, because grid paths can get
+        // blocked by obstructions that straight-line paths are not blocked by
+        
+        // makes on-screen path-finding smoother, while keeping off-screen
+        // path-finding fast
+        stopAtFirstObstruction = false;
+        }
+    
+    
 
     // last step that we could reach obstruction-free
     GridPos lastGoodStep = *( finalPath.getElement( finalPath.size() - 1 ) );
-
-    int stepsPastObstruction = 0;
     
 
     int nextStepIndex = finalPath.size() - 2;
@@ -1464,10 +1473,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
             // can't reach nextStep with straight line...
             // gone too far?
 
-            stepsPastObstruction ++;
-            
-            if( stepsPastObstruction > maxStepsPastFirstObstruction ) {
-                // too many steps with subsequent obstructions
+            if( stopAtFirstObstruction ) {
                 // stick with our last obstruction-free step
                 return lastGoodStep;
                 }
@@ -1480,9 +1486,6 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
             // new step reachable with straight line, keep going
             lastGoodStep = nextStep;
             nextStepIndex --;
-            
-            // no obstruction to this spot
-            stepsPastObstruction = 0;
             }
         }
     
