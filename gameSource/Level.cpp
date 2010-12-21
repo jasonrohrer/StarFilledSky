@@ -2052,15 +2052,25 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         [ targetGridPos.x ];
                     }
                 }
-            
-            
-            doublePair followVelocity = 
-                mult( normalize( sub( e->followNextWaypoint, 
-                                      e->position ) ),
-                      moveSpeed );
 
+
+            // if we're less that one step away from goal, limit move speed
+            // so we don't bounce back and forth around goal
+
+            doublePair followVelocity = sub( e->followNextWaypoint, 
+                                             e->position );
             
+            if( distance( e->followNextWaypoint, e->position ) > moveSpeed ) {
+                // far enough away to move with normal speed
+                followVelocity = 
+                    mult( normalize( followVelocity ), moveSpeed );
+                }
+            
+
             // weighted sum with old velocity to smooth out movement
+
+            // good even on last step to goal (adds a little, soft bounce to
+            //  enemy stop)
             doublePair weightedFollow = mult( followVelocity, 0.3 );
             
             e->velocity = mult( e->velocity, 0.7 );
