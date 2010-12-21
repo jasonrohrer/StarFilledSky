@@ -1398,37 +1398,100 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
         doneQueue.getElement( currentRecord->predIndex );
             
     done = false;
-    
+
+    // don't check for straight-line path for EVERY step, all the way
+    // from goal backwards... wasteful in most situations.
+
+    // instead, compile full path back to start, and then walk forward
+    // from start, looking for first spot that is not straight-line accessible.
+
+    SimpleVector<GridPos> finalPath;
+    finalPath.push_back( currentRecord->pos );
+
     while( ! equal(  predRecord->pos, inStart ) && ! done ) {
         currentRecord = predRecord;
+        finalPath.push_back( currentRecord->pos );
+
         predRecord = 
             doneQueue.getElement( currentRecord->predIndex );
+        
+        }
+    
 
-        // straight-line, unobstructed path from start to currentRecord?
+    // found next step away from start
+    
+    // next, walk forward through path as long as there is a straight-light,
+    // unobstructed path from start pos to the path spot
+
+    // keep searching past first obstruction, because grid paths can get
+    // blocked by obstructions that straight-line paths are not blocked by
+
+    // don't look farther than, roughly, a screen-width
+    // (not going all the way just makes path a bit jerkier, but if it's
+    //  happening off-screen, it doesn't matter)
+    int maxStepsPastFirstObstruction = 20;
+
+    // last step that we could reach obstruction-free
+    GridPos lastGoodStep = *( finalPath.getElement( finalPath.size() - 1 ) );
+
+    int stepsPastObstruction = 0;
+    
+
+    int nextStepIndex = finalPath.size() - 2;
+    
+    while( nextStepIndex >= 0  ) {
+        GridPos nextStep = *( finalPath.getElement( nextStepIndex ) );
+
+        // straight-line, unobstructed path from start to next step?
 
         doublePair stepPos = { inStartWorld.x, inStartWorld.y };
         doublePair goalPos = 
-            sGridWorldSpots[ currentRecord->pos.y ][ currentRecord->pos.x ];
+            sGridWorldSpots[ nextStep.y ][ nextStep.x ];
         GridPos stepGridPos = inStart;
         
         doublePair stepDelta = mult( normalize( sub( goalPos, stepPos ) ),
                                      inMoveSpeed );
         
-        while( !equal( stepGridPos, currentRecord->pos ) &&
+        while( !equal( stepGridPos, nextStep ) &&
                mWallFlags[ stepGridPos.y ][ stepGridPos.x ] == 1 ) {
             
             stepPos = add( stepPos, stepDelta );
             stepGridPos = getGridPos( stepPos );
             }
         
-        if( equal( stepGridPos, currentRecord->pos ) ) {
-            done = true;
+        if( ! equal( stepGridPos, nextStep ) ) {
+            
+            // can't reach nextStep with straight line...
+            // gone too far?
+
+            stepsPastObstruction ++;
+            
+            if( stepsPastObstruction > maxStepsPastFirstObstruction ) {
+                // too many steps with subsequent obstructions
+                // stick with our last obstruction-free step
+                return lastGoodStep;
+                }
+            else {
+                // keep going past the obstruction
+                nextStepIndex --;
+                }
+            }
+        else {
+            // new step reachable with straight line, keep going
+            lastGoodStep = nextStep;
+            nextStepIndex --;
+            
+            // no obstruction to this spot
+            stepsPastObstruction = 0;
             }
         }
-    // current record shows best move
-
-    return currentRecord->pos;                
+    
+    // straight-line path all the way to goal 
+    // OR further steps have obstructions all the way to goal
+    // (ran out of nextSteps )
+    return lastGoodStep;                
     }
+
 
 
 
@@ -1989,7 +2052,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     printf( "100 Path finds for enemy"
                             " %d took %f ms\n",
                             i, ( Time::getCurrentTime() - startTime ) * 1000 );
-                
+                    
                     GridPos targetGridPos = pathFind( start, e->position,
                                                       goal,
                                                       moveSpeed );
