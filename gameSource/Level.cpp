@@ -979,6 +979,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     
 
+    // skip to power-up parts (even if not all enemy parts used above)
+    musicPartIndex = 10;
     
     int powerUpMaxLevel = mLevelNumber / POWER_SET_SIZE;
 
