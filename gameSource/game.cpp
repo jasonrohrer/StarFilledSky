@@ -137,12 +137,12 @@ char isDemoMode() {
 
 
 const char *getDemoCodeSharedSecret() {
-    return "control_this";
+    return "green_stone_table";
     }
 
 
 const char *getDemoCodeServerURL() {
-    return "http://sleepisdeath.net/demoServer/server.php";
+    return "http://insideastarfilledsky.net/demoServer/server.php";
     }
 
 
