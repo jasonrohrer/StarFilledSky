@@ -136,6 +136,15 @@ char isDemoMode() {
     }
 
 
+const char *getDemoCodeSharedSecret() {
+    return "control_this";
+    }
+
+
+const char *getDemoCodeServerURL() {
+    return "http://sleepisdeath.net/demoServer/server.php";
+    }
+
 
 
 int levelNumber = 10;
