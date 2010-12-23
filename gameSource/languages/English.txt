@@ -6,3 +6,13 @@ tutorial_shoot "MOUSE to shoot"
 tutorial_enter1 "SPACE to enter things"
 
 tutorial_enter2 "Enter anything..."
+
+
+
+
+enterDemoCode  "Enter a demo code:"
+checkingCode  "Checking demo permissions with server..."
+
+
+err_webRequest   "ERROR:  Web request failed."
+err_codeFailed  "This demo code was denied by the server."

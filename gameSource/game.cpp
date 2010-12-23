@@ -108,7 +108,7 @@ double accelY = 0;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = false;
+char forceRepeatRandSeed = true;
 unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
@@ -124,6 +124,18 @@ char entering = false;
 const char *getWindowTitle() {
     return "Game 10";
     }
+
+
+const char *getFontTGAFileName() {
+    return "font_8_16.tga";
+    }
+
+
+char isDemoMode() {
+    return true;
+    }
+
+
 
 
 int levelNumber = 10;
@@ -326,9 +338,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initSpriteBank();
     initBulletSizeSet();
     
-    mainFont = new Font( "font_8_16.tga", -2, 4, true, 2.0 );
+    mainFont = new Font( getFontTGAFileName(), -2, 4, true, 2.0 );
 
-    mainFont2 = new Font( "font_8_16.tga", 1, 4, false );
+    mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
     
     initNumerals( "numerals.tga" );
     
