@@ -108,7 +108,7 @@ double accelY = 0;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = true;
+char forceRepeatRandSeed = false;
 unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
@@ -194,7 +194,13 @@ static void populateLevelRiseStack() {
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
         // copy player part's timbre/envelope
-        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2 );
+        // alternate part length with player part for phase patterns
+        int partLength = 16;
+        if( s.partLength == partLength ) {
+            partLength -= 4;
+            }
+        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
+                                                              partLength );
         
         levelRiseStack.push_back( new Level( &c, &s, 
                                              &freshColors,
@@ -220,7 +226,13 @@ static void populateLevelRiseStack() {
         ColorScheme freshColors;
         RandomWalkerSet freshSet;
         // copy player part's timbre/envelope
-        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2 );
+        // alternate part length with player part for phase patterns
+        int partLength = 16;
+        if( s.partLength == partLength ) {
+            partLength -= 4;
+            }
+        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
+                                                              partLength );
         
         levelRiseStack.push_back( new Level( &c, &s, &freshColors,
                                              &freshSet,

@@ -10,7 +10,9 @@ typedef struct NoteSequence {
     } NoteSequence;
 
 
-NoteSequence generateRandomNoteSequence( int inPartIndex );
+// default to no phase shifting
+NoteSequence generateRandomNoteSequence( int inPartIndex,
+                                         int inPartLength = 16 );
 
 
 // applies a sequence to its part number in the musicPlayer

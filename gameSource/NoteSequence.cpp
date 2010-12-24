@@ -9,14 +9,15 @@ extern CustomRandomSource randSource;
 
 
 
-NoteSequence generateRandomNoteSequence( int inPartIndex ) {
+NoteSequence generateRandomNoteSequence( int inPartIndex,
+                                         int inPartLength ) {
     NoteSequence s;
     s.partIndex = inPartIndex;
     
     // s.partLength = randSource.getRandomBoundedInt( 5, N );
     
-    // try no phase shifting...
-    s.partLength = N;
+    // allow caller to determine part length and phase shifting
+    s.partLength = inPartLength;
 
     memset( s.noteYIndex, -1, N );
     

@@ -877,7 +877,18 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     else {
         
         // else randomly-generated notes
-        mPlayerMusicNotes = generateRandomNoteSequence( PARTS - 2 );
+
+        // alternate part length with harmony notes to create nice
+        // phase patterns
+
+        int partLength = 16;
+        
+        if( mHarmonyNotes.partLength == partLength ) {
+            partLength -= 4;
+            }
+
+        mPlayerMusicNotes = generateRandomNoteSequence( PARTS - 2,
+                                                        partLength );
         }    
 
 
