@@ -7,17 +7,17 @@ static ColorScheme getScheme( spriteID inPowerType ) {
     
     switch( inPowerType ) {
         case powerUpEmpty: {
-            ColorScheme c( 0.1667f, 0.1667f );
+            ColorScheme c( 0.125f, 0.125f );
             return c;
             }
         case powerUpHeatSeek:
         case powerUpHeart: {
-            ColorScheme c( 0.0f, 0.1667f );
+            ColorScheme c( 0.0f, 0.125f );
             return c;
             }
         // most power ups have same scheme
         default: {
-            ColorScheme c( 0.6667f, 0.1667f );
+            ColorScheme c( 0.625f, 0.125f );
             return c;
             }
         }
