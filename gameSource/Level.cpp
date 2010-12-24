@@ -2930,17 +2930,31 @@ doublePair Level::getPowerUpCenter( int inPowerUpIndex ) {
 
 
 char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
+    
+    // find closest enemy to inPos, since enemies might overlap
+    // (unlike power-ups)
+
+    // return none if all are further away than this
+    double closestDistance = 0.5;
+    int closestIndex = -1;
+
     for( int j=0; j<mEnemies.size(); j++ ) {
         Enemy *e = mEnemies.getElement( j );
         
-        if( distance( e->position, inPos ) < 0.5 ) {
-
-            if( outEnemyIndex != NULL ) {
-                *outEnemyIndex = j;
-                }
-            return true;
+        double thisDist = distance( e->position, inPos );
+        if( thisDist < closestDistance ) {
+            closestDistance = thisDist;
+            closestIndex = j;
             }
         }
+
+    if( closestIndex != -1 ) {
+        if( outEnemyIndex != NULL ) {
+            *outEnemyIndex = closestIndex;
+            }
+        return true;
+        }
+
     return false;
     }
 
