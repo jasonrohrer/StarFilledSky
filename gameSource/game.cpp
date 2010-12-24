@@ -596,8 +596,12 @@ void drawFrame() {
             enteringType = power;
             symmetrical = false;
 
-            if( currentLevel->peekPowerUp( mousePos ).powerType == 
-                powerUpEmpty ) {
+            spriteID powerType = 
+                currentLevel->peekPowerUp( mousePos ).powerType;
+
+            if( powerType == powerUpEmpty ||
+                powerType == powerUpBulletSize ||
+                powerType == powerUpRapidFire ) {
                 
                 symmetrical = true;
                 }
