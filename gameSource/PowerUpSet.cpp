@@ -94,6 +94,7 @@ void PowerUpSet::fillDefaultSet() {
     
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
+        mPowers[i].behavior = false;
         mPowers[i].level = 0;
         }
     }
