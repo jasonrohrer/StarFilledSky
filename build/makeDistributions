@@ -1,0 +1,77 @@
+#!/bin/sh
+
+#
+# Modification History
+#
+# 2007-November-12   Jason Rohrer
+# Copied from Cultivation build.
+#
+
+
+if [ $# -lt 2 ] ; then
+   echo "Usage: $0 release_name unix_platform_name"
+   exit 1
+fi
+
+
+rm -rf unix
+rm -rf windows
+
+mkdir windows
+mkdir unix
+
+
+# work on unix tree first
+mkdir unix/StarFilledSky
+mkdir unix/StarFilledSky/graphics
+mkdir unix/StarFilledSky/settings
+mkdir unix/StarFilledSky/languages
+
+
+
+cp ../gameSource/graphics/*.tga unix/StarFilledSky/graphics
+cp ../gameSource/settings/*.ini unix/StarFilledSky/settings
+cp ../gameSource/languages/*.txt unix/StarFilledSky/languages
+cp ../gameSource/language.txt unix/StarFilledSky
+cp ../documentation/Readme.txt unix/StarFilledSky
+
+
+
+# duplicate unix tree so far to make windows tree
+cp -r unix/StarFilledSky windows/
+
+cp ../gameSource/StarFilledSky unix/StarFilledSky/
+
+cp win32/StarFilledSky.exe win32/*.dll windows/StarFilledSky/
+
+cd unix
+tar cf "StarFilledSky_$1_$2.tar" StarFilledSky
+gzip "StarFilledSky_$1_$2.tar"
+
+
+cd ..
+
+g++ -o unix2dos unix2dos.c 
+cp unix2dos windows
+cp unix2dosScript windows
+
+
+cd windows
+
+
+for file in StarFilledSky/languages/*.txt
+do
+	./unix2dosScript "$file"
+done
+
+
+
+./unix2dosScript "StarFilledSky/Readme.txt"
+
+
+zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky
+
+
+
+
+
