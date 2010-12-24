@@ -5,7 +5,7 @@
 
 PROFILE_FLAG = ${PROFILE_OFF_FLAG}
 
-APP_NAME = gameApp
+APP_NAME = StarFilledSky
 
 
 LAYER_SOURCE = \
