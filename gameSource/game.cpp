@@ -12,7 +12,7 @@
 #include <time.h>
 #include <math.h>
 
-#define USE_MALLINFO
+//#define USE_MALLINFO
 
 #ifdef USE_MALLINFO
 #include <malloc.h>
