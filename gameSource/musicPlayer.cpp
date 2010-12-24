@@ -1111,7 +1111,7 @@ void setDefaultMusicSounds() {
 
 
     for( int i=20; i<PARTS-1; i++ ) {
-        musicTimbres[i] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+        musicTimbres[i] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
                                       keyFrequency/2,
                                       heightPerTimbre, harmonicSine ); 
 
