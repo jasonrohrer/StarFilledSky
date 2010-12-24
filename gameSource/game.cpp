@@ -852,8 +852,6 @@ void drawFrame() {
     doublePair newPlayerPos = currentLevel->stopMoveWithWall( playerPos,
                                                               velocity );
     
-    doublePair viewDelta = sub( newPlayerPos, playerPos );
-    
     
     // printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
     
@@ -909,6 +907,9 @@ void drawFrame() {
     double minDistanceToMoveScreenY = 
         0.2 * ( viewWidth * tweakedViewHeightFraction ) / 2;
 
+    doublePair screenMoveDelta = { 0, 0 };
+    
+
     // stop move screen whenever position to center is inside the center 
     // rectangle (separate threshold for x and y)
     if( screenCenterDistanceFromPlayerX > 
@@ -916,8 +917,8 @@ void drawFrame() {
         screenCenterDistanceFromPlayerY > 
         minDistanceToMoveScreenY ) {
 
-        doublePair screenMoveDelta = sub( posToCenterOnScreen, 
-                                          tweakedScreenViewCenter );
+        screenMoveDelta = sub( posToCenterOnScreen, 
+                               tweakedScreenViewCenter );
         
         // set correction speed based on how far off we are from VERY CENTER
         // since we stop moving when player inside center box, this eliminates
@@ -965,7 +966,7 @@ void drawFrame() {
         }
 
     
-    if( viewDelta.x != 0 || viewDelta.y != 0 ) {
+    if( screenMoveDelta.x != 0 || screenMoveDelta.y != 0 ) {
         confineMouseOnScreen();
         }
     
