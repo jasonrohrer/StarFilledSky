@@ -121,6 +121,10 @@ char entering = false;
 
 
 
+char firstDrawFrameCalled = false;
+
+
+
 const char *getWindowTitle() {
     return "Game 10";
     }
@@ -306,35 +310,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     
 
 
-    char *moveKeyMapping = 
-        SettingsManager::getStringSetting( "upLeftDownRightKeys" );
-    
-    if( moveKeyMapping != NULL ) {
-        char *temp = stringToLowerCase( moveKeyMapping );
-        delete [] moveKeyMapping;
-        moveKeyMapping = temp;
-        
-        if( strlen( moveKeyMapping ) == 4 &&
-            strcmp( moveKeyMapping, "wasd" ) != 0 ) {
-            // different assignment
-
-            mapKey( moveKeyMapping[0], 'w' );
-            mapKey( moveKeyMapping[1], 'a' );
-            mapKey( moveKeyMapping[2], 's' );
-            mapKey( moveKeyMapping[3], 'd' );
-
-            // replace in tutorial text, too
-            tutorialMoveKeys[0] = moveKeyMapping[0];
-            tutorialMoveKeys[2] = moveKeyMapping[1];
-            tutorialMoveKeys[4] = moveKeyMapping[2];
-            tutorialMoveKeys[6] = moveKeyMapping[3];
-
-            temp = stringToUpperCase( tutorialMoveKeys );
-            delete [] tutorialMoveKeys;
-            tutorialMoveKeys = temp;
-            }
-        delete [] moveKeyMapping;
-        }
     
 
 
@@ -364,8 +339,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
     
     initNumerals( "numerals.tga" );
-    
-    initTutorial();
     
 
     currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );
@@ -547,6 +520,48 @@ static char lastRiseFreezeFrameDrawn = false;
 
 
 void drawFrame() {
+
+    if( !firstDrawFrameCalled ) {
+        // do final init step... stuff that shouldn't be done until
+        // we have control of screen
+        
+        char *moveKeyMapping = 
+            SettingsManager::getStringSetting( "upLeftDownRightKeys" );
+    
+        if( moveKeyMapping != NULL ) {
+            char *temp = stringToLowerCase( moveKeyMapping );
+            delete [] moveKeyMapping;
+            moveKeyMapping = temp;
+        
+            if( strlen( moveKeyMapping ) == 4 &&
+                strcmp( moveKeyMapping, "wasd" ) != 0 ) {
+                // different assignment
+
+                mapKey( moveKeyMapping[0], 'w' );
+                mapKey( moveKeyMapping[1], 'a' );
+                mapKey( moveKeyMapping[2], 's' );
+                mapKey( moveKeyMapping[3], 'd' );
+
+                // replace in tutorial text, too
+                tutorialMoveKeys[0] = moveKeyMapping[0];
+                tutorialMoveKeys[2] = moveKeyMapping[1];
+                tutorialMoveKeys[4] = moveKeyMapping[2];
+                tutorialMoveKeys[6] = moveKeyMapping[3];
+
+                temp = stringToUpperCase( tutorialMoveKeys );
+                delete [] tutorialMoveKeys;
+                tutorialMoveKeys = temp;
+                }
+            delete [] moveKeyMapping;
+            }
+
+        initTutorial();
+        
+        firstDrawFrameCalled = true;
+        }
+    
+
+
 
     if( lastRiseFreezeFrameDrawn ) {
         levelNumber = currentLevel->getLevelNumber();

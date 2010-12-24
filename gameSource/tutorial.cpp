@@ -73,8 +73,10 @@ void initTutorial() {
 
 
 void freeTutorial() {
-    delete [] modifiedMoveTutorial;
-    modifiedMoveTutorial = NULL;
+    if( modifiedMoveTutorial != NULL ) {
+        delete [] modifiedMoveTutorial;
+        modifiedMoveTutorial = NULL;
+        }
     }
 
 
