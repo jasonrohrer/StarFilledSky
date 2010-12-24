@@ -2456,35 +2456,97 @@ void Level::drawSmoke( double inFade ) {
 
 
 
-
-        
-void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
-    
-    if( !mFrozen ) {
-        step( inViewCenter, inViewSize );
+void Level::drawEnemies( double inFade, int inLayer, 
+                         doublePair inVisStart, doublePair inVisEnd ) {
+    if( mLastComputedEdgeFade <= 0 ) {
+        return;
         }
-    else {
-        // frozen, but keep any token that was sub-level entry point updated
-        
-        if( mLastEnterPointPowerTokenIndex != -1 ) {
-            PowerUpToken *t = mPowerUpTokens.getElement( 
-                mLastEnterPointPowerTokenIndex );
+    
+    int startIndex = 0;
+    int endIndex = mEnemies.size();
+    
+    if( inLayer == 0 ) {
+        if( mWindowSet ) {
             
-            if( t->startedEmpty ) {
-                t->power.powerType = t->subPowers->getMajorityType();
+            if( mWindowPosition.type == enemy ) {
+                endIndex = mWindowPosition.index;
                 }
-
-            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+            else if( mWindowPosition.type == power ) {
+                
+                // all enemies drawn ABOVE power ups, so none to draw
+                // on layer 0 if a power up is our item window
+                return;
+                }
+            }
+        }
+    else if( inLayer == 1 ) {
+        // window is ALWAYS set if we're drawing layer 1
+        if( mWindowSet ) {
+            if( mWindowPosition.type == enemy ) {
+                startIndex = mWindowPosition.index + 1;
+                }
+            else if( mWindowPosition.type == power ) {
+                // draw all on layer 1, since all drawn above power-ups
+                }
             }
         }
     
+
+    double fade = inFade * mLastComputedEdgeFade;
         
-    int i;
+
+    for( int i=startIndex; i<endIndex; i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+
+        doublePair pos = e->position;
+        
+        if( pos.x >= inVisStart.x && pos.y >= inVisStart.y &&
+            pos.x <= inVisEnd.x && pos.y <= inVisEnd.y ) {
+
+            e->sprite->draw( pos, fade );
+        
+            if( e->healthBarFade > 0 ) {
+                // hold at full vis until half-way through fade
+                float fade = 1;
+
+                if( e->healthBarFade < 0.5 ) {
+                    // from held at 1 to sin fade out
+                    fade = sin( e->healthBarFade * M_PI );
+                    }
+            
+
+                setDrawColor( 0.25, 0.25, 0.25, fade );
+                drawRect( pos.x - 0.5, pos.y + 0.5, 
+                          pos.x + 0.5, pos.y + 0.25 );
+            
+                float healthFraction = e->health / 
+                    (float)getEnemyMaxHealth( e->powers );
+            
+                setDrawColor( 0, 0, 0, fade );
+                drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
+                          pos.y + 0.4375, 
+                          pos.x + 0.4375, 
+                          pos.y + 0.3125 );
+            
+    
+                setDrawColor( 0.85, 0, 0, fade );
+                drawRect( pos.x -0.4375, 
+                          pos.y + 0.4375,
+                          pos.x - 0.4375 + 0.875 * healthFraction, 
+                          pos.y + 0.3125 );
+                }
+            }
+        }
+    }
 
 
 
 
-    // opt:  don't draw whole grid, just visible part
+static void computeVisBoundaries( doublePair inViewCenter, double inViewSize,
+                                  doublePair *outVisStart, 
+                                  doublePair *outVisEnd,
+                                  GridPos *outVisStartGrid,
+                                  GridPos *outVisEndGrid ) {
     
     int yVisStart = (int)( inViewCenter.y - inViewSize / 2 + MAX_LEVEL_H / 2 );
     int yVisEnd = (int)( inViewCenter.y + inViewSize / 2 + MAX_LEVEL_H / 2 );
@@ -2515,17 +2577,62 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
     
+    outVisStartGrid->x = xVisStart;
+    outVisStartGrid->y = yVisStart;
+
+    outVisEndGrid->x = xVisEnd;
+    outVisEndGrid->y = yVisEnd;
+    
 
     // mignt be outside sGridWorldSpots, compute world-coord visual boundaries
     // from scratch
-    doublePair visStart;
-    doublePair visEnd;
     
-    visStart.x = xVisStart - MAX_LEVEL_W/2;
-    visStart.y = yVisStart - MAX_LEVEL_H/2;
+    outVisStart->x = xVisStart - MAX_LEVEL_W/2;
+    outVisStart->y = yVisStart - MAX_LEVEL_H/2;
 
-    visEnd.x = xVisEnd - MAX_LEVEL_W/2;
-    visEnd.y = yVisEnd - MAX_LEVEL_H/2;
+    outVisEnd->x = xVisEnd - MAX_LEVEL_W/2;
+    outVisEnd->y = yVisEnd - MAX_LEVEL_H/2;
+    }
+
+    
+
+
+
+        
+void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
+    
+    if( !mFrozen ) {
+        step( inViewCenter, inViewSize );
+        }
+    else {
+        // frozen, but keep any token that was sub-level entry point updated
+        
+        if( mLastEnterPointPowerTokenIndex != -1 ) {
+            PowerUpToken *t = mPowerUpTokens.getElement( 
+                mLastEnterPointPowerTokenIndex );
+            
+            if( t->startedEmpty ) {
+                t->power.powerType = t->subPowers->getMajorityType();
+                }
+
+            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+            }
+        }
+    
+        
+    int i;
+
+
+
+
+    // opt:  don't draw whole grid, just visible part
+    doublePair visStart, visEnd;
+    GridPos visStartGrid, visEndGrid;
+    
+    computeVisBoundaries( inViewCenter, inViewSize, 
+                          &visStart, &visEnd,
+                          &visStartGrid, &visEndGrid );
+    
     
 
 
@@ -2585,8 +2692,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     // draw walls
     if( edgeFade > 0 )
-    for( int y=yVisStart; y<=yVisEnd; y++ ) {
-        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+    for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
+        for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
             if( mWallFlags[y][x] == 2 ) {
                 Color *c = &( mGridColors[mSquareIndices[y][x]] );
                 
@@ -2610,8 +2717,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                       c.g,
                       c.b, 1 );
         
-        for( int y=yVisStart; y<=yVisEnd; y++ ) {
-            for( int x=xVisStart; x<=xVisEnd; x++ ) {
+        for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
+            for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
                 if( mWallFlags[y][x] == 1 &&
                     mFloorEdgeFlags[mSquareIndices[y][x]] != 0 ) {
                     
@@ -2625,8 +2732,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     // draw floor
     if( edgeFade > 0 )
-    for( int y=yVisStart; y<=yVisEnd; y++ ) {
-        for( int x=xVisStart; x<=xVisEnd; x++ ) {
+    for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
+        for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
             if( mWallFlags[y][x] == 1 ) {
                 Color *c = &( mGridColors[mSquareIndices[y][x]] );
                 
@@ -2726,51 +2833,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
 
-    // draw enemies
-    if( edgeFade > 0 )
-    for( i=0; i<mEnemies.size(); i++ ) {
-        Enemy *e = mEnemies.getElement( i );
-
-        doublePair pos = e->position;
-        
-        if( pos.x >= visStart.x && pos.y >= visStart.y &&
-            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-
-            e->sprite->draw( pos, edgeFade );
-        
-            if( e->healthBarFade > 0 ) {
-                // hold at full vis until half-way through fade
-                float fade = 1;
-
-                if( e->healthBarFade < 0.5 ) {
-                    // from held at 1 to sin fade out
-                    fade = sin( e->healthBarFade * M_PI );
-                    }
-            
-
-                setDrawColor( 0.25, 0.25, 0.25, fade );
-                drawRect( pos.x - 0.5, pos.y + 0.5, 
-                          pos.x + 0.5, pos.y + 0.25 );
-            
-                float healthFraction = e->health / 
-                    (float)getEnemyMaxHealth( e->powers );
-            
-                setDrawColor( 0, 0, 0, fade );
-                drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
-                          pos.y + 0.4375, 
-                          pos.x + 0.4375, 
-                          pos.y + 0.3125 );
-            
-    
-                setDrawColor( 0.85, 0, 0, fade );
-                drawRect( pos.x -0.4375, 
-                          pos.y + 0.4375,
-                          pos.x - 0.4375 + 0.875 * healthFraction, 
-                          pos.y + 0.3125 );
-                }
-            }
-        }
-    
+    // draw layer of enemies under any item window
+    // (draws all enemies if no window set, or if window
+    //   doesn't require enemies to be drawn on top [player window])
+    drawEnemies( 1.0, 0, visStart, visEnd );
     
 
 
@@ -2816,8 +2882,18 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
 
-void Level::drawWindowShade( double inFade, double inFrameFade ) {
+void Level::drawWindowShade( double inFade, double inFrameFade,
+                             doublePair inViewCenter, double inViewSize ) {
     if( mWindowSet ) {
+
+        doublePair visStart, visEnd;
+        GridPos visStartGrid, visEndGrid;
+        
+        computeVisBoundaries( inViewCenter, inViewSize, 
+                              &visStart, &visEnd,
+                              &visStartGrid, &visEndGrid );
+
+
         stopStencil();
         
         double overlieFade = (inFade - 0.63) / 0.37;
@@ -2843,9 +2919,11 @@ void Level::drawWindowShade( double inFade, double inFrameFade ) {
                 }
             
 
+            // second enemy layer drawn on top of enemy or power-up window
             // mouse and player drawn on top of enemy or power-up
             // fade these a bit sooner to get them out of the way
             if( overlieFade > 0 ) {
+                drawEnemies( overlieFade, 1, visStart, visEnd );
                 drawMouse( overlieFade );
                 drawPlayer( overlieFade );
                 }

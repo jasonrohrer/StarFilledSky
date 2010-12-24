@@ -1123,7 +1123,9 @@ void drawFrame() {
             
             double centerFade = 1 - zoomProgress;
             
-            lastLevel->drawWindowShade( centerFade, frameFade );
+            lastLevel->drawWindowShade( centerFade, frameFade,
+                                        lastLevelCurrentViewCenter,
+                                        lastLevelCurrentViewSize );
             }
 
         // step zoom and check for zoom end

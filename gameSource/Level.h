@@ -159,7 +159,8 @@ class Level {
         
         // after drawing through stencil, call this to draw item body shade 
         // on top.
-        void drawWindowShade( double inFade, double inFrameFade );
+        void drawWindowShade( double inFade, double inFrameFade,
+                              doublePair inViewCenter, double inViewSize );
 
         void forgetItemWindow();
 
@@ -263,6 +264,10 @@ class Level {
         void drawMouse( double inFade );
         void drawSmoke( double inFade );        
 
+        // inLayer is either 0 or 1 (those below or above item window)
+        // inLayer has no effect if no current item window is set
+        void drawEnemies( double inFade, int inLayer,
+                          doublePair inVisStart, doublePair inVisEnd );
         
 
         GridPos getGridPos( doublePair inWorldPos );
