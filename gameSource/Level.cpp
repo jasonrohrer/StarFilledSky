@@ -3383,76 +3383,85 @@ void Level::drawFloorEdges( char inDraw ) {
 
 
 
+// how close we can get to wall
+// one game pixel
+#define WALL_LIMIT 0.4375
+#define WALL_BUFFER 0.0625
+
+
 doublePair Level::stopMoveWithWall( doublePair inStart,
                                     doublePair inMoveDelta ) {
-
-    doublePair newPos = inStart;
     
+    doublePair newPos = inStart;
+
+
     double velocityX = inMoveDelta.x;
     double velocityY = inMoveDelta.y;
+
+
+    // apply each component of move separately
+
+    doublePair xMove = newPos;
+    xMove.x += velocityX;
     
-    newPos.x += velocityX;
-    newPos.y += velocityY;
+
+    doublePair yMove = newPos;
+    yMove.y += velocityY;
+    
+
+    // is a component move too close to wall?
+    // push a bit farther to test
+
+    doublePair testXMove = xMove;
+    
+    if( velocityX > 0 ) {
+        testXMove.x += WALL_BUFFER;
+        }
+    else if( velocityX < 0 ) {
+        testXMove.x -= WALL_BUFFER;
+        }
 
 
-    if( isWall( newPos ) ) {
-        doublePair xMoveAlone = inStart;
-        xMoveAlone.x += velocityX;
-        
-        if( !isWall( xMoveAlone ) ) {
-            
-            // push y as close as possible to nearest wall
-            // closest fraction of whole pixels without going into wall
+    doublePair testYMove = yMove;
+    
+    if( velocityY > 0 ) {
+        testYMove.y += WALL_BUFFER;
+        }
+    else if( velocityY < 0 ) {
+        testYMove.y -= WALL_BUFFER;
+        }
+    
 
-            int intY = (int)rint( xMoveAlone.y );
-            if( velocityY > 0 ) {
-                xMoveAlone.y = intY + 0.4375;
-                }
-            else {
-                xMoveAlone.y = intY - 0.4375;
-                }
-            
-            newPos = xMoveAlone;
+
+
+    if( !isWall( testXMove ) ) {    
+        newPos.x = xMove.x;
+        }
+    else {
+        // too close to wall
+        // get as close as possible instead
+        int intX = (int)rint( inStart.x );
+        if( velocityX > 0 ) {
+            newPos.x = intX + WALL_LIMIT;
             }
         else {
-            // try y move alone
-            doublePair yMoveAlone = inStart;
-            yMoveAlone.y += velocityY;
-        
-            if( !isWall( yMoveAlone ) ) {
-                
-                // push x as close as possible to nearest wall
-            
-                int intX = (int)rint( yMoveAlone.x );
-                if( velocityX > 0 ) {
-                    yMoveAlone.x = intX + 0.4375;
-                    }
-                else {
-                    yMoveAlone.x = intX - 0.4375;
-                    }
+            newPos.x = intX - WALL_LIMIT;
+            }
+        }
 
 
-                newPos = yMoveAlone;
-                }
-            else {
-                // both hit
-                
-                int intX = (int)rint( inStart.x );
-                if( velocityX > 0 ) {
-                    newPos.x = intX + 0.4375;
-                    }
-                else {
-                    newPos.x = intX - 0.4375;
-                    }
-
-                int intY = (int)rint( inStart.y );
-                if( velocityY > 0 ) {
-                    newPos.y = intY + 0.4375;
-                    }
-                else {
-                    newPos.y = intY - 0.4375;
-                    }
-                }
+    if( !isWall( testYMove ) ) {    
+        newPos.y = yMove.y;
+        }
+    else {
+        // too close to wall
+        // get as close as possible instead
+        int intY = (int)rint( inStart.y );
+        if( velocityY > 0 ) {
+            newPos.y = intY + WALL_LIMIT;
+            }
+        else {
+            newPos.y = intY - WALL_LIMIT;
             }
         }
 
