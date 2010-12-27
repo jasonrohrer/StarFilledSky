@@ -923,7 +923,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // place enemies in random floor spots
     int musicPartIndex = 0;
     
-    for( int i=0; i<10; i++ ) {
+    // fewer enemies in lower levels
+    int maxNumEnemies = mLevelNumber;
+    
+    for( int i=0; i<maxNumEnemies; i++ ) {
         
         // pick random floor spot until found one away from player
         
@@ -990,12 +993,20 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     
 
+    // no power ups in lowest levels
+    int maxNumPowerUps = 10;
+    
+    if( mLevelNumber < 3 ) {
+        maxNumPowerUps = 0;
+        }
+
+
     // skip to power-up parts (even if not all enemy parts used above)
     musicPartIndex = 10;
     
     int powerUpMaxLevel = mLevelNumber / POWER_SET_SIZE;
 
-    for( int i=0; i<10; i++ ) {
+    for( int i=0; i<maxNumPowerUps; i++ ) {
 
         // pick random floor spot until found one not on rise marker
         // or existing power token

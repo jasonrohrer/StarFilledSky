@@ -151,7 +151,7 @@ const char *getDemoCodeServerURL() {
 
 
 
-int levelNumber = 10;
+int levelNumber = 0;
 
 Level *currentLevel;
 
