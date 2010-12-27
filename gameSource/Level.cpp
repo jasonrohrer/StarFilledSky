@@ -463,7 +463,7 @@ void Level::generateReproducibleData() {
             
             doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 5 ) {
+            if( distance( spot, playerSpot ) > 10 ) {
 
                 placed = true;
                 mRisePosition.x = x;
@@ -814,7 +814,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( new PowerUpSet( inLevelNumber - 1 ) ) {
+          mPlayerPowers( new PowerUpSet( inLevelNumber - 3 ) ) {
 
     int health, max;
     getPlayerHealth( &health, &max );
@@ -924,8 +924,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     int musicPartIndex = 0;
     
     // fewer enemies in lower levels
-    int maxNumEnemies = mLevelNumber;
+    int maxNumEnemies = 10;
+
+    if( mLevelNumber * 2 < 10 ) {
+        maxNumEnemies = mLevelNumber * 2;
+        }
     
+
     for( int i=0; i<maxNumEnemies; i++ ) {
         
         // pick random floor spot until found one away from player
@@ -960,7 +965,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 doublePair a = { 0, 0 };
                 
 
-                PowerUpSet *p = new PowerUpSet( mLevelNumber - 1, true );
+                PowerUpSet *p = new PowerUpSet( mLevelNumber - 3, true );
                 
                 RandomWalkerSet walkerSet;
                 
@@ -3292,6 +3297,18 @@ int Level::getEnteringPointSubLevel( doublePair inPosition,
                     powerSum += e->powers->mPowers[j].level;
                     }
 
+                // if enemy has powers at all, sub level has to be at least
+                // 3 so that those powers can be replaced (since levels < 3
+                // have no powers on floor)
+
+                // do this if enemy currently doesn't even have powers,
+                // since we want to see the sense of entering level 0 enemies
+                // that live on floor level 4.
+
+                if( powerSum < 3 ) {
+                    powerSum = 3;
+                    }
+
                 // ensure that level number always decrements
                 if( powerSum <= mLevelNumber - 1 ) {
                     return powerSum;
@@ -3307,6 +3324,19 @@ int Level::getEnteringPointSubLevel( doublePair inPosition,
     
             if( isPowerUp( inPosition, &i ) ) {
                 int returnValue = mLevelNumber / POWER_SET_SIZE;
+                
+                // bottom out at level where there are power ups on floor
+                // (unless we are descending from that bottom)
+                // Thus, from floor level 4 upward, power ups can be
+                // raised to a minimum of level 4 by entering them and
+                // collecting three level 1 power ups of the same type.
+
+                // This makes floor level 4 a good training spot for
+                // entering all types of things.
+                if( returnValue < 3 ) {
+                    returnValue = 3;
+                    }
+                
 
                 // ensure that level number always decrements
                 if( returnValue <= mLevelNumber - 1 ) {
