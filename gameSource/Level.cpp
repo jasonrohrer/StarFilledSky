@@ -3816,13 +3816,16 @@ void Level::pushAllMusicIntoPlayer() {
         // this is a reference to some other part
         // copy timbre into harmony slot
         setCopiedPart( mHarmonyNotes.partIndex );
-    
-        // now that we've done this once, set the harmony to its proper
-        // part index
-        mHarmonyNotes.partIndex = PARTS - 1;
         }
     
-    setNoteSequence( mHarmonyNotes );
+    // copy harmony sequence, because it doesn't necessarily reference
+    // PARTS - 1  (which we want to preserve, for when we need to re-set
+    //  it later)
+    NoteSequence harmonyCopy = mHarmonyNotes;
+    
+    harmonyCopy.partIndex = PARTS - 1;
+
+    setNoteSequence( harmonyCopy );
     
     unlockAudio();    
     }
