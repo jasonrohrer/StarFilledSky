@@ -639,7 +639,7 @@ void drawFrame() {
             
             if( playerHealth > 0 ) {
                 // don't count forced entering
-                tutorialSomethingEntered();
+                tutorialSomethingEntered( enteringType );
                 }
             
             
@@ -1195,7 +1195,7 @@ void drawFrame() {
             
             // done with current level
             delete currentLevel;
-            
+
             // switch to last level (zooming out)
             currentLevel = lastLevel;
             currentLevel->pushAllMusicIntoPlayer();
@@ -1224,6 +1224,9 @@ void drawFrame() {
             secondToLastRiseFreezeFrameDrawn = true;
             
             zoomProgress = 0;
+
+            // report to tutorial
+            tutorialRiseHappened( currentLevel->getLevelNumber() );
             }    
         }
 

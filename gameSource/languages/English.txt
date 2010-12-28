@@ -1,9 +1,9 @@
 
 tutorial_move "W A S D	to move"
 
-tutorial_shoot "MOUSE to shoot"
+tutorial_shoot "MOUSE to aim and shoot"
 
-tutorial_enter1 "SPACE to enter things"
+tutorial_enter1 "Hold SPACE and move MOUSE to enter things"
 
 tutorial_enter2 "Enter anything..."
 

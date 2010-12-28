@@ -30,10 +30,16 @@ static const char *tutorialKeys[ numTut ] =
 
 static char tutorialsDone[ numTut ] = { false, false, false, false };
 
+static char tutorialsReady[ numTut ] = { true, false, false, false };
+
+
+
 int finalStepFrameCount = 0;
 
 
 static char moveKeysPressed[ 4 ] = { false, false, false, false };
+
+static char enteredTypes[ 3 ] =  { false, false, false };
 
 
 static double tutorialOffset = 0;
@@ -87,8 +93,10 @@ void resetTutorial() {
 
         for( int i=0; i<numTut; i++ ) {
             tutorialsDone[i] = false;
+            tutorialsReady[i] = false;
             }
-        
+        tutorialsReady[0] = true;
+
 
         finalStepFrameCount = 0;
 
@@ -97,6 +105,10 @@ void resetTutorial() {
             moveKeysPressed[i] = false;
             }
         
+        for( int i=0; i<3; i++ ) {
+            enteredTypes[i] = false;
+            }
+
         tutorialOffset = 0;
         tutorialFade = 0;
 
@@ -109,7 +121,7 @@ void resetTutorial() {
 void drawTutorial( doublePair inScreenCenter ) {
 
 
-    if( currentTut != -1 ) {
+    if( currentTut != -1 && tutorialsReady[ currentTut ] ) {
         
         // tutorial text
         const char *tutMessage = translate( tutorialKeys[ currentTut ] );
@@ -191,6 +203,7 @@ void drawTutorial( doublePair inScreenCenter ) {
         }
     
 
+    /*
     // show final until 2 things entered, or until enough time passes
     if( currentTut == numTut - 1 ) {
         finalStepFrameCount ++;
@@ -199,7 +212,7 @@ void drawTutorial( doublePair inScreenCenter ) {
             tutorialsDone[ currentTut ] = true;
             }
         }
-    
+    */
 
     }
 
@@ -224,6 +237,25 @@ void tutorialKeyPressed( int inKeyNum ) {
     }
 
 
+void tutorialRiseHappened( int inLevelRisenTo ) {
+
+    switch( inLevelRisenTo ) {
+        case 1:
+            tutorialsReady[1] = true;
+            break;
+        case 4:
+            tutorialsReady[2] = true;
+            break;
+        }
+
+    if( tutorialsDone[2] ) {
+        // risen out of whatever was entered
+        tutorialsReady[3] = true;
+        }
+    }
+
+
+
 // report mouse shooting used
 void tutorialEnemyHit() {
     tutorialsDone[1] = true;
@@ -232,19 +264,23 @@ void tutorialEnemyHit() {
 
 
 // report enter function used
-void tutorialSomethingEntered() {
-    if( !tutorialsDone[2] ) {
-        tutorialsDone[2] = true;
-        }
-    else {
-        tutorialsDone[3] = true;
-        }
-
-    if( !tutorialsDone[1] ) {
-        // entered before shooting used
-        // assume they know how to enter, and don't show dangling final
-        // enter tip by itself
-        tutorialsDone[3] = true;
+void tutorialSomethingEntered( itemType inType ) {
+    if( tutorialsDone[1] ) {
+        
+        enteredTypes[ (int)inType ] = true;
+        
+        
+        if( tutorialsDone[2] ) {
+            if( tutorialsReady[3] &&
+                enteredTypes[0] && enteredTypes[1] && enteredTypes[2] ) {
+                
+                // entered all three types after "enter anything..." shown
+                tutorialsDone[3] = true;
+                }
+            }
+        else {
+            tutorialsDone[2] = true;
+            }
         }
     }
 

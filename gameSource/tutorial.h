@@ -1,5 +1,7 @@
 #include "minorGems/game/doublePair.h"
 
+#include "Level.h"
+
 void initTutorial();
 
 
@@ -13,12 +15,16 @@ void drawTutorial( doublePair inScreenCenter );
 // report movement keys pressed
 void tutorialKeyPressed( int inKeyNum );
 
+// report that rise marker discovered and operated
+void tutorialRiseHappened( int inLevelRisenTo );
+
+
 // report mouse shooting used
 void tutorialEnemyHit();
 
 
 // report enter function used
-void tutorialSomethingEntered();
+void tutorialSomethingEntered( itemType inType );
 
 
 

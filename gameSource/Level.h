@@ -1,3 +1,7 @@
+#ifndef LEVEL_INCLUDED
+#define LEVEL_INCLUDED
+
+
 #include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
 
@@ -410,3 +414,6 @@ class Level {
     };
 
         
+
+
+#endif
