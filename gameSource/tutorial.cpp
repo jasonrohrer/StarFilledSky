@@ -74,6 +74,14 @@ void initTutorial() {
 
     if( tutorialCompletedCount >= 1 ) {
         currentTut = -1;
+        
+        // don't space out tutorial across levels if player
+        // asks for tutorial to be replayed later
+        
+        // just show one tutorial after another
+        for( int i=0; i<numTut; i++ ) {
+            tutorialsReady[i] = true;
+            }
         }
     }
 
@@ -93,7 +101,6 @@ void resetTutorial() {
 
         for( int i=0; i<numTut; i++ ) {
             tutorialsDone[i] = false;
-            tutorialsReady[i] = false;
             }
         tutorialsReady[0] = true;
 
