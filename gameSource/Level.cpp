@@ -846,9 +846,6 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
-    
-    printf( "Level construction (%d) has rand start state %d (%d calls)\n",
-            mLevelNumber, mRandSeedState, randSource.getCallCount() );
 
     mDataGenerated = false;
     mSymmetrical = inSymmetrical;
