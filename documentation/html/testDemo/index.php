@@ -24,7 +24,7 @@ You need a demo code from me to run these (so they don't escape into the wild):
 <!--
 <tr><td><a href="SleepIsDeath_v14a_demo_Windows.zip">SleepIsDeath_v14a_demo_Windows.zip</a></td></tr>
 -->
-<tr><td><a href="StarFilledSky_v1_IntelMacOSX.dmg">StarFilledSky_v1_IntelMacOSX.dmg</a></td></tr>
+<tr><td><a href="StarFilledSky_v2_IntelMacOSX.dmg">StarFilledSky_v2_IntelMacOSX.dmg</a></td></tr>
 <!--
 <tr><td><a href="SleepIsDeath_v14a_UnixSource.tar.gz">SleepIsDeath_v14a_UnixSource.tar.gz</a></td></tr>
 -->
