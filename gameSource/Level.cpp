@@ -947,11 +947,30 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
             
             doublePair spot = *( mGridWorldSpots[ floorPick ] );
                     
+            
+            char fixedSpot = false;
+            
+
+            if( i == 0 || ( mSymmetrical && i == 1 ) ) {
+                
+                fixedSpot = true;
+                
+                if( i == 0 ) {
+                    spot = mRiseWorldPos;
+                    }
+                else {
+                    spot = mRiseWorldPos2;
+                    }
+                }
+            
+
+
             // keep enemies away from player starting spot (fair)
+            // unless on fixed spots
 
             doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 20 ) {
+            if( fixedSpot || distance( spot, playerSpot ) > 20 ) {
                 
                 // random starting velocity
                 doublePair baseMoveDirection = 
