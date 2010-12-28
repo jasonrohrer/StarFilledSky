@@ -847,6 +847,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
     
+    printf( "Level construction (%d) has rand start state %d (%d calls)\n",
+            mLevelNumber, mRandSeedState, randSource.getCallCount() );
+
     mDataGenerated = false;
     mSymmetrical = inSymmetrical;
 
@@ -2347,10 +2350,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             partLoudness[ e->musicNotes.partIndex ] = 1;
             }
         else {
-            playerDist -= 4;
+            double playerDistModified = playerDist - 4;
             partLoudness[ e->musicNotes.partIndex ] = 
                 loudnessFalloffFactor / 
-                ( loudnessFalloffFactor + playerDist * playerDist );
+                ( loudnessFalloffFactor + 
+                  playerDistModified * playerDistModified );
             }
         double vectorCosine = (e->position.x - mPlayerPos.x) / playerDist;
         partStereo[ e->musicNotes.partIndex ] = 
@@ -2367,10 +2371,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             partLoudness[ p->musicNotes.partIndex ] = 1;
             }
         else {
-            playerDist -= 4;
+            double playerDistModified = playerDist - 4;
             partLoudness[ p->musicNotes.partIndex ] = 
                 loudnessFalloffFactor / 
-                ( loudnessFalloffFactor + playerDist * playerDist );
+                ( loudnessFalloffFactor + 
+                  playerDistModified * playerDistModified );
             }
         double vectorCosine = (p->position.x - mPlayerPos.x) / playerDist;
         partStereo[ p->musicNotes.partIndex ] = 
