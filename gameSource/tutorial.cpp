@@ -248,8 +248,9 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             break;
         }
 
-    if( tutorialsDone[2] ) {
-        // risen out of whatever was entered
+    if( tutorialsDone[2] && inLevelRisenTo >= 4 ) {
+        // risen out of whatever was entered,
+        // or at least in a good spot to suggest "entering anything..."
         tutorialsReady[3] = true;
         }
     }
@@ -267,19 +268,18 @@ void tutorialEnemyHit() {
 void tutorialSomethingEntered( itemType inType ) {
     if( tutorialsDone[1] ) {
         
-        enteredTypes[ (int)inType ] = true;
         
         
-        if( tutorialsDone[2] ) {
-            if( tutorialsReady[3] &&
-                enteredTypes[0] && enteredTypes[1] && enteredTypes[2] ) {
-                
-                // entered all three types after "enter anything..." shown
+        if( tutorialsReady[2] ) {
+            enteredTypes[ (int)inType ] = true;
+
+            tutorialsDone[2] = true;
+
+            if( enteredTypes[0] && enteredTypes[1] && enteredTypes[2] ) {
+                // entered all three types after basic enter tutorial shown
+                // maybe don't need to show "enter anything..."
                 tutorialsDone[3] = true;
                 }
-            }
-        else {
-            tutorialsDone[2] = true;
             }
         }
     }
