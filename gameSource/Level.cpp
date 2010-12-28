@@ -2693,7 +2693,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     if( mDrawFloorEdges ) {
         
-        double maxDistance = 5;
+        double maxDistance = 5.5;
         
         double dist = distance( mPlayerPos, mRiseWorldPos );
         
@@ -2716,7 +2716,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 
                 if( smallestDist > 1 ) {
-                    fade = (smallestDist - 1) / (maxDistance-1);
+                    fade = (smallestDist - 1.5) / (maxDistance - 1.5);
 
                     if( fade > mEdgeFadeIn ) {
                         // not done fading in yet, don't let
@@ -3022,6 +3022,18 @@ char Level::isWall( doublePair inPos ) {
 
 
 char Level::isRiseSpot( doublePair inPos ) {
+
+    if( distance( mRiseWorldPos, inPos ) < 1 ) {
+        return true;
+        }
+    else if( mDoubleRisePositions ) {
+        if( distance( mRiseWorldPos2, inPos ) < 1 ) {
+            return true;
+            }
+        }
+    return false;
+
+
     int x = (int)( rint( inPos.x ) );
     int y = (int)( rint( inPos.y ) );
     
@@ -3095,11 +3107,22 @@ char Level::isPlayer( doublePair inPos ) {
 
 
 
-char Level::isPowerUp( doublePair inPos, int *outPowerUpIndex ) {
+static double widePickUpRadius = 0.85;
+
+
+char Level::isPowerUp( doublePair inPos, int *outPowerUpIndex,
+                       char inWidePickup ) {
+
+    double radius = 0.5;
+    if( inWidePickup ) {
+        radius = widePickUpRadius;
+        }
+    
+
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
         
-        if( distance( t->position, inPos ) < 0.5 ) {
+        if( distance( t->position, inPos ) < radius ) {
             if( outPowerUpIndex != NULL ) {
                 *outPowerUpIndex = j;
                 }
@@ -3115,7 +3138,7 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
         
-        if( distance( t->position, inPos ) < 0.5 ) {
+        if( distance( t->position, inPos ) < widePickUpRadius ) {
             
             PowerUp p = t->power;
 

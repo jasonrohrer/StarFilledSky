@@ -776,7 +776,7 @@ void drawFrame() {
 
 
     int powerUpIndex;
-    if( currentLevel->isPowerUp( playerPos, &powerUpIndex ) ) {
+    if( currentLevel->isPowerUp( playerPos, &powerUpIndex, true ) ) {
         
         doublePair powerPos = currentLevel->getPowerUpCenter( powerUpIndex );
 

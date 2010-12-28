@@ -177,7 +177,8 @@ class Level {
         char isEnemy( doublePair inPos, int *outEnemyIndex = NULL );
         char isPlayer( doublePair inPos  );
       
-        char isPowerUp( doublePair inPos, int *outPowerUpIndex = NULL );
+        char isPowerUp( doublePair inPos, int *outPowerUpIndex = NULL,
+                        char inWidePickup = false );
 
 
         PowerUp peekPowerUp( doublePair inPos );
