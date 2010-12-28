@@ -3532,8 +3532,19 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
 
         if( !isWall( testXMove ) ) {
             // only too close to wall because of y component of move
-            // discard y component
+
+            // keep full x move
             newPos.x = movePos.x;
+
+            // get as close as possible with y component
+            int intY = (int)rint( inStart.y );
+            if( velocityY > 0 ) {
+                newPos.y = intY + WALL_LIMIT;
+                }
+            else {
+                newPos.y = intY - WALL_LIMIT;
+                }
+
             return newPos;
             }
         
@@ -3561,8 +3572,19 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
 
         if( !isWall( testYMove ) ) {
             // only too close to wall because of x component of move
-            // discard x component
+            
+            // keep full y move
             newPos.y = movePos.y;
+
+            // get as close as possible with x component
+            int intX = (int)rint( inStart.x );
+            if( velocityX > 0 ) {
+                newPos.x = intX + WALL_LIMIT;
+                }
+            else {
+                newPos.x = intX - WALL_LIMIT;
+                }
+
             return newPos;
             }
         
