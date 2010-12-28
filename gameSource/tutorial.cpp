@@ -72,7 +72,7 @@ void initTutorial() {
         tutorialCompletedCount = readCount;
         }
 
-    if( tutorialCompletedCount >= 2 ) {
+    if( tutorialCompletedCount >= 1 ) {
         currentTut = -1;
         }
     }

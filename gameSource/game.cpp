@@ -341,6 +341,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initNumerals( "numerals.tga" );
     
 
+    int completedCount = 
+        SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
+
+    if( completedCount >= 1 ) {
+        // don't force player back through boring level 1
+        levelNumber = 4;
+        }
+
+
     currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );
     
     populateLevelRiseStack();
