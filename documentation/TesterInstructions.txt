@@ -1,0 +1,26 @@
+
+
+
+== Recorded Games ==
+
+Every time you play the game, your whole experience is saved in the "recordedGames" folder as a compact text file.  This is extremely useful for testing and debugging:
+
+1) PLEASE take the time to send me the recording of your very first game (when you go through the tutorial the first time and try to figure out how to play).  By watching your game, I can hopefully pinpoint stuff that was confusing.  Kinda like me watching quietly over your shoulder, but remotely and asynchronously.
+
+2) If you encounter what seems like a bug or a glitch, quit the game (ESC) and send me the last recorded game file.  I can watch your game on my end, which will replay the bad behavior for me and help me fix the problem.
+
+3) If the game crashes, send me the last recorded game file along with a description of what happened right before the crash.  I can hopefully reproduce the crash on my end.
+
+4) If there's some other issue that you have with the game---balancing or difficulty or general confusion---you can potentially send a recorded game that illustrates the problem along with your report.
+
+
+
+== Tutorial mode ==
+
+The game includes a simple tutorial that both explains the controls and gradually exposes you to additional gameplay mechanics.  I arrived at the "gradual exposure" method after watching my wife struggle with all the new gameplay concepts in the game---I just dumped her right into the full matrix of mechanics, and it was a train wreck.  Now the game takes the Braid approach, exposing you to even the most basic mechanics one at a time.
+
+It was more clear to my wife that way, but she was already tainted by her first play-through.  So I need feedback from others.  I don't want to spell every little thing out in the tutorial, because I think there is a certain joy in figuring out how stuff works for yourself, and I hope that the visual cues provide enough hints to bootstrap that process.  
+
+Is it clear enough?  Were you able to figure out the various gameplay systems?
+
+After you go through that whole process once, subsequent games will jump right into the full matrix of mechanics from the start.
