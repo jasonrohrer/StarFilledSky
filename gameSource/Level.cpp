@@ -1079,6 +1079,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 PowerUp mainPower = getRandomPowerUp( powerUpMaxLevel );
                 
+                // NEVER put empty power-ups on the floor
+                while( mainPower.powerType == powerUpEmpty ) {
+                    // re-roll
+                    mainPower = getRandomPowerUp( powerUpMaxLevel );
+                    }
+                
+
 
                 // powers must sum to main power
                 PowerUpSet *subPowers = new PowerUpSet( mainPower.level,

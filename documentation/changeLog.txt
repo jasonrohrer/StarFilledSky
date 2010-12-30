@@ -3,6 +3,10 @@ Version 3   ???
 --Fixed crash when rising out right onto a rise marker that will cause and
   immediate, subsequent rise (thanks Stephen Lavelle).
 
+--Removed empty power-up tokens completely from all floors to reduce
+  confusion about their function and increase tactical richness when trying
+  to de-power an enemy.
+
 
 
 
