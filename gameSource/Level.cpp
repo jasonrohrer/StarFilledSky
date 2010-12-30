@@ -3457,6 +3457,13 @@ void Level::freezeLevel( char inFrozen ) {
     }
 
 
+
+char Level::isFrozen() {
+    return mFrozen;
+    }
+
+
+
 void Level::drawFloorEdges( char inDraw ) {
     if( inDraw && !mDrawFloorEdges ) {
         // start fade-in

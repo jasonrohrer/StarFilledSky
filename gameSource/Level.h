@@ -240,6 +240,8 @@ class Level {
         // freeze level step updates during drawLevel
         void freezeLevel( char inFrozen );
         
+        char isFrozen();
+        
 
         void drawFloorEdges( char inDraw );
         
