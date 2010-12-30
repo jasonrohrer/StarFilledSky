@@ -7,6 +7,8 @@ Version 3   ???
   confusion about their function and increase tactical richness when trying
   to de-power an enemy.
 
+--Fixed to ignore hidden files in playbackGame directory (a problem on Mac OS
+  where .DS_STORE files are created automatically by the OS).
 
 
 
