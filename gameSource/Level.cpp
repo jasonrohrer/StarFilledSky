@@ -813,8 +813,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               NoteSequence *inMusicNotes,
               int inLevelNumber, char inSymmetrical ) 
         : mLevelNumber( inLevelNumber ), 
-          mPlayerSprite( inPlayerColors ),
-          mPlayerPowers( new PowerUpSet( inLevelNumber - 3 ) ) {
+          mPlayerSprite( inPlayerColors ) {
+
+    if( shouldPowerUpsBeRigged() && mLevelNumber < 9 ) {
+        mPlayerPowers = new PowerUpSet( 0 );
+        }
+    else {
+        mPlayerPowers = new PowerUpSet( inLevelNumber - 3 );
+        }
 
     int health, max;
     getPlayerHealth( &health, &max );

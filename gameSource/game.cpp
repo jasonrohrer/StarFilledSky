@@ -345,8 +345,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
         SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
 
     if( completedCount >= 1 ) {
-        // don't force player back through boring level 1
-        levelNumber = 8;
+        // don't force player back through boring level 0
+        levelNumber = 9;
         }
 
 
