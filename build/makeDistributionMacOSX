@@ -20,33 +20,33 @@ mkdir mac
 
 
 
-mkdir mac/StarFilledSky
-mkdir mac/StarFilledSky/graphics
-mkdir mac/StarFilledSky/settings
-mkdir mac/StarFilledSky/languages
+mkdir mac/StarFilledSky_$1
+mkdir mac/StarFilledSky_$1/graphics
+mkdir mac/StarFilledSky_$1/settings
+mkdir mac/StarFilledSky_$1/languages
 
 
 
-cp ../gameSource/graphics/*.tga mac/StarFilledSky/graphics
-cp ../gameSource/settings/*.ini mac/StarFilledSky/settings
-cp ../gameSource/languages/*.txt mac/StarFilledSky/languages
-cp ../gameSource/language.txt mac/StarFilledSky
-cp ../documentation/Readme.txt mac/StarFilledSky
+cp ../gameSource/graphics/*.tga mac/StarFilledSky_$1/graphics
+cp ../gameSource/settings/*.ini mac/StarFilledSky_$1/settings
+cp ../gameSource/languages/*.txt mac/StarFilledSky_$1/languages
+cp ../gameSource/language.txt mac/StarFilledSky_$1
+cp ../documentation/Readme.txt mac/StarFilledSky_$1
 
 
 
 
-cp -r macOSX/StarFilledSky.app mac/StarFilledSky/StarFilledSky.app
-cp ../gameSource/StarFilledSky mac/StarFilledSky/StarFilledSky.app/Contents/MacOS
+cp -r macOSX/StarFilledSky.app mac/StarFilledSky_$1/StarFilledSky.app
+cp ../gameSource/StarFilledSky mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS
 
-rm -r mac/StarFilledSky/StarFilledSky.app/Contents/MacOS/empty.txt
-rm -r mac/StarFilledSky/StarFilledSky.app/Contents/Frameworks/empty.txt
+rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/MacOS/empty.txt
+rm -r mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/empty.txt
 
 # install SDL framework
-cp -r $3 mac/StarFilledSky/StarFilledSky.app/Contents/Frameworks/
+cp -r $3 mac/StarFilledSky_$1/StarFilledSky.app/Contents/Frameworks/
 
 cd mac
-tar cf "StarFilledSky_$1_$2.tar" StarFilledSky
+tar cf "StarFilledSky_$1_$2.tar" StarFilledSky_$1
 gzip "StarFilledSky_$1_$2.tar"
 
 

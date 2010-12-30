@@ -22,30 +22,30 @@ mkdir unix
 
 
 # work on unix tree first
-mkdir unix/StarFilledSky
-mkdir unix/StarFilledSky/graphics
-mkdir unix/StarFilledSky/settings
-mkdir unix/StarFilledSky/languages
+mkdir unix/StarFilledSky_$1
+mkdir unix/StarFilledSky_$1/graphics
+mkdir unix/StarFilledSky_$1/settings
+mkdir unix/StarFilledSky_$1/languages
 
 
 
-cp ../gameSource/graphics/*.tga unix/StarFilledSky/graphics
-cp ../gameSource/settings/*.ini unix/StarFilledSky/settings
-cp ../gameSource/languages/*.txt unix/StarFilledSky/languages
-cp ../gameSource/language.txt unix/StarFilledSky
-cp ../documentation/Readme.txt unix/StarFilledSky
+cp ../gameSource/graphics/*.tga unix/StarFilledSky_$1/graphics
+cp ../gameSource/settings/*.ini unix/StarFilledSky_$1/settings
+cp ../gameSource/languages/*.txt unix/StarFilledSky_$1/languages
+cp ../gameSource/language.txt unix/StarFilledSky_$1
+cp ../documentation/Readme.txt unix/StarFilledSky_$1
 
 
 
 # duplicate unix tree so far to make windows tree
-cp -r unix/StarFilledSky windows/
+cp -r unix/StarFilledSky_$1 windows/
 
-cp ../gameSource/StarFilledSky unix/StarFilledSky/
+cp ../gameSource/StarFilledSky unix/StarFilledSky_$1/
 
-cp win32/StarFilledSky.exe win32/*.dll windows/StarFilledSky/
+cp win32/StarFilledSky.exe win32/*.dll windows/StarFilledSky_$1/
 
 cd unix
-tar cf "StarFilledSky_$1_$2.tar" StarFilledSky
+tar cf "StarFilledSky_$1_$2.tar" StarFilledSky_$1
 gzip "StarFilledSky_$1_$2.tar"
 
 
@@ -59,17 +59,17 @@ cp unix2dosScript windows
 cd windows
 
 
-for file in StarFilledSky/languages/*.txt
+for file in StarFilledSky_$1/languages/*.txt
 do
 	./unix2dosScript "$file"
 done
 
 
 
-./unix2dosScript "StarFilledSky/Readme.txt"
+./unix2dosScript "StarFilledSky_$1/Readme.txt"
 
 
-zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky
+zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky_$1
 
 
 
