@@ -1030,6 +1030,11 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     int powerUpMaxLevel = mLevelNumber / POWER_SET_SIZE;
 
+
+    // for tutorial-mode power-up placement
+    // (every other power-up is spread)
+    char spreadToggle = false;
+
     for( int i=0; i<maxNumPowerUps; i++ ) {
 
         // pick random floor spot until found one not on rise marker
@@ -1041,7 +1046,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         char hit = false;
         
         int numTries = 0;
-        
+
         while( ! hit && numTries < 20 ) {
             numTries++;
 
@@ -1085,6 +1090,24 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     mainPower = getRandomPowerUp( powerUpMaxLevel );
                     }
                 
+                if( shouldPowerUpsBeRigged() ) {
+                    if( mLevelNumber == 3 ) {
+                        mainPower.powerType = powerUpBulletSize;
+                        }
+                    else if( mLevelNumber == 4 ) {
+                        mainPower.powerType = powerUpSpread;
+                        }
+                    else if( mLevelNumber == 5 || mLevelNumber == 6 ) {
+                        // 50/50
+                        if( spreadToggle ) {
+                            mainPower.powerType = powerUpSpread;
+                            }
+                        else {
+                            mainPower.powerType = powerUpBulletSize;
+                            }
+                        spreadToggle = !spreadToggle;
+                        }
+                    }
 
 
                 // powers must sum to main power

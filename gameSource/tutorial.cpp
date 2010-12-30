@@ -52,6 +52,9 @@ static int tutorialCompletedCount = 0;
 
 static char *modifiedMoveTutorial = NULL;
 
+static char rigPowerUpsForTeaching = true;
+
+
 
 void initTutorial() {
 
@@ -74,6 +77,7 @@ void initTutorial() {
 
     if( tutorialCompletedCount >= 1 ) {
         currentTut = -1;
+        rigPowerUpsForTeaching = false;
         
         // don't space out tutorial across levels if player
         // asks for tutorial to be replayed later
@@ -92,6 +96,12 @@ void freeTutorial() {
         modifiedMoveTutorial = NULL;
         }
     }
+
+
+char shouldPowerUpsBeRigged() {
+    return rigPowerUpsForTeaching;
+    }
+
 
 
 void resetTutorial() {
@@ -250,12 +260,15 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         case 1:
             tutorialsReady[1] = true;
             break;
-        case 4:
+        case 7:
+            rigPowerUpsForTeaching = false;
+            break;
+        case 8:
             tutorialsReady[2] = true;
             break;
         }
 
-    if( tutorialsDone[2] && inLevelRisenTo >= 4 ) {
+    if( tutorialsDone[2] && inLevelRisenTo >= 8 ) {
         // risen out of whatever was entered,
         // or at least in a good spot to suggest "entering anything..."
         tutorialsReady[3] = true;

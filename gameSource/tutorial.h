@@ -11,6 +11,10 @@ void freeTutorial();
 void drawTutorial( doublePair inScreenCenter );
 
 
+// true if we're still teaching about power-ups, where they are revealed
+// in a certain order on various levels
+char shouldPowerUpsBeRigged();
+
 
 // report movement keys pressed
 void tutorialKeyPressed( int inKeyNum );

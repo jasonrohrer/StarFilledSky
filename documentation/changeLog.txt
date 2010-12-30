@@ -12,6 +12,9 @@ Version 3   ???
 
 --Fixed memory leak upon quit during rise-out.
 
+--Improved intro levels to introduce a few power-ups, and combinations
+  of power-ups, one step at a time.
+
 
 
 Version 2    2010-December-29
