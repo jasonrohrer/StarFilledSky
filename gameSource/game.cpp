@@ -736,7 +736,16 @@ void drawFrame() {
         
         }
     
-    if( currentLevel->isRiseSpot( playerPos ) && lastLevel == NULL ) {
+
+
+    // if current level still frozen, last freeze frame not drawn yet,
+    // and next level on stack not decompacted yet.
+    // Don't try to rise into next level on stack if that's the case.
+
+    if( currentLevel->isRiseSpot( playerPos ) && 
+        lastLevel == NULL &&
+        ! currentLevel->isFrozen() ) {
+        
         
         if( levelRiseStack.size() == 0 ) {
             printf( "WARNING:  level stack empty unexpectedly\n" );            

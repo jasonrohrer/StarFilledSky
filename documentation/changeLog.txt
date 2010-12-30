@@ -1,0 +1,11 @@
+Version 3   ???
+
+--Fixed crash when rising out right onto a rise marker that will cause and
+  immediate, subsequent rise (thanks Stephen Lavelle).
+
+
+
+
+Version 2    2010-December-29
+
+Initial release to beta testers.
