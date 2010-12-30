@@ -346,7 +346,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 
     if( completedCount >= 1 ) {
         // don't force player back through boring level 1
-        levelNumber = 4;
+        levelNumber = 8;
         }
 
 
