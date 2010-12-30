@@ -1,3 +1,10 @@
+== Getting the Game ==
+
+Download from here:
+
+  http://insideastarfilledsky.net/testDemo/
+
+Make sure to write down your demo code.  When you launch the game the first time, it runs in full-screen mode, and you'll be prompted to enter your code. 
 
 
 
