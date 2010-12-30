@@ -404,6 +404,11 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
 void freeFrameDrawer() {
     delete currentLevel;
     
+    if( lastLevel != NULL ) {
+        delete lastLevel;
+        }
+    
+
     delete [] tutorialMoveKeys;
     
 

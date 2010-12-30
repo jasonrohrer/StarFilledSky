@@ -10,6 +10,8 @@ Version 3   ???
 --Fixed to ignore hidden files in playbackGame directory (a problem on Mac OS
   where .DS_STORE files are created automatically by the OS).
 
+--Fixed memory leak upon quit during rise-out.
+
 
 
 Version 2    2010-December-29
