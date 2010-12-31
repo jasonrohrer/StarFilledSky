@@ -15,12 +15,15 @@ Version 3   ???
 --Improved intro levels to introduce a few power-ups, and combinations
   of power-ups, one step at a time.
 
---Changed so that default player power set is always empty, increasing
-  the tactical challenge and also increasing the implicit penalty for
-  getting knocked down to a lower level.
+--Changed so that default player power set is always empty (with two hearts), 
+  increasing the tactical challenge and also increasing the implicit penalty 
+  for getting knocked down to a lower level.
 
 --Shortened bullet fade-out at end of range to make bullet range easier
   to discern.
+
+--Player base health is now 1, but combined with two default heart tokens,
+  effective health is still 3 if the player picks up no tokens.
 
 
 
