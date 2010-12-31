@@ -2905,8 +2905,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
             float fade = 1;
         
-            if( b->explode == 0 && b->distanceLeft < 2 ) {
-                fade = b->distanceLeft * 0.5;
+            if( b->explode == 0 && b->distanceLeft < 1 ) {
+                fade = b->distanceLeft;
                 }
 
             

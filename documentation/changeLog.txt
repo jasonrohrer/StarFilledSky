@@ -19,6 +19,9 @@ Version 3   ???
   the tactical challenge and also increasing the implicit penalty for
   getting knocked down to a lower level.
 
+--Shortened bullet fade-out at end of range to make bullet range easier
+  to discern.
+
 
 
 Version 2    2010-December-29
