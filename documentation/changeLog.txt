@@ -15,6 +15,10 @@ Version 3   ???
 --Improved intro levels to introduce a few power-ups, and combinations
   of power-ups, one step at a time.
 
+--Changed so that default player power set is always empty, increasing
+  the tactical challenge and also increasing the implicit penalty for
+  getting knocked down to a lower level.
+
 
 
 Version 2    2010-December-29

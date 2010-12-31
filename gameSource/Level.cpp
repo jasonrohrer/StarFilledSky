@@ -815,12 +815,19 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ) {
 
+    /*
     if( shouldPowerUpsBeRigged() && mLevelNumber < 9 ) {
         mPlayerPowers = new PowerUpSet( 0 );
         }
     else {
         mPlayerPowers = new PowerUpSet( inLevelNumber - 3 );
         }
+    */
+    // Try power-ups for player ALWAYS starting off empty
+    // getting knocked down a level, and having to fight through with a
+    // pea shooter, is much more serious this way
+    mPlayerPowers = new PowerUpSet( 0 );
+
 
     int health, max;
     getPlayerHealth( &health, &max );
