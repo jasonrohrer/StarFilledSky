@@ -68,6 +68,11 @@ enum spriteID {
     };
 
 
+// maps each spriteID to a string (except for endSpriteID)
+extern const char *spriteIDNames[];
+
+
+
 
 extern int firstPowerUpID;
 extern int lastPowerUpID;

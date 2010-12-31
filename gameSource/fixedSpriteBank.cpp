@@ -3,6 +3,16 @@
 
 
 
+// redefine F so that it expands each name into a string constant
+#undef F
+#define F(inName) #inName
+
+const char *spriteIDNames[] = {
+	FIXED_SPRITE_NAMES
+    };
+
+
+
 // redefine F so that it expands each name into a file-name string
 // constant
 #undef F

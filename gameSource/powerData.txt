@@ -1,0 +1,105 @@
+v2 test:
+
+
+level 10 enemy powers: powerUpEmpty(0), powerUpAccuracy(1), powerUpRapidFire(2)
+level 10 enemy powers: powerUpBulletSize(1), powerUpBulletSize(1), powerUpHeatSeek(1)
+level 10 enemy powers: powerUpBulletDistance(1), powerUpSpread(1), powerUpRapidFire(1)
+level 10 enemy powers: powerUpBounce(1), powerUpHeatSeek(1), powerUpEmpty(0)
+level 10 enemy powers: powerUpEmpty(0), powerUpBulletDistance(2), powerUpEmpty(0)
+level 10 enemy powers: powerUpEmpty(0), powerUpAccuracy(1), powerUpRapidFire(2)
+level 10 enemy powers: powerUpHeart(1), powerUpEmpty(0), powerUpBulletSize(1)
+level 10 enemy powers: powerUpEmpty(0), powerUpEmpty(0), powerUpBulletDistance(2)
+level 10 enemy powers: powerUpHeart(2), powerUpRapidFire(1), powerUpEmpty(0)
+level 10 enemy powers: powerUpEmpty(0), powerUpExplode(2), powerUpBulletSize(1)
+
+
+
+level 40 enemy powers: powerUpBulletSpeed(5), powerUpBulletSize(5), powerUpEmpty(0)
+level 40 enemy powers: powerUpSpread(3), powerUpHeatSeek(7), powerUpBulletDistance(12)
+level 40 enemy powers: powerUpEmpty(0), powerUpAccuracy(5), enemyBehaviorCircle(8)
+level 40 enemy powers: powerUpBulletDistance(1), powerUpExplode(2), powerUpAccuracy(3)
+level 40 enemy powers: powerUpRapidFire(3), powerUpBulletDistance(8), enemyBehaviorDodge(12)
+level 40 enemy powers: powerUpBulletSize(6), enemyBehaviorDodge(9), powerUpExplode(9)
+level 40 enemy powers: powerUpEmpty(0), enemyBehaviorRandom(9), powerUpBulletSpeed(8)
+level 40 enemy powers: powerUpBulletSize(5), powerUpRapidFire(6), enemyBehaviorDodge(7)
+level 40 enemy powers: powerUpBulletDistance(4), powerUpRapidFire(4), enemyBehaviorRandom(9)
+level 40 enemy powers: enemyBehaviorFollow(6), powerUpExplode(10), powerUpBounce(1)
+
+
+
+
+level 50 enemy powers: powerUpBounce(5), powerUpBulletSpeed(10), enemyBehaviorFollow(7)
+level 50 enemy powers: powerUpBulletDistance(4), powerUpHeatSeek(7), powerUpExplode(12)
+level 50 enemy powers: powerUpBulletSpeed(6), enemyBehaviorRandom(10), powerUpHeart(15)
+level 50 enemy powers: powerUpExplode(1), powerUpRapidFire(6), powerUpRapidFire(15)
+level 50 enemy powers: powerUpHeatSeek(2), powerUpHeart(3), enemyBehaviorDodge(8)
+level 50 enemy powers: powerUpSpread(1), powerUpBounce(9), enemyBehaviorDodge(9)
+level 50 enemy powers: powerUpBulletSize(10), powerUpSpread(10), powerUpRapidFire(4)
+level 50 enemy powers: powerUpBulletSize(9), powerUpBounce(5), enemyBehaviorDodge(14)
+level 50 enemy powers: powerUpHeart(3), enemyBehaviorDodge(7), powerUpBulletSpeed(10)
+level 50 enemy powers: powerUpBulletSize(7), powerUpHeatSeek(3), enemyBehaviorDodge(12)
+
+
+level 100 enemy powers: powerUpBulletSize(1), powerUpHeatSeek(27), powerUpHeart(4)
+level 100 enemy powers: powerUpRapidFire(16), powerUpHeatSeek(4), enemyBehaviorRandom(7)
+level 100 enemy powers: powerUpBulletSize(19), enemyBehaviorCircle(7), enemyBehaviorDodge(11)
+level 100 enemy powers: powerUpHeatSeek(25), powerUpAccuracy(11), powerUpSpread(2)
+level 100 enemy powers: powerUpBulletDistance(6), enemyBehaviorFast(15), powerUpHeatSeek(18)
+level 100 enemy powers: powerUpBulletDistance(3), powerUpBulletSize(28), powerUpSpread(5)
+level 100 enemy powers: powerUpEmpty(0), enemyBehaviorRandom(26), powerUpHeart(5)
+level 100 enemy powers: powerUpExplode(2), powerUpHeatSeek(19), enemyBehaviorDodge(10)
+level 100 enemy powers: powerUpSpread(12), enemyBehaviorFollow(25), powerUpBulletDistance(8)
+level 100 enemy powers: enemyBehaviorFollow(21), powerUpBulletSpeed(4), powerUpRapidFire(26)
+
+
+
+level 150 enemy powers: powerUpHeart(15), powerUpBulletSpeed(4), powerUpHeatSeek(36)
+level 150 enemy powers: powerUpHeart(5), powerUpBulletSpeed(3), enemyBehaviorCircle(34)
+level 150 enemy powers: powerUpHeatSeek(22), powerUpSpread(2), powerUpBulletDistance(30)
+level 150 enemy powers: powerUpBulletSize(4), powerUpHeatSeek(8), enemyBehaviorCircle(46)
+level 150 enemy powers: powerUpBulletSize(11), powerUpRapidFire(13), powerUpBulletSize(9)
+level 150 enemy powers: enemyBehaviorCircle(29), powerUpHeatSeek(30), powerUpBounce(13)
+level 150 enemy powers: enemyBehaviorDodge(11), powerUpBounce(24), powerUpRapidFire(23)
+level 150 enemy powers: powerUpHeart(13), powerUpHeart(3), enemyBehaviorDodge(45)
+level 150 enemy powers: powerUpBulletDistance(14), enemyBehaviorCircle(33), powerUpHeatSeek(7)
+level 150 enemy powers: powerUpBulletDistance(36), powerUpSpread(2), powerUpAccuracy(16)
+
+
+
+level 200 enemy powers: enemyBehaviorDodge(22), powerUpBulletSize(3), enemyBehaviorFast(62)
+level 200 enemy powers: enemyBehaviorFast(29), powerUpHeart(3), powerUpBulletSpeed(46)
+level 200 enemy powers: powerUpHeatSeek(2), powerUpBulletSize(11), powerUpBulletSpeed(11)
+level 200 enemy powers: powerUpHeatSeek(1), powerUpSpread(1), powerUpBulletSpeed(61)
+level 200 enemy powers: powerUpBounce(23), powerUpRapidFire(47), enemyBehaviorRandom(33)
+level 200 enemy powers: powerUpBounce(22), enemyBehaviorFast(12), enemyBehaviorRandom(33)
+level 200 enemy powers: powerUpSpread(26), enemyBehaviorRandom(19), enemyBehaviorDodge(48)
+level 200 enemy powers: powerUpExplode(6), powerUpBulletDistance(40), enemyBehaviorFollow(41)
+level 200 enemy powers: powerUpBulletSize(32), enemyBehaviorDodge(26), powerUpBulletSpeed(2)
+level 200 enemy powers: powerUpBounce(30), enemyBehaviorDodge(54), enemyBehaviorFast(17)
+
+
+
+
+level 400 enemy powers: powerUpHeatSeek(11), powerUpBulletSize(126), powerUpBounce(19)
+level 400 enemy powers: powerUpBulletSize(86), powerUpExplode(14), enemyBehaviorCircle(18)
+level 400 enemy powers: powerUpBulletDistance(83), enemyBehaviorRandom(89), powerUpHeatSeek(1)
+level 400 enemy powers: enemyBehaviorDodge(10), enemyBehaviorRandom(48), powerUpRapidFire(120)
+level 400 enemy powers: powerUpSpread(103), powerUpHeart(11), enemyBehaviorCircle(29)
+level 400 enemy powers: powerUpBulletSize(78), enemyBehaviorDodge(47), enemyBehaviorCircle(59)
+level 400 enemy powers: powerUpHeatSeek(68), enemyBehaviorDodge(114), powerUpHeatSeek(42)
+level 400 enemy powers: powerUpBulletDistance(3), powerUpBulletDistance(88), enemyBehaviorCircle(114)
+level 400 enemy powers: powerUpBulletSize(81), powerUpExplode(16), powerUpExplode(70)
+level 400 enemy powers: enemyBehaviorDodge(55), enemyBehaviorFollow(13), powerUpSpread(90)
+
+
+
+level 800 enemy powers: powerUpBulletDistance(158), powerUpAccuracy(200), enemyBehaviorDodge(72)
+level 800 enemy powers: powerUpBounce(101), powerUpAccuracy(200), enemyBehaviorDodge(192)
+level 800 enemy powers: enemyBehaviorCircle(33), enemyBehaviorDodge(109), enemyBehaviorFast(104)
+level 800 enemy powers: enemyBehaviorRandom(159), powerUpRapidFire(194), powerUpBulletSize(111)
+level 800 enemy powers: powerUpExplode(96), enemyBehaviorRandom(163), powerUpHeart(238)
+level 800 enemy powers: powerUpBulletSize(40), powerUpBounce(105), powerUpSpread(117)
+level 800 enemy powers: powerUpBulletSize(189), powerUpBounce(67), powerUpAccuracy(67)
+level 800 enemy powers: powerUpRapidFire(161), powerUpBulletSpeed(38), enemyBehaviorRandom(214)
+level 800 enemy powers: powerUpSpread(36), powerUpBulletSpeed(20), powerUpSpread(245)
+level 800 enemy powers: enemyBehaviorFast(226), powerUpSpread(43), powerUpExplode(39)
