@@ -322,7 +322,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     mouseSpeed = viewWidth / inWidth;
     
     setCursorVisible( false );
-    grabInput( true );
+    //grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -496,28 +496,100 @@ static Level *getNextAbove() {
     }
 
 
+
 void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
+                    int inMaxSegments,
                     float inFade, char inDrawBarBackground ) {
     
-    if( inDrawBarBackground ) {    
-        setDrawColor( 0.25, 0.25, 0.25, inFade );
-        drawRect( inBarLeftEdge.x, inBarLeftEdge.y - 0.25, 
-                  inBarLeftEdge.x + 2, inBarLeftEdge.y + 0.25 );
+    double redBarWidth;
+    
+    double segmentWidth = 0.5;
+
+    char drawSegments = false;
+    
+    if( inMaxSegments < 10 ) {
+
+        //if( inMaxSegments
+
+        redBarWidth = segmentWidth * inMaxSegments;
+        
+        drawSegments = true;
+        }
+    else {
+        redBarWidth = segmentWidth * 9;
         }
     
             
+
+    // .125 border on both ends
+    double fullBarWidth = redBarWidth + 0.25;
+    
+
+
+    if( inDrawBarBackground ) {    
+        setDrawColor( 0.25, 0.25, 0.25, inFade );
+        drawRect( inBarLeftEdge.x, inBarLeftEdge.y - 0.25, 
+                  inBarLeftEdge.x + fullBarWidth, inBarLeftEdge.y + 0.25 );
+        }
+    
+            
+    // filling behind red
     setDrawColor( 0, 0, 0, inFade );
-    drawRect( inBarLeftEdge.x + 0.125 + 1.75 * inHealthFraction, 
+    drawRect( inBarLeftEdge.x + 0.125 + redBarWidth * inHealthFraction, 
               inBarLeftEdge.y - 0.125, 
-              inBarLeftEdge.x + 0.125 + 1.75, 
+              inBarLeftEdge.x + 0.125 + redBarWidth, 
               inBarLeftEdge.y + 0.125 );
 
     
-    setDrawColor( 0.85, 0, 0, inFade );
-    drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y - 0.125, 
-              inBarLeftEdge.x + 0.125 + 1.75 * inHealthFraction, 
-              inBarLeftEdge.y + 0.125 );
+    if( !drawSegments ) {
+        // solid bar
+        setDrawColor( 0.85, 0, 0, inFade );
+        drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y - 0.125, 
+                  inBarLeftEdge.x + 0.125 + redBarWidth * inHealthFraction, 
+                  inBarLeftEdge.y + 0.125 );
+        }
+    else {
+        // segments
+      
+        int numSegments = (int)( inHealthFraction * inMaxSegments );
+        
+        char swapColor = true;
+        
+        for( int i=0; i<numSegments; i++ ) {
+            
+            if( swapColor ) {
+                setDrawColor( 0.85, 0, 0, inFade );
+                }
+            else {
+                setDrawColor( 0.65, 0, 0, inFade );
+                }
+            swapColor = !swapColor;
+            
+            
+            drawRect( 
+                inBarLeftEdge.x + 0.125 + i * segmentWidth, 
+                inBarLeftEdge.y - 0.125, 
+                inBarLeftEdge.x + 0.125 + i * segmentWidth + segmentWidth, 
+                inBarLeftEdge.y + 0.125 );
+            }
+        }
+    /*
+    // segment markers
+    if( inMaxSegments < 10 ) {
+        
+        setDrawColor( 0, 0, 0, inFade );
 
+        for( int i=0; i<=inMaxSegments; i++ ) {
+            
+            double barCenterX = ( 1.75 / inMaxSegments ) * i;
+            
+            barCenterX += inBarLeftEdge.x + 0.125;
+
+            drawRect( barCenterX - 0.03125, inBarLeftEdge.y - 0.125,
+                      barCenterX + 0.03125, inBarLeftEdge.y + 0.125 );
+            }
+        }
+    */
     }
 
 
@@ -1431,7 +1503,7 @@ void drawFrame() {
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
 
-    drawHealthBar( barPos, playerHealthFraction, 1, true );
+    drawHealthBar( barPos, playerHealthFraction, playerMax, 1, true );
 
     
     if( levelToGetCurrentFrom != currentLevel ) {
@@ -1440,7 +1512,8 @@ void drawFrame() {
         currentLevel->getPlayerHealth( &playerHealth, &playerMax );
         float playerHealthFraction = playerHealth / (float)playerMax;
 
-        drawHealthBar( barPos, playerHealthFraction, zoomProgress, false );
+        drawHealthBar( barPos, playerHealthFraction, playerMax,
+                       zoomProgress, false );
         }
 
 

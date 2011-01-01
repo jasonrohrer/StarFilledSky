@@ -25,6 +25,8 @@ Version 3   ???
 --Player base health is now 1, but combined with two default heart tokens,
   effective health is still 3 if the player picks up no tokens.
 
+--Easier to read, segmented player health bar.
+
 
 
 Version 2    2010-December-29
