@@ -1,0 +1,9 @@
+
+// testing various power-up curves that map level numbers to [0:1]
+
+gnuplot> f(x)= (x<10?x/20: (0.5 *(x-10)/(x-10 +10) +0.5)) 
+gnuplot> g(x)= (x<10?x/20: (0.5 *(x-10)/(x-10 +3) +0.5))    
+gnuplot> plot [x=0:20] g(x), f(x), x/(x+20)             
+gnuplot> plot [x=0:20] g(x), f(x), x/(x+20), x/(x+3)
+gnuplot> plot [x=0:20] g(x), f(x), x/(x+20), x/(x+3), x/(x+2), x/(x+5)
+gnuplot> plot [x=0:30] g(x), f(x), x/(x+20), x/(x+3), x/(x+2), x/(x+5) 
