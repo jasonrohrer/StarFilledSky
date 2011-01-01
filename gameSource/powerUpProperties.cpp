@@ -32,12 +32,34 @@ int getMaxHealth( PowerUpSet *inSet ) {
 static float bulletParam = 20;
 
 
+static float bulletCurve( int inLevel ) {
+    
+    // linear up to level 10, where it reaches 0.5
+
+    if( inLevel <= 10 ) {
+        return inLevel / 20.0f;
+        }
+    else {
+        // a steep curve that meets line at level (10, 0.5)
+        // and approaches 1 as inLevel -> infinity
+
+        int adjustedLevel = inLevel - 10;
+
+        return 
+            0.5 * 
+            adjustedLevel / ( adjustedLevel + 3.0f ) 
+            + 0.5;
+        }
+    }
+
+
+
 
 float getBulletSize( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBulletSize );
 
     // first bound to 0:1
-    float boundedSize = totalLevel / ( totalLevel + bulletParam );
+    float boundedSize = bulletCurve( totalLevel );
 
     // bound to 1:maxBulletSize
     boundedSize *= ( maxBulletSize - 1 );
@@ -67,7 +89,7 @@ float getBulletSpeed( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBulletSpeed );
 
     // first bound to 0:1
-    float boundedSpeed = totalLevel / ( totalLevel + bulletParam );
+    float boundedSpeed = bulletCurve( totalLevel );
 
     // bound to 0.15 : 0.4
     boundedSpeed *= ( 0.25 );
@@ -107,7 +129,7 @@ float getSpread( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpSpread );
 
     // first bound to 0:1
-    float boundedSpread = totalLevel / ( totalLevel + bulletParam );
+    float boundedSpread = bulletCurve( totalLevel );
 
     // bound to 0:10
     boundedSpread *= 10;
@@ -138,7 +160,7 @@ float getBulletDistance( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBulletDistance );
 
     // first bound to 0:1
-    float boundedDistance = totalLevel / ( totalLevel + bulletParam );
+    float boundedDistance = bulletCurve( totalLevel );
 
     // bound to 5:30
     boundedDistance *= 25;
@@ -169,7 +191,7 @@ float getExplode( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpExplode );
 
     // first bound to 0:1
-    float boundedExplode = totalLevel / ( totalLevel + bulletParam );
+    float boundedExplode = bulletCurve( totalLevel );
 
     // bound to 0:5
     boundedExplode *= 10;
