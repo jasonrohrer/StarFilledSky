@@ -27,6 +27,7 @@ Version 3   ???
 
 --Easier to read, segmented player health bar.
 
+--Power ups now can change type based on the majority type of their sub-powers.
 
 
 Version 2    2010-December-29

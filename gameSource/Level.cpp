@@ -1144,15 +1144,11 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                                         mainPower.powerType );
                 
 
-                char startedEmpty = ( mainPower.powerType == powerUpEmpty );
-                
                 PowerUpToken t = { mainPower,
-                                   startedEmpty,
                                    pickPos,
                                    worldPos,
                                    new PowerUpSprite( mainPower, 
-                                                      subPowers,
-                                                      startedEmpty ),
+                                                      subPowers ),
                                    subPowers,
                                    generateRandomNoteSequence( 
                                        musicPartIndex ) };
@@ -2718,10 +2714,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             PowerUpToken *t = mPowerUpTokens.getElement( 
                 mLastEnterPointPowerTokenIndex );
             
-            if( t->startedEmpty ) {
-                t->power.powerType = t->subPowers->getMajorityType();
-                }
 
+            t->power.powerType = t->subPowers->getMajorityType();
             t->power.level = t->subPowers->getLevelSum( t->power.powerType );
             }
         }
@@ -3279,6 +3273,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                 mLastEnterPointPowers = t->subPowers;
                 mLastEnterPointPowerTokenIndex = i;
 
+                /*
                 if( t->startedEmpty &&
                     t->power.powerType != powerUpEmpty ) {
                     
@@ -3288,7 +3283,11 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
                     t->startedEmpty = false;
                     t->sprite->mStartedEmpty = false;
                     }
-                
+                */
+
+                // entering a power-up to modify it.
+                // keep its sprite updated
+                t->sprite->mKeepUpdated = true;
 
                 return t->sprite->getColors();
                 }

@@ -8,8 +8,7 @@ class PowerUpSprite : public BorderSprite {
 
     public:
 
-        PowerUpSprite( PowerUp inPower, PowerUpSet *inSubPowers,
-                       char inStartedEmpty );
+        PowerUpSprite( PowerUp inPower, PowerUpSet *inSubPowers );
         
 
         // override these from BorderSprite to draw fixed sprites from sprite
@@ -22,7 +21,7 @@ class PowerUpSprite : public BorderSprite {
 
         ColorScheme getColors();
 
-        char mStartedEmpty;
+        char mKeepUpdated;
         
     protected:
         PowerUp mPower;

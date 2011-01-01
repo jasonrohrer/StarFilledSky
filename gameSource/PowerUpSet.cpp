@@ -241,13 +241,11 @@ PowerUpSet::PowerUpSet( int inTotalLevel, spriteID inType ) {
     
     // fill with random first
 
-    // leave room for type itself, which contributes 1 point
-    fillRandomSet( inTotalLevel - 1 );
+    fillRandomSet( inTotalLevel );
     
 
     // spread inType tokens evenly throughout set
-    // start at 1, because type itself contributes 1
-    int typeSum = 1;
+    int typeSum = 0;
         
     for( int i=POWER_SET_SIZE-1; i>=0; i-- ) {
         
@@ -459,7 +457,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
 
 
 int PowerUpSet::getLevelSum( spriteID inPowerUpType ) {
-    int sum = 1;
+    int sum = 0;
 
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( mPowers[i].powerType == inPowerUpType ) {
