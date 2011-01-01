@@ -29,6 +29,10 @@ Version 3   ???
 
 --Power ups now can change type based on the majority type of their sub-powers.
 
+--Stepened power-up curves to make game more difficult faster (level 30 is
+  now roughly as difficult as the old level 90).
+
+
 
 Version 2    2010-December-29
 
