@@ -499,7 +499,7 @@ static Level *getNextAbove() {
 
 void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
                     int inMaxSegments,
-                    float inFade, char inDrawBarBackground ) {
+                    float inFade ) {
     
     double redBarWidth;
     
@@ -525,12 +525,29 @@ void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
     double fullBarWidth = redBarWidth + 0.25;
     
 
+    
+    // background
+    setDrawColor( 0.25, 0.25, 0.25, inFade );
+    // four rects that serve as borders without overlapping filled area
+    // (so whole bar can fade in on top of another, even if they are
+    //  different lengths)
+    // left
+    drawRect( inBarLeftEdge.x, inBarLeftEdge.y - 0.25, 
+              inBarLeftEdge.x + 0.125, inBarLeftEdge.y + 0.25 );
+    // right
+    drawRect( inBarLeftEdge.x + fullBarWidth - 0.125, 
+              inBarLeftEdge.y - 0.25, 
+              inBarLeftEdge.x + fullBarWidth, inBarLeftEdge.y + 0.25 );
 
-    if( inDrawBarBackground ) {    
-        setDrawColor( 0.25, 0.25, 0.25, inFade );
-        drawRect( inBarLeftEdge.x, inBarLeftEdge.y - 0.25, 
-                  inBarLeftEdge.x + fullBarWidth, inBarLeftEdge.y + 0.25 );
-        }
+    // top
+    drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y - 0.25, 
+              inBarLeftEdge.x + fullBarWidth - 0.125, 
+              inBarLeftEdge.y - 0.125 );
+    
+    // bottom
+    drawRect( inBarLeftEdge.x + 0.125, inBarLeftEdge.y + 0.125, 
+              inBarLeftEdge.x + fullBarWidth - 0.125, 
+              inBarLeftEdge.y + 0.25 );
     
             
     // filling behind red
@@ -1503,7 +1520,8 @@ void drawFrame() {
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
 
-    drawHealthBar( barPos, playerHealthFraction, playerMax, 1, true );
+    drawHealthBar( barPos, playerHealthFraction, playerMax, 
+                   1 - zoomProgress );
 
     
     if( levelToGetCurrentFrom != currentLevel ) {
@@ -1513,7 +1531,7 @@ void drawFrame() {
         float playerHealthFraction = playerHealth / (float)playerMax;
 
         drawHealthBar( barPos, playerHealthFraction, playerMax,
-                       zoomProgress, false );
+                       zoomProgress );
         }
 
 
