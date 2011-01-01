@@ -103,3 +103,41 @@ level 800 enemy powers: powerUpBulletSize(189), powerUpBounce(67), powerUpAccura
 level 800 enemy powers: powerUpRapidFire(161), powerUpBulletSpeed(38), enemyBehaviorRandom(214)
 level 800 enemy powers: powerUpSpread(36), powerUpBulletSpeed(20), powerUpSpread(245)
 level 800 enemy powers: enemyBehaviorFast(226), powerUpSpread(43), powerUpExplode(39)
+
+
+
+
+
+level 30 enemy powers: powerUpExplode(5), powerUpAccuracy(2), enemyBehaviorCircle(5)
+level 30 enemy powers: powerUpBounce(4), powerUpBulletSpeed(8), powerUpHeart(1)
+level 30 enemy powers: powerUpHeatSeek(3), powerUpAccuracy(5), powerUpBulletDistance(5)
+level 30 enemy powers: powerUpAccuracy(1), powerUpSpread(5), powerUpHeatSeek(3)
+level 30 enemy powers: powerUpSpread(6), powerUpHeart(4), enemyBehaviorCircle(5)
+level 30 enemy powers: powerUpRapidFire(3), powerUpEmpty(0), powerUpBulletSize(1)
+level 30 enemy powers: powerUpAccuracy(4), powerUpRapidFire(2), powerUpHeatSeek(5)
+level 30 enemy powers: powerUpBounce(4), powerUpHeart(5), enemyBehaviorRandom(8)
+level 30 enemy powers: powerUpBulletSpeed(6), powerUpBounce(8), powerUpSpread(1)
+level 30 enemy powers: powerUpSpread(2), enemyBehaviorRandom(8), powerUpSpread(2)
+
+
+
+
+level 30 enemy powers: powerUpBulletSpeed(6), powerUpExplode(3), enemyBehaviorCircle(5)
+level 30 enemy powers: powerUpBulletSize(3), powerUpHeatSeek(5), powerUpAccuracy(5)
+level 30 enemy powers: powerUpBounce(7), powerUpEmpty(0), powerUpBounce(4)
+level 30 enemy powers: powerUpEmpty(0), powerUpBounce(4), powerUpBulletSize(9)
+level 30 enemy powers: powerUpRapidFire(1), powerUpBounce(1), powerUpRapidFire(2)
+level 30 enemy powers: powerUpEmpty(0), powerUpHeart(2), powerUpBulletSize(4)
+
+
+
+level 30 enemy powers: powerUpRapidFire(8), powerUpEmpty(0), powerUpRapidFire(3)
+level 30 enemy powers: powerUpBounce(3), powerUpAccuracy(1), powerUpBulletDistance(1)
+level 30 enemy powers: powerUpBulletSpeed(4), powerUpBulletSize(4), powerUpBulletSpeed(6)
+level 30 enemy powers: powerUpBulletSpeed(6), powerUpHeart(3), enemyBehaviorCircle(5)
+level 30 enemy powers: powerUpBounce(3), powerUpBulletSize(4), powerUpBulletDistance(3)
+level 30 enemy powers: powerUpBulletDistance(6), powerUpBulletDistance(4), powerUpEmpty(0)
+level 30 enemy powers: powerUpAccuracy(3), powerUpBulletSize(8), powerUpEmpty(0)
+level 30 enemy powers: powerUpExplode(2), powerUpBounce(1), enemyBehaviorCircle(6)
+level 30 enemy powers: powerUpBounce(7), powerUpEmpty(0), powerUpBulletDistance(5)
+level 30 enemy powers: powerUpSpread(1), powerUpRapidFire(2), powerUpBounce(4)
