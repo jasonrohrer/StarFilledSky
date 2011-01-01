@@ -487,12 +487,22 @@ spriteID PowerUpSet::getMajorityType() {
     int maxType = powerUpEmpty;
     int maxSum = 0;
     
-    for( int i=0; i<NUM_POWER_TYPES; i++ ) {
-        if( sums[i] > maxSum ) {
-            maxSum = sums[i];
-            maxType = i + firstPowerUpID;
+    // don't consider all types, in the arbitrary order they occur in 
+    // the sums array
+    
+    // instead, only consider the types in our set, in that order
+    // (in case of tie, first power token trumps others)
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType != powerUpEmpty ) {
+            int thisSum = sums[ mPowers[i].powerType - firstPowerUpID ];
+
+            if( thisSum > maxSum ) {
+                maxSum = thisSum;
+                maxType = mPowers[i].powerType;
+                }
             }
         }
+
     
     return (spriteID)maxType;
     }
