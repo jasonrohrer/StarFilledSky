@@ -55,6 +55,32 @@ static char *modifiedMoveTutorial = NULL;
 static char rigPowerUpsForTeaching = true;
 
 
+static char forceFreshStart = false;
+static char forceEnd = false;
+
+
+void forceTutorialEnd() {
+    forceEnd = true;
+    
+    /*
+    */
+    }
+
+
+
+void forceTutorialFreshStart() {
+    forceFreshStart = true;
+    /*
+    resetTutorial();
+    
+    // full fresh start
+    for( int i=0; i<numTut; i++ ) {
+        tutorialsReady[i] = false;
+        }
+    */    
+    }
+
+
 
 void initTutorial() {
 
@@ -75,7 +101,10 @@ void initTutorial() {
         tutorialCompletedCount = readCount;
         }
 
-    if( tutorialCompletedCount >= 1 ) {
+    if( ( tutorialCompletedCount >= 1 && ! forceFreshStart )
+        ||
+        forceEnd ) {
+
         currentTut = -1;
         rigPowerUpsForTeaching = false;
         
@@ -85,7 +114,7 @@ void initTutorial() {
         // just show one tutorial after another
         for( int i=0; i<numTut; i++ ) {
             tutorialsReady[i] = true;
-            }
+            }        
         }
     }
 

@@ -2,6 +2,12 @@
 
 #include "Level.h"
 
+
+// must be called before init to have an effect
+void forceTutorialEnd();
+void forceTutorialFreshStart();
+
+
 void initTutorial();
 
 

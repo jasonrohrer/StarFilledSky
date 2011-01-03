@@ -264,8 +264,31 @@ static void populateLevelRiseStack() {
 
 
 
+char *getCustomRecordedGameData() {
+    int completedCount = 
+        SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
 
-void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
+    int tutorialOn = 1;
+
+    if( completedCount >= 1 ) {
+        // don't force player back through boring level 0
+        levelNumber = 9;
+        tutorialOn = 0;
+        }
+    
+    
+    
+    
+    char * result = autoSprintf( "%d_%d", levelNumber, tutorialOn );
+    
+    return result;
+    }
+
+
+
+
+void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
+                      const char *inCustomRecordedGameData ) {
     screenW = inWidth;
     screenH = inHeight;
     
@@ -350,13 +373,36 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     initNumerals( "numerals.tga" );
     
 
-    int completedCount = 
-        SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
+    // override default with data from recorded game
+    int tutorialOn = 0;
+    int numRead = sscanf( inCustomRecordedGameData, "%d_%d", &levelNumber,
+                          &tutorialOn );
+    printf( "CUSTOM= %s\n", inCustomRecordedGameData );
+    
+    if( numRead != 2 ) {
 
-    if( completedCount >= 1 ) {
-        // don't force player back through boring level 0
-        levelNumber = 9;
+        int completedCount = 
+            SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
+
+        if( completedCount >= 1 ) {
+            // don't force player back through boring level 0
+            levelNumber = 9;
+            }
         }
+    else {
+        // override
+        
+        // (keep levelNumber that was read from data)
+
+        if( !tutorialOn ) {
+            forceTutorialEnd();
+            }
+        else {
+            forceTutorialFreshStart();
+            }
+        
+        }
+    
 
 
     currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );

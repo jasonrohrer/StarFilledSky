@@ -45,6 +45,9 @@ Version 3   ???
 --Fixed to ensure good random mixing between rises and falls, even in 
   unpopulated levels.
 
+--Recorded games now track tutorial status.
+
+
 
 Version 2    2010-December-29
 
