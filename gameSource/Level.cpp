@@ -3558,7 +3558,7 @@ char Level::isFrozen() {
 
 
 void Level::startPlayerImmortal() {
-    mPlayerImmortalSteps = 30 * frameRateFactor;
+    mPlayerImmortalSteps = (int)( 30 * frameRateFactor );
     }
 
 
