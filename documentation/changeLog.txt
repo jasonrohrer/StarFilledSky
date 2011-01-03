@@ -42,6 +42,9 @@ Version 3   ???
 
 --Changed rise icon on info panel to be color-matching.
 
+--Fixed to ensure good random mixing between rises and falls, even in 
+  unpopulated levels.
+
 
 Version 2    2010-December-29
 

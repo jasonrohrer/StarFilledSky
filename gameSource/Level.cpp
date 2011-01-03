@@ -1690,6 +1690,16 @@ void Level::generateEnemyDestructionSmoke( Enemy *inE ) {
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
     
+    // call rand at least once per step to ensure some mixing between
+    // saves and restores when rising and falling (compacting and decompacting
+    //  levels in stack)
+    // Because some levels (negative ones) have nothing happening that uses
+    //  the random number generator (unless player shoots).
+    // Doing this causes random state to depend on exactly how many frame
+    //  steps have happened.
+    randSource.getRandomInt();
+    
+
     mPlayerImmortalSteps --;
     if( mPlayerImmortalSteps < 0 ) {
         mPlayerImmortalSteps = 0;
