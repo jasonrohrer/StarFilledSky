@@ -319,8 +319,17 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate ) {
     viewHeightFraction = inHeight / (double)inWidth;
 
     
-    mouseSpeed = viewWidth / inWidth;
+    double mouseParam = 0.000976562;
+
+    float mouseSpeedSetting = 
+        SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
+
+    mouseParam *= mouseSpeedSetting;
+
+    mouseSpeed = mouseParam * inWidth / viewWidth;
+
     
+
     setCursorVisible( false );
     grabInput( true );
     

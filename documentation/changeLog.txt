@@ -32,6 +32,11 @@ Version 3   ???
 --Stepened power-up curves to make game more difficult faster (level 30 is
   now roughly as difficult as the old level 90).
 
+--Fixed so that mouse speed is independent of screen resolution.
+
+--Added a settings file for adjusting mouse speed.
+
+
 
 
 Version 2    2010-December-29
