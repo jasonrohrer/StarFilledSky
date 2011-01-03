@@ -254,7 +254,17 @@ void tutorialKeyPressed( int inKeyNum ) {
     }
 
 
+// start at level 0, so it is already visited
+static char levelVisited[7] = { true, false, false,
+                                false, false, false };
+                                
+
+
 void tutorialRiseHappened( int inLevelRisenTo ) {
+
+    if( inLevelRisenTo < 7 ) {
+        levelVisited[ inLevelRisenTo ] = true;
+        }
 
     switch( inLevelRisenTo ) {
         case 1:
@@ -274,6 +284,18 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         tutorialsReady[3] = true;
         }
     }
+
+
+
+char levelAlreadyVisited( int inLevelNumber ) {
+    if( inLevelNumber < 7 ) {
+        return levelVisited[ inLevelNumber ];
+        }
+    else {
+        return false;
+        }
+    }
+
 
 
 

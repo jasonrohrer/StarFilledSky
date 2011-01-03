@@ -1063,6 +1063,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // for tutorial-mode power-up placement
     // (every other power-up is spread)
     char spreadToggle = false;
+    // if knocked back down:  half or 1/3 of power-ups are hearts
+    char heartToggle = 0;
+
 
     for( int i=0; i<maxNumPowerUps; i++ ) {
 
@@ -1120,21 +1123,47 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     }
                 
                 if( shouldPowerUpsBeRigged() ) {
-                    if( mLevelNumber == 3 ) {
-                        mainPower.powerType = powerUpBulletSize;
-                        }
-                    else if( mLevelNumber == 4 ) {
-                        mainPower.powerType = powerUpSpread;
-                        }
-                    else if( mLevelNumber == 5 || mLevelNumber == 6 ) {
-                        // 50/50
-                        if( spreadToggle ) {
-                            mainPower.powerType = powerUpSpread;
-                            }
-                        else {
+
+                    if( mLevelNumber == 3 || mLevelNumber == 4 ) {
+                        
+                        if( mLevelNumber == 3 ) {
                             mainPower.powerType = powerUpBulletSize;
                             }
-                        spreadToggle = !spreadToggle;
+                        else if( mLevelNumber == 4 ) {
+                            mainPower.powerType = powerUpSpread;
+                            }
+                        
+                        if( levelAlreadyVisited( mLevelNumber ) ) {
+                            heartToggle ++;
+                            if( heartToggle == 2 ) {
+                                heartToggle = 0;
+                                mainPower.powerType = powerUpHeart;
+                                }
+                            }
+                        }
+                    else if( mLevelNumber == 5 || mLevelNumber == 6 ) {
+                        
+                        char heartPlaced = false;
+                        if( levelAlreadyVisited( mLevelNumber ) ) {
+                            heartToggle ++;
+                            if( heartToggle == 3 ) {
+                                heartToggle = 0;
+                                mainPower.powerType = powerUpHeart;
+                                heartPlaced = true;
+                                }
+                            }
+                        
+                        if( !heartPlaced ) {    
+                            // 50/50
+                            if( spreadToggle ) {
+                                mainPower.powerType = powerUpSpread;
+                                }
+                            else {
+                                mainPower.powerType = powerUpBulletSize;
+                                }
+                            spreadToggle = !spreadToggle;
+                            }
+                        
                         }
                     }
 
