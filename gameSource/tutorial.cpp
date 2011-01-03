@@ -262,7 +262,7 @@ static char levelVisited[7] = { true, false, false,
 
 void tutorialRiseHappened( int inLevelRisenTo ) {
 
-    if( inLevelRisenTo < 7 ) {
+    if( inLevelRisenTo >=0 && inLevelRisenTo < 7 ) {
         levelVisited[ inLevelRisenTo ] = true;
         }
 
