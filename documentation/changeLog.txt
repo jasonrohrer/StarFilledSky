@@ -40,6 +40,8 @@ Version 3   ???
 
 --Fixed crash on exit during descent.
 
+--Changed rise icon on info panel to be color-matching.
+
 
 Version 2    2010-December-29
 

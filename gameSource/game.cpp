@@ -1422,7 +1422,7 @@ void drawFrame() {
     
     
     doublePair spritePos = levelNumberPos;
-    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.25;
+    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.5;
     //spritePos.x -= zoomProgress * viewWidth /2;
     
     spritePos.y += 0.125;
@@ -1448,12 +1448,12 @@ void drawFrame() {
     weAreInsideSprite->draw( spritePos, fade );
 
     doublePair markerPos = spritePos;
-    markerPos.x -= 0.875;
+    markerPos.x -= 1;
     
     
     setDrawColor( 1, 1, 1, 1 );
     
-    drawSprite( riseIcon, markerPos );
+    
     
     
     doublePair setPos = spritePos;
@@ -1496,7 +1496,7 @@ void drawFrame() {
     PowerUpSet *playerPowers = levelToGetCurrentFrom->getPlayerPowers();
     setPos = spritePos;
     setPos.x = lastScreenViewCenter.x;
-    setPos.x -= sin( zoomProgress * M_PI * 0.5 ) * (viewWidth /2 - 3.5);
+    setPos.x -= sin( zoomProgress * M_PI * 0.5 ) * (viewWidth /2 - 3.75);
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
     spritePos = setPos;
@@ -1525,7 +1525,19 @@ void drawFrame() {
     playerSprite->draw( spritePos, fade );
     
     
+    Color *riseIconColor = Color::linearSum( 
+        &( playerSprite->getColors().special ),
+        &( weAreInsideSprite->getColors().special ),
+        zoomProgress );
+    
+    setDrawColor( riseIconColor->r, riseIconColor->g, riseIconColor->b, 1 );
 
+    delete riseIconColor;
+    
+    drawSprite( riseMarker, markerPos );
+
+    setDrawColor( 1, 1, 1, 1 );
+    
 
     // health bar
     doublePair barPos = { lastScreenViewCenter.x, setPos.y };
