@@ -28,10 +28,6 @@ int getMaxHealth( PowerUpSet *inSet ) {
 
 
 
-// determines steepness of bullet size curve (higher makes a flatter curve) 
-static float bulletParam = 20;
-
-
 static float bulletCurve( int inLevel ) {
     
     // linear up to level 10, where it reaches 0.5
