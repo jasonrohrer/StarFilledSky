@@ -242,6 +242,11 @@ class Level {
         char isFrozen();
         
 
+        // brief period of immortality
+        void startPlayerImmortal();
+        
+
+
         void drawFloorEdges( char inDraw );
         
         
@@ -371,6 +376,9 @@ class Level {
         
         char mFrozen;
         
+        int mPlayerImmortalSteps;
+        
+
         char mDrawFloorEdges;
         float mEdgeFadeIn;
         

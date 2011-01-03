@@ -1242,6 +1242,7 @@ void drawFrame() {
     if( lastRiseFreezeFrameDrawn ) {
         lastRiseFreezeFrameDrawn = false;
         currentLevel->freezeLevel( false );
+        currentLevel->startPlayerImmortal();
         }
     else if( secondToLastRiseFreezeFrameDrawn ) {
         secondToLastRiseFreezeFrameDrawn = false;

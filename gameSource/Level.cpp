@@ -912,6 +912,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
 
     mFrozen = false;
+    mPlayerImmortalSteps = 0;
+    
     mDrawFloorEdges = true;
     mEdgeFadeIn = 0.0f;
     mLastComputedEdgeFade = 0.0f;
@@ -1688,7 +1690,10 @@ void Level::generateEnemyDestructionSmoke( Enemy *inE ) {
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
     
-    
+    mPlayerImmortalSteps --;
+    if( mPlayerImmortalSteps < 0 ) {
+        mPlayerImmortalSteps = 0;
+        }
 
     
     // opt:  for certain steppable things,
@@ -1948,7 +1953,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             }
                         }
                     }
-                else {
+                else if( mPlayerImmortalSteps <= 0 ) {
+
                     // check if hit player
                     if( distance( mPlayerPos, b->position ) < hitRadius ) {
                         hit = true;
@@ -3547,6 +3553,12 @@ void Level::freezeLevel( char inFrozen ) {
 
 char Level::isFrozen() {
     return mFrozen;
+    }
+
+
+
+void Level::startPlayerImmortal() {
+    mPlayerImmortalSteps = 30 * frameRateFactor;
     }
 
 
