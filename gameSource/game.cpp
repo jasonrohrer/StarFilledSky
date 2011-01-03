@@ -713,8 +713,26 @@ static char secondToLastRiseFreezeFrameDrawn = false;
 static char lastRiseFreezeFrameDrawn = false;
 
 
+// draw code separated from updates
+// some updates are still embedded in draw code, so pass a switch to 
+// turn them off
+static void drawFrameNoUpdate( char inUpdate );
 
-void drawFrame() {
+
+
+void drawFrame( char inUpdate ) {
+
+    if( !inUpdate ) {
+        char oldFrozen = currentLevel->isFrozen();
+        
+        currentLevel->freezeLevel( true );
+
+        drawFrameNoUpdate( false );
+
+        currentLevel->freezeLevel( oldFrozen );
+        return;
+        }
+    
 
     if( !firstDrawFrameCalled ) {
         // do final init step... stuff that shouldn't be done until
@@ -1248,6 +1266,16 @@ void drawFrame() {
 
 
     // now draw stuff AFTER all updates
+    drawFrameNoUpdate( true );
+    }
+
+
+
+void drawFrameNoUpdate( char inUpdate ) {
+
+    // toggle animations that are built-in to power-up set drawing functions
+    PowerUpSet::sPauseAllSets = !inUpdate;
+    
 
 
     char stencilDrawn = false;
@@ -1349,9 +1377,11 @@ void drawFrame() {
         }
     else {
         // okay to pass player movement to level
-        currentLevel->setMousePos( mousePos );
-        currentLevel->setPlayerPos( playerPos );
-        currentLevel->setEnteringMouse( entering );
+        if( inUpdate ) {    
+            currentLevel->setMousePos( mousePos );
+            currentLevel->setPlayerPos( playerPos );
+            currentLevel->setEnteringMouse( entering );
+            }
         }
     currentLevel->drawLevel( lastScreenViewCenter, viewSize );
 
@@ -1378,9 +1408,10 @@ void drawFrame() {
             }
 
         // step zoom and check for zoom end
-
-        zoomProgress += zoomSpeed * zoomDirection * frameRateFactor;
-        
+        if( inUpdate ) {
+            zoomProgress += zoomSpeed * zoomDirection * frameRateFactor;
+            }
+    
         if( zoomProgress >= 1 && zoomDirection == 1) {
 #ifdef USE_MALLINFO
             struct mallinfo meminfo = mallinfo();
@@ -1638,6 +1669,8 @@ void drawFrame() {
     doublePair barPos = { lastScreenViewCenter.x, setPos.y };
     barPos.x += 1.75;
 
+    int playerHealth, playerMax;
+    
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
 
@@ -1827,7 +1860,11 @@ void keyDown( unsigned char inASCII ) {
         case 'T':
         case '?':
             resetTutorial();
-            break;            
+            break;   
+        case 'p':
+        case 'P':
+            pauseGame();
+            break;
         }
     }
 

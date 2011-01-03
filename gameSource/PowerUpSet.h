@@ -78,6 +78,11 @@ class PowerUpSet {
         
 
         PowerUp mPowers[ POWER_SET_SIZE ];
+        
+
+        // set to disable animations when drawing
+        static char sPauseAllSets;
+
 
     protected:
         

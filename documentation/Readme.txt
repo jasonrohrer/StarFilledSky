@@ -12,6 +12,9 @@ This game has music.  Please use speakers or headphones.
 
 Use ESC or Ctrl-Q to exit the game.
 
+Press P to pause and resume.
+
+
 Keyboard and mouse controls for the game are quite simple, and brief
 instructions are included in the game.  To view the instructions again
 at any time, hit the "T" key.

@@ -10,6 +10,9 @@ extern CustomRandomSource randSource;
 extern double frameRateFactor;
 
 
+char PowerUpSet::sPauseAllSets = false;
+
+
 
 void drawPowerUpBorder( doublePair inPosition, double inFade ) {
     setDrawColor( 1, 1, 1, inFade );
@@ -413,7 +416,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
 
     
 
-    if( mPushing ) {
+    if( mPushing && ! sPauseAllSets ) {
         // speed up as stack of waiting power-ups gets taller
         mPushProgress += ( 0.025 + 0.025 * mPushStackSize ) * frameRateFactor;
         if( mPushProgress >= 1 ) {
