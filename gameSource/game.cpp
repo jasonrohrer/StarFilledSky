@@ -1422,7 +1422,7 @@ void drawFrame() {
     
     
     doublePair spritePos = levelNumberPos;
-    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.5;
+    spritePos.x = lastScreenViewCenter.x - viewWidth/2 + 1.5625;
     //spritePos.x -= zoomProgress * viewWidth /2;
     
     spritePos.y += 0.125;
@@ -1448,7 +1448,7 @@ void drawFrame() {
     weAreInsideSprite->draw( spritePos, fade );
 
     doublePair markerPos = spritePos;
-    markerPos.x -= 1;
+    markerPos.x -= 1.0625;
     
     
     setDrawColor( 1, 1, 1, 1 );
@@ -1457,7 +1457,7 @@ void drawFrame() {
     
     
     doublePair setPos = spritePos;
-    setPos.x += 2.25;
+    setPos.x += 2.1875;
 
     p->drawSet( setPos, fade );
     
@@ -1484,7 +1484,7 @@ void drawFrame() {
         PlayerSprite *playerSprite = currentLevel->getPlayerSprite(); 
 
         spritePos = setPos;
-        spritePos.x -= 2.25;
+        spritePos.x -= 2.1875;
     
         playerSprite->draw( spritePos, zoomProgress );
         }
@@ -1500,7 +1500,7 @@ void drawFrame() {
 
     PlayerSprite *playerSprite = levelToGetCurrentFrom->getPlayerSprite(); 
     spritePos = setPos;
-    spritePos.x -= 2.25;
+    spritePos.x -= 2.1875;
 
     
     if( zoomProgress != 0 && lastLevel != NULL ) {
