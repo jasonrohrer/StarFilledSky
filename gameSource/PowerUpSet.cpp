@@ -103,9 +103,9 @@ void PowerUpSet::fillDefaultSet() {
 
 #define MIN_FOLLOW_LEVEL 5
 #define MIN_DODGE_LEVEL 5
-#define MIN_RANDOM_LEVEL 5
-#define MIN_FAST_LEVEL 10
-#define MIN_CIRCLE_LEVEL 3
+#define MIN_RANDOM_LEVEL 4
+#define MIN_FAST_LEVEL 7
+#define MIN_CIRCLE_LEVEL 4
 
 
 
