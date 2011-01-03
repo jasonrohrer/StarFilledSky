@@ -47,6 +47,8 @@ Version 3   ???
 
 --Recorded games now track tutorial status.
 
+--Added saving of highest level reached.  Can resume at that level next game.
+
 
 
 Version 2    2010-December-29

@@ -153,6 +153,12 @@ const char *getDemoCodeServerURL() {
 
 int levelNumber = 0;
 
+int highestLevelReached = 0;
+
+char gamePlayingBack = false;
+
+
+
 Level *currentLevel;
 
 SimpleVector<Level *> levelRiseStack;
@@ -263,6 +269,26 @@ static void populateLevelRiseStack() {
     }
 
 
+#define SETTINGS_HASH_SALT  "gazing upward"
+
+
+int getStartingLevelNumber() {
+    SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+    SettingsManager::setHashingOn( true );
+    
+    // defaults to 9 if hash fails
+    int startingLevelNumber = 
+        SettingsManager::getIntSetting( "startAtLevel", 9 );
+    
+    SettingsManager::setHashingOn( false );
+    
+    return startingLevelNumber;    
+    }
+
+
+
+
 
 char *getCustomRecordedGameData() {
     int completedCount = 
@@ -272,7 +298,7 @@ char *getCustomRecordedGameData() {
 
     if( completedCount >= 1 ) {
         // don't force player back through boring level 0
-        levelNumber = 9;
+        levelNumber = getStartingLevelNumber();
         tutorialOn = 0;
         }
     
@@ -386,13 +412,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
         if( completedCount >= 1 ) {
             // don't force player back through boring level 0
-            levelNumber = 9;
+            levelNumber = getStartingLevelNumber();
             }
         }
     else {
         // override
         
         // (keep levelNumber that was read from data)
+
+        if( levelNumber != getStartingLevelNumber() ) {
+            // this is not a level that the local player has reached
+            // assume this is a playback game, and don't allow player
+            // to rise up unfairly
+            gamePlayingBack = true;
+            }
 
         if( !tutorialOn ) {
             forceTutorialEnd();
@@ -728,6 +761,22 @@ void drawFrame() {
     if( lastRiseFreezeFrameDrawn ) {
         levelNumber = currentLevel->getLevelNumber();
         
+        // only save bookmark to this level if local player is actually playing
+        // (not for playback games from others)
+        if( !gamePlayingBack && levelNumber > highestLevelReached ) {
+            highestLevelReached = levelNumber;
+        
+            SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+            SettingsManager::setHashingOn( true );
+    
+            SettingsManager::setSetting( "startAtLevel", highestLevelReached );
+    
+            SettingsManager::setHashingOn( false );
+            }
+        
+            
+
         // populate stack here, in case we rise back out further
         // this prevents frame hiccups, because this happens
         // at the tail end of lastLevel's freeze right before
