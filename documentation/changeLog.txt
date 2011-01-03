@@ -38,6 +38,7 @@ Version 3   ???
 
 --Added a half-second of immortality after rise-out.
 
+--Fixed crash on exit during descent.
 
 
 Version 2    2010-December-29

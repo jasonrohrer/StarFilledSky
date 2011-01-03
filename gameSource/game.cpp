@@ -414,6 +414,10 @@ void freeFrameDrawer() {
     delete currentLevel;
     
     if( lastLevel != NULL ) {
+        // remove from stack first, if it's there, to avoid double-delete
+        // below
+        levelRiseStack.deleteElementEqualTo( lastLevel );
+        
         delete lastLevel;
         }
     
