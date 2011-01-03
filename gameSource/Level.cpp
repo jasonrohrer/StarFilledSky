@@ -1129,10 +1129,11 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     if( mLevelNumber == 3 || mLevelNumber == 4 ) {
                         
                         if( mLevelNumber == 3 ) {
-                            mainPower.powerType = powerUpBulletSize;
+                            // spread first, easiest to notice
+                            mainPower.powerType = powerUpSpread;
                             }
                         else if( mLevelNumber == 4 ) {
-                            mainPower.powerType = powerUpSpread;
+                            mainPower.powerType = powerUpBulletSize;
                             }
                         
                         if( levelAlreadyVisited( mLevelNumber ) ) {
