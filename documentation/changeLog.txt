@@ -51,8 +51,11 @@ Version 3   ???
 
 --Press P to pause game.
 
---Changed to always have level-1 power-ups on player floors and high power-ups
-  on enemy floor, forcing recursion to power-up self and power-down enemies.
+--Reduced power-up levels on player sub-floors and increased power-up levels
+  on enemy sub-floors, encouraging more sub-recursion to power-up self
+  and power-down enemies.
+
+--Made bounce power-up unlimited (not on curve, level 20 now means 20 bounces).
 
 
 

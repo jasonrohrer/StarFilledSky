@@ -172,6 +172,10 @@ float bounceParam = 5;
 int getBounce( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBounce );
 
+    // try unlimited bounce (limited by range, anyway)
+    return totalLevel;
+    
+
     // first bound to 0:1
     float boundedBounce = totalLevel / ( totalLevel + bounceParam );
 
