@@ -51,6 +51,9 @@ Version 3   ???
 
 --Press P to pause game.
 
+--Changed to always have level-1 power-ups on player floors and high power-ups
+  on enemy floor, forcing recursion to power-up self and power-down enemies.
+
 
 
 Version 2    2010-December-29

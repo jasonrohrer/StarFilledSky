@@ -130,7 +130,8 @@ class Level {
                RandomWalkerSet *inWalkerSet=NULL,
                NoteSequence *inMusicNotes=NULL,
                int inLevelNumber = 0,
-               char inSymmetrical=true );
+               char inSymmetrical=true,
+               char inInsideEnemy=false );
 
 
         ~Level();
@@ -264,7 +265,10 @@ class Level {
 
         void pushAllMusicIntoPlayer();
         
+        
 
+        char isInsideEnemy();
+        
 
     protected:
         
@@ -308,6 +312,8 @@ class Level {
 
         char mSymmetrical;
 
+        char mInsideEnemy;
+        
 
         // background notes for this level
         NoteSequence mHarmonyNotes;        

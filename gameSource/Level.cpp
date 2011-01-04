@@ -811,7 +811,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
               NoteSequence *inMusicNotes,
-              int inLevelNumber, char inSymmetrical ) 
+              int inLevelNumber, char inSymmetrical, char inInsideEnemy ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ) {
 
@@ -868,6 +868,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
     mDataGenerated = false;
     mSymmetrical = inSymmetrical;
+    
+    mInsideEnemy = inInsideEnemy;
+    
 
     if( inColors != NULL ) {
         // copy
@@ -1124,6 +1127,15 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     mainPower = getRandomPowerUp( powerUpMaxLevel );
                     }
                 
+
+                if( mInsideEnemy ) {
+                    mainPower.level = powerUpMaxLevel;
+                    }
+                else {
+                    mainPower.level = 1;
+                    }
+
+
                 if( shouldPowerUpsBeRigged() ) {
 
                     if( mLevelNumber == 3 || mLevelNumber == 4 ) {
@@ -3428,6 +3440,15 @@ NoteSequence Level::getEnteringPointNoteSequence( doublePair inPosition,
 
 int Level::getEnteringPointSubLevel( doublePair inPosition,
                                      itemType inType ) {
+    
+    // new method:  just decrement level no matter what we're entering
+    
+    // thus, there's effectively no limit on exponential player power growth
+    // (though achieving huge player powers is still impractical)
+    return mLevelNumber - 1;
+    
+
+    
     switch( inType ) {
         case player: {
             return mLevelNumber - 1;
@@ -3993,6 +4014,14 @@ void Level::pushAllMusicIntoPlayer() {
     
     unlockAudio();    
     }
+
+
+
+
+char Level::isInsideEnemy() {
+    return mInsideEnemy;
+    }
+
 
     
 

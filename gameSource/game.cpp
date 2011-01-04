@@ -835,6 +835,8 @@ void drawFrame( char inUpdate ) {
         itemType enteringType = player;
         char symmetrical = true;
 
+        char insideEnemy = false;
+
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
             
@@ -842,6 +844,7 @@ void drawFrame( char inUpdate ) {
             enteringHit = true;
             enteringType = enemy;
             symmetrical = false;
+            insideEnemy = true;
             }
         else if( playerHealth == 0 ||
                  currentLevel->isPlayer( mousePos ) ) {
@@ -865,6 +868,8 @@ void drawFrame( char inUpdate ) {
                 
                 symmetrical = true;
                 }
+
+            insideEnemy = currentLevel->isInsideEnemy();
             }
         
 
@@ -919,8 +924,8 @@ void drawFrame( char inUpdate ) {
             currentLevel = new Level( NULL, NULL, &c, &walkerSet,
                                       &musicNotes,
                                       subLevelNumber,
-                                      symmetrical );
-            
+                                      symmetrical, insideEnemy );            
+
             currentLevel->pushAllMusicIntoPlayer();
             
 #ifdef USE_MALLINFO            
