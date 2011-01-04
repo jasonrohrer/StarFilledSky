@@ -322,7 +322,10 @@ char *getCustomRecordedGameData() {
 
 
 void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
-                      const char *inCustomRecordedGameData ) {
+                      const char *inCustomRecordedGameData,
+                      char inPlayingBack ) {
+    gamePlayingBack = inPlayingBack;
+    
     screenW = inWidth;
     screenH = inHeight;
     
@@ -427,13 +430,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         // override
         
         // (keep levelNumber that was read from data)
-
-        if( levelNumber != getStartingLevelNumber() ) {
-            // this is not a level that the local player has reached
-            // assume this is a playback game, and don't allow player
-            // to rise up unfairly
-            gamePlayingBack = true;
-            }
 
         if( !tutorialOn ) {
             forceTutorialEnd();
