@@ -1129,10 +1129,17 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 
 
                 if( mInsideEnemy ) {
-                    mainPower.level = powerUpMaxLevel;
+                    // increase, encourage sub-recursion into enemy
+                    if( mainPower.level < powerUpMaxLevel / 2 ) {    
+                        mainPower.level *= 2;
+                        }
                     }
                 else {
-                    mainPower.level = 1;
+                    // further divide... encourage more sub-recursion
+                    // into self
+                    if( mainPower.level > 2 ) {
+                        mainPower.level /= 2;
+                        }
                     }
 
 
