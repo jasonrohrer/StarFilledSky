@@ -282,7 +282,15 @@ int getStartingLevelNumber() {
         SettingsManager::getIntSetting( "startAtLevel", 9 );
     
     SettingsManager::setHashingOn( false );
+
+    int completedCount = 
+        SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
+
+    if( completedCount < 1 ) {
+        startingLevelNumber = 0;
+        }
     
+        
     return startingLevelNumber;    
     }
 
