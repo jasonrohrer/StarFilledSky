@@ -21,7 +21,7 @@ You need a demo code from me to run these (so they don't escape into the wild):
 <br>
 
 
-<font size=5>Lastest version (posted soon!):</font>
+<font size=5>Lastest version:</font>
 <center>
 <table border=0 cellpadding=4 cellspacing=1>
 <tr><td><a href="StarFilledSky_v3_Windows.exe">StarFilledSky_v3_Windows.exe</a></td></tr>

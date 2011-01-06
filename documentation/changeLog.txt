@@ -1,4 +1,4 @@
-Version 3   ???
+Version 3   2011-January-6
 
 --Fixed crash when rising out right onto a rise marker that will cause and
   immediate, subsequent rise (thanks Stephen Lavelle).
@@ -47,7 +47,7 @@ Version 3   ???
 
 --Recorded games now track tutorial status.
 
---Added saving of highest level reached.  Can resume at that level next game.
+--Added saving of level number on quit.  Can resume at that level next game.
 
 --Press P to pause game.
 
