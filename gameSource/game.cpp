@@ -1637,6 +1637,8 @@ void drawFrameNoUpdate( char inUpdate ) {
     spritePos = setPos;
     spritePos.x -= 2.1875;
 
+    BorderSprite *enteringPointSprite = playerSprite;
+
     
     if( zoomProgress != 0 && lastLevel != NULL ) {
         BorderSprite *lastLevelSprite = lastLevel->getLastEnterPointSprite();
@@ -1652,6 +1654,8 @@ void drawFrameNoUpdate( char inUpdate ) {
             
             lastLevelPowers->drawSet( setPos, 1 - fade );
             lastLevelSprite->draw( spritePos, 1 - fade );
+
+            enteringPointSprite = lastLevelSprite;
             }
         }
     
@@ -1661,7 +1665,7 @@ void drawFrameNoUpdate( char inUpdate ) {
     
     
     Color *riseIconColor = Color::linearSum( 
-        &( playerSprite->getColors().special ),
+        &( enteringPointSprite->getColors().special ),
         &( weAreInsideSprite->getColors().special ),
         zoomProgress );
     
