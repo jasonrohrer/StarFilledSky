@@ -1,5 +1,5 @@
 Inside a Star-filled Sky
-A recursive game for one player by Jason Rohrer
+An infinite, recursive, tactical shooter by Jason Rohrer
 
 http://insideastarfilledsky.net
 
