@@ -1017,16 +1017,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 
 
                 PowerUpSet *p = new PowerUpSet( levelForDifficulty - 3, true );
-                
-                printf( "level %d enemy powers: %s(%d), %s(%d), %s(%d)\n",
-                        mLevelNumber,
-                        spriteIDNames[ p->mPowers[0].powerType ],
-                        p->mPowers[0].level,
-                        spriteIDNames[ p->mPowers[1].powerType ],
-                        p->mPowers[1].level,
-                        spriteIDNames[ p->mPowers[2].powerType ],
-                        p->mPowers[2].level );
-                        
+                       
 
                 RandomWalkerSet walkerSet;
                 

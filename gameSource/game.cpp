@@ -710,8 +710,6 @@ static void saveLevelBookmark() {
     // only save bookmark to this level if local player is actually playing
     // (not for playback games from others)
     if( !gamePlayingBack ) {
-        printf( "UPDATING\n" );
-        
         SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
     
         SettingsManager::setHashingOn( true );
