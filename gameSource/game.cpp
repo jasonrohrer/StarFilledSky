@@ -413,7 +413,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int numRead = sscanf( inCustomRecordedGameData, "%d_%d", &levelNumber,
                           &tutorialOn );
-    printf( "CUSTOM= %s\n", inCustomRecordedGameData );
     
     if( numRead != 2 ) {
 
