@@ -10,7 +10,8 @@ This game has music.  Please use speakers or headphones.
 
 == Controls ==
 
-Use ESC or Ctrl-Q to exit the game.
+Press ESC or Ctrl-Q to exit the game.  This will save a numerical bookmark 
+where you will start at next time.
 
 Press P to pause and resume.
 

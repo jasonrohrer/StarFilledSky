@@ -153,7 +153,6 @@ const char *getDemoCodeServerURL() {
 
 int levelNumber = 0;
 
-int highestLevelReached = 0;
 
 char gamePlayingBack = false;
 
@@ -707,6 +706,25 @@ void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
 
 
 
+static void saveLevelBookmark() {
+    // only save bookmark to this level if local player is actually playing
+    // (not for playback games from others)
+    if( !gamePlayingBack ) {
+        printf( "UPDATING\n" );
+        
+        SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+        SettingsManager::setHashingOn( true );
+        
+        SettingsManager::setSetting( "startAtLevel", levelNumber );
+        
+        SettingsManager::setHashingOn( false );
+        }
+    }
+
+
+
+
 
 // used to keep level rise stack populated without a visible frame hiccup
 // hide the hiccup right after the final freeze frame of the level
@@ -783,20 +801,7 @@ void drawFrame( char inUpdate ) {
     if( lastRiseFreezeFrameDrawn ) {
         levelNumber = currentLevel->getLevelNumber();
         
-        // only save bookmark to this level if local player is actually playing
-        // (not for playback games from others)
-        if( !gamePlayingBack && levelNumber > highestLevelReached ) {
-            highestLevelReached = levelNumber;
-        
-            SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
-    
-            SettingsManager::setHashingOn( true );
-    
-            SettingsManager::setSetting( "startAtLevel", highestLevelReached );
-    
-            SettingsManager::setHashingOn( false );
-            }
-        
+        saveLevelBookmark();
             
 
         // populate stack here, in case we rise back out further
@@ -1450,6 +1455,8 @@ void drawFrameNoUpdate( char inUpdate ) {
             currentLevel->drawFloorEdges( true );
             
             levelNumber = currentLevel->getLevelNumber();
+            saveLevelBookmark();
+            
             zoomProgress = 0;
             }
         else if( zoomProgress <= 0 && zoomDirection == -1 ) {
