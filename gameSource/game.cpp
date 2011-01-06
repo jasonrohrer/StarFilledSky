@@ -1885,6 +1885,9 @@ void keyDown( unsigned char inASCII ) {
         case 'P':
             pauseGame();
             break;
+        case '=':
+            saveScreenShot( "screen" );
+            break;
         }
     }
 
