@@ -57,6 +57,9 @@ Version 3   ???
 
 --Made bounce power-up unlimited (not on curve, level 20 now means 20 bounces).
 
+--Added power inversion in negative levels.
+
+
 
 
 Version 2    2010-December-29

@@ -943,6 +943,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     generateReproducibleData();
     
     
+    // negative levels get harder and harder the farther you go down
+    int levelForDifficulty = mLevelNumber;
+    
+    if( levelForDifficulty < 0 ) {
+        levelForDifficulty *= -1;
+        }
+    
+
 
     // place enemies in random floor spots
     int musicPartIndex = 0;
@@ -950,8 +958,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // fewer enemies in lower levels
     int maxNumEnemies = 10;
 
-    if( mLevelNumber * 2 < 10 ) {
-        maxNumEnemies = mLevelNumber * 2;
+    if( levelForDifficulty * 2 < 10 ) {
+        maxNumEnemies = levelForDifficulty * 2;
         }
     
 
@@ -1008,7 +1016,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 doublePair a = { 0, 0 };
                 
 
-                PowerUpSet *p = new PowerUpSet( mLevelNumber - 3, true );
+                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 3, true );
                 
                 printf( "level %d enemy powers: %s(%d), %s(%d), %s(%d)\n",
                         mLevelNumber,
@@ -1054,7 +1062,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // no power ups in lowest levels
     int maxNumPowerUps = 10;
     
-    if( mLevelNumber < 3 ) {
+    if( mLevelNumber < 3 && shouldPowerUpsBeRigged() ) {
         maxNumPowerUps = 0;
         }
 
@@ -1062,8 +1070,12 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // skip to power-up parts (even if not all enemy parts used above)
     musicPartIndex = 10;
     
-    int powerUpMaxLevel = mLevelNumber / POWER_SET_SIZE;
+    int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
 
+    if( powerUpMaxLevel < 1 ) {
+        powerUpMaxLevel = 1;
+        }
+    
 
     // for tutorial-mode power-up placement
     // (every other power-up is spread)
