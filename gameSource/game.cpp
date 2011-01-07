@@ -944,9 +944,9 @@ void drawFrame( char inUpdate ) {
                 mousePos.y = 0;
 
                 lastScreenViewCenter.x = -0.5;
-                // a little lower than player to line up with 
+                // a little higher than player to line up with 
                 // super-level sprite pixels
-                lastScreenViewCenter.y = -0.5;
+                lastScreenViewCenter.y = 0.5;
                 }
             else {
                 // safe, since -0.5 might be out of bounds
@@ -955,10 +955,10 @@ void drawFrame( char inUpdate ) {
                 mousePos.x = 0;
                 mousePos.y = 0;
 
-                // a little lower than player to line up with 
+                // a little higher than player to line up with 
                 // super-level sprite pixels
                 lastScreenViewCenter.x = -0.5;
-                lastScreenViewCenter.y = -0.5;
+                lastScreenViewCenter.y = 0.5;
                 }
             
             setViewCenterPosition( 0, 0 );
@@ -1443,6 +1443,8 @@ void drawFrameNoUpdate( char inUpdate ) {
                     meminfo.uordblks / 1024 );
 #endif
             lastLevel = NULL;
+
+            // saveScreenShot( "zoomScreen" );
 
             // go with current level
             setViewSize( viewWidth );
