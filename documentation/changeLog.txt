@@ -2,6 +2,9 @@ Version 4   ???
 
 --Fixed vertical screen position after zoom.
 
+--Fixed health bar mismatch if power-up picked up right before rise.
+
+
 
 
 Version 3   2011-January-6

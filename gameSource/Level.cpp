@@ -3571,8 +3571,16 @@ NoteSequence *Level::getPlayerNoteSequence() {
 
 
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
+    int max = 1 + getMaxHealth( mPlayerPowers );
+    *outMax = max;
+    
+    // truncate player health, incase it was restored before a power-up
+    // pickup that reduced max health
+    if( mPlayerHealth > max ) {
+        mPlayerHealth = max;
+        }
+    
     *outValue = mPlayerHealth;
-    *outMax = 1 + getMaxHealth( mPlayerPowers );
     }
 
 
