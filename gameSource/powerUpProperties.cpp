@@ -138,17 +138,19 @@ float getSpread( PowerUpSet *inSet ) {
 
 
 
-float heatSeekParam = 3;
+float heatSeekParam = 5;
 
 
 float getHeatSeek( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpHeatSeek );
-
+    
+    totalLevel = 1;
+    
     // first bound to 0:1
     float boundedHeatSeek = totalLevel / ( totalLevel + heatSeekParam );
 
-    // bound to 0:0.05
-    boundedHeatSeek *= 0.05 * frameRateFactor;
+    // bound to 0:0.25
+    boundedHeatSeek *= 0.25 * frameRateFactor;
     
     return boundedHeatSeek;
     }

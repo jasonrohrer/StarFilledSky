@@ -12,6 +12,10 @@ Version 4   ???
 
 --Made rapid fire more rapid at lower levels so it's easier to notice.
 
+--Made heat seek more noticeable at low levels, and much stronger at high 
+  levels.
+
+
 
 
 Version 3   2011-January-6
