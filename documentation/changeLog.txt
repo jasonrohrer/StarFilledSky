@@ -7,6 +7,9 @@ Version 4   ???
 --Fixed bug that caused tutorial power-ups to be present in lower levels upon
   restart even when tutorial has already been completed.
 
+--Removed accuracy power-up to improve feel of basic shooting, and also because
+  its effect was hard to notice, making it confusing.
+
 
 
 Version 3   2011-January-6

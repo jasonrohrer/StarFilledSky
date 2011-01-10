@@ -99,6 +99,7 @@ float getBulletSpeed( PowerUpSet *inSet ) {
 
 
 
+/*
 float accuracyParam = 2;
 
 
@@ -114,6 +115,8 @@ float getAccuracy( PowerUpSet *inSet ) {
     
     return boundedAccuracy;
     }
+*/
+
 
 
 float spreadD1 = 0.5;

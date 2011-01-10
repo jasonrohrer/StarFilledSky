@@ -3801,9 +3801,9 @@ void Level::addBullet( doublePair inPosition,
 
     double exactAimDist = distance( inAimPosition, inPosition );
 
-    double distanceScaleFactor = exactAimDist / 10;
+    //double distanceScaleFactor = exactAimDist / 10;
     
-    double inAccuracy = getAccuracy( inPowers );
+    //double inAccuracy = getAccuracy( inPowers );
     double inSpread = getSpread( inPowers );
     double inHeatSeek = getHeatSeek( inPowers );
     
@@ -3824,14 +3824,16 @@ void Level::addBullet( doublePair inPosition,
         }
     */
 
+    /*
+      Ignore accuracy for now.
+    
     inAccuracy *= distanceScaleFactor;
-
 
     inAimPosition.x += 
         randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
     inAimPosition.y += 
         randSource.getRandomBoundedDouble( -inAccuracy, inAccuracy );
-    
+    */
 
 
 

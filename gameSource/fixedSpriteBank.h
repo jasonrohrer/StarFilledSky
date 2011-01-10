@@ -42,7 +42,6 @@ void freeSpriteBank();
     F(powerUpBulletSize), \
     F(powerUpRapidFire), \
     F(powerUpBulletSpeed), \
-    F(powerUpAccuracy), \
     F(powerUpSpread), \
     F(powerUpHeatSeek), \
     F(powerUpBulletDistance), \

@@ -42,7 +42,7 @@ RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
             mWalkers[1] = rectPod;
             mWalkers[2] = roundPod;
             break;
-        case powerUpAccuracy:
+        // case powerUpAccuracy:
         case powerUpBulletSpeed:
         case powerUpBounce:
             mWalkers[0] = diagonal;

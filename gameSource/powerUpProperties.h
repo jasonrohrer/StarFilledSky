@@ -12,7 +12,7 @@ int getStepsBetweenBullets( PowerUpSet *inSet );
 float getBulletSpeed( PowerUpSet *inSet );
 
 
-float getAccuracy( PowerUpSet *inSet );
+//float getAccuracy( PowerUpSet *inSet );
 
 
 // angle between pack and outlying member that hasn't joined pack yet
