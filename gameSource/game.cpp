@@ -439,6 +439,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         }
     
 
+    checkTutorial();
+    
+
 
     currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );
     

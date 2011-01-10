@@ -8,6 +8,11 @@ void forceTutorialEnd();
 void forceTutorialFreshStart();
 
 
+// check if tutorial should run, even if we're not ready to init it yet
+void checkTutorial();
+
+
+
 void initTutorial();
 
 

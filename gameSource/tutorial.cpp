@@ -81,16 +81,7 @@ void forceTutorialFreshStart() {
     }
 
 
-
-void initTutorial() {
-
-    const char *tutMessage = translate( tutorialKeys[ 0 ] );
-    
-    char found;
-    modifiedMoveTutorial = replaceOnce( tutMessage, "W A S D",
-                                        tutorialMoveKeys,
-                                        &found );
-
+void checkTutorial() {
     currentTut = 0;
 
     char countFound = false;
@@ -117,6 +108,21 @@ void initTutorial() {
             }        
         }
     }
+
+
+
+void initTutorial() {
+
+    const char *tutMessage = translate( tutorialKeys[ 0 ] );
+    
+    char found;
+    modifiedMoveTutorial = replaceOnce( tutMessage, "W A S D",
+                                        tutorialMoveKeys,
+                                        &found );
+    checkTutorial();
+    }
+
+
 
 
 void freeTutorial() {

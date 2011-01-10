@@ -4,6 +4,8 @@ Version 4   ???
 
 --Fixed health bar mismatch if power-up picked up right before rise.
 
+--Fixed bug that caused tutorial power-ups to be present in lower levels upon
+  restart even when tutorial has already been completed.
 
 
 
