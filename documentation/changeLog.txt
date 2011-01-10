@@ -10,6 +10,8 @@ Version 4   ???
 --Removed accuracy power-up to improve feel of basic shooting, and also because
   its effect was hard to notice, making it confusing.
 
+--Made rapid fire more rapid at lower levels so it's easier to notice.
+
 
 
 Version 3   2011-January-6

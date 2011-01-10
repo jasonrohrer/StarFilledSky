@@ -66,7 +66,7 @@ float getBulletSize( PowerUpSet *inSet ) {
     }
 
 
-float bulletStepParam = 5;
+float bulletStepParam = 2;
 
 
 
