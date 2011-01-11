@@ -26,6 +26,8 @@ Version 4   ???
 
 --Added a blended overlay to soften tile colors.
 
+--Shrank level maximum dimensions to 96x96 instead of 128x128.  Less wandering.
+
 
 
 Version 3   2011-January-6

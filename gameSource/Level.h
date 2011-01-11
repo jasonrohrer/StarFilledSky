@@ -17,7 +17,7 @@
 #include "NoteSequence.h"
 
 
-#define MAX_LEVEL_W  128
+#define MAX_LEVEL_W  96
 #define MAX_LEVEL_H  MAX_LEVEL_W
 
 #define MAX_FLOOR_SQUARES 1000
