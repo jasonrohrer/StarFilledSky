@@ -1820,7 +1820,13 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         }
                 
                     Enemy *e = mEnemies.getElement( minIndex );
-                    closestTarget = e->position;                        
+                    closestTarget = e->position;
+
+                    // update heat seek waypoint... stick to the first enemy
+                    // that we've started tracking, even if it moves,
+                    // and then switch to the next closest enemy if the 
+                    // currently-tracked one is destroyed.
+                    b->heatSeekWaypoint = closestTarget;
                     }
                 }
             

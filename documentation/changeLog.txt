@@ -22,6 +22,8 @@ Version 4   ???
 
 --Fixed timing of brief player immortality on rise-out.
 
+--Fixed heat seek targeting to prevent it from jumping oddly between targets.
+
 
 
 Version 3   2011-January-6
