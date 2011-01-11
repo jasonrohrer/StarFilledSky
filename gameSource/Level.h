@@ -131,7 +131,8 @@ class Level {
                NoteSequence *inMusicNotes=NULL,
                int inLevelNumber = 0,
                char inSymmetrical=true,
-               char inInsideEnemy=false );
+               char inInsideEnemy=false,
+               char inIsKnockDown=false );
 
 
         ~Level();
