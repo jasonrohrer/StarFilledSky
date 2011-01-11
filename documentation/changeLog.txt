@@ -24,6 +24,8 @@ Version 4   ???
 
 --Fixed heat seek targeting to prevent it from jumping oddly between targets.
 
+--Added a blended overlay to soften tile colors.
+
 
 
 Version 3   2011-January-6

@@ -2931,15 +2931,28 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
+    doublePair fullMapPos = { -.5, 0.5 };
+
+    if( edgeFade > 0 ) {
+        
+        // soft glow over everything
+        setDrawColor( 1, 1, 1, 0.50 );
+        //toggleAdditiveBlend( true );
+        drawSprite( mFullMapSprite, fullMapPos, 1.0, true );
+        //toggleAdditiveBlend( false );
+        }
+
+
     if( edgeFade < 1 ) {
         // fade this in over top as edges fade in
-        doublePair pos = { -.5, 0.5 };
         
         setDrawColor( 1, 1, 1, 1 - edgeFade );
         
-        
-        drawSprite( mFullMapSprite, pos );
+        drawSprite( mFullMapSprite, fullMapPos, 1.0 );
         }
+
+    
+    
     
 
     
