@@ -15,6 +15,8 @@ Version 4   ???
 --Made heat seek more noticeable at low levels, and much stronger at high 
   levels.
 
+--Made bullet speed faster at lower levels so it's easier to notice.
+
 
 
 

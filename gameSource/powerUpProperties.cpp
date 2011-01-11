@@ -80,12 +80,13 @@ int getStepsBetweenBullets( PowerUpSet *inSet ) {
     }
 
 
+float bulletSpeedParam = 2;
 
 float getBulletSpeed( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBulletSpeed );
 
     // first bound to 0:1
-    float boundedSpeed = bulletCurve( totalLevel );
+    float boundedSpeed = totalLevel / ( totalLevel + bulletSpeedParam );
 
     // bound to 0.15 : 0.4
     boundedSpeed *= ( 0.25 );
