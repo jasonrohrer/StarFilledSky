@@ -811,7 +811,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
               NoteSequence *inMusicNotes,
-              int inLevelNumber, char inSymmetrical, char inInsideEnemy ) 
+              int inLevelNumber, char inSymmetrical, char inInsideEnemy,
+              char inIsKnockDown ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ) {
 
@@ -832,6 +833,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mPlayerPowers->mPowers[1].level = 1;
     mPlayerPowers->mPowers[2].powerType = powerUpHeart;
     mPlayerPowers->mPowers[2].level = 1;
+    
+    if( ! inIsKnockDown ) {
+        // make basic bullets faster, so shooting feels better at
+        // start of game
+        mPlayerPowers->mPowers[0].powerType = powerUpBulletSpeed;
+        mPlayerPowers->mPowers[0].level = 1;
+        }
+    
 
 
 
@@ -3799,7 +3808,7 @@ void Level::addBullet( doublePair inPosition,
                        double inSpeed, char inPlayerBullet,
                        int inEnemyIndex ) {
 
-    double exactAimDist = distance( inAimPosition, inPosition );
+    //double exactAimDist = distance( inAimPosition, inPosition );
 
     //double distanceScaleFactor = exactAimDist / 10;
     

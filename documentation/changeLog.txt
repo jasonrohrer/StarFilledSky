@@ -17,6 +17,9 @@ Version 4   ???
 
 --Made bullet speed faster at lower levels so it's easier to notice.
 
+--Changed default set to [speed,heart,heart] to make shooting feel better
+  at start of game.  Knock-down still results in [empty,heart,heart].
+
 
 
 

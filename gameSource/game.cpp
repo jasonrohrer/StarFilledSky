@@ -841,6 +841,9 @@ void drawFrame( char inUpdate ) {
         char symmetrical = true;
 
         char insideEnemy = false;
+        
+        char knockDown = false;
+        
 
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
@@ -857,6 +860,10 @@ void drawFrame( char inUpdate ) {
             enteringHit = true;
             enteringType = player;
             symmetrical = true;
+
+            if( playerHealth == 0 ) {
+                knockDown = true;
+                }
             }
         else if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
             enteringPos = currentLevel->getPowerUpCenter( itemIndex );
@@ -929,7 +936,7 @@ void drawFrame( char inUpdate ) {
             currentLevel = new Level( NULL, NULL, &c, &walkerSet,
                                       &musicNotes,
                                       subLevelNumber,
-                                      symmetrical, insideEnemy );            
+                                      symmetrical, insideEnemy, knockDown );
 
             currentLevel->pushAllMusicIntoPlayer();
             
