@@ -20,6 +20,7 @@ Version 4   ???
 --Changed default set to [speed,heart,heart] to make shooting feel better
   at start of game.  Knock-down still results in [empty,heart,heart].
 
+--Fixed timing of brief player immortality on rise-out.
 
 
 
