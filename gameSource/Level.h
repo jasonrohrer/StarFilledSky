@@ -61,6 +61,13 @@ typedef struct BloodStain {
     } BloodStain;
 
 
+typedef struct GlowSpriteTrail {
+        doublePair position;
+        float fade;
+        EyeBorderSprite *sprite;
+    } GlowSpriteTrail;
+
+
 
 
 
@@ -82,6 +89,7 @@ typedef struct Enemy {
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;
         NoteSequence musicNotes;
+        int stepsUntilNextGlowTrail;
     } Enemy;
 
 
@@ -376,6 +384,8 @@ class Level {
         
         SimpleVector<BloodStain> mBloodStains;
         
+        SimpleVector<GlowSpriteTrail> mGlowTrails;
+
 
         GridPos mRisePosition, mRisePosition2;
         doublePair mRiseWorldPos, mRiseWorldPos2;
@@ -400,6 +410,8 @@ class Level {
         char mEnteringMouse;
         doublePair mPlayerPos;
 
+        int mPlayerStepsUntilNextGlowTrail;
+        
 
         PlayerSprite mPlayerSprite;
         PowerUpSet *mPlayerPowers;

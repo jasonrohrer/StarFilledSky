@@ -45,7 +45,7 @@ static SimpleVector<GridPos> blurHitEntries;
 double maxEnemySpeed = 0.05;
 
 
-
+static int stepsBetweenGlowTrails = 4;
 
 
 
@@ -944,6 +944,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mPlayerPos.x = 0;
         mPlayerPos.y = 0;
         }
+
+    mPlayerStepsUntilNextGlowTrail = 
+        (int)( stepsBetweenGlowTrails / frameRateFactor );
     
     mEnteringMouse = false;
     
@@ -1041,7 +1044,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             false,
                             randSource.getRandomBoundedDouble( 0.1, 0.8 ),
                             walkerSet,
-                            generateRandomNoteSequence( musicPartIndex ) };
+                            generateRandomNoteSequence( musicPartIndex ),
+                            (int)( stepsBetweenGlowTrails / 
+                                   frameRateFactor ) };
                 
                 musicPartIndex ++;
                 
@@ -1736,6 +1741,19 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     if( mPlayerImmortalSteps < 0 ) {
         mPlayerImmortalSteps = 0;
         }
+    
+    mPlayerStepsUntilNextGlowTrail --;
+    
+    if( mPlayerStepsUntilNextGlowTrail <= 0 ) {
+        
+
+        GlowSpriteTrail playerTrail = { mPlayerPos, 1.0, &mPlayerSprite };
+        mGlowTrails.push_back( playerTrail );
+    
+        mPlayerStepsUntilNextGlowTrail = 
+            (int)( stepsBetweenGlowTrails / frameRateFactor );
+        }
+    
 
     
     // opt:  for certain steppable things,
@@ -1988,6 +2006,18 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                 // don't generate other hit smoke
                                 destroyed = true;
                                 
+                                // clean up glow trails that use
+                                // enemy sprite too
+                                for( int t=0; t<mGlowTrails.size(); t++ ) {
+                                    GlowSpriteTrail *trail = 
+                                        mGlowTrails.getElement( t );
+    
+                                    if( trail->sprite == e->sprite ) {
+                                        mGlowTrails.deleteElement( t );
+                                        t--;
+                                        }
+                                    }
+                                
 
                                 delete e->sprite;
                                 delete e->powers;
@@ -2156,6 +2186,23 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+
+    // step glow trails
+    for( int t=0; t<mGlowTrails.size(); t++ ) {
+        GlowSpriteTrail *trail = mGlowTrails.getElement( t );
+    
+        trail->fade -= 0.05 * frameRateFactor;
+    
+        if( trail->fade <= 0 ) {
+            mGlowTrails.deleteElement( t );
+            t--;
+            }
+        }
+    
+        
+        
+
+
     
     
     mNextEnemyPathFindIndex ++;
@@ -2173,6 +2220,17 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
 
+        e->stepsUntilNextGlowTrail --;
+        
+        if( e->stepsUntilNextGlowTrail <= 0 ) {
+            GlowSpriteTrail trail = { e->position, 1, e->sprite };
+        
+            mGlowTrails.push_back( trail );
+
+            e->stepsUntilNextGlowTrail = 
+                (int)( stepsBetweenGlowTrails / frameRateFactor );
+            }
+        
 
         // search for behaviors
         char follow = false;
@@ -2645,7 +2703,7 @@ void Level::drawSmoke( double inFade ) {
 void Level::drawEnemies( double inFade, int inLayer, 
                          doublePair inVisStart, doublePair inVisEnd ) {
     if( mLastComputedEdgeFade <= 0 ) {
-        return;
+return;
         }
     
     int startIndex = 0;
@@ -3050,6 +3108,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     drawEnemies( 1.0, 0, visStart, visEnd );
     
 
+
+    if( edgeFade >  0 ) {
+        
+        toggleAdditiveBlend( true );
+        
+        for( int t=0; t<mGlowTrails.size(); t++ ) {
+            GlowSpriteTrail *trail = mGlowTrails.getElement( t );
+            
+            trail->sprite->draw( trail->position, 
+                                 trail->fade * 0.1 * edgeFade);
+            
+            }
+        toggleAdditiveBlend( false );
+        }
+    
 
 
     // window for zoom
