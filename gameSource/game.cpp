@@ -1840,6 +1840,8 @@ static void movementKeyChange() {
 
 
 
+extern char toggleEdgeFade;
+
 
 void keyDown( unsigned char inASCII ) {
     switch( inASCII ) {
@@ -1896,6 +1898,13 @@ void keyDown( unsigned char inASCII ) {
             break;
         case '=':
             saveScreenShot( "screen" );
+            break;
+        case 'b':
+        case 'B':
+            toggleEdgeFade++;
+            if( toggleEdgeFade > 2 ) {
+                toggleEdgeFade = 0;
+                }
             break;
         }
     }

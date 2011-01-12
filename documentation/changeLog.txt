@@ -24,7 +24,7 @@ Version 4   ???
 
 --Fixed heat seek targeting to prevent it from jumping oddly between targets.
 
---Added a blended overlay to soften tile colors.
+--Added a blended overlay to soften background tile colors.
 
 --Shrank level maximum dimensions to 96x96 instead of 128x128.  Less wandering.
 

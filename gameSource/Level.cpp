@@ -2782,6 +2782,8 @@ static void computeVisBoundaries( doublePair inViewCenter, double inViewSize,
 
     
 
+char toggleEdgeFade = 1;
+
 
 
         
@@ -2890,6 +2892,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+    doublePair fullMapPos = { -.5, 0.5 };
+
+    if( toggleEdgeFade == 1 && edgeFade > 0 ) {
+        
+        // soft glow over everything
+        setDrawColor( 1, 1, 1, 0.50 );
+        //toggleAdditiveBlend( true );
+        drawSprite( mFullMapSprite, fullMapPos, 1.0, true );
+        //toggleAdditiveBlend( false );
+        }
+
 
 
     if( edgeFade > 0 ) {
@@ -2931,9 +2944,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    doublePair fullMapPos = { -.5, 0.5 };
 
-    if( edgeFade > 0 ) {
+    if( toggleEdgeFade == 2 && edgeFade > 0 ) {
         
         // soft glow over everything
         setDrawColor( 1, 1, 1, 0.50 );
@@ -2941,6 +2953,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawSprite( mFullMapSprite, fullMapPos, 1.0, true );
         //toggleAdditiveBlend( false );
         }
+
+    
 
 
     if( edgeFade < 1 ) {
