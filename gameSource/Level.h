@@ -286,7 +286,8 @@ class Level {
         
         void drawPlayer( double inFade );
         void drawMouse( double inFade );
-        void drawSmoke( double inFade );        
+        void drawSmoke( double inFade,
+                        doublePair inVisStart, doublePair inVisEnd );        
 
         // inLayer is either 0 or 1 (those below or above item window)
         // inLayer has no effect if no current item window is set

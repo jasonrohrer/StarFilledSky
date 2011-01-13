@@ -47,6 +47,8 @@ double maxEnemySpeed = 0.05;
 
 static int stepsBetweenGlowTrails = 4;
 
+static double trailJitter = 0.25;
+
 
 
 static int getEnemyMaxHealth( PowerUpSet *inSet ) {
@@ -1748,8 +1750,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         doublePair trailPos = mPlayerPos;
         
-        trailPos.x += randSource.getRandomBoundedDouble( -0.25, 0.25 );
-        trailPos.y += randSource.getRandomBoundedDouble( -0.25, 0.25 );
+        trailPos.x += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                         trailJitter );
+        
+        trailPos.y += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                         trailJitter );
         
 
         GlowSpriteTrail playerTrail = { trailPos, 1.0, &mPlayerSprite };
@@ -2228,7 +2233,16 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         e->stepsUntilNextGlowTrail --;
         
         if( e->stepsUntilNextGlowTrail <= 0 ) {
-            GlowSpriteTrail trail = { e->position, 1, e->sprite };
+            
+            doublePair trailPos = e->position;
+        
+            trailPos.x += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                             trailJitter );
+            
+            trailPos.y += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                             trailJitter );
+            
+            GlowSpriteTrail trail = { trailPos, 1, e->sprite };
         
             mGlowTrails.push_back( trail );
 
@@ -2669,37 +2683,45 @@ void Level::drawPlayer( double inFade ) {
 
 
 
-void Level::drawSmoke( double inFade ) {
+void Level::drawSmoke( double inFade, 
+                       doublePair inVisStart, doublePair inVisEnd) {
     // draw smoke
     for( int i=0; i<mSmokeClouds.size(); i++ ) {
         
         HitSmoke *s = mSmokeClouds.getElement( i );
+
+        doublePair pos = s->position;
         
-        float fade = inFade * ( 0.5 - 0.5 * s->progress );
+        if( pos.x >= inVisStart.x && pos.y >= inVisStart.y &&
+            pos.x <= inVisEnd.x && pos.y <= inVisEnd.y ) {
         
-        switch( s->type ) {
-            case 0:
-                setDrawColor( 0, 0, 0, fade );
-                break;
-            case 1:
-                setDrawColor( 1, 1, 1, fade );
-                break;
-            case 2:
-                setDrawColor( 0.85, 0, 0, fade * 2 );
-                break;
-            case 3:
-                setDrawColor( s->enemyColor.r, 
-                              s->enemyColor.g, 
-                              s->enemyColor.b, fade * 2 );
-                break;
-            };
+            float fade = inFade * ( 0.5 - 0.5 * s->progress );
+        
+            switch( s->type ) {
+                case 0:
+                    setDrawColor( 0, 0, 0, fade );
+                    break;
+                case 1:
+                    setDrawColor( 1, 1, 1, fade );
+                    break;
+                case 2:
+                    setDrawColor( 0.85, 0, 0, fade * 2 );
+                    break;
+                case 3:
+                    setDrawColor( s->enemyColor.r, 
+                                  s->enemyColor.g, 
+                                  s->enemyColor.b, fade * 2 );
+                    break;
+                };
         
 
         
-        //setDrawColor( 1, 1, 1, 1 - s->progress );
+            //setDrawColor( 1, 1, 1, 1 - s->progress );
         
-        drawSquare( s->position, s->maxSize * s->progress );
+            drawSquare( s->position, s->maxSize * s->progress );
+            }
         }
+    
 
     }
 
@@ -3161,7 +3183,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawMouse( 1 );
         drawPlayer( 1 );
 
-        drawSmoke( 1 );
+        drawSmoke( 1, visStart, visEnd );
         }
     
 
@@ -3223,7 +3245,7 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
             }
 
         // smoke drawn on top of all
-        drawSmoke( overlieFade );
+        drawSmoke( overlieFade, visStart, visEnd );
         }
     }
 
