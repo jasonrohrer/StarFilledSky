@@ -1746,8 +1746,13 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     
     if( mPlayerStepsUntilNextGlowTrail <= 0 ) {
         
+        doublePair trailPos = mPlayerPos;
+        
+        trailPos.x += randSource.getRandomBoundedDouble( -0.25, 0.25 );
+        trailPos.y += randSource.getRandomBoundedDouble( -0.25, 0.25 );
+        
 
-        GlowSpriteTrail playerTrail = { mPlayerPos, 1.0, &mPlayerSprite };
+        GlowSpriteTrail playerTrail = { trailPos, 1.0, &mPlayerSprite };
         mGlowTrails.push_back( playerTrail );
     
         mPlayerStepsUntilNextGlowTrail = 
@@ -2957,7 +2962,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         // soft glow over everything
         setDrawColor( 1, 1, 1, 0.50 );
         //toggleAdditiveBlend( true );
-        drawSprite( mFullMapSprite, fullMapPos, 1.0, true );
+        toggleLinearMagFilter( true );
+        drawSprite( mFullMapSprite, fullMapPos, 1.0 );
+        toggleLinearMagFilter( false );
         //toggleAdditiveBlend( false );
         }
 
@@ -3008,7 +3015,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         // soft glow over everything
         setDrawColor( 1, 1, 1, 0.50 );
         //toggleAdditiveBlend( true );
-        drawSprite( mFullMapSprite, fullMapPos, 1.0, true );
+        toggleLinearMagFilter( true );
+        drawSprite( mFullMapSprite, fullMapPos, 1.0 );
+        toggleLinearMagFilter( false );
         //toggleAdditiveBlend( false );
         }
 
