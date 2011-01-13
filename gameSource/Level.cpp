@@ -2197,17 +2197,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         }
     
 
-    // step glow trails
-    for( int t=0; t<mGlowTrails.size(); t++ ) {
-        GlowSpriteTrail *trail = mGlowTrails.getElement( t );
-    
-        trail->fade -= 0.025 * frameRateFactor;
-    
-        if( trail->fade <= 0 ) {
-            mGlowTrails.deleteElement( t );
-            t--;
-            }
-        }
     
         
         
@@ -2917,6 +2906,22 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+
+    // step glow trails, even when frozen (so they fade out during a zoom
+    // and don't cause things to slow down when they fill the screen at 
+    // the end of a zoom)
+    for( int t=0; t<mGlowTrails.size(); t++ ) {
+        GlowSpriteTrail *trail = mGlowTrails.getElement( t );
+    
+        trail->fade -= 0.025 * frameRateFactor;
+    
+        if( trail->fade <= 0 ) {
+            mGlowTrails.deleteElement( t );
+            t--;
+            }
+        }
+
+
         
     int i;
 
