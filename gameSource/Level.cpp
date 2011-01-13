@@ -45,7 +45,7 @@ static SimpleVector<GridPos> blurHitEntries;
 double maxEnemySpeed = 0.05;
 
 
-static int stepsBetweenGlowTrails = 4;
+static int stepsBetweenGlowTrails = 8;
 
 static double trailJitter = 0.25;
 
@@ -2201,7 +2201,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     for( int t=0; t<mGlowTrails.size(); t++ ) {
         GlowSpriteTrail *trail = mGlowTrails.getElement( t );
     
-        trail->fade -= 0.05 * frameRateFactor;
+        trail->fade -= 0.025 * frameRateFactor;
     
         if( trail->fade <= 0 ) {
             mGlowTrails.deleteElement( t );
@@ -2684,7 +2684,7 @@ void Level::drawPlayer( double inFade ) {
 
 
 void Level::drawSmoke( double inFade, 
-                       doublePair inVisStart, doublePair inVisEnd) {
+                       doublePair inVisStart, doublePair inVisEnd ) {
     // draw smoke
     for( int i=0; i<mSmokeClouds.size(); i++ ) {
         
@@ -2727,10 +2727,37 @@ void Level::drawSmoke( double inFade,
 
 
 
+void Level::drawGlowTrails( double inFade, 
+                            doublePair inVisStart, doublePair inVisEnd ) {
+
+    toggleAdditiveBlend( true );
+        
+    for( int t=0; t<mGlowTrails.size(); t++ ) {
+        GlowSpriteTrail *trail = mGlowTrails.getElement( t );
+        
+        doublePair pos = trail->position;
+        
+        if( pos.x >= inVisStart.x && pos.y >= inVisStart.y &&
+            pos.x <= inVisEnd.x && pos.y <= inVisEnd.y ) {
+            
+
+            float mappedFade = sin( trail->fade * M_PI );
+
+            
+
+            trail->sprite->draw( trail->position, 
+                                 mappedFade * 0.1 * inFade );
+            }
+        }
+    toggleAdditiveBlend( false );
+    }
+
+
+
 void Level::drawEnemies( double inFade, int inLayer, 
                          doublePair inVisStart, doublePair inVisEnd ) {
     if( mLastComputedEdgeFade <= 0 ) {
-return;
+        return;
         }
     
     int startIndex = 0;
@@ -3140,19 +3167,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    if( edgeFade >  0 ) {
-        
-        toggleAdditiveBlend( true );
-        
-        for( int t=0; t<mGlowTrails.size(); t++ ) {
-            GlowSpriteTrail *trail = mGlowTrails.getElement( t );
-            
-            trail->sprite->draw( trail->position, 
-                                 trail->fade * 0.1 * edgeFade);
-            
-            }
-        toggleAdditiveBlend( false );
-        }
     
 
 
@@ -3183,7 +3197,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         drawMouse( 1 );
         drawPlayer( 1 );
 
-        drawSmoke( 1, visStart, visEnd );
+        if( edgeFade >  0 ) {
+            drawGlowTrails( edgeFade, visStart, visEnd );
+            }
+
+
+        drawSmoke( 1, visStart, visEnd );        
         }
     
 
@@ -3243,6 +3262,12 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
                 drawPlayer( overlieFade );
                 }
             }
+
+        // glow trails drawn on top
+        if( mLastComputedEdgeFade >  0 ) {
+            drawGlowTrails( overlieFade, visStart, visEnd );
+            }
+
 
         // smoke drawn on top of all
         drawSmoke( overlieFade, visStart, visEnd );
