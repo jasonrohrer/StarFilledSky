@@ -372,6 +372,9 @@ class Level {
         // to speed-up drawing of zoom-in,
         // when map doesn't have to be interactive anyway
         SpriteHandle mFullMapSprite;
+
+        // same trick for shadows along wall edges
+        SpriteHandle mFullMapWallShadowSprite;
         
 
         // static to save RAM

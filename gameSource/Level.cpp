@@ -726,7 +726,30 @@ void Level::generateReproducibleData() {
 
     mFullMapSprite = fillSprite( &fullGridImage, false );
     
+
+
+    // now make a shadow sprite for the walls
+    Image wallShadowImage( imageSize, imageSize, 4, true );
     
+    for( int c=0; c<4; c++ ) {
+        fullGridChannels[c] = wallShadowImage.getChannel( c );
+        }
+    for( int i=mNumFloorSquares; 
+         i<mNumFloorSquares + mNumWallSquares; i++ ) {
+        
+        int x = mIndexToGridMap[i].x;
+        int y = mIndexToGridMap[i].y;
+        
+        
+        int imageIndex = 
+            ( imageSize - (y + imageYOffset ) ) * imageSize + 
+            x + imageXOffset;
+    
+        // fill in alpha for wall spots
+        fullGridChannels[3][imageIndex] = 1;
+        }
+    
+    mFullMapWallShadowSprite = fillSprite( &wallShadowImage, false );
 
 
 
@@ -799,6 +822,7 @@ void Level::freeReproducibleData() {
         mDataGenerated = false;
 
         freeSprite( mFullMapSprite );
+        freeSprite( mFullMapWallShadowSprite );
         }
     
     }
@@ -3056,21 +3080,35 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
     // draw floor
-    if( edgeFade > 0 )
-    for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
-        for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
-            if( mWallFlags[y][x] == 1 ) {
-                Color *c = &( mGridColors[mSquareIndices[y][x]] );
-                
-                setDrawColor( c->r,
-                              c->g,
-                              c->b, 1 );
-                
-                drawSquare( sGridWorldSpots[y][x], 0.5 );
+    if( edgeFade > 0 ) {
+        // draw shadows only on top of floor
+        startAddingToStencil( true, true );
+
+        for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
+            for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
+                if( mWallFlags[y][x] == 1 ) {
+                    Color *c = &( mGridColors[mSquareIndices[y][x]] );
+                    
+                    setDrawColor( c->r,
+                                  c->g,
+                                  c->b, 1 );
+                    
+                    drawSquare( sGridWorldSpots[y][x], 0.5 );
+                    }
                 }
             }
-        }
+        startDrawingThroughStencil();
+        
+        // wall shadows on floor
+        setDrawColor( 1, 1, 1, 0.50 );
+        //toggleAdditiveBlend( true );
+        toggleLinearMagFilter( true );
+        drawSprite( mFullMapWallShadowSprite, fullMapPos, 1.0 );
+        toggleLinearMagFilter( false );
 
+        stopStencil();
+        }
+    
 
 
     if( toggleEdgeFade == 2 && edgeFade > 0 ) {

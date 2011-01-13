@@ -28,6 +28,10 @@ Version 4   ???
 
 --Shrank level maximum dimensions to 96x96 instead of 128x128.  Less wandering.
 
+--Added glowing shimmer over player and enemies, with trails for motion
+
+--Added drop shadows along wall edges.
+
 
 
 Version 3   2011-January-6
