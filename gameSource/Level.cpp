@@ -2729,9 +2729,17 @@ void Level::drawGlowTrails( double inFade,
         if( pos.x >= inVisStart.x && pos.y >= inVisStart.y &&
             pos.x <= inVisEnd.x && pos.y <= inVisEnd.y ) {
             
+            // remap [1..0] to [0..1], where full fade is at 1
+            float mappedFade = 1 - trail->fade;// = sin( trail->fade * M_PI );
 
-            float mappedFade = sin( trail->fade * M_PI );
-
+            if( mappedFade < 0.25 ) {
+                // hits sine peak at 0.25
+                mappedFade = sin( mappedFade * M_PI * 2 );
+                }
+            else {
+                // decays linearly down from peak
+                mappedFade = 1 - (mappedFade - 0.25 ) / 0.75;
+                }
             
 
             trail->sprite->draw( trail->position, 
