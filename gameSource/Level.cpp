@@ -45,7 +45,7 @@ static SimpleVector<GridPos> blurHitEntries;
 double maxEnemySpeed = 0.05;
 
 
-static int stepsBetweenGlowTrails = 8;
+static int stepsBetweenGlowTrails = 4;
 
 static double trailJitter = 0.25;
 
@@ -2720,7 +2720,7 @@ void Level::drawGlowTrails( double inFade,
                             doublePair inVisStart, doublePair inVisEnd ) {
 
     toggleAdditiveBlend( true );
-        
+    toggleLinearMagFilter( true );
     for( int t=0; t<mGlowTrails.size(); t++ ) {
         GlowSpriteTrail *trail = mGlowTrails.getElement( t );
         
@@ -2746,6 +2746,7 @@ void Level::drawGlowTrails( double inFade,
                                  mappedFade * 0.1 * inFade );
             }
         }
+    toggleLinearMagFilter( false );
     toggleAdditiveBlend( false );
     }
 
