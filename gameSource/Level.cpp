@@ -50,6 +50,9 @@ static int stepsBetweenGlowTrails = 4;
 static double trailJitter = 0.25;
 
 
+static int shadowBlowUpFactor = 4;
+
+
 
 static int getEnemyMaxHealth( PowerUpSet *inSet ) {
     return 1 + getMaxHealth( inSet );
@@ -749,7 +752,85 @@ void Level::generateReproducibleData() {
         fullGridChannels[3][imageIndex] = 1;
         }
     
-    mFullMapWallShadowSprite = fillSprite( &wallShadowImage, false );
+    writeTGAFile( "wallShadows.tga", &wallShadowImage );
+
+    int blowUpFactor = shadowBlowUpFactor;
+    int blownUpSize = imageSize * blowUpFactor;
+    Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 4, true );
+
+    double *fullGridChannelsBlownUp[4];
+    
+    for( int c=0; c<4; c++ ) {
+        fullGridChannelsBlownUp[c] = wallShadowImageBlownUp.getChannel( c );
+        }
+
+    // blow up with nearest neighbor
+    for( int y=0; y<blownUpSize; y++ ) {
+        int smallY = y / blowUpFactor;
+        for( int x=0; x<blownUpSize; x++ ) {
+            int smallX = x / blowUpFactor;
+            
+            fullGridChannelsBlownUp[3][ y * blownUpSize + x ] =
+                fullGridChannels[3][ smallY * imageSize + smallX ];
+            }
+        }
+
+    BoxBlurFilter filter2( 3 );
+
+    Image *shadowCopy = wallShadowImageBlownUp.copy();
+    
+    shadowCopy->filter( &filter2, 3 );
+    
+    //writeTGAFile( "wallShadowBig_allInOnePass.tga", shadowCopy );
+    delete shadowCopy;
+    
+    //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
+
+    wallShadowImageBlownUp.filter( &filter, 3 );
+    //writeTGAFile( "wallShadowsBig_pass1.tga", &wallShadowImageBlownUp );
+
+    //wallShadowImageBlownUp.filter( &filter, 3 );
+    //writeTGAFile( "wallShadowsBig_pass2.tga", &wallShadowImageBlownUp );
+
+    //wallShadowImageBlownUp.filter( &filter, 3 );
+    //writeTGAFile( "wallShadowsBig_pass3.tga", &wallShadowImageBlownUp );
+
+    //wallShadowImageBlownUp.filter( &filter, 3 );
+    //writeTGAFile( "wallShadowsBig_pass4.tga", &wallShadowImageBlownUp );
+
+    wallShadowImageBlownUp.filter( &filter, 3 );
+        
+    
+    // add a bit of noise
+    int numBlowupPixels = blownUpSize * blownUpSize;
+    
+    for( int i=0; i<numBlowupPixels; i++ ) {
+        
+        double oldValue = fullGridChannelsBlownUp[3][i];
+
+        if( oldValue > 0 ) {
+            fullGridChannelsBlownUp[3][i] -= 
+                randSource.
+                getRandomBoundedDouble( -oldValue, oldValue );
+            
+            // clamp
+            if( fullGridChannelsBlownUp[3][i] < 0 ) {
+                fullGridChannelsBlownUp[3][i] = 0;
+                }
+            else if( fullGridChannelsBlownUp[3][i] > 1 ) {
+                fullGridChannelsBlownUp[3][i] = 1;
+                }
+            
+            }
+        }
+    
+    // blur again, post-noise
+    wallShadowImageBlownUp.filter( &filter, 3 );
+    wallShadowImageBlownUp.filter( &filter, 3 );
+    wallShadowImageBlownUp.filter( &filter, 3 );
+    wallShadowImageBlownUp.filter( &filter, 3 );
+
+    mFullMapWallShadowSprite = fillSprite( &wallShadowImageBlownUp, false );
 
 
 
@@ -3081,6 +3162,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     // draw floor
     if( edgeFade > 0 ) {
+
+                
         // draw shadows only on top of floor
         startAddingToStencil( true, true );
 
@@ -3097,13 +3180,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             }
+
+        setDrawColor( 1, 1, 1, 1 );
+        
+        if( false )drawRect( visStart.x, visStart.y, 
+                             visEnd.x, visEnd.y );
+
         startDrawingThroughStencil();
         
         // wall shadows on floor
-        setDrawColor( 1, 1, 1, 0.50 );
+        setDrawColor( 1, 1, 1, 1 );
         //toggleAdditiveBlend( true );
         toggleLinearMagFilter( true );
-        drawSprite( mFullMapWallShadowSprite, fullMapPos, 1.0 );
+        drawSprite( mFullMapWallShadowSprite, fullMapPos, 
+                    1.0 / shadowBlowUpFactor );
         toggleLinearMagFilter( false );
 
         stopStencil();
