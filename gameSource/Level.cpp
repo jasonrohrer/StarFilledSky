@@ -179,7 +179,7 @@ void FastBoxBlurFilter::apply( double *inChannel,
     double *sourcePointer = inChannel;
     for( int y=0; y<inHeight; y++ ) {
         for( int x=0; x<inWidth; x++ ) {
-            double total = sourcePointer[0];
+            double total = *sourcePointer;
 
             if( x>0 ) {    
                 total += accumPointer[-1];
@@ -206,57 +206,56 @@ void FastBoxBlurFilter::apply( double *inChannel,
     
     double boxValueMultiplier = 1.0 / numPixelsInBox;
     
+    int yStart = mRadius + 1;
+    int yEnd = inHeight - mRadius;
+
+    int xStart = mRadius + 1;
+    int xEnd = inWidth - mRadius;
+
+    // use pointer tricks to walk through accumulation table
+    //accumPointer = accumTotals[ yStart * inWidth + xStart ];
+    
+    // four "corners" around box in accumulation table used to compute
+    // box total
+    // these are offsets to current accumulation pointer
+    int cornerOffsetA = (mRadius) * inWidth + (mRadius);
+    int cornerOffsetB = (-mRadius -1) * inWidth + (mRadius);
+    int cornerOffsetC = (mRadius) * inWidth + (-mRadius - 1);
+    int cornerOffsetD = (-mRadius -1) * inWidth + (-mRadius - 1);
+
+    // seems like Gamasutra's code had a mistake
+    // need to extend start of box 1 past actual box, for this to work
+    // properly, thus the (-mRadius -1) stuff above
+    
     
     // sum boxes right into passed-in channel
-    for( int y=0; y<inHeight; y++ ) {
-        // seems like Gamasutra's code had a mistake
-        // need to extend start of box 1 past actual box, for this to work
-        // properly
-        int boxYStart = y - mRadius - 1;
-        int boxYEnd = y + mRadius;
-
-        if( boxYStart < 0 ) {
-            boxYStart = 0;
-            }
-        if( boxYEnd >= inHeight ) {
-            boxYEnd = inHeight - 1;
-            }
-        
-        int boxYStartIndex = boxYStart * inWidth;
-        int boxYEndIndex = boxYEnd * inWidth;
+    for( int y=yStart; y<yEnd; y++ ) {
 
         int resultYIndex = y * inWidth;
+
+        accumPointer = &( accumTotals[ y * inWidth + xStart ] );
+
+        double *resultPointer = &( inChannel[ y * inWidth + xStart ] );
         
-
-        for( int x=0; x<inWidth; x++ ) {
+        for( int x=xStart; x<xEnd; x++ ) {
             
-            int boxXStart = x - mRadius - 1;
-            int boxXEnd = x + mRadius;
-            
-            if( boxXStart < 0 ) {
-                boxXStart = 0;
-                }
-            if( boxXEnd >= inWidth ) {
-                boxXEnd = inWidth - 1;
-                }
-            
-
-            
-            inChannel[ resultYIndex + x ] = 
+            *resultPointer = 
                 boxValueMultiplier * (
                     // total sum of pixels in image from far corner
                     // of box back to (0,0)
-                    accumTotals[ boxYStartIndex + boxXStart ]
+                    accumPointer[ cornerOffsetA ]
                     // subtract regions outside of box
                     -
-                    accumTotals[ boxYStartIndex + boxXEnd ]
+                    accumPointer[ cornerOffsetB ]
                     -
-                    accumTotals[ boxYEndIndex + boxXStart ]
+                    accumPointer[ cornerOffsetC ]
                     // add back in region that was subtracted twice
                     +
-                    accumTotals[ boxYEndIndex + boxXEnd ]
+                    accumPointer[ cornerOffsetD ]
                     );
-            
+
+            accumPointer++;
+            resultPointer++;
             }
         }
     
