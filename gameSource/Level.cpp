@@ -106,7 +106,7 @@ static void outputLevelMapImage( Image *inMapImage ) {
  *
  * Faster accumulative implementation, as suggested by Gamasutra.
  *
- * Does NOT handle edge of image correctly.
+ * Fixed from Gamasutra code to handle edges of image correctly
  *
  * @author Jason Rohrer 
  */
@@ -201,9 +201,7 @@ void FastBoxBlurFilter::apply( double *inChannel,
         }
     
     
-    int numPixelsInBox = (mRadius * 2 + 1) * (mRadius * 2 + 1);
     
-    double boxValueMultiplier = 1.0 / numPixelsInBox;
     
     
     // sum boxes right into passed-in channel
@@ -213,25 +211,48 @@ void FastBoxBlurFilter::apply( double *inChannel,
         // properly
         int boxYStart = y - mRadius - 1;
         int boxYEnd = y + mRadius;
+
+        double yOutsideFactor = 1;
         
+        int yDimensionExtra = 0;
+
         if( boxYStart < 0 ) {
             boxYStart = 0;
+            yOutsideFactor = 0;
+            yDimensionExtra = 1;
             }
         if( boxYEnd >= inHeight ) {
             boxYEnd = inHeight - 1;
             }
-        
+        int yDimension = boxYEnd - boxYStart + yDimensionExtra;
+
+
         for( int x=0; x<inWidth; x++ ) {
             
             int boxXStart = x - mRadius - 1;
             int boxXEnd = x + mRadius;
             
+            double xOutsideFactor = 1;
+            
+            int xDimensionExtra = 0;
+            
             if( boxXStart < 0 ) {
                 boxXStart = 0;
+                xOutsideFactor = 0;
+                xDimensionExtra = 1;
                 }
             if( boxXEnd >= inWidth ) {
                 boxXEnd = inWidth - 1;
                 }
+            
+            double outsideOverlapFactor = yOutsideFactor * xOutsideFactor;
+            
+
+            int xDimension = boxXEnd - boxXStart + xDimensionExtra;
+
+            int numPixelsInBox = (yDimension) * (xDimension);
+    
+            double boxValueMultiplier = 1.0 / numPixelsInBox;
 
             
             inChannel[ y * inWidth + x ] = 
@@ -239,13 +260,16 @@ void FastBoxBlurFilter::apply( double *inChannel,
                     // total sum of pixels in image from far corner
                     // of box back to (0,0)
                     accumTotals[ boxYStart * inWidth + boxXStart ]
-                    // subtract regions outside of box
+                    // subtract regions outside of box, if any
                     -
+                    yOutsideFactor * 
                     accumTotals[ boxYStart * inWidth + boxXEnd ]
                     -
+                    xOutsideFactor * 
                     accumTotals[ boxYEnd * inWidth + boxXStart ]
-                    // add back in region that was subtracted twice
+                    // add back in region that was subtracted twice, if any
                     +
+                    outsideOverlapFactor *
                     accumTotals[ boxYEnd * inWidth + boxXEnd ]
                     );
             
