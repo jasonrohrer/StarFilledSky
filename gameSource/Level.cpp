@@ -3206,6 +3206,16 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 drawSprite( riseMarker, mRiseWorldPos2 );
                 }
             }
+        
+        // draw blood stains under shadows too
+        
+        // blood stains
+        for( int s=0; s<mBloodStains.size(); s++ ) {
+            BloodStain *stain = mBloodStains.getElement( s );
+            setDrawColor( 0.80, 0, 0, stain->blendFactor );
+            
+            drawSquare( *( mGridWorldSpots[ stain->floorIndex ] ), 0.5 );
+            }
 
 
 
@@ -3251,13 +3261,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
     
-    // blood stains
-    for( int s=0; s<mBloodStains.size(); s++ ) {
-        BloodStain *stain = mBloodStains.getElement( s );
-        setDrawColor( 0.80, 0, 0, stain->blendFactor );
-        
-        drawSquare( *( mGridWorldSpots[ stain->floorIndex ] ), 0.5 );
-        }
     
 
 
