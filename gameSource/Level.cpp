@@ -775,18 +775,22 @@ void Level::generateReproducibleData() {
             }
         }
 
-    BoxBlurFilter filter2( 3 );
+    //BoxBlurFilter filter2( 3 );
 
-    Image *shadowCopy = wallShadowImageBlownUp.copy();
+    //Image *shadowCopy = wallShadowImageBlownUp.copy();
     
-    shadowCopy->filter( &filter2, 3 );
+    //shadowCopy->filter( &filter2, 3 );
     
     //writeTGAFile( "wallShadowBig_allInOnePass.tga", shadowCopy );
-    delete shadowCopy;
+    //delete shadowCopy;
     
     //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
 
-    wallShadowImageBlownUp.filter( &filter, 3 );
+
+    int numBlowupPixels = blownUpSize * blownUpSize;
+
+
+    //wallShadowImageBlownUp.filter( &filter, 3 );
     //writeTGAFile( "wallShadowsBig_pass1.tga", &wallShadowImageBlownUp );
 
     //wallShadowImageBlownUp.filter( &filter, 3 );
@@ -802,8 +806,10 @@ void Level::generateReproducibleData() {
         
     
     // add a bit of noise
-    int numBlowupPixels = blownUpSize * blownUpSize;
     
+    double noiseFraction = 0.75;
+    
+    if( true )
     for( int i=0; i<numBlowupPixels; i++ ) {
         
         double oldValue = fullGridChannelsBlownUp[3][i];
@@ -811,7 +817,8 @@ void Level::generateReproducibleData() {
         if( oldValue > 0 ) {
             fullGridChannelsBlownUp[3][i] -= 
                 randSource.
-                getRandomBoundedDouble( -oldValue, oldValue );
+                getRandomBoundedDouble( -oldValue * noiseFraction, 
+                                        oldValue * noiseFraction );
             
             // clamp
             if( fullGridChannelsBlownUp[3][i] < 0 ) {
@@ -825,8 +832,8 @@ void Level::generateReproducibleData() {
         }
     
     // blur again, post-noise
-    wallShadowImageBlownUp.filter( &filter, 3 );
-    wallShadowImageBlownUp.filter( &filter, 3 );
+    //wallShadowImageBlownUp.filter( &filter, 3 );
+    //wallShadowImageBlownUp.filter( &filter, 3 );
     wallShadowImageBlownUp.filter( &filter, 3 );
     wallShadowImageBlownUp.filter( &filter, 3 );
 
@@ -3189,7 +3196,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         startDrawingThroughStencil();
         
         // wall shadows on floor
-        setDrawColor( 1, 1, 1, 1 );
+        setDrawColor( 1, 1, 1, 0.75 );
         //toggleAdditiveBlend( true );
         toggleLinearMagFilter( true );
         drawSprite( mFullMapWallShadowSprite, fullMapPos, 
