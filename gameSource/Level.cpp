@@ -206,6 +206,8 @@ void FastBoxBlurFilter::apply( double *inChannel,
     
     double boxValueMultiplier = 1.0 / numPixelsInBox;
     
+
+    // set boundaries so that box never goes out of bounds
     int yStart = mRadius + 1;
     int yEnd = inHeight - mRadius;
 
@@ -230,8 +232,6 @@ void FastBoxBlurFilter::apply( double *inChannel,
     
     // sum boxes right into passed-in channel
     for( int y=yStart; y<yEnd; y++ ) {
-
-        int resultYIndex = y * inWidth;
 
         accumPointer = &( accumTotals[ y * inWidth + xStart ] );
 
