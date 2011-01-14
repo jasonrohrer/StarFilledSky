@@ -97,6 +97,179 @@ static void outputLevelMapImage( Image *inMapImage ) {
 
 
 
+
+
+
+
+/**
+ * Blur convolution filter that uses a box for averaging.
+ *
+ * Faster accumulative implementation, as suggested by Gamasutra.
+ *
+ * Does NOT handle edge of image correctly.
+ *
+ * @author Jason Rohrer 
+ */
+class FastBoxBlurFilter : public ChannelFilter { 
+	
+	public:
+		
+		/**
+		 * Constructs a box filter.
+		 *
+		 * @param inRadius the radius of the box in pixels.
+		 */
+		FastBoxBlurFilter( int inRadius );
+		
+		
+		/**
+		 * Sets the box radius.
+		 *
+		 * @param inRadius the radius of the box in pixels.
+		 */
+		void setRadius( int inRadius );
+		
+		
+		/**
+		 * Gets the box radius.
+		 *
+		 * @return the radius of the box in pixels.
+		 */
+		int getRadius();
+		
+		
+		// implements the ChannelFilter interface
+		void apply( double *inChannel, int inWidth, int inHeight );
+
+	private:
+		int mRadius;
+	};
+	
+	
+	
+FastBoxBlurFilter::FastBoxBlurFilter( int inRadius ) 
+	: mRadius( inRadius ) {	
+	
+	}
+
+
+
+void FastBoxBlurFilter::setRadius( int inRadius ) {
+	mRadius = inRadius;
+	}
+
+
+
+int FastBoxBlurFilter::getRadius() {
+	return mRadius;
+	}	
+	
+	
+	
+void FastBoxBlurFilter::apply( double *inChannel, 
+	int inWidth, int inHeight ) {
+
+    
+    // sum of all pixels to left and above each position 
+    // (including that position)
+    double *accumTotals = new double[ inWidth * inHeight ];
+    
+
+    double *accumPointer = accumTotals;
+    double *sourcePointer = inChannel;
+    for( int y=0; y<inHeight; y++ ) {
+        for( int x=0; x<inWidth; x++ ) {
+            double total = sourcePointer[0];
+
+            if( x>0 ) {    
+                total += accumPointer[-1];
+                }
+            
+            if( y>0 ) {    
+                total += accumPointer[ -inWidth ];
+                }
+            
+            if( x>0 && y>0 ) {
+                total -= accumPointer[ -inWidth - 1 ];
+                }
+            
+            *accumPointer = total;
+            accumPointer++;
+            
+            sourcePointer++;
+            }
+        }
+    
+    
+    int numPixelsInBox = (mRadius * 2 + 1) * (mRadius * 2 + 1);
+    
+    double boxValueMultiplier = 1.0 / numPixelsInBox;
+    
+    
+    // sum boxes right into passed-in channel
+    for( int y=0; y<inHeight; y++ ) {
+        // seems like Gamasutra's code had a mistake
+        // need to extend start of box 1 past actual box, for this to work
+        // properly
+        int boxYStart = y - mRadius - 1;
+        int boxYEnd = y + mRadius;
+        
+        if( boxYStart < 0 ) {
+            boxYStart = 0;
+            }
+        if( boxYEnd >= inHeight ) {
+            boxYEnd = inHeight - 1;
+            }
+        
+        for( int x=0; x<inWidth; x++ ) {
+            
+            int boxXStart = x - mRadius - 1;
+            int boxXEnd = x + mRadius;
+            
+            if( boxXStart < 0 ) {
+                boxXStart = 0;
+                }
+            if( boxXEnd >= inWidth ) {
+                boxXEnd = inWidth - 1;
+                }
+
+            
+            inChannel[ y * inWidth + x ] = 
+                boxValueMultiplier * (
+                    // total sum of pixels in image from far corner
+                    // of box back to (0,0)
+                    accumTotals[ boxYStart * inWidth + boxXStart ]
+                    // subtract regions outside of box
+                    -
+                    accumTotals[ boxYStart * inWidth + boxXEnd ]
+                    -
+                    accumTotals[ boxYEnd * inWidth + boxXStart ]
+                    // add back in region that was subtracted twice
+                    +
+                    accumTotals[ boxYEnd * inWidth + boxXEnd ]
+                    );
+            
+            }
+        }
+    
+    delete [] accumTotals;
+    
+
+    return;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Level::generateReproducibleData() {
 
     if( mDataGenerated ) {
@@ -752,8 +925,8 @@ void Level::generateReproducibleData() {
         fullGridChannels[3][imageIndex] = 1;
         }
     
-    writeTGAFile( "wallShadows.tga", &wallShadowImage );
-
+    //writeTGAFile( "wallShadows.tga", &wallShadowImage );
+    
     int blowUpFactor = shadowBlowUpFactor;
     int blownUpSize = imageSize * blowUpFactor;
     Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 4, true );
@@ -775,14 +948,27 @@ void Level::generateReproducibleData() {
             }
         }
 
-    //BoxBlurFilter filter2( 3 );
 
-    //Image *shadowCopy = wallShadowImageBlownUp.copy();
+    // test edge case of box blur filters
+    fullGridChannelsBlownUp[3][ 0 ] = 1;
     
-    //shadowCopy->filter( &filter2, 3 );
+
+    FastBoxBlurFilter filter2( 1 );
+
+    Image *shadowCopy = wallShadowImageBlownUp.copy();
     
-    //writeTGAFile( "wallShadowBig_allInOnePass.tga", shadowCopy );
-    //delete shadowCopy;
+    shadowCopy->filter( &filter2, 3 );
+    
+    writeTGAFile( "wallShadowBig_blurFast.tga", shadowCopy );
+    delete shadowCopy;
+    
+
+    shadowCopy = wallShadowImageBlownUp.copy();
+    
+    shadowCopy->filter( &filter, 3 );
+    
+    writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
+    delete shadowCopy;
     
     //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
 
