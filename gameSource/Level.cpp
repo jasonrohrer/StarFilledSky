@@ -3193,6 +3193,22 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( false )drawRect( visStart.x, visStart.y, 
                              visEnd.x, visEnd.y );
 
+        
+        // draw rise marker *under* shadows
+        if( edgeFade > 0 ) {
+            Color *c = &( mColors.special );
+            setDrawColor( c->r,
+                          c->g,
+                          c->b, edgeFade );
+            drawSprite( riseMarker, mRiseWorldPos );
+            
+            if( mDoubleRisePositions ) {
+                drawSprite( riseMarker, mRiseWorldPos2 );
+                }
+            }
+
+
+
         startDrawingThroughStencil();
         
         // wall shadows on floor
@@ -3245,18 +3261,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
 
 
-    // draw rise marker
-    if( edgeFade > 0 ) {
-        Color *c = &( mColors.special );
-        setDrawColor( c->r,
-                      c->g,
-                      c->b, edgeFade );
-        drawSprite( riseMarker, mRiseWorldPos );
-        
-        if( mDoubleRisePositions ) {
-            drawSprite( riseMarker, mRiseWorldPos2 );
-            }
-        }
     
 
 
