@@ -106,7 +106,7 @@ static void outputLevelMapImage( Image *inMapImage ) {
  *
  * Faster accumulative implementation, as suggested by Gamasutra.
  *
- * Fixed from Gamasutra code to handle edges of image correctly
+ * For speed, does NOT handle edge pixels correctly
  *
  * @author Jason Rohrer 
  */
@@ -201,7 +201,10 @@ void FastBoxBlurFilter::apply( double *inChannel,
         }
     
     
+
+    int numPixelsInBox = (mRadius*2 + 1) * (mRadius*2 + 1);
     
+    double boxValueMultiplier = 1.0 / numPixelsInBox;
     
     
     // sum boxes right into passed-in channel
@@ -212,65 +215,46 @@ void FastBoxBlurFilter::apply( double *inChannel,
         int boxYStart = y - mRadius - 1;
         int boxYEnd = y + mRadius;
 
-        double yOutsideFactor = 1;
-        
-        int yDimensionExtra = 0;
-
         if( boxYStart < 0 ) {
             boxYStart = 0;
-            yOutsideFactor = 0;
-            yDimensionExtra = 1;
             }
         if( boxYEnd >= inHeight ) {
             boxYEnd = inHeight - 1;
             }
-        int yDimension = boxYEnd - boxYStart + yDimensionExtra;
+        
+        int boxYStartIndex = boxYStart * inWidth;
+        int boxYEndIndex = boxYEnd * inWidth;
 
+        int resultYIndex = y * inWidth;
+        
 
         for( int x=0; x<inWidth; x++ ) {
             
             int boxXStart = x - mRadius - 1;
             int boxXEnd = x + mRadius;
             
-            double xOutsideFactor = 1;
-            
-            int xDimensionExtra = 0;
-            
             if( boxXStart < 0 ) {
                 boxXStart = 0;
-                xOutsideFactor = 0;
-                xDimensionExtra = 1;
                 }
             if( boxXEnd >= inWidth ) {
                 boxXEnd = inWidth - 1;
                 }
             
-            double outsideOverlapFactor = yOutsideFactor * xOutsideFactor;
-            
-
-            int xDimension = boxXEnd - boxXStart + xDimensionExtra;
-
-            int numPixelsInBox = (yDimension) * (xDimension);
-    
-            double boxValueMultiplier = 1.0 / numPixelsInBox;
 
             
-            inChannel[ y * inWidth + x ] = 
+            inChannel[ resultYIndex + x ] = 
                 boxValueMultiplier * (
                     // total sum of pixels in image from far corner
                     // of box back to (0,0)
-                    accumTotals[ boxYStart * inWidth + boxXStart ]
-                    // subtract regions outside of box, if any
+                    accumTotals[ boxYStartIndex + boxXStart ]
+                    // subtract regions outside of box
                     -
-                    yOutsideFactor * 
-                    accumTotals[ boxYStart * inWidth + boxXEnd ]
+                    accumTotals[ boxYStartIndex + boxXEnd ]
                     -
-                    xOutsideFactor * 
-                    accumTotals[ boxYEnd * inWidth + boxXStart ]
-                    // add back in region that was subtracted twice, if any
+                    accumTotals[ boxYEndIndex + boxXStart ]
+                    // add back in region that was subtracted twice
                     +
-                    outsideOverlapFactor *
-                    accumTotals[ boxYEnd * inWidth + boxXEnd ]
+                    accumTotals[ boxYEndIndex + boxXEnd ]
                     );
             
             }
@@ -974,22 +958,28 @@ void Level::generateReproducibleData() {
 
 
     // test edge case of box blur filters
-    fullGridChannelsBlownUp[3][ 0 ] = 1;
+    //fullGridChannelsBlownUp[3][ 0 ] = 1;
     
 
     FastBoxBlurFilter filter2( 1 );
 
     Image *shadowCopy = wallShadowImageBlownUp.copy();
     
+    double startTime = Time::getCurrentTime();
     shadowCopy->filter( &filter2, 3 );
-    
+    printf( "Fast blur time = %f ms\n", 
+            1000 * ( Time::getCurrentTime() - startTime ) );
+
     writeTGAFile( "wallShadowBig_blurFast.tga", shadowCopy );
     delete shadowCopy;
     
 
     shadowCopy = wallShadowImageBlownUp.copy();
     
+    startTime = Time::getCurrentTime();
     shadowCopy->filter( &filter, 3 );
+    printf( "Old blur time = %f ms\n", 
+            1000 * ( Time::getCurrentTime() - startTime ) );
     
     writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
     delete shadowCopy;
