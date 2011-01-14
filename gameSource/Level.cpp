@@ -141,6 +141,10 @@ class FastBoxBlurFilter : public ChannelFilter {
 		// implements the ChannelFilter interface
 		void apply( double *inChannel, int inWidth, int inHeight );
 
+        void applySubRegion( double *inChannel, int inWidth, int inHeight,
+                             int inXStart, int inYStart, 
+                             int inXEnd, int inYEnd );
+
 	private:
 		int mRadius;
 	};
@@ -166,8 +170,18 @@ int FastBoxBlurFilter::getRadius() {
 	
 	
 	
-void FastBoxBlurFilter::apply( double *inChannel, 
-	int inWidth, int inHeight ) {
+void FastBoxBlurFilter::apply( double *inChannel, int inWidth, int inHeight ) {
+    
+    applySubRegion( inChannel, inWidth, inHeight, 0, 0, 
+                    inWidth - 1, inHeight - 1 );
+    }
+
+
+
+void FastBoxBlurFilter::applySubRegion( double *inChannel, 
+                                        int inWidth, int inHeight,
+                                        int inXStart, int inYStart, 
+                                        int inXEnd, int inYEnd ) {
 
     
     // sum of all pixels to left and above each position 
@@ -175,25 +189,37 @@ void FastBoxBlurFilter::apply( double *inChannel,
     double *accumTotals = new double[ inWidth * inHeight ];
     
 
-    double *accumPointer = accumTotals;
-    double *sourcePointer = inChannel;
-    for( int y=0; y<inHeight; y++ ) {
-        for( int x=0; x<inWidth; x++ ) {
-            double total = *sourcePointer;
+    int accumXStart = inXStart - mRadius - 1;
+    int accumYStart = inYStart - mRadius - 1;
 
-            if( x>0 ) {    
-                total += accumPointer[-1];
-                }
+    int accumXEnd = inXEnd + mRadius + 1;
+    int accumYEnd = inYEnd + mRadius + 1;
+    
+    // force both > 0 to remove checks in loop below
+    if( accumXStart < 1 ) {
+        accumXStart = 1;
+        }
+    if( accumYStart < 1 ) {
+        accumYStart = 1;
+        }
+    if( accumXEnd >= inWidth ) {
+        accumXEnd = inWidth - 1;
+        }
+    if( accumYEnd >= inHeight ) {
+        accumYEnd = inHeight - 1;
+        }
+
+
+    for( int y=accumYStart; y<accumYEnd; y++ ) {
+        double *accumPointer = &( accumTotals[ y * inWidth + accumXStart ] );
+        double *sourcePointer = &( inChannel[ y * inWidth + accumXStart ] );
+        
+        for( int x=accumXStart; x<accumXEnd; x++ ) {
+            *accumPointer = *sourcePointer
+                + accumPointer[-1]
+                + accumPointer[ -inWidth ]
+                - accumPointer[ -inWidth - 1 ];
             
-            if( y>0 ) {    
-                total += accumPointer[ -inWidth ];
-                }
-            
-            if( x>0 && y>0 ) {
-                total -= accumPointer[ -inWidth - 1 ];
-                }
-            
-            *accumPointer = total;
             accumPointer++;
             
             sourcePointer++;
@@ -214,6 +240,21 @@ void FastBoxBlurFilter::apply( double *inChannel,
     int xStart = mRadius + 1;
     int xEnd = inWidth - mRadius;
 
+
+    if( inXStart > xStart ) {
+        xStart = inXStart;
+        }
+    if( inYStart > yStart ) {
+        yStart = inYStart;
+        }
+    if( inXEnd < xEnd ) {
+        xEnd = inXEnd;
+        }
+    if( inYEnd < yEnd ) {
+        yEnd = inYEnd;
+        }
+    
+
     // use pointer tricks to walk through accumulation table
     //accumPointer = accumTotals[ yStart * inWidth + xStart ];
     
@@ -233,7 +274,7 @@ void FastBoxBlurFilter::apply( double *inChannel,
     // sum boxes right into passed-in channel
     for( int y=yStart; y<yEnd; y++ ) {
 
-        accumPointer = &( accumTotals[ y * inWidth + xStart ] );
+        double *accumPointer = &( accumTotals[ y * inWidth + xStart ] );
 
         double *resultPointer = &( inChannel[ y * inWidth + xStart ] );
         
@@ -965,11 +1006,20 @@ void Level::generateReproducibleData() {
     Image *shadowCopy = wallShadowImageBlownUp.copy();
     
     double startTime = Time::getCurrentTime();
-    shadowCopy->filter( &filter2, 3 );
+
+    double *shadowAlphaChannel = shadowCopy->getChannel( 3 );
+    
+    filter2.applySubRegion( shadowAlphaChannel, blownUpSize, blownUpSize,
+                            imageXOffset * blowUpFactor,
+                            imageYOffset * blowUpFactor,
+                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
+                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
+                            
+    //shadowCopy->filter( &filter2, 3 );
     printf( "Fast blur time = %f ms\n", 
             1000 * ( Time::getCurrentTime() - startTime ) );
 
-    writeTGAFile( "wallShadowBig_blurFast.tga", shadowCopy );
+    //writeTGAFile( "wallShadowBig_blurFast.tga", shadowCopy );
     delete shadowCopy;
     
 
@@ -980,7 +1030,7 @@ void Level::generateReproducibleData() {
     printf( "Old blur time = %f ms\n", 
             1000 * ( Time::getCurrentTime() - startTime ) );
     
-    writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
+    //writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
     delete shadowCopy;
     
     //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
