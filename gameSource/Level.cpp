@@ -50,7 +50,7 @@ static int stepsBetweenGlowTrails = 4;
 static double trailJitter = 0.25;
 
 
-static int shadowBlowUpFactor = 4;
+static int shadowBlowUpFactor = 2;
 
 
 
@@ -952,11 +952,9 @@ void Level::generateReproducibleData() {
 
     
     // now make a shadow sprite for the walls
-    Image wallShadowImage( imageSize, imageSize, 4, true );
+    Image wallShadowImage( imageSize, imageSize, 1, true );
     
-    for( int c=0; c<4; c++ ) {
-        fullGridChannels[c] = wallShadowImage.getChannel( c );
-        }
+    double *wallShadowAlpha = wallShadowImage.getChannel( 0 );
     for( int i=mNumFloorSquares; 
          i<mNumFloorSquares + mNumWallSquares; i++ ) {
         
@@ -969,30 +967,40 @@ void Level::generateReproducibleData() {
             x + imageXOffset;
     
         // fill in alpha for wall spots
-        fullGridChannels[3][imageIndex] = 1;
+        wallShadowAlpha[imageIndex] = 1;
         }
     
     //writeTGAFile( "wallShadows.tga", &wallShadowImage );
 
     
+    
     int blowUpFactor = shadowBlowUpFactor;
     int blownUpSize = imageSize * blowUpFactor;
-    Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 4, true );
-
-    double *fullGridChannelsBlownUp[4];
     
-    for( int c=0; c<4; c++ ) {
-        fullGridChannelsBlownUp[c] = wallShadowImageBlownUp.getChannel( c );
-        }
+    // opt:  no need to operate on all four channels
+    // just process alpha channel now
+    Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 1, true );
+    
+    double *fullGridChannelsBlownUpAlpha = 
+        wallShadowImageBlownUp.getChannel( 0 );
 
+    // only process used sub-region of blown up image
+    // don't waste time on blank areas outside walls
+    int blowUpStartX = imageXOffset * blowUpFactor;
+    int blowUpStartY = imageYOffset * blowUpFactor;
+    int blowUpEndX = ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor;
+    int blowUpEndY = ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor;
+
+    
+    
     // blow up with nearest neighbor
-    for( int y=0; y<blownUpSize; y++ ) {
+    for( int y=blowUpStartY; y<blowUpEndY; y++ ) {
         int smallY = y / blowUpFactor;
-        for( int x=0; x<blownUpSize; x++ ) {
+        for( int x=blowUpStartX; x<blowUpEndX; x++ ) {
             int smallX = x / blowUpFactor;
             
-            fullGridChannelsBlownUp[3][ y * blownUpSize + x ] =
-                fullGridChannels[3][ smallY * imageSize + smallX ];
+            fullGridChannelsBlownUpAlpha[ y * blownUpSize + x ] =
+                wallShadowAlpha[ smallY * imageSize + smallX ];
             }
         }
     
@@ -1054,35 +1062,33 @@ void Level::generateReproducibleData() {
 
     //wallShadowImageBlownUp.filter( &filter2, 3 );
           
-    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
-                            blownUpSize, blownUpSize,
-                            imageXOffset * blowUpFactor,
-                            imageYOffset * blowUpFactor,
-                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
-                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
-  
+    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                       blownUpSize, blownUpSize,
+                                       blowUpStartX, blowUpStartY,
+                                       blowUpEndX, blowUpEndY );
+    
     
     // add a bit of noise
     
     double noiseFraction = 0.75;
     
-    if( true )
+    if( false )
     for( int i=0; i<numBlowupPixels; i++ ) {
         
-        double oldValue = fullGridChannelsBlownUp[3][i];
+        double oldValue = fullGridChannelsBlownUpAlpha[i];
 
         if( oldValue > 0 ) {
-            fullGridChannelsBlownUp[3][i] -= 
+            fullGridChannelsBlownUpAlpha[i] -= 
                 randSource.
                 getRandomBoundedDouble( -oldValue * noiseFraction, 
                                         oldValue * noiseFraction );
             
             // clamp
-            if( fullGridChannelsBlownUp[3][i] < 0 ) {
-                fullGridChannelsBlownUp[3][i] = 0;
+            if( fullGridChannelsBlownUpAlpha[i] < 0 ) {
+                fullGridChannelsBlownUpAlpha[i] = 0;
                 }
-            else if( fullGridChannelsBlownUp[3][i] > 1 ) {
-                fullGridChannelsBlownUp[3][i] = 1;
+            else if( fullGridChannelsBlownUpAlpha[i] > 1 ) {
+                fullGridChannelsBlownUpAlpha[i] = 1;
                 }
             
             }
@@ -1094,23 +1100,41 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
     //wallShadowImageBlownUp.filter( &filter2, 3 );
 
-    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
-                            blownUpSize, blownUpSize,
-                            imageXOffset * blowUpFactor,
-                            imageYOffset * blowUpFactor,
-                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
-                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
+    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                       blownUpSize, blownUpSize,
+                                       blowUpStartX, blowUpStartY,
+                                       blowUpEndX, blowUpEndY );
 
-    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
-                            blownUpSize, blownUpSize,
-                            imageXOffset * blowUpFactor,
-                            imageYOffset * blowUpFactor,
-                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
-                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
-
+    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                                       blownUpSize, blownUpSize,
+                                       blowUpStartX, blowUpStartY,
+                                       blowUpEndX, blowUpEndY );
     
-    mFullMapWallShadowSprite = fillSprite( &wallShadowImageBlownUp, false );
 
+    int numWallShadowBytes = blownUpSize * blownUpSize * 4;
+    
+    unsigned char *wallShadowRGBA = new unsigned char[ numWallShadowBytes ];
+    
+    memset( wallShadowRGBA, 0, numWallShadowBytes );
+    
+    // keep track of alpha index int RGBA bytes
+    int alphaIndex = 3;
+    for( int p=0; p<numBlowupPixels; p++ ) {
+        wallShadowRGBA[ alphaIndex ] = 
+            (int)( 255 * fullGridChannelsBlownUpAlpha[p] );
+
+        // next alpha byte
+        alphaIndex += 4;
+        }
+    
+    
+    
+    mFullMapWallShadowSprite = fillSprite( wallShadowRGBA, 
+                                           blownUpSize, 
+                                           blownUpSize );
+
+    delete [] wallShadowRGBA;
+    
 
 
     // now compute which walls should have edges
