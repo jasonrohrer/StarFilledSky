@@ -952,27 +952,7 @@ void Level::generateReproducibleData() {
 
     
     // now make a shadow sprite for the walls
-    Image wallShadowImage( imageSize, imageSize, 1, true );
-    
-    double *wallShadowAlpha = wallShadowImage.getChannel( 0 );
-    for( int i=mNumFloorSquares; 
-         i<mNumFloorSquares + mNumWallSquares; i++ ) {
-        
-        int x = mIndexToGridMap[i].x;
-        int y = mIndexToGridMap[i].y;
-        
-        
-        int imageIndex = 
-            ( imageSize - (y + imageYOffset ) ) * imageSize + 
-            x + imageXOffset;
-    
-        // fill in alpha for wall spots
-        wallShadowAlpha[imageIndex] = 1;
-        }
-    
-    //writeTGAFile( "wallShadows.tga", &wallShadowImage );
 
-    
     
     int blowUpFactor = shadowBlowUpFactor;
     int blownUpSize = imageSize * blowUpFactor;
@@ -994,13 +974,24 @@ void Level::generateReproducibleData() {
     
     
     // blow up with nearest neighbor
-    for( int y=blowUpStartY; y<blowUpEndY; y++ ) {
-        int smallY = y / blowUpFactor;
-        for( int x=blowUpStartX; x<blowUpEndX; x++ ) {
-            int smallX = x / blowUpFactor;
-            
-            fullGridChannelsBlownUpAlpha[ y * blownUpSize + x ] =
-                wallShadowAlpha[ smallY * imageSize + smallX ];
+    // ignore areas that are not walls
+    for( int i=mNumFloorSquares; 
+         i<mNumFloorSquares + mNumWallSquares; i++ ) {
+        
+        int x = mIndexToGridMap[i].x + imageXOffset;
+        int y = imageSize - ( mIndexToGridMap[i].y + imageYOffset );
+        
+        for( int blowUpY= y * blowUpFactor; 
+             blowUpY< y * blowUpFactor + blowUpFactor; 
+             blowUpY++ ) {
+
+            for( int blowUpX= x * blowUpFactor; 
+                 blowUpX< x * blowUpFactor + blowUpFactor; 
+                 blowUpX++ ) {
+                
+                fullGridChannelsBlownUpAlpha[ 
+                    blowUpY * blownUpSize + blowUpX ] = 1.0;
+                }
             }
         }
     
