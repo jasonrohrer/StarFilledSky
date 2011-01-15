@@ -1000,7 +1000,7 @@ void Level::generateReproducibleData() {
     //fullGridChannelsBlownUp[3][ 0 ] = 1;
     
 
-    FastBoxBlurFilter filter2( 1 );
+    FastBoxBlurFilter filter2( 2 );
 
     /*
     Image *shadowCopy = wallShadowImageBlownUp.copy();
@@ -1053,10 +1053,10 @@ void Level::generateReproducibleData() {
 
     //wallShadowImageBlownUp.filter( &filter2, 3 );
           
-    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                                       blownUpSize, blownUpSize,
-                                       blowUpStartX, blowUpStartY,
-                                       blowUpEndX, blowUpEndY );
+    filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            blownUpSize, blownUpSize,
+                            blowUpStartX, blowUpStartY,
+                            blowUpEndX, blowUpEndY );
     
     
     // add a bit of noise
