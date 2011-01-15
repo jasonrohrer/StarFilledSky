@@ -256,8 +256,7 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
     
 
     // use pointer tricks to walk through accumulation table
-    //accumPointer = accumTotals[ yStart * inWidth + xStart ];
-    
+
     // four "corners" around box in accumulation table used to compute
     // box total
     // these are offsets to current accumulation pointer
@@ -951,7 +950,7 @@ void Level::generateReproducibleData() {
     mFullMapSprite = fillSprite( &fullGridImage, false );
     
 
-
+    
     // now make a shadow sprite for the walls
     Image wallShadowImage( imageSize, imageSize, 4, true );
     
@@ -974,6 +973,7 @@ void Level::generateReproducibleData() {
         }
     
     //writeTGAFile( "wallShadows.tga", &wallShadowImage );
+
     
     int blowUpFactor = shadowBlowUpFactor;
     int blownUpSize = imageSize * blowUpFactor;
@@ -995,7 +995,7 @@ void Level::generateReproducibleData() {
                 fullGridChannels[3][ smallY * imageSize + smallX ];
             }
         }
-
+    
 
     // test edge case of box blur filters
     //fullGridChannelsBlownUp[3][ 0 ] = 1;
@@ -1003,6 +1003,7 @@ void Level::generateReproducibleData() {
 
     FastBoxBlurFilter filter2( 1 );
 
+    /*
     Image *shadowCopy = wallShadowImageBlownUp.copy();
     
     double startTime = Time::getCurrentTime();
@@ -1032,7 +1033,7 @@ void Level::generateReproducibleData() {
     
     //writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
     delete shadowCopy;
-    
+    */
     //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
 
 
@@ -1051,8 +1052,15 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter, 3 );
     //writeTGAFile( "wallShadowsBig_pass4.tga", &wallShadowImageBlownUp );
 
-    wallShadowImageBlownUp.filter( &filter, 3 );
-        
+    //wallShadowImageBlownUp.filter( &filter2, 3 );
+          
+    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
+                            blownUpSize, blownUpSize,
+                            imageXOffset * blowUpFactor,
+                            imageYOffset * blowUpFactor,
+                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
+                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
+  
     
     // add a bit of noise
     
@@ -1083,9 +1091,24 @@ void Level::generateReproducibleData() {
     // blur again, post-noise
     //wallShadowImageBlownUp.filter( &filter, 3 );
     //wallShadowImageBlownUp.filter( &filter, 3 );
-    wallShadowImageBlownUp.filter( &filter, 3 );
-    wallShadowImageBlownUp.filter( &filter, 3 );
+    //wallShadowImageBlownUp.filter( &filter2, 3 );
+    //wallShadowImageBlownUp.filter( &filter2, 3 );
 
+    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
+                            blownUpSize, blownUpSize,
+                            imageXOffset * blowUpFactor,
+                            imageYOffset * blowUpFactor,
+                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
+                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
+
+    filter2.applySubRegion( fullGridChannelsBlownUp[3], 
+                            blownUpSize, blownUpSize,
+                            imageXOffset * blowUpFactor,
+                            imageYOffset * blowUpFactor,
+                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
+                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
+
+    
     mFullMapWallShadowSprite = fillSprite( &wallShadowImageBlownUp, false );
 
 
