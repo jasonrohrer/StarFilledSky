@@ -525,6 +525,11 @@ void Level::generateReproducibleData() {
             }
         }
     
+
+    // keep a list of grid positions that are on boundary between
+    // walls and floor
+    // use this for optimized shadow generation later
+    SimpleVector<GridPos> wallAndFloorBoundaries;
     
 
 
@@ -555,18 +560,34 @@ void Level::generateReproducibleData() {
                 // avoid sticking walls across symm line
                 nxStart = x;
                 }
-                
+               
+            char floorTouchingWalls = false;
+            
             for( int ny=y-1; ny<=y+1; ny++ ) {
                 for( int nx=nxStart; nx<=x+1; nx++ ) {
                         
                     if( mWallFlags[ny][nx] == 0 ) {
                         // empty spot adjacent to this floor square
-
+                        floorTouchingWalls = true;
+                        
                         mWallFlags[ny][nx] = 2;
                                                 
                         mSquareIndices[ny][nx] = mNumUsedSquares;
                         mIndexToGridMap[mNumUsedSquares].x = nx;
                         mIndexToGridMap[mNumUsedSquares].y = ny;
+                        
+                        // this wall is on boundary too, and hasn't been added
+                        wallAndFloorBoundaries.push_back(  
+                            mIndexToGridMap[mNumUsedSquares] );
+                        
+                        if( mSymmetrical ) {
+                            // handle "twin" wall square as well
+                            GridPos twinPos = mIndexToGridMap[mNumUsedSquares];
+                            twinPos.x = MAX_LEVEL_W - 
+                                mIndexToGridMap[mNumUsedSquares].x - 1;
+                    
+                            wallAndFloorBoundaries.push_back( twinPos );
+                            }
 
                         mNumUsedSquares++;
 
@@ -576,6 +597,18 @@ void Level::generateReproducibleData() {
                     
                         mNumWallSquares ++;
                         }
+                    }
+                }
+            
+            if( floorTouchingWalls ) {
+                wallAndFloorBoundaries.push_back( mIndexToGridMap[i] );
+
+                if( mSymmetrical ) {
+                    // handle "twin" floor square as well
+                    GridPos twinPos = mIndexToGridMap[i];
+                    twinPos.x = MAX_LEVEL_W - mIndexToGridMap[i].x - 1;
+                    
+                    wallAndFloorBoundaries.push_back( twinPos );
                     }
                 }
             }
@@ -974,7 +1007,8 @@ void Level::generateReproducibleData() {
     
     
     // blow up with nearest neighbor
-    // ignore areas that are not walls
+    // ignore areas that are not on wall/floor boundary
+    // FIXME
     for( int i=mNumFloorSquares; 
          i<mNumFloorSquares + mNumWallSquares; i++ ) {
         
