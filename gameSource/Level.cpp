@@ -50,7 +50,7 @@ static int stepsBetweenGlowTrails = 4;
 static double trailJitter = 0.25;
 
 
-static int shadowBlowUpFactor = 2;
+static int shadowBlowUpFactor = 4;
 
 
 
@@ -1000,7 +1000,7 @@ void Level::generateReproducibleData() {
     //fullGridChannelsBlownUp[3][ 0 ] = 1;
     
 
-    FastBoxBlurFilter filter2( 2 );
+    FastBoxBlurFilter filter2( 1 );
 
     /*
     Image *shadowCopy = wallShadowImageBlownUp.copy();
@@ -1052,7 +1052,7 @@ void Level::generateReproducibleData() {
     //writeTGAFile( "wallShadowsBig_pass4.tga", &wallShadowImageBlownUp );
 
     //wallShadowImageBlownUp.filter( &filter2, 3 );
-          
+        
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
@@ -1063,7 +1063,6 @@ void Level::generateReproducibleData() {
     
     double noiseFraction = 0.75;
     
-    if( false )
     for( int i=0; i<numBlowupPixels; i++ ) {
         
         double oldValue = fullGridChannelsBlownUpAlpha[i];
@@ -1091,15 +1090,15 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
     //wallShadowImageBlownUp.filter( &filter2, 3 );
 
-    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                                       blownUpSize, blownUpSize,
-                                       blowUpStartX, blowUpStartY,
-                                       blowUpEndX, blowUpEndY );
+    filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            blownUpSize, blownUpSize,
+                            blowUpStartX, blowUpStartY,
+                            blowUpEndX, blowUpEndY );
 
-    if( false) filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                                       blownUpSize, blownUpSize,
-                                       blowUpStartX, blowUpStartY,
-                                       blowUpEndX, blowUpEndY );
+    filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            blownUpSize, blownUpSize,
+                            blowUpStartX, blowUpStartY,
+                            blowUpEndX, blowUpEndY );
     
 
     int numWallShadowBytes = blownUpSize * blownUpSize * 4;
