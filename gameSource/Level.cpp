@@ -108,9 +108,12 @@ static void outputLevelMapImage( Image *inMapImage ) {
  *
  * For speed, does NOT handle edge pixels correctly
  *
+ *
+ * Also, changed to process uchar channels (instead of doubles) for speed
+ *
  * @author Jason Rohrer 
  */
-class FastBoxBlurFilter : public ChannelFilter { 
+class FastBoxBlurFilter { 
 	
 	public:
 		
@@ -138,10 +141,11 @@ class FastBoxBlurFilter : public ChannelFilter {
 		int getRadius();
 		
 		
-		// implements the ChannelFilter interface
-		void apply( double *inChannel, int inWidth, int inHeight );
+		// implements the ChannelFilter interface (but for uchars)
+		void apply( unsigned char *inChannel, int inWidth, int inHeight );
 
-        void applySubRegion( double *inChannel, int inWidth, int inHeight,
+        void applySubRegion( unsigned char *inChannel, 
+                             int inWidth, int inHeight,
                              int inXStart, int inYStart, 
                              int inXEnd, int inYEnd );
 
@@ -170,7 +174,8 @@ int FastBoxBlurFilter::getRadius() {
 	
 	
 	
-void FastBoxBlurFilter::apply( double *inChannel, int inWidth, int inHeight ) {
+void FastBoxBlurFilter::apply( unsigned char *inChannel, 
+                               int inWidth, int inHeight ) {
     
     applySubRegion( inChannel, inWidth, inHeight, 0, 0, 
                     inWidth - 1, inHeight - 1 );
@@ -178,7 +183,7 @@ void FastBoxBlurFilter::apply( double *inChannel, int inWidth, int inHeight ) {
 
 
 
-void FastBoxBlurFilter::applySubRegion( double *inChannel, 
+void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
                                         int inWidth, int inHeight,
                                         int inXStart, int inYStart, 
                                         int inXEnd, int inYEnd ) {
@@ -186,7 +191,8 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
     
     // sum of all pixels to left and above each position 
     // (including that position)
-    double *accumTotals = new double[ inWidth * inHeight ];
+    // use ints so that we have room (big enough for 4100x4100 images)
+    unsigned int *accumTotals = new unsigned int[ inWidth * inHeight ];
     
 
     int accumXStart = inXStart - mRadius - 1;
@@ -211,8 +217,11 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
 
 
     for( int y=accumYStart; y<accumYEnd; y++ ) {
-        double *accumPointer = &( accumTotals[ y * inWidth + accumXStart ] );
-        double *sourcePointer = &( inChannel[ y * inWidth + accumXStart ] );
+        unsigned int *accumPointer = 
+            &( accumTotals[ y * inWidth + accumXStart ] );
+        
+        unsigned char *sourcePointer = 
+            &( inChannel[ y * inWidth + accumXStart ] );
         
         for( int x=accumXStart; x<accumXEnd; x++ ) {
             *accumPointer = *sourcePointer
@@ -229,8 +238,6 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
     
 
     int numPixelsInBox = (mRadius*2 + 1) * (mRadius*2 + 1);
-    
-    double boxValueMultiplier = 1.0 / numPixelsInBox;
     
 
     // set boundaries so that box never goes out of bounds
@@ -273,15 +280,14 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
     // sum boxes right into passed-in channel
     for( int y=yStart; y<yEnd; y++ ) {
 
-        double *accumPointer = &( accumTotals[ y * inWidth + xStart ] );
+        unsigned int *accumPointer = &( accumTotals[ y * inWidth + xStart ] );
 
-        double *resultPointer = &( inChannel[ y * inWidth + xStart ] );
+        unsigned char *resultPointer = &( inChannel[ y * inWidth + xStart ] );
         
         for( int x=xStart; x<xEnd; x++ ) {
             
             *resultPointer = 
-                boxValueMultiplier * (
-                    // total sum of pixels in image from far corner
+                (   // total sum of pixels in image from far corner
                     // of box back to (0,0)
                     accumPointer[ cornerOffsetA ]
                     // subtract regions outside of box
@@ -292,7 +298,7 @@ void FastBoxBlurFilter::applySubRegion( double *inChannel,
                     // add back in region that was subtracted twice
                     +
                     accumPointer[ cornerOffsetD ]
-                    );
+                    ) / numPixelsInBox;
 
             accumPointer++;
             resultPointer++;
@@ -989,13 +995,22 @@ void Level::generateReproducibleData() {
     
     int blowUpFactor = shadowBlowUpFactor;
     int blownUpSize = imageSize * blowUpFactor;
+
+    int numBlowupPixels = blownUpSize * blownUpSize;
     
     // opt:  no need to operate on all four channels
     // just process alpha channel now
-    Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 1, true );
+    //Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 1, true );
     
-    double *fullGridChannelsBlownUpAlpha = 
-        wallShadowImageBlownUp.getChannel( 0 );
+    //double *fullGridChannelsBlownUpAlpha = 
+    //    wallShadowImageBlownUp.getChannel( 0 );
+
+    // opt:  do all this processing with uchars instead of doubles
+    unsigned char *fullGridChannelsBlownUpAlpha =
+        new unsigned char[ numBlowupPixels ];
+
+    memset( fullGridChannelsBlownUpAlpha, 0, numBlowupPixels );
+    
 
     // only process used sub-region of blown up image
     // don't waste time on blank areas outside walls
@@ -1024,7 +1039,7 @@ void Level::generateReproducibleData() {
                  blowUpX++ ) {
                 
                 fullGridChannelsBlownUpAlpha[ 
-                    blowUpY * blownUpSize + blowUpX ] = 1.0;
+                    blowUpY * blownUpSize + blowUpX ] = 255;
                 }
             }
         }
@@ -1070,7 +1085,6 @@ void Level::generateReproducibleData() {
     //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
 
 
-    int numBlowupPixels = blownUpSize * blownUpSize;
 
 
     //wallShadowImageBlownUp.filter( &filter, 3 );
@@ -1102,19 +1116,21 @@ void Level::generateReproducibleData() {
         double oldValue = fullGridChannelsBlownUpAlpha[i];
 
         if( oldValue > 0 ) {
-            fullGridChannelsBlownUpAlpha[i] -= 
-                randSource.
-                getRandomBoundedDouble( -oldValue * noiseFraction, 
-                                        oldValue * noiseFraction );
+            int tweakedValue =
+                (int)( fullGridChannelsBlownUpAlpha[i] - 
+                       255 * randSource.
+                       getRandomBoundedDouble( -oldValue * noiseFraction, 
+                                               oldValue * noiseFraction ) );
             
             // clamp
-            if( fullGridChannelsBlownUpAlpha[i] < 0 ) {
-                fullGridChannelsBlownUpAlpha[i] = 0;
+            if( tweakedValue < 0 ) {
+                tweakedValue = 0;
                 }
-            else if( fullGridChannelsBlownUpAlpha[i] > 1 ) {
-                fullGridChannelsBlownUpAlpha[i] = 1;
+            else if( tweakedValue > 255 ) {
+                tweakedValue = 255;
                 }
-            
+
+            fullGridChannelsBlownUpAlpha[i] = tweakedValue;            
             }
         }
     
@@ -1144,14 +1160,14 @@ void Level::generateReproducibleData() {
     // keep track of alpha index int RGBA bytes
     int alphaIndex = 3;
     for( int p=0; p<numBlowupPixels; p++ ) {
-        wallShadowRGBA[ alphaIndex ] = 
-            (int)( 255 * fullGridChannelsBlownUpAlpha[p] );
+        wallShadowRGBA[ alphaIndex ] = fullGridChannelsBlownUpAlpha[p];
 
         // next alpha byte
         alphaIndex += 4;
         }
     
     
+    delete [] fullGridChannelsBlownUpAlpha;
     
     mFullMapWallShadowSprite = fillSprite( wallShadowRGBA, 
                                            blownUpSize, 
