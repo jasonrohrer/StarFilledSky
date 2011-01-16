@@ -1118,7 +1118,7 @@ void Level::generateReproducibleData() {
         if( oldValue > 0 ) {
             int tweakedValue =
                 (int)( fullGridChannelsBlownUpAlpha[i] - 
-                       255 * randSource.
+                       randSource.
                        getRandomBoundedDouble( -oldValue * noiseFraction, 
                                                oldValue * noiseFraction ) );
             
