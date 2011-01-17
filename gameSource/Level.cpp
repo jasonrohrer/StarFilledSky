@@ -141,10 +141,12 @@ class FastBoxBlurFilter {
 		int getRadius();
 		
 		
-		// implements the ChannelFilter interface (but for uchars)
-		void apply( unsigned char *inChannel, int inWidth, int inHeight );
-
-        void applySubRegion( unsigned char *inChannel, 
+		// implements the ChannelFilter interface 
+        // (but for uchars and sub-regions, and a subset of pixels in that
+        //  region)
+		void applySubRegion( unsigned char *inChannel,
+                             GridPos *inTouchPixelCoordinates,
+                             int inNumTouchPixels,
                              int inWidth, int inHeight,
                              int inXStart, int inYStart, 
                              int inXEnd, int inYEnd );
@@ -170,20 +172,12 @@ void FastBoxBlurFilter::setRadius( int inRadius ) {
 
 int FastBoxBlurFilter::getRadius() {
 	return mRadius;
-	}	
-	
-	
-	
-void FastBoxBlurFilter::apply( unsigned char *inChannel, 
-                               int inWidth, int inHeight ) {
-    
-    applySubRegion( inChannel, inWidth, inHeight, 0, 0, 
-                    inWidth - 1, inHeight - 1 );
-    }
-
+	}
 
 
 void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
+                                        GridPos *inTouchPixelCoordinates,
+                                        int inNumTouchPixels,
                                         int inWidth, int inHeight,
                                         int inXStart, int inYStart, 
                                         int inXEnd, int inYEnd ) {
@@ -278,6 +272,34 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
     
     
     // sum boxes right into passed-in channel
+
+    for( int i=0; i<inNumTouchPixels; i++ ) {
+        
+        int y = inTouchPixelCoordinates[i].y;
+        int x = inTouchPixelCoordinates[i].x;
+        
+        int pixelIndex = y * inWidth + x;
+        
+
+        unsigned int *accumPointer = &( accumTotals[ pixelIndex ] );
+
+        inChannel[ pixelIndex ] =
+            (   // total sum of pixels in image from far corner
+                // of box back to (0,0)
+                accumPointer[ cornerOffsetA ]
+                // subtract regions outside of box
+                -
+                accumPointer[ cornerOffsetB ]
+                -
+                accumPointer[ cornerOffsetC ]
+                // add back in region that was subtracted twice
+                +
+                accumPointer[ cornerOffsetD ]
+                ) / numPixelsInBox;
+        }
+    
+
+    /*
     for( int y=yStart; y<yEnd; y++ ) {
 
         unsigned int *accumPointer = &( accumTotals[ y * inWidth + xStart ] );
@@ -304,7 +326,9 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
             resultPointer++;
             }
         }
-    
+    */
+
+
     delete [] accumTotals;
     
 
@@ -577,7 +601,9 @@ void Level::generateReproducibleData() {
             for( int ny=y-1; ny<=y+1; ny++ ) {
                 for( int nx=nxStart; nx<=x+1; nx++ ) {
                         
-                    if( mWallFlags[ny][nx] == 0 ) {
+                    char wallFlag = mWallFlags[ny][nx];
+
+                    if( wallFlag == 0 ) {
                         // empty spot adjacent to this floor square
                         floorTouchingWalls = true;
                         
@@ -618,6 +644,10 @@ void Level::generateReproducibleData() {
                         wallColorIndex = (wallColorIndex + 1) % 3;
                     
                         mNumWallSquares ++;
+                        }
+                    else if( wallFlag == 2 ) {
+                        // wall here already that this floor is touching
+                        floorTouchingWalls = true;
                         }
                     }
                 }
@@ -1048,7 +1078,8 @@ void Level::generateReproducibleData() {
 
     GridPos *boundaryBlowUpPixelCoordinates = 
         new GridPos[ numBoundaryBlowUpPixels ];
-    
+
+
     
     // blow up with nearest neighbor
     // ignore areas that are not on wall/floor boundary
@@ -1059,9 +1090,9 @@ void Level::generateReproducibleData() {
     for( int i=0; 
          i<numWallAndFloorBoundaries; i++ ) {
         
-        GridPos boundaryPos = wallBoundaries[ i ];
+        GridPos boundaryPos = wallAndFloorBoundaries[ i ];
 
-        char alphaValue = 0;
+        unsigned char alphaValue = 0;
         if( mWallFlags[boundaryPos.y][boundaryPos.x] == 2 ) {
             alphaValue = 255;
             }
@@ -1147,6 +1178,8 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
         
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            boundaryBlowUpPixelCoordinates,
+                            numBoundaryBlowUpPixels,
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
                             blowUpEndX, blowUpEndY );
@@ -1156,13 +1189,18 @@ void Level::generateReproducibleData() {
     
     double noiseFraction = 0.75;
     
-    for( int i=0; i<numBlowupPixels; i++ ) {
+    for( int i=0; i<numBoundaryBlowUpPixels; i++ ) {
         
-        double oldValue = fullGridChannelsBlownUpAlpha[i];
+        GridPos pixelCoordinates = boundaryBlowUpPixelCoordinates[i];
+
+        int pixelIndex = pixelCoordinates.y * blownUpSize + pixelCoordinates.x;
+        
+
+        double oldValue = fullGridChannelsBlownUpAlpha[pixelIndex];
 
         if( oldValue > 0 ) {
             int tweakedValue =
-                (int)( fullGridChannelsBlownUpAlpha[i] - 
+                (int)( oldValue - 
                        randSource.
                        getRandomBoundedDouble( -oldValue * noiseFraction, 
                                                oldValue * noiseFraction ) );
@@ -1175,7 +1213,7 @@ void Level::generateReproducibleData() {
                 tweakedValue = 255;
                 }
 
-            fullGridChannelsBlownUpAlpha[i] = tweakedValue;            
+            fullGridChannelsBlownUpAlpha[pixelIndex] = tweakedValue;
             }
         }
     
@@ -1186,11 +1224,15 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
 
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            boundaryBlowUpPixelCoordinates,
+                            numBoundaryBlowUpPixels, 
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
                             blowUpEndX, blowUpEndY );
-
+    
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
+                            boundaryBlowUpPixelCoordinates,
+                            numBoundaryBlowUpPixels, 
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
                             blowUpEndX, blowUpEndY );
