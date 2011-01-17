@@ -8,7 +8,6 @@
 
 #include "PlayerSprite.h"
 #include "EnemySprite.h"
-#include "TileSet.h"
 #include "ColorScheme.h"
 #include "PowerUpSet.h"
 #include "PowerUpSprite.h"
@@ -430,7 +429,6 @@ class Level {
         
 
 
-        //TileSet mTileSet;
         ColorScheme mColors;
         
         RandomWalkerSet mWalkerSet;
