@@ -108,6 +108,8 @@ static void outputLevelMapImage( Image *inMapImage ) {
  *
  * For speed, does NOT handle edge pixels correctly
  *
+ * For even more speed, does not support multiple radii (only radius=1)
+ *
  *
  * Also, changed to process uchar channels (instead of doubles) for speed
  *
@@ -119,27 +121,8 @@ class FastBoxBlurFilter {
 		
 		/**
 		 * Constructs a box filter.
-		 *
-		 * @param inRadius the radius of the box in pixels.
 		 */
-		FastBoxBlurFilter( int inRadius );
-		
-		
-		/**
-		 * Sets the box radius.
-		 *
-		 * @param inRadius the radius of the box in pixels.
-		 */
-		void setRadius( int inRadius );
-		
-		
-		/**
-		 * Gets the box radius.
-		 *
-		 * @return the radius of the box in pixels.
-		 */
-		int getRadius();
-		
+		FastBoxBlurFilter();
 		
 		// implements the ChannelFilter interface 
         // (but for uchars and sub-regions, and a subset of pixels in that
@@ -151,28 +134,16 @@ class FastBoxBlurFilter {
                              int inXStart, int inYStart, 
                              int inXEnd, int inYEnd );
 
-	private:
-		int mRadius;
 	};
 	
 	
 	
-FastBoxBlurFilter::FastBoxBlurFilter( int inRadius ) 
-	: mRadius( inRadius ) {	
+FastBoxBlurFilter::FastBoxBlurFilter() {	
 	
 	}
 
 
 
-void FastBoxBlurFilter::setRadius( int inRadius ) {
-	mRadius = inRadius;
-	}
-
-
-
-int FastBoxBlurFilter::getRadius() {
-	return mRadius;
-	}
 
 
 void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
@@ -183,92 +154,28 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
                                         int inXEnd, int inYEnd ) {
 
     
-    // sum of all pixels to left and above each position 
-    // (including that position)
-    // use ints so that we have room (big enough for 4100x4100 images)
-    unsigned int *accumTotals = new unsigned int[ inWidth * inHeight ];
-    
-
-    int accumXStart = inXStart - mRadius - 1;
-    int accumYStart = inYStart - mRadius - 1;
-
-    int accumXEnd = inXEnd + mRadius + 1;
-    int accumYEnd = inYEnd + mRadius + 1;
-    
-    // force both > 0 to remove checks in loop below
-    if( accumXStart < 1 ) {
-        accumXStart = 1;
-        }
-    if( accumYStart < 1 ) {
-        accumYStart = 1;
-        }
-    if( accumXEnd >= inWidth ) {
-        accumXEnd = inWidth - 1;
-        }
-    if( accumYEnd >= inHeight ) {
-        accumYEnd = inHeight - 1;
-        }
 
 
-    for( int y=accumYStart; y<accumYEnd; y++ ) {
-        unsigned int *accumPointer = 
-            &( accumTotals[ y * inWidth + accumXStart ] );
-        
-        unsigned char *sourcePointer = 
-            &( inChannel[ y * inWidth + accumXStart ] );
-        
-        for( int x=accumXStart; x<accumXEnd; x++ ) {
-            *accumPointer = *sourcePointer
-                + accumPointer[-1]
-                + accumPointer[ -inWidth ]
-                - accumPointer[ -inWidth - 1 ];
-            
-            accumPointer++;
-            
-            sourcePointer++;
-            }
-        }
-    
-    
-
-    int numPixelsInBox = (mRadius*2 + 1) * (mRadius*2 + 1);
-    
-
-    // set boundaries so that box never goes out of bounds
-    int yStart = mRadius + 1;
-    int yEnd = inHeight - mRadius;
-
-    int xStart = mRadius + 1;
-    int xEnd = inWidth - mRadius;
-
-
-    if( inXStart > xStart ) {
-        xStart = inXStart;
-        }
-    if( inYStart > yStart ) {
-        yStart = inYStart;
-        }
-    if( inXEnd < xEnd ) {
-        xEnd = inXEnd;
-        }
-    if( inYEnd < yEnd ) {
-        yEnd = inYEnd;
-        }
-    
-
-    // use pointer tricks to walk through accumulation table
+    // use pointer tricks to walk through neighbor box of each pixel
 
     // four "corners" around box in accumulation table used to compute
     // box total
     // these are offsets to current accumulation pointer
-    int cornerOffsetA = (mRadius) * inWidth + (mRadius);
-    int cornerOffsetB = (-mRadius -1) * inWidth + (mRadius);
-    int cornerOffsetC = (mRadius) * inWidth + (-mRadius - 1);
-    int cornerOffsetD = (-mRadius -1) * inWidth + (-mRadius - 1);
+    int cornerOffsetA = inWidth + 1;
+    int cornerOffsetB = -inWidth + 1;
+    int cornerOffsetC = inWidth - 1;
+    int cornerOffsetD = -inWidth - 1;
 
-    // seems like Gamasutra's code had a mistake
-    // need to extend start of box 1 past actual box, for this to work
-    // properly, thus the (-mRadius -1) stuff above
+    // sides around box
+    int sideOffsetA = inWidth;
+    int sideOffsetB = -inWidth;
+    int sideOffsetC = 1;
+    int sideOffsetD = -1;
+
+    unsigned char *sourceData = new unsigned char[ inWidth * inHeight ];
+    
+    memcpy( sourceData, inChannel, inWidth * inHeight );
+    
     
     
     // sum boxes right into passed-in channel
@@ -281,55 +188,22 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
         int pixelIndex = y * inWidth + x;
         
 
-        unsigned int *accumPointer = &( accumTotals[ pixelIndex ] );
+        unsigned char *sourcePointer = &( sourceData[ pixelIndex ] );
 
         inChannel[ pixelIndex ] =
-            (   // total sum of pixels in image from far corner
-                // of box back to (0,0)
-                accumPointer[ cornerOffsetA ]
-                // subtract regions outside of box
-                -
-                accumPointer[ cornerOffsetB ]
-                -
-                accumPointer[ cornerOffsetC ]
-                // add back in region that was subtracted twice
-                +
-                accumPointer[ cornerOffsetD ]
-                ) / numPixelsInBox;
+            ( sourcePointer[ 0 ] +
+              sourcePointer[ cornerOffsetA ] +
+              sourcePointer[ cornerOffsetB ] +
+              sourcePointer[ cornerOffsetC ] +
+              sourcePointer[ cornerOffsetD ] +
+              sourcePointer[ sideOffsetA ] +
+              sourcePointer[ sideOffsetB ] +
+              sourcePointer[ sideOffsetC ] +
+              sourcePointer[ sideOffsetD ]
+              ) / 9;
         }
-    
 
-    /*
-    for( int y=yStart; y<yEnd; y++ ) {
-
-        unsigned int *accumPointer = &( accumTotals[ y * inWidth + xStart ] );
-
-        unsigned char *resultPointer = &( inChannel[ y * inWidth + xStart ] );
-        
-        for( int x=xStart; x<xEnd; x++ ) {
-            
-            *resultPointer = 
-                (   // total sum of pixels in image from far corner
-                    // of box back to (0,0)
-                    accumPointer[ cornerOffsetA ]
-                    // subtract regions outside of box
-                    -
-                    accumPointer[ cornerOffsetB ]
-                    -
-                    accumPointer[ cornerOffsetC ]
-                    // add back in region that was subtracted twice
-                    +
-                    accumPointer[ cornerOffsetD ]
-                    ) / numPixelsInBox;
-
-            accumPointer++;
-            resultPointer++;
-            }
-        }
-    */
-
-
-    delete [] accumTotals;
+    delete [] sourceData;
     
 
     return;
@@ -1125,7 +999,7 @@ void Level::generateReproducibleData() {
     //fullGridChannelsBlownUp[3][ 0 ] = 1;
     
 
-    FastBoxBlurFilter filter2( 1 );
+    FastBoxBlurFilter filter2;
 
     /*
     Image *shadowCopy = wallShadowImageBlownUp.copy();
