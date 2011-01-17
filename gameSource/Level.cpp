@@ -128,7 +128,7 @@ class FastBoxBlurFilter {
         // (but for uchars and sub-regions, and a subset of pixels in that
         //  region)
 		void applySubRegion( unsigned char *inChannel,
-                             GridPos *inTouchPixelCoordinates,
+                             int *inTouchPixelIndices,
                              int inNumTouchPixels,
                              int inWidth, int inHeight,
                              int inXStart, int inYStart, 
@@ -147,7 +147,7 @@ FastBoxBlurFilter::FastBoxBlurFilter() {
 
 
 void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
-                                        GridPos *inTouchPixelCoordinates,
+                                        int *inTouchPixelIndices,
                                         int inNumTouchPixels,
                                         int inWidth, int inHeight,
                                         int inXStart, int inYStart, 
@@ -181,11 +181,8 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
     // sum boxes right into passed-in channel
 
     for( int i=0; i<inNumTouchPixels; i++ ) {
-        
-        int y = inTouchPixelCoordinates[i].y;
-        int x = inTouchPixelCoordinates[i].x;
-        
-        int pixelIndex = y * inWidth + x;
+
+        int pixelIndex = inTouchPixelIndices[ i ];
         
 
         unsigned char *sourcePointer = &( sourceData[ pixelIndex ] );
@@ -950,8 +947,8 @@ void Level::generateReproducibleData() {
     int numBoundaryBlowUpPixels = 
         nunBlowUpPixelsPerSquare * numWallAndFloorBoundaries;
 
-    GridPos *boundaryBlowUpPixelCoordinates = 
-        new GridPos[ numBoundaryBlowUpPixels ];
+    int *boundaryBlowUpPixelIndices = 
+        new int[ numBoundaryBlowUpPixels ];
 
 
     
@@ -982,13 +979,13 @@ void Level::generateReproducibleData() {
                  blowUpX< x * blowUpFactor + blowUpFactor; 
                  blowUpX++ ) {
                 
-                fullGridChannelsBlownUpAlpha[ 
-                    blowUpY * blownUpSize + blowUpX ] = alphaValue;
 
-                boundaryBlowUpPixelCoordinates[ boundaryPixelIndex ].x
-                    = blowUpX;
-                boundaryBlowUpPixelCoordinates[ boundaryPixelIndex ].y
-                    = blowUpY;
+                int imageIndex = blowUpY * blownUpSize + blowUpX;
+                
+                fullGridChannelsBlownUpAlpha[ imageIndex ] = alphaValue;
+
+                boundaryBlowUpPixelIndices[ boundaryPixelIndex ] = imageIndex;
+                
                 boundaryPixelIndex++;
                 }
             }
@@ -1052,7 +1049,7 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
         
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                            boundaryBlowUpPixelCoordinates,
+                            boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels,
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
@@ -1065,10 +1062,7 @@ void Level::generateReproducibleData() {
     
     for( int i=0; i<numBoundaryBlowUpPixels; i++ ) {
         
-        GridPos pixelCoordinates = boundaryBlowUpPixelCoordinates[i];
-
-        int pixelIndex = pixelCoordinates.y * blownUpSize + pixelCoordinates.x;
-        
+        int pixelIndex = boundaryBlowUpPixelIndices[i];
 
         double oldValue = fullGridChannelsBlownUpAlpha[pixelIndex];
 
@@ -1098,14 +1092,14 @@ void Level::generateReproducibleData() {
     //wallShadowImageBlownUp.filter( &filter2, 3 );
 
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                            boundaryBlowUpPixelCoordinates,
+                            boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
                             blowUpEndX, blowUpEndY );
     
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
-                            boundaryBlowUpPixelCoordinates,
+                            boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
                             blownUpSize, blownUpSize,
                             blowUpStartX, blowUpStartY,
@@ -1117,7 +1111,7 @@ void Level::generateReproducibleData() {
                              blownUpSize );
 
     delete [] fullGridChannelsBlownUpAlpha;
-    delete [] boundaryBlowUpPixelCoordinates;
+    delete [] boundaryBlowUpPixelIndices;
     
 
 
