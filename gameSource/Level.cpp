@@ -1041,14 +1041,30 @@ void Level::generateReproducibleData() {
 
 
 
+    int nunBlowUpPixelsPerSquare = blowUpFactor * blowUpFactor;
+    
+    int numBoundaryBlowUpPixels = 
+        nunBlowUpPixelsPerSquare * numWallAndFloorBoundaries;
+
+    GridPos *boundaryBlowUpPixelCoordinates = 
+        new GridPos[ numBoundaryBlowUpPixels ];
     
     
     // blow up with nearest neighbor
     // ignore areas that are not on wall/floor boundary
+
+    // track pixels in blow up image as they are touched
+    int boundaryPixelIndex = 0;
+
     for( int i=0; 
-         i<numWallBoundaries; i++ ) {
+         i<numWallAndFloorBoundaries; i++ ) {
         
         GridPos boundaryPos = wallBoundaries[ i ];
+
+        char alphaValue = 0;
+        if( mWallFlags[boundaryPos.y][boundaryPos.x] == 2 ) {
+            alphaValue = 255;
+            }
 
         int x = boundaryPos.x + imageXOffset;
         int y = imageSize - ( boundaryPos.y + imageYOffset );
@@ -1062,7 +1078,13 @@ void Level::generateReproducibleData() {
                  blowUpX++ ) {
                 
                 fullGridChannelsBlownUpAlpha[ 
-                    blowUpY * blownUpSize + blowUpX ] = 255;
+                    blowUpY * blownUpSize + blowUpX ] = alphaValue;
+
+                boundaryBlowUpPixelCoordinates[ boundaryPixelIndex ].x
+                    = blowUpX;
+                boundaryBlowUpPixelCoordinates[ boundaryPixelIndex ].y
+                    = blowUpY;
+                boundaryPixelIndex++;
                 }
             }
         }
@@ -1179,6 +1201,7 @@ void Level::generateReproducibleData() {
                              blownUpSize );
 
     delete [] fullGridChannelsBlownUpAlpha;
+    delete [] boundaryBlowUpPixelCoordinates;
     
 
 
