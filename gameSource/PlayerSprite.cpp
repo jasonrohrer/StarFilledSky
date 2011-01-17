@@ -1,7 +1,7 @@
 #include "PlayerSprite.h"
 #include "fixedSpriteBank.h"
 
-#include "minorGems/graphics/filters/BoxBlurFilter.h"
+#include "minorGems/graphics/filters/FastBlurFilter.h"
 
 #include "minorGems/util/random/CustomRandomSource.h"
 
@@ -97,7 +97,7 @@ void PlayerSprite::generateReproducibleData() {
         }
 
 
-    BoxBlurFilter filter( 1 );
+    FastBlurFilter filter;
     
 
     centerImage.filter( &filter );

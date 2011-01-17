@@ -1,7 +1,7 @@
 #include "EnemySprite.h"
 
 
-#include "minorGems/graphics/filters/BoxBlurFilter.h"
+#include "minorGems/graphics/filters/FastBlurFilter.h"
 
 #include "minorGems/util/random/CustomRandomSource.h"
 
@@ -86,7 +86,7 @@ void EnemySprite::generateReproducibleData() {
         }
     
 
-    BoxBlurFilter filter( 1 );
+    FastBlurFilter filter;
     
 
     centerImage.filter( &filter );

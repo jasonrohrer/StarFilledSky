@@ -19,7 +19,7 @@
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/system/Time.h"
 #include "minorGems/io/file/File.h"
-#include "minorGems/graphics/filters/BoxBlurFilter.h"
+#include "minorGems/graphics/filters/FastBlurFilter.h"
 
 #include <math.h>
 
@@ -815,7 +815,7 @@ void Level::generateReproducibleData() {
     
 
     
-    BoxBlurFilter filter( 1 );
+    FastBlurFilter filter;
     fullGridImage.filter( &filter );
 
 
