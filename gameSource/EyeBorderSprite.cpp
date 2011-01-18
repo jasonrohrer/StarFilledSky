@@ -18,7 +18,26 @@ EyeBorderSprite::EyeBorderSprite() {
         }
     
     mSquintTimeLeft = 0;
+
+    mShadowSprite = NULL;
     }
+
+
+
+EyeBorderSprite::~EyeBorderSprite() {
+    setShadow( NULL );
+    }
+
+
+void EyeBorderSprite::setShadow( SpriteHandle inShadow ) {
+    if( mShadowSprite != NULL ) {
+        freeSprite( mShadowSprite );
+        }
+    mShadowSprite = inShadow;
+    }
+
+
+
 
 
 ColorScheme EyeBorderSprite::getColors() {
@@ -54,6 +73,15 @@ void EyeBorderSprite::drawCenter( doublePair inPosition, double inFade ) {
         }
     
     }
+
+
+static double shadowScaleFactor = 1.0 / 4;
+
+void EyeBorderSprite::drawShadow( doublePair inPosition, double inFade ) {
+    setDrawColor( 1, 1, 1, inFade );
+    drawSprite( mShadowSprite, inPosition, shadowScaleFactor );
+    }
+
 
 
 

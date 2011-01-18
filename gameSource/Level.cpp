@@ -3440,6 +3440,26 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         toggleLinearMagFilter( true );
         drawSprite( mFullMapWallShadowSprite, fullMapPos, 
                     1.0 / shadowBlowUpFactor );
+        
+
+
+        // player shadow cut off by walls, too
+        mPlayerSprite.drawShadow( mPlayerPos, 0.75 );
+
+        // same with enemy shadows
+        for( int i=0; i<mEnemies.size(); i++ ) {
+            Enemy *e = mEnemies.getElement( i );
+
+            doublePair pos = e->position;
+        
+            if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+
+                e->sprite->drawShadow( pos, 0.75 );
+                }
+            }
+        
+
         toggleLinearMagFilter( false );
 
         stopStencil();

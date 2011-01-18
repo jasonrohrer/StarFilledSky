@@ -130,6 +130,7 @@ void EnemySprite::generateReproducibleData() {
     
     
     Image borderImage( 16, 16, 4, false );
+    Image shadowImage( 16, 16, 4, true );
 
     
     double *borderChannels[4];
@@ -137,6 +138,14 @@ void EnemySprite::generateReproducibleData() {
     for( int i=0; i<4; i++ ) {
         borderChannels[i] = borderImage.getChannel( i );
         }
+    
+    double *shadowAlpha = shadowImage.getChannel( 3 );
+
+
+    // shadow is shrunk down in center of 16x16 image so it can be blown
+    // up by texture scaling later
+
+
 
     Color borderColor = mColors.primary.elements[3];
 
@@ -153,7 +162,11 @@ void EnemySprite::generateReproducibleData() {
         for( int x=1; x<15; x++ ) {
             
             if( channels[3][ y*16+x ] != 0 ) {
-                
+    
+                // fill in shadow
+                shadowAlpha[ ((y-8) / 4 + 8) * 16 + ((x-8) / 4 + 8) ] = 1;
+
+            
                 // fill empty neighbors in border image with opaque pixels
 
                 int n = (y-1) * 16 + x;
@@ -177,8 +190,27 @@ void EnemySprite::generateReproducibleData() {
             }
         }
     
+    // add border to shadow
+    for( int y=0; y<16; y++ ) {
+        for( int x=0; x<16; x++ ) {
+            if( borderChannels[3][ y*16+x ] != 0 ) {
+                // fill in shadow
+                shadowAlpha[ ((y-8) / 4 + 8) * 16 + ((x-8) / 4 + 8) ] = 1;
+                }
+            }
+        
+        }
+
 
     mBorderSprite = fillSprite( &borderImage );
+
+    
+    shadowImage.filter( &filter, 3 );
+    shadowImage.filter( &filter, 3 );
+    shadowImage.filter( &filter, 3 );
+    
+    setShadow( fillSprite( &shadowImage ) );
+
 
     mDataGenerated = true;
     }

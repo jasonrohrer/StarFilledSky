@@ -32,6 +32,9 @@ Version 4   ???
 
 --Added drop shadows along wall edges.
 
+--Added drop shadows under player and enemies.
+
+
 
 
 Version 3   2011-January-6
