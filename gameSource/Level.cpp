@@ -3387,6 +3387,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     
 
+
     // draw floor
     if( edgeFade > 0 ) {
 
@@ -3477,6 +3478,27 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         1.0 / shadowBlowUpFactor );
         
 
+            // bullet shadows under walls too
+            for( i=0; i<mBullets.size(); i++ ) {
+                    
+                Bullet *b = mBullets.getElement( i );
+                
+                doublePair pos = b->position;
+                
+                if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                    pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                    
+                    float fade = 1;
+                    
+                    if( b->explode == 0 && b->distanceLeft < 1 ) {
+                        fade = b->distanceLeft;
+                        }
+                    
+                    setDrawColor( 1, 1, 1, fade * shadowLevel );
+                    
+                    drawBulletShadow( b->size, b->position );
+                    }
+                }                             
 
         
             // player shadow cut off by walls, too

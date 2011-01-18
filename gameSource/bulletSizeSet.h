@@ -10,3 +10,5 @@ extern int maxBulletSize;
 
 
 void drawBullet( float inSize, doublePair inCenter, float inFade = 1 );
+
+void drawBulletShadow( float inSize, doublePair inCenter );
