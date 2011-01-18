@@ -32,7 +32,7 @@ Version 4   ???
 
 --Added drop shadows along wall edges.
 
---Added drop shadows under player and enemies.
+--Added drop shadows under player, enemies, and bullets.
 
 
 
