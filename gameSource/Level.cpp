@@ -1629,6 +1629,8 @@ void Level::setEnteringMouse( char inEntering ) {
 void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
     int index;
 
+    char windowAlreadySet = mWindowSet;
+
     if( inType == enemy && isEnemy( inPosition, &index ) ) {
         mWindowSet = true;
         mWindowPosition.index = index;
@@ -1643,6 +1645,11 @@ void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
         mWindowSet = true;
         mWindowPosition.type = player;
         }
+
+    if( mWindowSet && !windowAlreadySet ) {
+        mLastComputedOverlieWindowFade = 1;
+        }
+        
     }
 
 
@@ -3443,21 +3450,34 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
 
 
-        // player shadow cut off by walls, too
-        mPlayerSprite.drawShadow( mPlayerPos, 0.75 );
-
-        // same with enemy shadows
-        for( int i=0; i<mEnemies.size(); i++ ) {
-            Enemy *e = mEnemies.getElement( i );
-
-            doublePair pos = e->position;
+        float objectShadowLevel = 0.75;
         
-            if( pos.x >= visStart.x && pos.y >= visStart.y &&
-                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+        if( mWindowSet ) {
+            // don't draw object shadows toward end of zoom
+            // too many pixels to fill
+            objectShadowLevel *= mLastComputedOverlieWindowFade;
+            }
+        
 
-                e->sprite->drawShadow( pos, 0.75 );
+        if( objectShadowLevel > 0 ) {
+            
+            // player shadow cut off by walls, too
+            mPlayerSprite.drawShadow( mPlayerPos, objectShadowLevel );
+
+            // same with enemy shadows
+            for( int i=0; i<mEnemies.size(); i++ ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                doublePair pos = e->position;
+                
+                if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                    pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                    
+                    e->sprite->drawShadow( pos, objectShadowLevel );
+                    }
                 }
             }
+        
         
 
         toggleLinearMagFilter( false );
@@ -3608,7 +3628,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 void Level::drawWindowShade( double inFade, double inFrameFade,
                              doublePair inViewCenter, double inViewSize ) {
     if( mWindowSet ) {
-
+        
         doublePair visStart, visEnd;
         GridPos visStartGrid, visEndGrid;
         
@@ -3620,6 +3640,8 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
         stopStencil();
         
         double overlieFade = (inFade - 0.63) / 0.37;
+
+        mLastComputedOverlieWindowFade = overlieFade;
 
         if( mWindowPosition.type == player ) {
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
@@ -3653,7 +3675,7 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
             }
 
         // glow trails drawn on top
-        if( mLastComputedEdgeFade >  0 ) {
+        if( overlieFade > 0 &&  mLastComputedEdgeFade >  0 ) {
             drawGlowTrails( overlieFade * mLastComputedEdgeFade, 
                             visStart, visEnd );
             }
