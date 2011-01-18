@@ -3426,16 +3426,14 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
         
         // draw rise marker *under* shadows
-        if( edgeFade > 0 ) {
-            Color *c = &( mColors.special );
-            setDrawColor( c->r,
-                          c->g,
-                          c->b, edgeFade );
-            drawSprite( riseMarker, mRiseWorldPos );
-            
-            if( mDoubleRisePositions ) {
-                drawSprite( riseMarker, mRiseWorldPos2 );
-                }
+        Color *c = &( mColors.special );
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, 1 );
+        drawSprite( riseMarker, mRiseWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            drawSprite( riseMarker, mRiseWorldPos2 );
             }
         
         // draw blood stains under shadows too
@@ -3447,6 +3445,23 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             drawSquare( *( mGridWorldSpots[ stain->floorIndex ] ), 0.5 );
             }
+
+        
+        
+        // draw power-ups under shadows too
+        for( i=0; i<mPowerUpTokens.size(); i++ ) {
+            PowerUpToken *p = mPowerUpTokens.getElement( i );
+            
+            doublePair pos = p->position;
+            
+            if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                
+                drawPowerUp( p->power, p->position, edgeFade );
+                }
+            }
+
+
 
 
         
@@ -3525,20 +3540,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
     
-
-    // draw power-ups
-    if( edgeFade > 0 )
-    for( i=0; i<mPowerUpTokens.size(); i++ ) {
-        PowerUpToken *p = mPowerUpTokens.getElement( i );
-        
-        doublePair pos = p->position;
-        
-        if( pos.x >= visStart.x && pos.y >= visStart.y &&
-            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-
-            drawPowerUp( p->power, p->position, edgeFade );
-            }
-        }
     
     
 
