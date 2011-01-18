@@ -3695,7 +3695,8 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
 
         // glow trails drawn on top
         if( mLastComputedEdgeFade >  0 ) {
-            drawGlowTrails( overlieFade, visStart, visEnd );
+            drawGlowTrails( overlieFade * mLastComputedEdgeFade, 
+                            visStart, visEnd );
             }
 
 
