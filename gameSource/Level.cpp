@@ -1647,7 +1647,7 @@ void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
         }
 
     if( mWindowSet && !windowAlreadySet ) {
-        mLastComputedOverlieWindowFade = 1;
+        mLastComputedFastWindowFade = 1;
         }
         
     }
@@ -3395,7 +3395,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mWindowSet ) {
             // don't shadows toward end of zoom
             // too many pixels to fill
-            shadowLevel *= mLastComputedOverlieWindowFade;
+            shadowLevel *= mLastComputedFastWindowFade;
             }
 
 
@@ -3645,7 +3645,8 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
         
         double overlieFade = (inFade - 0.63) / 0.37;
 
-        mLastComputedOverlieWindowFade = overlieFade;
+        // for stuff that slows down zoom progress if drawn too big
+        mLastComputedFastWindowFade = (inFade - 0.85) / 0.15;
 
         if( mWindowPosition.type == player ) {
             mPlayerSprite.drawBorder( mPlayerPos, inFrameFade );
@@ -3679,9 +3680,10 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
             }
 
         // glow trails drawn on top
-        if( overlieFade > 0 &&  mLastComputedEdgeFade >  0 ) {
-            drawGlowTrails( overlieFade * mLastComputedEdgeFade, 
-                            visStart, visEnd );
+        if( mLastComputedFastWindowFade > 0 &&  mLastComputedEdgeFade >  0 ) {
+            drawGlowTrails( 
+                mLastComputedFastWindowFade * mLastComputedEdgeFade, 
+                visStart, visEnd );
             }
 
 
