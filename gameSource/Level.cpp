@@ -3390,10 +3390,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     // draw floor
     if( edgeFade > 0 ) {
 
-                
-        // draw shadows only on top of floor
-        startAddingToStencil( true, true );
+        float shadowLevel = 0.75;
+        
+        if( mWindowSet ) {
+            // don't shadows toward end of zoom
+            // too many pixels to fill
+            shadowLevel *= mLastComputedOverlieWindowFade;
+            }
 
+
+                
+        if( shadowLevel > 0 ) {
+            // draw shadows only on top of floor, not walls
+            startAddingToStencil( true, true );
+            }
+        
         for( int y=visStartGrid.y; y<=visEndGrid.y; y++ ) {
             for( int x=visStartGrid.x; x<=visEndGrid.x; x++ ) {
                 if( mWallFlags[y][x] == 1 ) {
@@ -3438,31 +3449,23 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
 
-
-        startDrawingThroughStencil();
         
-        // wall shadows on floor
-        setDrawColor( 1, 1, 1, 0.75 );
-        //toggleAdditiveBlend( true );
-        toggleLinearMagFilter( true );
-        drawSprite( mFullMapWallShadowSprite, fullMapPos, 
-                    1.0 / shadowBlowUpFactor );
-        
-
-
-        float objectShadowLevel = 0.75;
-        
-        if( mWindowSet ) {
-            // don't draw object shadows toward end of zoom
-            // too many pixels to fill
-            objectShadowLevel *= mLastComputedOverlieWindowFade;
-            }
-        
-
-        if( objectShadowLevel > 0 ) {
+        if( shadowLevel > 0 ) {
             
+            startDrawingThroughStencil();
+        
+            // wall shadows on floor
+            setDrawColor( 1, 1, 1, shadowLevel );
+            //toggleAdditiveBlend( true );
+            toggleLinearMagFilter( true );
+            drawSprite( mFullMapWallShadowSprite, fullMapPos, 
+                        1.0 / shadowBlowUpFactor );
+        
+
+
+        
             // player shadow cut off by walls, too
-            mPlayerSprite.drawShadow( mPlayerPos, objectShadowLevel );
+            mPlayerSprite.drawShadow( mPlayerPos, shadowLevel );
 
             // same with enemy shadows
             for( int i=0; i<mEnemies.size(); i++ ) {
@@ -3473,16 +3476,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
-                    e->sprite->drawShadow( pos, objectShadowLevel );
+                    e->sprite->drawShadow( pos, shadowLevel );
                     }
                 }
+
+            toggleLinearMagFilter( false );
+            
+            stopStencil();
             }
         
         
 
-        toggleLinearMagFilter( false );
-
-        stopStencil();
         }
     
 
