@@ -921,10 +921,6 @@ void Level::generateReproducibleData() {
     
     // opt:  no need to operate on all four channels
     // just process alpha channel now
-    //Image wallShadowImageBlownUp( blownUpSize, blownUpSize, 1, true );
-    
-    //double *fullGridChannelsBlownUpAlpha = 
-    //    wallShadowImageBlownUp.getChannel( 0 );
 
     // opt:  do all this processing with uchars instead of doubles
     unsigned char *fullGridChannelsBlownUpAlpha =
@@ -992,61 +988,8 @@ void Level::generateReproducibleData() {
         }
     
 
-    // test edge case of box blur filters
-    //fullGridChannelsBlownUp[3][ 0 ] = 1;
-    
 
     FastBoxBlurFilter filter2;
-
-    /*
-    Image *shadowCopy = wallShadowImageBlownUp.copy();
-    
-    double startTime = Time::getCurrentTime();
-
-    double *shadowAlphaChannel = shadowCopy->getChannel( 3 );
-    
-    filter2.applySubRegion( shadowAlphaChannel, blownUpSize, blownUpSize,
-                            imageXOffset * blowUpFactor,
-                            imageYOffset * blowUpFactor,
-                            ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor,
-                            ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor );
-                            
-    //shadowCopy->filter( &filter2, 3 );
-    printf( "Fast blur time = %f ms\n", 
-            1000 * ( Time::getCurrentTime() - startTime ) );
-
-    //writeTGAFile( "wallShadowBig_blurFast.tga", shadowCopy );
-    delete shadowCopy;
-    
-
-    shadowCopy = wallShadowImageBlownUp.copy();
-    
-    startTime = Time::getCurrentTime();
-    shadowCopy->filter( &filter, 3 );
-    printf( "Old blur time = %f ms\n", 
-            1000 * ( Time::getCurrentTime() - startTime ) );
-    
-    //writeTGAFile( "wallShadowBig_blurOld.tga", shadowCopy );
-    delete shadowCopy;
-    */
-    //writeTGAFile( "wallShadowsBig_pass0.tga", &wallShadowImageBlownUp );
-
-
-
-
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //writeTGAFile( "wallShadowsBig_pass1.tga", &wallShadowImageBlownUp );
-
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //writeTGAFile( "wallShadowsBig_pass2.tga", &wallShadowImageBlownUp );
-
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //writeTGAFile( "wallShadowsBig_pass3.tga", &wallShadowImageBlownUp );
-
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //writeTGAFile( "wallShadowsBig_pass4.tga", &wallShadowImageBlownUp );
-
-    //wallShadowImageBlownUp.filter( &filter2, 3 );
         
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
@@ -1086,10 +1029,6 @@ void Level::generateReproducibleData() {
         }
     
     // blur again, post-noise
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //wallShadowImageBlownUp.filter( &filter, 3 );
-    //wallShadowImageBlownUp.filter( &filter2, 3 );
-    //wallShadowImageBlownUp.filter( &filter2, 3 );
 
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
