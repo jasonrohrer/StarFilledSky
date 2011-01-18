@@ -408,7 +408,7 @@ class Level {
         
 
         float mLastComputedEdgeFade;
-        float mLastComputedOverlieWindowFade;
+        float mLastComputedFastWindowFade;
         
 
         char mWindowSet;
