@@ -3479,6 +3479,13 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
 
             // bullet shadows under walls too
+
+            // skip shadows if too many are already drawn over a given
+            // grid square (so too much darkness doesn't accumulate)
+            // init all to zero
+            char shadowHitCounts[ MAX_LEVEL_H ][ MAX_LEVEL_W ] = { {0} };
+                        
+            
             for( i=0; i<mBullets.size(); i++ ) {
                     
                 Bullet *b = mBullets.getElement( i );
@@ -3488,15 +3495,24 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
-                    float fade = 1;
+                    GridPos gridPos = getGridPos( pos );
                     
-                    if( b->explode == 0 && b->distanceLeft < 1 ) {
-                        fade = b->distanceLeft;
+                    if( shadowHitCounts[ gridPos.y ][ gridPos.x ] < 2 ) {
+                        
+                        shadowHitCounts[ gridPos.y ][ gridPos.x ]++;
+                        
+
+                        float fade = 1;
+                    
+                        if( b->explode == 0 && b->distanceLeft < 1 ) {
+                            fade = b->distanceLeft;
+                            }
+                    
+                        setDrawColor( 1, 1, 1, fade * shadowLevel );
+                        
+                        drawBulletShadow( b->size, b->position );
                         }
                     
-                    setDrawColor( 1, 1, 1, fade * shadowLevel );
-                    
-                    drawBulletShadow( b->size, b->position );
                     }
                 }                             
 
