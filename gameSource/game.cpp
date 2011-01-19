@@ -215,6 +215,7 @@ static void populateLevelRiseStack() {
                                              &freshColors,
                                              &freshSet,
                                              &freshNotes,
+                                             NULL,
                                              levelNumber + 1 ) );
         
         // center player in symmetrical level
@@ -246,6 +247,7 @@ static void populateLevelRiseStack() {
         levelRiseStack.push_back( new Level( &c, &s, &freshColors,
                                              &freshSet,
                                              &freshNotes,
+                                             NULL,
                                              levelNumber + 2 ) );
         
         levelRiseStack.push_back( nextAbove );
@@ -443,7 +445,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
 
-    currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, levelNumber );
+    currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, NULL, 
+                              levelNumber );
     
     populateLevelRiseStack();
     
@@ -460,7 +463,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         printf( "Contstructing levels took %f s\n",
                 (Time::getCurrentTime() - msTime) );
     
-        exit(0);
+        //exit(0);
         }
     
     initMusicPlayer();
@@ -932,9 +935,35 @@ void drawFrame( char inUpdate ) {
                                                         enteringType );
 
             
+            PowerUpSet *setPlayerPowers = NULL;
+            if( ! knockDown ) {
+                // entering, copy powers
+                setPlayerPowers = currentLevel->getPlayerPowers();
+                }
             
+            
+            if( knockDown ) {
+                // cause player that we're entering to drop down to default set
+                PowerUpSet knockDownSet( 0 );
+                
+                knockDownSet.mPowers[1].powerType = powerUpHeart;
+                knockDownSet.mPowers[1].level = 1;
+                knockDownSet.mPowers[2].powerType = powerUpHeart;
+                knockDownSet.mPowers[2].level = 1;
+
+                PowerUpSet *currentPowers = currentLevel->getPlayerPowers();
+                
+                // skip this animation if we're already at default set
+                if( !knockDownSet.equals( currentPowers ) ) {        
+                    currentPowers->dropDownToSet( &knockDownSet );
+                    }
+                }
+            
+            
+
             currentLevel = new Level( NULL, NULL, &c, &walkerSet,
                                       &musicNotes,
+                                      setPlayerPowers,
                                       subLevelNumber,
                                       symmetrical, insideEnemy, knockDown );
 

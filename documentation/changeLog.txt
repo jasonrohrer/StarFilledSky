@@ -38,6 +38,9 @@ Version 4   ???
 --Changed so that current powers are carried down when intentionally entering
   something (though not when unintentionally knocked-down).
 
+--Changed so that current powers revert to default when you are knocked down,
+  forcing you to gather new powers before rising back out (no more rushing
+  through after being knocked down).
 
 
 

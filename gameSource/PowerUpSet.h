@@ -71,7 +71,19 @@ class PowerUpSet {
         void pushPower( PowerUp inPower, doublePair inPowerPos );
         
 
-        void drawSet( doublePair inPosition, float inFade=1 );
+        void drawSet( doublePair inPosition, float inFade=1, 
+                      char inDrawSlots = true );
+        
+
+        // whole-sale replace all 3 powers, displaying a "dropping off" 
+        // animation
+        // Note that only one drop-off animation at a time is supported
+        // inNewSet can be destroyed by caller after call returns
+        void dropDownToSet( PowerUpSet *inNewSet );
+        
+
+        // do sets contain same powers?
+        char equals( PowerUpSet *inOtherSet );
         
         
         // sum of powers in set that match a type
@@ -103,6 +115,10 @@ class PowerUpSet {
         PowerUp mPowerToPush;
         doublePair mPushStartPos;
         
+        
+        char mDropping;
+        double mDropProgress;
+        PowerUpSet *mPowersBeingDropped;
         
         
     };

@@ -91,9 +91,11 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
 
 void PowerUpSet::fillDefaultSet() {
     mPushing = false;
-    
     mPushStack = NULL;
     mPushStackSize = 0;
+    
+    mDropping = false;
+    mPowersBeingDropped = NULL;
     
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
@@ -320,6 +322,11 @@ PowerUpSet::~PowerUpSet() {
     mPushStack = NULL;
     mPushStackSize = 0;
     
+    if( mPowersBeingDropped != NULL ) {
+        delete mPowersBeingDropped;
+        mPowersBeingDropped = NULL;
+        }
+
     }
 
 
@@ -359,20 +366,62 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
 
 
 
+void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
+    if( mPowersBeingDropped != NULL ) {
+        delete mPowersBeingDropped;
+        mPowersBeingDropped = NULL;
+        }
+    
+    mDropping = true;
+    mDropProgress = 0;
+    
+    // copy our powers into the drop animation set
+    mPowersBeingDropped = new PowerUpSet( this );
+    
+    // replace our powers with these new ones
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        mPowers[i] = inNewSet->mPowers[i];
+        }
+    }
 
-void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
+
+
+char PowerUpSet::equals( PowerUpSet *inOtherSet ) {
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType != inOtherSet->mPowers[i].powerType
+            ||
+            mPowers[i].behavior != inOtherSet->mPowers[i].behavior
+            ||
+            mPowers[i].level != inOtherSet->mPowers[i].level ) {
+            
+            return false;
+            }
+        }
+    // else all match
+    return true;
+    }
+
+
+
+
+void PowerUpSet::drawSet( doublePair inPosition, float inFade, 
+                          char inDrawSlots ) {
+    
     int centerIndex = POWER_SET_CENTERED_INDEX;
     
     double slotSize = 1.125;
 
-    // draw slots first, under everything
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
-        doublePair drawPos = inPosition;
-        drawPos.x += ( i - centerIndex ) * slotSize;
+    if( inDrawSlots ) {    
+        // draw slots first, under everything
+        for( int i=0; i<POWER_SET_SIZE; i++ ) {
+            doublePair drawPos = inPosition;
+            drawPos.x += ( i - centerIndex ) * slotSize;
         
-        setDrawColor( 1, 1, 1, inFade );
-        drawSprite( powerUpSlot, drawPos );
-        } 
+            setDrawColor( 1, 1, 1, inFade );
+            drawSprite( powerUpSlot, drawPos );
+            } 
+        }
+    
 
 
 
@@ -425,7 +474,19 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
         
         drawPowerUp( mPowers[i], drawPos, fadeFactor );
         } 
+    
 
+    if( mDropping ) {
+        // draw dropped stuff on top, dropping down and fading out
+        
+        doublePair dropPosition = inPosition;
+        
+        inPosition.y -= mDropProgress;
+        
+        // don't draw slots for the set that's dropping off
+        mPowersBeingDropped->drawSet( inPosition, 1 - mDropProgress, false );
+        }
+    
     
 
     if( mPushing && ! sPauseAllSets ) {
@@ -460,12 +521,16 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade ) {
         }
     
     
-
-
-
+    if( mDropping && ! sPauseAllSets ) {
+        mDropProgress += 0.025 * frameRateFactor;
+        if( mDropProgress >= 1 ) {
+            mDropping = false;
+            
+            delete mPowersBeingDropped;
+            mPowersBeingDropped = NULL;
+            }
+        }
     
-    
-
 
     }
 
