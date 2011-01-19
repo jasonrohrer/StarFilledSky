@@ -83,6 +83,7 @@ void freeBulletSizeSet() {
     
     for( int i=0; i<maxBulletSize; i++ ) {
         freeSprite( spriteBank[ i ] );
+        freeSprite( shadowSpriteBank[ i ] );
         }
     }
 
