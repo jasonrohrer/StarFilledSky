@@ -934,6 +934,15 @@ void drawFrame( char inUpdate ) {
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
 
+            if( enteringType == power ) {
+                // entering a power, show majority sub-power coloring
+                PowerUpSet *subPowers = 
+                    currentLevel->getLastEnterPointPowers();
+                
+                subPowers->setDimMinority( true );
+                }
+            
+
             
             PowerUpSet *setPlayerPowers = NULL;
             if( ! knockDown ) {

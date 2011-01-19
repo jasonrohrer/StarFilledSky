@@ -97,10 +97,14 @@ void PowerUpSet::fillDefaultSet() {
     mDropping = false;
     mPowersBeingDropped = NULL;
     
+    mDimMinority = false;
+
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i].powerType = powerUpEmpty;
         mPowers[i].behavior = false;
         mPowers[i].level = 0;
+
+        mDimFlags[i] = false;
         }
     }
 
@@ -386,6 +390,30 @@ void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
 
 
 
+void PowerUpSet::setDimMinority( char inDim ) {
+    mDimMinority = inDim;
+    
+    if( mDimMinority ) {
+        recomputeDimFlags();
+        }
+    }
+
+
+
+void PowerUpSet::recomputeDimFlags() {
+    spriteID majorityType = getMajorityType();
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        char inMinority = ( mPowers[i].powerType != majorityType );
+        
+        mDimFlags[i] = inMinority;
+        }
+    }
+
+
+            
+    
+
 char PowerUpSet::equals( PowerUpSet *inOtherSet ) {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( mPowers[i].powerType != inOtherSet->mPowers[i].powerType
@@ -472,6 +500,10 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
             drawPos.y -= mPushProgress;
             }
         
+        if( mDimMinority && mDimFlags[i] ) {
+            fadeFactor *= 0.5;
+            }
+
         drawPowerUp( mPowers[i], drawPos, fadeFactor );
         } 
     
@@ -501,6 +533,8 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
                 }
             
             mPowers[ POWER_SET_SIZE - 1 ] = mPowerToPush;
+            
+            recomputeDimFlags();
 
             if( mPushStack != NULL ) {
                 // start next from stack

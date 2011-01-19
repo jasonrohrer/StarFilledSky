@@ -44,6 +44,9 @@ Version 4   ???
 
 --When inside a power token, in case of tie, right-most sub-power dominates.
 
+--Added dimming of sub-powers inside a power token to make majority formula
+  easier to understand.
+
 
 
 Version 3   2011-January-6

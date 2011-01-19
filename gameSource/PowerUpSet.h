@@ -82,6 +82,12 @@ class PowerUpSet {
         void dropDownToSet( PowerUpSet *inNewSet );
         
 
+        // should minority powers in set be dimmed?
+        // makes majority calculation more clear
+        void setDimMinority( char inDim );
+        
+
+
         // do sets contain same powers?
         char equals( PowerUpSet *inOtherSet );
         
@@ -119,6 +125,12 @@ class PowerUpSet {
         char mDropping;
         double mDropProgress;
         PowerUpSet *mPowersBeingDropped;
+        
+        char mDimMinority;
+        // true if corresponding power dimmed
+        char mDimFlags[ POWER_SET_SIZE ];
+
+        void recomputeDimFlags();
         
         
     };
