@@ -42,6 +42,7 @@ Version 4   ???
   forcing you to gather new powers before rising back out (no more rushing
   through after being knocked down).
 
+--When inside a power token, in case of tie, right-most sub-power dominates.
 
 
 

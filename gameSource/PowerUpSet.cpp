@@ -571,8 +571,8 @@ spriteID PowerUpSet::getMajorityType() {
     // the sums array
     
     // instead, only consider the types in our set, in that order
-    // (in case of tie, first power token trumps others)
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+    // (in case of tie, last power token trumps others)
+    for( int i=POWER_SET_SIZE-1; i>=0; i-- ) {
         if( mPowers[i].powerType != powerUpEmpty ) {
             int thisSum = sums[ mPowers[i].powerType - firstPowerUpID ];
 
