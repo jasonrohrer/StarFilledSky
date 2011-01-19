@@ -1546,7 +1546,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                                       subPowers ),
                                    subPowers,
                                    generateRandomNoteSequence( 
-                                       musicPartIndex ) };
+                                       musicPartIndex ),
+                                   (int)( stepsBetweenGlowTrails / 
+                                          frameRateFactor ) };
                 
                 musicPartIndex++;
 
@@ -2089,11 +2091,39 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                                          trailJitter );
         
 
-        GlowSpriteTrail playerTrail = { trailPos, 1.0, &mPlayerSprite };
+        GlowSpriteTrail playerTrail = { trailPos, 1, 1, &mPlayerSprite };
         mGlowTrails.push_back( playerTrail );
     
         mPlayerStepsUntilNextGlowTrail = 
             (int)( stepsBetweenGlowTrails / frameRateFactor );
+        }
+    
+    int i;
+
+    // step token glow trails
+    for( i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( i );
+
+        t->stepsUntilNextGlowTrail --;
+        
+        if( t->stepsUntilNextGlowTrail <= 0 ) {
+            
+            doublePair trailPos = t->position;
+        
+            trailPos.x += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                             trailJitter );
+            
+            trailPos.y += randSource.getRandomBoundedDouble( -trailJitter, 
+                                                             trailJitter );
+            
+            // token glow trails less strong, to make them easier to read
+            GlowSpriteTrail trail = { trailPos, 0.5, 1, t->sprite };
+        
+            mGlowTrails.push_back( trail );
+
+            t->stepsUntilNextGlowTrail = 
+                (int)( stepsBetweenGlowTrails / frameRateFactor );
+            }
         }
     
 
@@ -2144,7 +2174,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
 
 
-    int i;
     
     // step bullets
     for( i=0; i<mBullets.size(); i++ ) {
@@ -2563,7 +2592,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             trailPos.y += randSource.getRandomBoundedDouble( -trailJitter, 
                                                              trailJitter );
             
-            GlowSpriteTrail trail = { trailPos, 1, e->sprite };
+            GlowSpriteTrail trail = { trailPos, 1, 1, e->sprite };
         
             mGlowTrails.push_back( trail );
 
@@ -3062,7 +3091,7 @@ void Level::drawGlowTrails( double inFade,
             pos.x <= inVisEnd.x && pos.y <= inVisEnd.y ) {
             
             // remap [1..0] to [0..1], where full fade is at 1
-            float mappedFade = 1 - trail->fade;// = sin( trail->fade * M_PI );
+            float mappedFade = 1 - trail->progress;
 
             if( mappedFade < 0.25 ) {
                 // hits sine peak at 0.25
@@ -3075,7 +3104,7 @@ void Level::drawGlowTrails( double inFade,
             
 
             trail->sprite->draw( trail->position, 
-                                 mappedFade * 0.1 * inFade );
+                                 mappedFade * 0.1 * inFade * trail->fade );
             }
         }
     toggleLinearMagFilter( false );
@@ -3254,9 +3283,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     for( int t=0; t<mGlowTrails.size(); t++ ) {
         GlowSpriteTrail *trail = mGlowTrails.getElement( t );
     
-        trail->fade -= 0.025 * frameRateFactor;
+        trail->progress -= 0.025 * frameRateFactor;
     
-        if( trail->fade <= 0 ) {
+        if( trail->progress <= 0 ) {
             mGlowTrails.deleteElement( t );
             t--;
             }
@@ -3887,6 +3916,19 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
         if( distance( t->position, inPos ) < widePickUpRadius ) {
             
             PowerUp p = t->power;
+
+            // clean up glow trails that use
+            // token sprite too
+            for( int i=0; i<mGlowTrails.size(); i++ ) {
+                GlowSpriteTrail *trail = 
+                    mGlowTrails.getElement( i );
+                
+                if( trail->sprite == t->sprite ) {
+                    mGlowTrails.deleteElement( i );
+                    i--;
+                    }
+                }
+
 
             delete t->sprite;
             delete t->subPowers;

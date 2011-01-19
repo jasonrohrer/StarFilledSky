@@ -63,7 +63,8 @@ typedef struct BloodStain {
 typedef struct GlowSpriteTrail {
         doublePair position;
         float fade;
-        EyeBorderSprite *sprite;
+        float progress;
+        BorderSprite *sprite;
     } GlowSpriteTrail;
 
 
@@ -119,6 +120,7 @@ typedef struct PowerUpToken {
         PowerUpSprite *sprite;
         PowerUpSet *subPowers;
         NoteSequence musicNotes;
+        int stepsUntilNextGlowTrail;
     };
 
 
