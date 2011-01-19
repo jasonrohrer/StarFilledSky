@@ -62,6 +62,10 @@ class PowerUpSet {
         // constructs a random set with sum level of EXACTLY inTotalLevel
         // for type inType (and maybe more in other types)
         PowerUpSet( int inTotalLevel, spriteID inType );
+        
+        // construct by copying an existing set
+        PowerUpSet( PowerUpSet *inSetToCopy );
+        
 
 
         void pushPower( PowerUp inPower, doublePair inPowerPos );

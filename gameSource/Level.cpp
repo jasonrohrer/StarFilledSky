@@ -1138,6 +1138,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
               NoteSequence *inMusicNotes,
+              PowerUpSet *inSetPlayerPowers,
               int inLevelNumber, char inSymmetrical, char inInsideEnemy,
               char inIsKnockDown ) 
         : mLevelNumber( inLevelNumber ), 
@@ -1151,22 +1152,33 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mPlayerPowers = new PowerUpSet( inLevelNumber - 3 );
         }
     */
-    // Try power-ups for player ALWAYS starting off empty
-    // getting knocked down a level, and having to fight through with a
-    // pea shooter, is much more serious this way
-    // give two heart token (to give player default of 3 health)
-    mPlayerPowers = new PowerUpSet( 0 );
-    mPlayerPowers->mPowers[1].powerType = powerUpHeart;
-    mPlayerPowers->mPowers[1].level = 1;
-    mPlayerPowers->mPowers[2].powerType = powerUpHeart;
-    mPlayerPowers->mPowers[2].level = 1;
-    
-    if( ! inIsKnockDown ) {
-        // make basic bullets faster, so shooting feels better at
-        // start of game
-        mPlayerPowers->mPowers[0].powerType = powerUpBulletSpeed;
-        mPlayerPowers->mPowers[0].level = 1;
+
+
+    if( inSetPlayerPowers != NULL ) {
+        // copy player powers (intentionally entering
+        mPlayerPowers = new PowerUpSet( inSetPlayerPowers );
         }
+    else {
+        // this is the next level up, or an unintentional knock-down
+
+        // Try power-ups for player ALWAYS starting off empty
+        // getting knocked down a level, and having to fight through with a
+        // pea shooter, is much more serious this way
+        // give two heart token (to give player default of 3 health)
+        mPlayerPowers = new PowerUpSet( 0 );
+        mPlayerPowers->mPowers[1].powerType = powerUpHeart;
+        mPlayerPowers->mPowers[1].level = 1;
+        mPlayerPowers->mPowers[2].powerType = powerUpHeart;
+        mPlayerPowers->mPowers[2].level = 1;
+        
+        if( ! inIsKnockDown ) {
+            // make basic bullets faster, so shooting feels better at
+            // start of game
+            mPlayerPowers->mPowers[0].powerType = powerUpBulletSpeed;
+            mPlayerPowers->mPowers[0].level = 1;
+            }
+        }
+    
     
 
 

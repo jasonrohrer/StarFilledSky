@@ -138,6 +138,7 @@ class Level {
                ColorScheme *inColors=NULL,
                RandomWalkerSet *inWalkerSet=NULL,
                NoteSequence *inMusicNotes=NULL,
+               PowerUpSet *inSetPlayerPowers=NULL,
                int inLevelNumber = 0,
                char inSymmetrical=true,
                char inInsideEnemy=false,
