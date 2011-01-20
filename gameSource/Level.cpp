@@ -1473,13 +1473,21 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
             
             GridPos pickPos = mIndexToGridMap[ floorPick ];
+            
+            doublePair worldPos = 
+                sGridWorldSpots[ pickPos.y ][ pickPos.x ];
+            
+            doublePair playerSpot = {0,0};
 
             if( mRisePosition.x != pickPos.x
                 &&
                 // in case of double rise spot
                 mRisePosition.x != - pickPos.x
                 &&
-                mRisePosition.y != pickPos.y ) {
+                mRisePosition.y != pickPos.y 
+                &&
+                // not too close to player staring spot
+                distance( worldPos, playerSpot ) > 5 ) {
                 
                 
                 hit = true;
@@ -1500,8 +1508,6 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
             if( hit ) {
                 
-                doublePair worldPos = 
-                    sGridWorldSpots[ pickPos.y ][ pickPos.x ];
 
                 PowerUp mainPower = getRandomPowerUp( powerUpMaxLevel );
                 

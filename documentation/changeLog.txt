@@ -59,6 +59,9 @@ Version 4   ???
 
 --Added level number coloring as extra reminder of what you are inside.
 
+--No more power-up tokens right where player starts (avoid confusion when
+  zooming in and instantly picking up a power).
+
 
 
 
