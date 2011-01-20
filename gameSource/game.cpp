@@ -749,10 +749,20 @@ static void updateLevelNumber() {
             levelNumberColor.a = 0.75;
             break;
         case power:
-            levelNumberColor.r = 1;
-            levelNumberColor.g = .75;
-            levelNumberColor.b = 0;
-            levelNumberColor.a = 0.65;
+            if( currentLevel->isInsideEnemy() ) {
+                // inside an enemy power
+                levelNumberColor.r = 1;
+                levelNumberColor.g = .375;
+                levelNumberColor.b = 0;
+                levelNumberColor.a = 0.75;
+                }
+            else {
+                // inside a player power
+                levelNumberColor.r = 1;
+                levelNumberColor.g = .75;
+                levelNumberColor.b = 0;
+                levelNumberColor.a = 0.65;
+                }
             break;
         }
     }
