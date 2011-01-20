@@ -54,6 +54,10 @@ Version 4   ???
 --Enemy behavior tokens now each imply two extra hearts, to make up for the
   fact that they are taking up a slot.
 
+--Floor tokens inside player now always level 1 (minimum), inside enemy now 
+  always at max for that level, to encourage more token recursion.
+
+
 
 
 Version 3   2011-January-6

@@ -1440,6 +1440,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
 
+    if( mInsideEnemy ) {
+        powerUpMaxLevel = (levelForDifficulty - 3) / POWER_SET_SIZE;
+        }
+    
     if( powerUpMaxLevel < 1 ) {
         powerUpMaxLevel = 1;
         }
@@ -1509,17 +1513,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 
 
                 if( mInsideEnemy ) {
-                    // increase, encourage sub-recursion into enemy
-                    if( mainPower.level < powerUpMaxLevel / 2 ) {    
-                        mainPower.level *= 2;
-                        }
+                    // set to max, encourage sub-recursion into enemy
+                    mainPower.level = powerUpMaxLevel;    
                     }
                 else {
-                    // further divide... encourage more sub-recursion
+                    // set to min... encourage more sub-recursion
                     // into self
-                    if( mainPower.level > 2 ) {
-                        mainPower.level /= 2;
-                        }
+                    mainPower.level = 1;
                     }
 
 
