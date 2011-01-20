@@ -2,6 +2,9 @@
 #include "numerals.h"
 #include "minorGems/game/gameGraphics.h"
 
+#include "drawUtils.h"
+
+
 
 #include "minorGems/util/random/CustomRandomSource.h"
 
@@ -500,11 +503,20 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
             drawPos.y -= mPushProgress;
             }
         
-        if( mDimMinority && mDimFlags[i] ) {
-            fadeFactor *= 0.5;
-            }
-
+            
+        
         drawPowerUp( mPowers[i], drawPos, fadeFactor );
+
+        if( mDimMinority && mDimFlags[i] && 
+            mPowers[i].powerType != powerUpEmpty ) {
+
+            // leave 71% of color in place, to match darkness of empty power
+            setDrawColor( 0, 0, 0, 0.29 );
+        
+            // don't cover power border or slot markers
+            drawSquare( drawPos, 0.375 );
+            }
+        
         } 
     
 
