@@ -1313,6 +1313,19 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxNumEnemies = levelForDifficulty * 2;
         }
     
+    // count number of enemies that have follow behavior
+    int followCount = 0;
+    
+    int maxFollowCount = ( levelForDifficulty - 12 ) / 2;
+    
+    if( maxFollowCount < 1 ) {
+        maxFollowCount = 1;
+        }
+    else if( maxFollowCount > 4 ) {
+        maxFollowCount = 4;
+        }
+    
+
 
     for( int i=0; i<maxNumEnemies; i++ ) {
         
@@ -1366,9 +1379,20 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                      maxEnemySpeed * frameRateFactor );
                 doublePair a = { 0, 0 };
                 
+                char allowFollow = false;
+                
+                if( ! fixedSpot && followCount < maxFollowCount ) {
+                    allowFollow = true;
+                    }
 
-                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 3, true );
-                       
+                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 3, 
+                                                true, allowFollow );
+                
+                if( p->containsFollow() ) {
+                    followCount++;
+                    }
+                
+
 
                 RandomWalkerSet walkerSet;
                 

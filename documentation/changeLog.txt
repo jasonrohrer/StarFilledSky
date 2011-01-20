@@ -47,6 +47,10 @@ Version 4   ???
 --Added dimming of sub-powers inside a power token to make majority formula
   easier to understand.
 
+--Made special enemy behaviors more likely at lower levels.
+
+--Fixed issues with uneven weighting of enemy sub-powers.
+
 
 
 Version 3   2011-January-6

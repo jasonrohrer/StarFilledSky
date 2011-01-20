@@ -57,7 +57,8 @@ class PowerUpSet {
         
     
         // constructs a random set with sum level at most inTotalLevel
-        PowerUpSet( int inTotalLevel, char inIsEnemy = false );
+        PowerUpSet( int inTotalLevel, char inIsEnemy = false,
+                    char inAllowFollow = false );
 
         // constructs a random set with sum level of EXACTLY inTotalLevel
         // for type inType (and maybe more in other types)
@@ -98,6 +99,11 @@ class PowerUpSet {
         // gets type of heaviest-total-weight power in set
         spriteID getMajorityType();
         
+        
+        // true if this set contains a follow ability
+        char containsFollow();
+        
+
 
         PowerUp mPowers[ POWER_SET_SIZE ];
         
@@ -109,7 +115,8 @@ class PowerUpSet {
     protected:
         
         void fillDefaultSet();
-        void fillRandomSet( int inTotalLevel, char inIsEnemy = false );
+        void fillRandomSet( int inTotalLevel, char inIsEnemy = false,
+                            char inAllowFollow = false );
 
 
         powerPushRecord *mPushStack;

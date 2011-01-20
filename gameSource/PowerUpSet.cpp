@@ -113,16 +113,17 @@ void PowerUpSet::fillDefaultSet() {
 
 
 
-#define MIN_FOLLOW_LEVEL 5
-#define MIN_DODGE_LEVEL 5
-#define MIN_RANDOM_LEVEL 4
-#define MIN_FAST_LEVEL 7
-#define MIN_CIRCLE_LEVEL 4
+#define MIN_FOLLOW_LEVEL 3
+#define MIN_DODGE_LEVEL 3
+#define MIN_RANDOM_LEVEL 3
+#define MIN_FAST_LEVEL 4
+#define MIN_CIRCLE_LEVEL 3
 
 
 
-void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
-    
+void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy,
+                                char inAllowFollow ) {
+
     // ensure enemy behaviors are inserted at most once
     char dodge = false;
     char fast = false;
@@ -134,16 +135,19 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
     // fill first FIFO slot first
     for( int i=POWER_SET_SIZE-1; i>=0 && inTotalLevel > 0; i-- ) {
         
-        if( inTotalLevel / 3 > 0 ) {
-            mPowers[i] = getRandomPowerUp( inTotalLevel / 3 );
+        if( inTotalLevel / POWER_SET_SIZE > 0 ) {
+            mPowers[i] = getRandomPowerUp( inTotalLevel / POWER_SET_SIZE );
             }
         else {
+            // total level cannot be spread evenly over slots 
+            // (smaller than 3, for example)
+            // try sticking it in one spot, and treat rest as remainder
             mPowers[i] = getRandomPowerUp( inTotalLevel );
+            
+            inTotalLevel -= mPowers[i].level;
             }
         
-        inTotalLevel -= mPowers[i].level;
 
-        
 
         if( inIsEnemy ) {
         
@@ -151,10 +155,10 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
             
             char behaviorPicked = false;
             
-            if( !behaviorPicked && ! moveStyle &&
-                mPowers[ i ].level > MIN_FOLLOW_LEVEL ) {
+            if( inAllowFollow && !behaviorPicked && ! moveStyle &&
+                mPowers[ i ].level >= MIN_FOLLOW_LEVEL ) {
             
-                if( randSource.getRandomBoundedInt( 0, 100 ) > 93 ) {
+                if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
                 
                     // stick a follow in this spot
                     mPowers[ i ].powerType = enemyBehaviorFollow;
@@ -167,7 +171,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 }
 
             if( !behaviorPicked && ! dodge &&
-                mPowers[ i ].level > MIN_DODGE_LEVEL ) {
+                mPowers[ i ].level >= MIN_DODGE_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
                 
@@ -182,7 +186,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 }
 
             if( !behaviorPicked && ! fast &&
-                mPowers[ i ].level > MIN_FAST_LEVEL ) {
+                mPowers[ i ].level >= MIN_FAST_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 90 ) {
                                 
@@ -197,7 +201,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 }
 
             if( !behaviorPicked && ! moveStyle &&
-                mPowers[ i ].level > MIN_RANDOM_LEVEL ) {
+                mPowers[ i ].level >= MIN_RANDOM_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
                 
@@ -212,7 +216,7 @@ void PowerUpSet::fillRandomSet( int inTotalLevel, char inIsEnemy ) {
                 }
 
             if( !behaviorPicked && ! moveStyle &&
-                mPowers[ i ].level > MIN_CIRCLE_LEVEL ) {
+                mPowers[ i ].level >= MIN_CIRCLE_LEVEL ) {
             
                 if( randSource.getRandomBoundedInt( 0, 100 ) > 86 ) {
                 
@@ -240,10 +244,11 @@ PowerUpSet::PowerUpSet() {
 
 
 
-PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy ) {
+PowerUpSet::PowerUpSet( int inTotalLevel, char inIsEnemy, 
+                        char inAllowFollow ) {
     fillDefaultSet();
     
-    fillRandomSet( inTotalLevel, inIsEnemy );
+    fillRandomSet( inTotalLevel, inIsEnemy, inAllowFollow );
     }
 
 
@@ -631,4 +636,17 @@ spriteID PowerUpSet::getMajorityType() {
 
     
     return (spriteID)maxType;
+    }
+
+
+
+
+char PowerUpSet::containsFollow() {
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType == enemyBehaviorFollow ) {
+            return true;
+            }
+        }
+    
+    return false;
     }
