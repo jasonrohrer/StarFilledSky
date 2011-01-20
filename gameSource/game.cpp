@@ -152,6 +152,7 @@ const char *getDemoCodeServerURL() {
 
 
 int levelNumber = 0;
+Color levelNumberColor( 1, 1, 1, .5 );
 
 
 char gamePlayingBack = false;
@@ -727,6 +728,37 @@ static void saveLevelBookmark() {
 
 
 
+static void updateLevelNumber() {
+    levelNumber = currentLevel->getLevelNumber();
+    
+    LevelPositionInfo *lastLevelInfo = 
+        levelRisePositionInfoStack.getElement( 
+            levelRisePositionInfoStack.size() - 1 );
+        
+    switch( lastLevelInfo->entryType ) {
+        case player:
+            levelNumberColor.r = 1;
+            levelNumberColor.g = 1;
+            levelNumberColor.b = 1;
+            levelNumberColor.a = 0.5;
+            break;
+        case enemy:
+            levelNumberColor.r = 1;
+            levelNumberColor.g = 0;
+            levelNumberColor.b = 0;
+            levelNumberColor.a = 0.75;
+            break;
+        case power:
+            levelNumberColor.r = 1;
+            levelNumberColor.g = .75;
+            levelNumberColor.b = 0;
+            levelNumberColor.a = 0.65;
+            break;
+        }
+    }
+
+    
+
 
 
 // used to keep level rise stack populated without a visible frame hiccup
@@ -802,7 +834,9 @@ void drawFrame( char inUpdate ) {
 
 
     if( lastRiseFreezeFrameDrawn ) {
-        levelNumber = currentLevel->getLevelNumber();
+        
+        updateLevelNumber();
+        
         
         saveLevelBookmark();
             
@@ -1501,7 +1535,8 @@ void drawFrameNoUpdate( char inUpdate ) {
             
             currentLevel->drawFloorEdges( true );
             
-            levelNumber = currentLevel->getLevelNumber();
+            updateLevelNumber();
+            
             saveLevelBookmark();
             
             zoomProgress = 0;
@@ -1586,7 +1621,8 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
     // level number display on dash
-    setDrawColor( 1, 1, 1, 0.5 );
+    setDrawColor( levelNumberColor.r, levelNumberColor.g, levelNumberColor.b, 
+                  levelNumberColor.a );
     
     doublePair levelNumberPos = { lastScreenViewCenter.x +
                                   viewWidth /2,

@@ -57,6 +57,8 @@ Version 4   ???
 --Floor tokens inside player now always level 1 (minimum), inside enemy now 
   always at max for that level, to encourage more token recursion.
 
+--Added level number coloring as extra reminder of what you are inside.
+
 
 
 
