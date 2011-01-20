@@ -51,6 +51,9 @@ Version 4   ???
 
 --Fixed issues with uneven weighting of enemy sub-powers.
 
+--Enemy behavior tokens now each imply two extra hearts, to make up for the
+  fact that they are taking up a slot.
+
 
 
 Version 3   2011-January-6

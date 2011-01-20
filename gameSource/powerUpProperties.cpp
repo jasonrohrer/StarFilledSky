@@ -22,8 +22,22 @@ static int getTotalLevel( PowerUpSet *inSet,
 
 
 int getMaxHealth( PowerUpSet *inSet ) {
-    return getTotalLevel( inSet, powerUpHeart );
+    int heartTotal = getTotalLevel( inSet, powerUpHeart );
+
+    int numBehaviors = 0;
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( inSet->mPowers[i].behavior ) {
+            numBehaviors++;
+            }
+        }    
+    
+    // extra hearts for each behavior, to make up for fact that they take
+    // up a slot
+    
+    return heartTotal + 2 * numBehaviors;
     }
+
 
 
 
