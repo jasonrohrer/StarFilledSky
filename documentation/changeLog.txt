@@ -62,6 +62,8 @@ Version 4   ???
 --No more power-up tokens right where player starts (avoid confusion when
   zooming in and instantly picking up a power).
 
+--Enemies now aim ahead of moving player (perfect aim).
+
 
 
 

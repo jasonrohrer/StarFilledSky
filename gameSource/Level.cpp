@@ -1284,6 +1284,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mPlayerPos.y = 0;
         }
 
+    mPlayerVelocity.x = 0;
+    mPlayerVelocity.y = 0;
+
     mPlayerStepsUntilNextGlowTrail = 
         (int)( stepsBetweenGlowTrails / frameRateFactor );
     
@@ -1656,6 +1659,10 @@ void Level::decompactLevel() {
 
 void Level::setPlayerPos( doublePair inPos ) {
     mPlayerPos = inPos;
+    }
+
+void Level::setPlayerVelocity( doublePair inVelocity ) {
+    mPlayerVelocity = inVelocity;
     }
 
 
@@ -2903,9 +2910,75 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             // set speed
             // enemy bullets are slower than equivalent player bullets
             float bulletSpeed = getBulletSpeed( e->powers ) / 2;
+
+
+            // perfect aim using quadratic equations
+            //
+            // similar to what is described here:
+            // http://playtechs.blogspot.com/2007/04/
+            //           aiming-at-moving-target.html
+
+            doublePair relativePlayerPos = sub( mPlayerPos, e->position );
+
+            double xt = relativePlayerPos.x;
+            double yt = relativePlayerPos.y;
             
+            double xv = mPlayerVelocity.x;
+            double yv = mPlayerVelocity.y;
             
-            addBullet( e->position, mPlayerPos, 
+            double bv = bulletSpeed;
+            
+            // quadratic terms
+            double A = xv * xv + yv * yv - bv * bv;
+            double B = 2 * ( xt * xv + yt * yv );
+            double C = xt * xt + yt * yt;
+            
+            double D = B * B - 4 * A * C;
+            
+            double hitTime = 0;
+            
+            if( D >= 0 ) {
+                
+                double sqrtD = sqrt( D );
+
+                double t1 = ( -B + sqrtD ) / ( 2 * A );
+                double t2 = ( -B - sqrtD ) / ( 2 * A );
+                
+                // pick smallest positive hit time
+                if( t1 > 0 && t2 > 0 ) {
+                    if( t1 < t2 ) {
+                        hitTime = t1;
+                        }
+                    else {
+                        hitTime = t2;
+                        }
+                    }
+                else if( t1 > 0 ) {
+                    hitTime = t1;
+                    }
+                else if( t2 > 0 ) {
+                    hitTime = t2;
+                    }
+                }
+            
+            double bulletDistance = getBulletDistance( e->powers );
+
+            if( bulletSpeed * hitTime > bulletDistance ) {
+                // bullet will die before it can reach target
+                hitTime = 0;
+                }
+            
+
+            
+            doublePair aimPos = mPlayerPos;
+
+            if( hitTime > 0 ) {
+                aimPos = add( mPlayerPos,
+                              mult( mPlayerVelocity, hitTime ) );
+                }            
+
+
+            addBullet( e->position, aimPos, 
                        e->powers,
                        mPlayerPos,
                        bulletSpeed, false, i );

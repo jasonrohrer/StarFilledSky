@@ -157,6 +157,7 @@ class Level {
 
         
         void setPlayerPos( doublePair inPos );
+        void setPlayerVelocity( doublePair inVelocity );
         void setMousePos( doublePair inPos );
         
         void setEnteringMouse( char inEntering );
@@ -420,6 +421,8 @@ class Level {
         doublePair mMousePos;
         char mEnteringMouse;
         doublePair mPlayerPos;
+        doublePair mPlayerVelocity;
+
 
         int mPlayerStepsUntilNextGlowTrail;
         

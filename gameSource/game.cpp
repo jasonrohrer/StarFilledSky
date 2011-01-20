@@ -1223,6 +1223,9 @@ void drawFrame( char inUpdate ) {
     
     // printf( "Player pos = %f, %f\n", newPlayerPos.x, newPlayerPos.y );
     
+    doublePair effectiveVelocity = sub( newPlayerPos, playerPos );
+    
+    currentLevel->setPlayerVelocity( effectiveVelocity );
     
 
     playerPos = newPlayerPos;
