@@ -15,5 +15,16 @@ NoteSequence generateRandomNoteSequence( int inPartIndex,
                                          int inPartLength = 16 );
 
 
+// two part drum beat
+typedef struct DrumSequence {
+        NoteSequence parts[2];
+    } DrumSequence;
+
+
+DrumSequence generateRandomDrumSequence( int inPartLength = 4 );
+
+
+
+
 // applies a sequence to its part number in the musicPlayer
 void setNoteSequence( NoteSequence inSequence );

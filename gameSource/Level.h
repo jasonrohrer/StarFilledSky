@@ -335,6 +335,8 @@ class Level {
         // background notes for this level
         NoteSequence mHarmonyNotes;        
 
+        // drum beat associated with rise marker
+        DrumSequence mRiseDrumBeat;
 
 
         // dynamically allocate these to make them compactable

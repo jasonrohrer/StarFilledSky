@@ -1241,6 +1241,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mHarmonyNotes = generateRandomNoteSequence( PARTS - 2 );
         }
     
+    mRiseDrumBeat = generateRandomDrumSequence( 4 );
+
     if( inPlayerMusicNotes != NULL ) {
         mPlayerMusicNotes = *( inPlayerMusicNotes );
         }
@@ -4896,6 +4898,9 @@ void Level::pushAllMusicIntoPlayer() {
 
 
     setNoteSequence( mPlayerMusicNotes );
+    
+    setNoteSequence( mRiseDrumBeat.parts[0] );
+    setNoteSequence( mRiseDrumBeat.parts[1] );
     
 
     if( mHarmonyNotes.partIndex != PARTS - 1 ) {

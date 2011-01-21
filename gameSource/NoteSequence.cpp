@@ -38,6 +38,43 @@ NoteSequence generateRandomNoteSequence( int inPartIndex,
     }
 
 
+DrumSequence generateRandomDrumSequence( int inPartLength ) {
+    DrumSequence s;
+    
+    s.parts[0].partIndex = PARTS - 4;
+    s.parts[1].partIndex = PARTS - 3;
+
+    
+    int minNotesPerPart = inPartLength / 4;
+    int maxNotesPerPart = ( inPartLength / 4 ) * 3;
+
+    for( int p=0; p<2; p++ ) {
+        
+        s.parts[p].partLength = inPartLength;
+        
+        memset( s.parts[p].noteYIndex, -1, N );
+
+        int numNotesInPart = 0;
+        while( numNotesInPart < minNotesPerPart ) {
+            for( int x=0; 
+                 x<inPartLength && 
+                     numNotesInPart < maxNotesPerPart; 
+                 x++ ) {
+                
+                if( randSource.getRandomBoundedInt( 0, 10 ) > 6 ) {        
+                    // all drum beats use middle notes only
+                    s.parts[p].noteYIndex[x] = N/2;
+                    numNotesInPart++;
+                    }
+                }
+            }
+        }
+    
+    return s;
+    }
+
+
+
 
 // applies a sequence to a part number in the musicPlayer
 void setNoteSequence( NoteSequence inSequence ) {
