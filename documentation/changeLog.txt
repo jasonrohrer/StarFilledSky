@@ -68,6 +68,8 @@ Version 4   ???
 
 --Made enemy health bar fade-out framerate independent.
 
+--Made enemy health bar outline more faint.
+
 
 
 Version 3   2011-January-6

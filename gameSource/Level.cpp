@@ -3325,7 +3325,8 @@ void Level::drawEnemies( double inFade, int inLayer,
                 
                 double barBGHalfWidth = halfRedBarWidth + borderWidth;
 
-                setDrawColor( 0.25, 0.25, 0.25, fade );
+                // outline
+                setDrawColor( 0.25, 0.25, 0.25, 0.75 * fade );
                 drawRect( pos.x - barBGHalfWidth, pos.y + 0.5, 
                           pos.x + barBGHalfWidth, pos.y + 0.25 );
             
