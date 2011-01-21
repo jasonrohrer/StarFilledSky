@@ -3708,18 +3708,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
         
         
-        // draw power-ups under shadows too
-        for( i=0; i<mPowerUpTokens.size(); i++ ) {
-            PowerUpToken *p = mPowerUpTokens.getElement( i );
-            
-            doublePair pos = p->position;
-            
-            if( pos.x >= visStart.x && pos.y >= visStart.y &&
-                pos.x <= visEnd.x && pos.y <= visEnd.y ) {
-                
-                drawPowerUp( p->power, p->position, edgeFade );
-                }
-            }
+        
 
 
 
@@ -3782,10 +3771,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
             // same with crosshair shadow, but only if we're not
             // entering a power-up, so we don't draw it twice
-            if( ! ( mWindowSet && mWindowPosition.type == power ) ) {
-                setDrawColor( 1, 1, 1, shadowLevel );
-                drawCrosshairShadow( mEnteringMouse, mMousePos );
-                }
+            setDrawColor( 1, 1, 1, shadowLevel );
+            drawCrosshairShadow( mEnteringMouse, mMousePos );
                 
 
             // same with enemy shadows
@@ -3800,6 +3787,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     e->sprite->drawShadow( pos, shadowLevel );
                     }
                 }
+            
+            // same with power-up shadows
+            setDrawColor( 1, 1, 1, shadowLevel );
+            for( int i=0; i<mPowerUpTokens.size(); i++ ) {
+                PowerUpToken *p = mPowerUpTokens.getElement( i );
+                
+                doublePair pos = p->position;
+                
+                if( pos.x >= visStart.x && pos.y >= visStart.y &&
+                    pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+                    
+                    drawPowerUpShadow( p->position );
+                    }
+                }
+
 
             toggleLinearMagFilter( false );
             
@@ -3808,6 +3810,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         
 
+        }
+
+
+    // draw power-ups
+    for( i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+        doublePair pos = p->position;
+        
+        if( pos.x >= visStart.x && pos.y >= visStart.y &&
+            pos.x <= visEnd.x && pos.y <= visEnd.y ) {
+            
+            drawPowerUp( p->power, p->position, 1.0 );
+            }
         }
     
 
@@ -3973,16 +3989,6 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
                 
                 drawPowerUpBorder( t->position, inFrameFade );
                 drawPowerUpCenter( t->power, t->position, inFade );
-
-                // mouse shadow on top of power up
-                if( overlieFade > 0 ) {
-                    toggleLinearMagFilter( true );
-                    setDrawColor( 1, 1, 1, 
-                                  0.75 * mLastComputedFastWindowFade );
-                    drawCrosshairShadow( mEnteringMouse, mMousePos );
-                    toggleLinearMagFilter( false );
-                    }
-                
                 }
             
 

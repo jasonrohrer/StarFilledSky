@@ -96,6 +96,8 @@ Color getBlurredColor( spriteID inID );
 
 void drawCrosshairShadow( char inEnteringMouse, doublePair inCenter );
 
+void drawPowerUpShadow( doublePair inCenter );
+
 
 
 // utility function

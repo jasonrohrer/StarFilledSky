@@ -57,6 +57,7 @@ graphics/enterCrosshair.tga \
 graphics/powerUpSlot.tga \
 graphics/powerUpBorder.tga \
 graphics/powerUpEmpty.tga \
+graphics/powerUpFullMask.tga \
 graphics/powerUpHeart.tga \
 graphics/powerUpBulletSize.tga \
 graphics/powerUpRapidFire.tga \

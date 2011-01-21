@@ -29,6 +29,7 @@ static Color blurredColors[ endSpriteID ];
 
 static SpriteHandle crosshairShadow;
 static SpriteHandle enterCrosshairShadow;
+static SpriteHandle powerUpShadow;
 
 
 static char transparentLowerLeftCorner[ endSpriteID ];
@@ -108,6 +109,9 @@ void initSpriteBank() {
     enterCrosshairShadow = 
         generateShadowSprite( fixedSpriteFileNames[ enterCrosshair ] );
 
+    powerUpShadow = 
+        generateShadowSprite( "powerUpFullMask.tga" );
+
     }
 
 
@@ -119,6 +123,7 @@ void freeSpriteBank() {
         }
     freeSprite( crosshairShadow );
     freeSprite( enterCrosshairShadow );
+    freeSprite( powerUpShadow );
     }
 
 
@@ -145,6 +150,13 @@ void drawCrosshairShadow( char inEnteringMouse, doublePair inCenter ) {
         }
     }
 
+
+
+void drawPowerUpShadow( doublePair inCenter ) {
+    // scale up with linear filter
+
+    drawSprite( powerUpShadow, inCenter, 1.0/4 );
+    }
 
 
 
