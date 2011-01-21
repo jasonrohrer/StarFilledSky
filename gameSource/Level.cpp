@@ -3076,6 +3076,13 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
     setPartLoudnessAndStereo( closestRisePosition, 
                               mPlayerPos,
+                              PARTS-4,
+                              // longer fall-off
+                              400,
+                              stereoSpread );
+
+    setPartLoudnessAndStereo( closestRisePosition, 
+                              mPlayerPos,
                               PARTS-3,
                               // longer fall-off
                               400,
@@ -3088,9 +3095,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // and player part
     
     
-    // now weight them all, except rise marker part, player part,
+    // now weight them all, except rise marker parts, player part,
     // and harmony part
-    for( int p=0; p<PARTS-3; p++ ) {
+    for( int p=0; p<PARTS-4; p++ ) {
         partLoudness[p] *= mLastComputedEdgeFade;
         }
 

@@ -696,6 +696,20 @@ double coefficientMix( double inT ) {
 
 
 
+// a sine wave that falls off over time
+double sinThwip( double inT ) {
+    return sin( inT / (1 + pow(inT, .2) ) ) ;
+    }
+
+double kickWave( double inT ) {
+    return sinThwip( inT ) +
+        // white noise at start, then fall-off
+        smoothedWhiteNoise( inT ) * ( 1 - inT / (inT + 10 ) );
+    }
+
+
+
+
 void setTimbre( int inTimbreNumber,
                 double *inPartialCoefficients, int numCoefficients,
                 int inOctavesDown ) {    
@@ -1106,17 +1120,38 @@ void setDefaultMusicSounds() {
     
 
     
-    // rise marker part
+    // rise marker parts
     
+    // snare type sound
     musicTimbres[20] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                      keyFrequency/2,
-                                      heightPerTimbre, harmonicSine ); 
+                                   keyFrequency/2,
+                                   heightPerTimbre, smoothedWhiteNoise,
+                                   // extra periods per table so that
+                                   // noise doesn't become tonal through
+                                   // short looping
+                                   10 ); 
 
     musicEnvelopes[20] = new Envelope(
-        0.01, 0.25, 0.0, 0.0,
+        0.0, 0.125, 0.0, 0.0,
         maxNoteLength,
         maxNoteLength,
         partStepDurationsInSamples[20] );
+
+
+    // kick drum type sound
+    musicTimbres[21] = new Timbre( sampleRate, 0.8 * loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, kickWave,
+                                   // extra periods in table to make room
+                                   // for entire kick sweep
+                                   200 ); 
+
+    musicEnvelopes[21] = new Envelope(
+        // AHR model
+        0.0, 0.25, 0.05,
+        maxNoteLength,
+        maxNoteLength,
+        partStepDurationsInSamples[21] );
     
     
     
@@ -1124,15 +1159,15 @@ void setDefaultMusicSounds() {
 
 
     // player part
-    musicTimbres[21] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                   keyFrequency/2,
-                                   heightPerTimbre, harmonicSine ); 
+    musicTimbres[PARTS-2] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                        keyFrequency/2,
+                                        heightPerTimbre, harmonicSine ); 
     
-    musicEnvelopes[21] = new Envelope(
+    musicEnvelopes[PARTS-2] = new Envelope(
         0.01, 0.99, 0.0, 0.0,
         maxNoteLength,
         maxNoteLength,
-        partStepDurationsInSamples[21] );
+        partStepDurationsInSamples[PARTS-2] );
     
 
     // harmony part, copied
@@ -1334,8 +1369,16 @@ void initMusicPlayer() {
 
     // fixed rhythm part for rise marker
     for( int n=0; n<N; n++ ) {
-        noteToggles[20][N/2][n] = true;
+        if( n%4 == 0 ) {
+            noteToggles[20][N/2][n] = true;
+            }
+        if( n%2 == 0 ) {
+            noteToggles[21][N/2][n] = true;
+            }
         }
+    
+    
+    
 
         
     // test
