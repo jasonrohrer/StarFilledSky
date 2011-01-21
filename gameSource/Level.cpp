@@ -3784,7 +3784,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // entering a power-up, so we don't draw it twice
             if( ! ( mWindowSet && mWindowPosition.type == power ) ) {
                 setDrawColor( 1, 1, 1, shadowLevel );
-                drawCrosshairShadow( mMousePos );
+                drawCrosshairShadow( mEnteringMouse, mMousePos );
                 }
                 
 
@@ -3979,7 +3979,7 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
                     toggleLinearMagFilter( true );
                     setDrawColor( 1, 1, 1, 
                                   0.75 * mLastComputedFastWindowFade );
-                    drawCrosshairShadow( mMousePos );
+                    drawCrosshairShadow( mEnteringMouse, mMousePos );
                     toggleLinearMagFilter( false );
                     }
                 

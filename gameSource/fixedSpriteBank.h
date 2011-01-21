@@ -94,12 +94,12 @@ void drawSprite( spriteID inID, doublePair inCenter );
 Color getBlurredColor( spriteID inID );
 
 
-void drawCrosshairShadow( doublePair inCenter );
+void drawCrosshairShadow( char inEnteringMouse, doublePair inCenter );
 
 
 
 // utility function
-// generates a 16x16 shadow sprite from any tga file with transparent 
+// generates a shadow sprite from any tga file with transparent 
 // background color
 SpriteHandle generateShadowSprite( const char *inSourceTGAFile );
 

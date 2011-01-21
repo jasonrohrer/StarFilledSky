@@ -28,6 +28,7 @@ static SpriteHandle spriteBank[ endSpriteID ];
 static Color blurredColors[ endSpriteID ];
 
 static SpriteHandle crosshairShadow;
+static SpriteHandle enterCrosshairShadow;
 
 
 static char transparentLowerLeftCorner[ endSpriteID ];
@@ -104,6 +105,8 @@ void initSpriteBank() {
     
     crosshairShadow = 
         generateShadowSprite( fixedSpriteFileNames[ crosshair ] );
+    enterCrosshairShadow = 
+        generateShadowSprite( fixedSpriteFileNames[ enterCrosshair ] );
 
     }
 
@@ -115,6 +118,7 @@ void freeSpriteBank() {
         freeSprite( spriteBank[ i ] );
         }
     freeSprite( crosshairShadow );
+    freeSprite( enterCrosshairShadow );
     }
 
 
@@ -130,10 +134,17 @@ Color getBlurredColor( spriteID inID ) {
     }
 
 
-void drawCrosshairShadow( doublePair inCenter ) {    
+void drawCrosshairShadow( char inEnteringMouse, doublePair inCenter ) {    
+
     // scale up with linear filter
-    drawSprite( crosshairShadow, inCenter, 1.0/4 );
+    if( inEnteringMouse ) {
+        drawSprite( enterCrosshairShadow, inCenter, 1.0/4 );
+        }
+    else {
+        drawSprite( crosshairShadow, inCenter, 1.0/4 );
+        }
     }
+
 
 
 
@@ -150,7 +161,7 @@ SpriteHandle generateShadowSprite( const char *inSourceTGAFile ) {
     Color transColor = spriteImage->getColor( (h-1) * w );
 
 
-    Image shadowImage( 16, 16, 4, true );
+    Image shadowImage( w, h, 4, true );
         
     double *shadowAlpha = shadowImage.getChannel( 3 );
         
