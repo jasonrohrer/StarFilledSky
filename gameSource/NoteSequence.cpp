@@ -74,6 +74,37 @@ DrumSequence generateRandomDrumSequence( int inPartLength ) {
     }
 
 
+DrumSequence generateStraightDrumSequence( int inPartLength ) {
+        DrumSequence s;
+    
+    s.parts[0].partIndex = PARTS - 4;
+    s.parts[1].partIndex = PARTS - 3;
+
+    
+    for( int p=0; p<2; p++ ) {
+        
+        s.parts[p].partLength = inPartLength;
+        
+        memset( s.parts[p].noteYIndex, -1, N );
+
+        for( int x=0; x<inPartLength; x++ ) {
+            
+            if( p == 0 && x == 0 ) {
+                // snare
+                s.parts[p].noteYIndex[x] = N/2;
+                }
+            else if( p == 1 && x % 2 == 0 ) {
+                // kick
+                s.parts[p].noteYIndex[x] = N/2;
+                }
+            }
+        }
+    
+    return s;
+    }
+
+
+
 
 
 // applies a sequence to a part number in the musicPlayer

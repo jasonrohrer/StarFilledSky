@@ -23,6 +23,7 @@ typedef struct DrumSequence {
 
 DrumSequence generateRandomDrumSequence( int inPartLength = 4 );
 
+DrumSequence generateStraightDrumSequence( int inPartLength = 4 );
 
 
 

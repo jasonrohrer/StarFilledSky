@@ -70,7 +70,7 @@ Version 4   ???
 
 --Made enemy health bar outline more faint.
 
---Added musical sonar-type track to make finding rise marker easier.
+--Added musical sonar-type drum track to make finding rise marker easier.
 
 
 

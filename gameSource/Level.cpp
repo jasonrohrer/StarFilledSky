@@ -1140,6 +1140,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               NoteSequence *inMusicNotes,
               PowerUpSet *inSetPlayerPowers,
               int inLevelNumber, char inSymmetrical, char inInsideEnemy,
+              char inInsidePowerUp,
               char inIsKnockDown ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ) {
@@ -1241,8 +1242,21 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mHarmonyNotes = generateRandomNoteSequence( PARTS - 2 );
         }
     
-    mRiseDrumBeat = generateRandomDrumSequence( 4 );
-
+    if( inInsidePowerUp ) {
+        // immediately inside power-up (which may be inside enemy)
+        // long, random beat
+        mRiseDrumBeat = generateRandomDrumSequence( 8 );
+        }
+    else if( mInsideEnemy ) {
+        // short random beat
+        mRiseDrumBeat = generateRandomDrumSequence( 4 );    
+        }
+    else {
+        // inside player
+        // straight techno beat
+        mRiseDrumBeat = generateStraightDrumSequence( 4 );
+        }
+    
     if( inPlayerMusicNotes != NULL ) {
         mPlayerMusicNotes = *( inPlayerMusicNotes );
         }

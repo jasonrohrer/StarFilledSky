@@ -142,6 +142,7 @@ class Level {
                int inLevelNumber = 0,
                char inSymmetrical=true,
                char inInsideEnemy=false,
+               char inInsidePowerUp=false,
                char inIsKnockDown=false );
 
 

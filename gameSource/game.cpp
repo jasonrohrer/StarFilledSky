@@ -891,6 +891,8 @@ void drawFrame( char inUpdate ) {
         
         char knockDown = false;
         
+        char insidePowerUp = false;
+        
 
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
@@ -928,6 +930,9 @@ void drawFrame( char inUpdate ) {
                 symmetrical = true;
                 }
 
+            insidePowerUp = true;
+            
+            // could be inside a power-up sub-chain in an enemy
             insideEnemy = currentLevel->isInsideEnemy();
             }
         
@@ -1018,7 +1023,8 @@ void drawFrame( char inUpdate ) {
                                       &musicNotes,
                                       setPlayerPowers,
                                       subLevelNumber,
-                                      symmetrical, insideEnemy, knockDown );
+                                      symmetrical, insideEnemy, insidePowerUp,
+                                      knockDown );
 
             currentLevel->pushAllMusicIntoPlayer();
             
