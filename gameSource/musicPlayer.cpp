@@ -1105,23 +1105,35 @@ void setDefaultMusicSounds() {
         }
     
 
-
-
-
-
-
-    for( int i=20; i<PARTS-1; i++ ) {
-        musicTimbres[i] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+    
+    // rise marker part
+    
+    musicTimbres[20] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
                                       keyFrequency/2,
                                       heightPerTimbre, harmonicSine ); 
 
-        musicEnvelopes[i] = new Envelope(
-            0.01, 0.99, 0.0, 0.0,
-            maxNoteLength,
-            maxNoteLength,
-            partStepDurationsInSamples[i] );
-        }
+    musicEnvelopes[20] = new Envelope(
+        0.01, 0.25, 0.0, 0.0,
+        maxNoteLength,
+        maxNoteLength,
+        partStepDurationsInSamples[20] );
+    
+    
+    
 
+
+
+    // player part
+    musicTimbres[21] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                   keyFrequency/2,
+                                   heightPerTimbre, harmonicSine ); 
+    
+    musicEnvelopes[21] = new Envelope(
+        0.01, 0.99, 0.0, 0.0,
+        maxNoteLength,
+        maxNoteLength,
+        partStepDurationsInSamples[21] );
+    
 
     // harmony part, copied
 
@@ -1319,6 +1331,12 @@ void initMusicPlayer() {
         partLengths[i] = w;
         }
     
+
+    // fixed rhythm part for rise marker
+    for( int n=0; n<N; n++ ) {
+        noteToggles[20][N/2][n] = true;
+        }
+
         
     // test
     for( int i=0; i<w; i++ ) {

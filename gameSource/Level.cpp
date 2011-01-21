@@ -2108,6 +2108,29 @@ void Level::generateEnemyDestructionSmoke( Enemy *inE ) {
 
 
 
+static void setPartLoudnessAndStereo( doublePair inSourcePos, 
+                                      doublePair inPlayerPos,
+                                      int inPartIndex,
+                                      double inLoudnessFalloff,
+                                      double inStereoSpread ) {
+    
+    double playerDist = distance( inPlayerPos, inSourcePos );
+    if( playerDist < 4 ) {
+        partLoudness[ inPartIndex ] = 1;
+        }
+    else {
+        double playerDistModified = playerDist - 4;
+        partLoudness[ inPartIndex ] = 
+            inLoudnessFalloff / 
+            ( inLoudnessFalloff + 
+              playerDistModified * playerDistModified );
+        }
+    double vectorCosine = (inSourcePos.x - inPlayerPos.x) / playerDist;
+    partStereo[ inPartIndex ] = 
+        vectorCosine * inStereoSpread + 0.5;
+    }
+
+
 
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
@@ -3021,21 +3044,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
         
-        // music loudness for enemy part
-        double playerDist = distance( mPlayerPos, e->position );
-        if( playerDist < 4 ) {
-            partLoudness[ e->musicNotes.partIndex ] = 1;
-            }
-        else {
-            double playerDistModified = playerDist - 4;
-            partLoudness[ e->musicNotes.partIndex ] = 
-                loudnessFalloffFactor / 
-                ( loudnessFalloffFactor + 
-                  playerDistModified * playerDistModified );
-            }
-        double vectorCosine = (e->position.x - mPlayerPos.x) / playerDist;
-        partStereo[ e->musicNotes.partIndex ] = 
-            vectorCosine * stereoSpread + 0.5;
+        setPartLoudnessAndStereo( e->position, 
+                                  mPlayerPos,
+                                  e->musicNotes.partIndex,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
         }
     
     
@@ -3043,29 +3056,40 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
-        double playerDist = distance( mPlayerPos, p->position );
-        if( playerDist < 4 ) {
-            partLoudness[ p->musicNotes.partIndex ] = 1;
-            }
-        else {
-            double playerDistModified = playerDist - 4;
-            partLoudness[ p->musicNotes.partIndex ] = 
-                loudnessFalloffFactor / 
-                ( loudnessFalloffFactor + 
-                  playerDistModified * playerDistModified );
-            }
-        double vectorCosine = (p->position.x - mPlayerPos.x) / playerDist;
-        partStereo[ p->musicNotes.partIndex ] = 
-            vectorCosine * stereoSpread + 0.5;
+        setPartLoudnessAndStereo( p->position, 
+                                  mPlayerPos,
+                                  p->musicNotes.partIndex,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
         }
+
+
+    // loudness for closest rise markers
+    doublePair closestRisePosition = mRiseWorldPos;
+    
+    if( mSymmetrical && 
+        distance( mRiseWorldPos2, mPlayerPos ) < 
+        distance( mRiseWorldPos, mPlayerPos ) ) {
+        
+        closestRisePosition = mRiseWorldPos2;
+        }
+
+    setPartLoudnessAndStereo( closestRisePosition, 
+                              mPlayerPos,
+                              PARTS-3,
+                              loudnessFalloffFactor,
+                              stereoSpread );
+
+
     
     
     // further weight loudness based on edge fade, except for super-part
     // and player part
     
     
-    // now weight them all, except player part and harmony part
-    for( int p=0; p<PARTS-2; p++ ) {
+    // now weight them all, except rise marker part, player part,
+    // and harmony part
+    for( int p=0; p<PARTS-3; p++ ) {
         partLoudness[p] *= mLastComputedEdgeFade;
         }
 

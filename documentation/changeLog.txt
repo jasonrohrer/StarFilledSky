@@ -70,6 +70,8 @@ Version 4   ???
 
 --Made enemy health bar outline more faint.
 
+--Added musical sonar-type track to make finding rise marker easier.
+
 
 
 Version 3   2011-January-6
