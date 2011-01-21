@@ -1,5 +1,5 @@
 #include "fixedSpriteBank.h"
-#include "minorGems/game/gameGraphics.h"
+
 
 
 
@@ -26,6 +26,9 @@ const char *fixedSpriteFileNames[] = {
 
 static SpriteHandle spriteBank[ endSpriteID ];
 static Color blurredColors[ endSpriteID ];
+
+static SpriteHandle crosshairShadow;
+
 
 static char transparentLowerLeftCorner[ endSpriteID ];
 
@@ -99,6 +102,9 @@ void initSpriteBank() {
         
         }
     
+    crosshairShadow = 
+        generateShadowSprite( fixedSpriteFileNames[ crosshair ] );
+
     }
 
 
@@ -108,6 +114,7 @@ void freeSpriteBank() {
     for( int i=0; i<endSpriteID; i++ ) {
         freeSprite( spriteBank[ i ] );
         }
+    freeSprite( crosshairShadow );
     }
 
 
@@ -121,5 +128,63 @@ void drawSprite( spriteID inID, doublePair inCenter ) {
 Color getBlurredColor( spriteID inID ) {
     return blurredColors[ inID ];
     }
+
+
+void drawCrosshairShadow( doublePair inCenter ) {    
+    // scale up with linear filter
+    drawSprite( crosshairShadow, inCenter, 1.0/4 );
+    }
+
+
+
+#include "minorGems/graphics/filters/FastBlurFilter.h"
+
+
+SpriteHandle generateShadowSprite( const char *inSourceTGAFile ) {
+    Image *spriteImage = readTGAFile( inSourceTGAFile );
+
+    int w = spriteImage->getWidth();
+    int h = spriteImage->getHeight();
+
+    // lower left corner
+    Color transColor = spriteImage->getColor( (h-1) * w );
+
+
+    Image shadowImage( 16, 16, 4, true );
+        
+    double *shadowAlpha = shadowImage.getChannel( 3 );
+        
+
+    int halfW = w/2;
+    int halfH = h/2;
+        
+
+    // shadow image is centered at 1/4 size to be blown up by texture
+    // scaling later
+    for( int y=0; y<h; y++ ) {
+        for( int x=0; x<w; x++ ) {
+            Color pixelColor = spriteImage->getColor( y*w + x );
+                
+            if( !pixelColor.equals( &transColor ) ) {
+                    
+                // fill in shadow
+                shadowAlpha[ ((y-halfH) / 4 + halfH) * w + 
+                             ((x-halfW) / 4 + halfW) ] = 1;
+                }
+            }  
+        }
+
+    FastBlurFilter filter;
+
+    shadowImage.filter( &filter, 3 );
+    shadowImage.filter( &filter, 3 );
+    shadowImage.filter( &filter, 3 );
+
+
+    delete spriteImage;
+        
+    return fillSprite( &shadowImage, false );
+    }
+
 
 

@@ -3779,6 +3779,15 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // player shadow cut off by walls, too
             mPlayerSprite.drawShadow( mPlayerPos, shadowLevel );
 
+
+            // same with crosshair shadow, but only if we're not
+            // entering a power-up, so we don't draw it twice
+            if( ! ( mWindowSet && mWindowPosition.type == power ) ) {
+                setDrawColor( 1, 1, 1, shadowLevel );
+                drawCrosshairShadow( mMousePos );
+                }
+                
+
             // same with enemy shadows
             for( int i=0; i<mEnemies.size(); i++ ) {
                 Enemy *e = mEnemies.getElement( i );
@@ -3964,6 +3973,16 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
                 
                 drawPowerUpBorder( t->position, inFrameFade );
                 drawPowerUpCenter( t->power, t->position, inFade );
+
+                // mouse shadow on top of power up
+                if( overlieFade > 0 ) {
+                    toggleLinearMagFilter( true );
+                    setDrawColor( 1, 1, 1, 
+                                  0.75 * mLastComputedFastWindowFade );
+                    drawCrosshairShadow( mMousePos );
+                    toggleLinearMagFilter( false );
+                    }
+                
                 }
             
 

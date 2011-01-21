@@ -5,6 +5,9 @@
 #include "minorGems/game/doublePair.h"
 #include "minorGems/graphics/Color.h"
 
+#include "minorGems/game/gameGraphics.h"
+
+
 
 void initSpriteBank();
 
@@ -89,6 +92,16 @@ void drawSprite( spriteID inID, doublePair inCenter );
 
 
 Color getBlurredColor( spriteID inID );
+
+
+void drawCrosshairShadow( doublePair inCenter );
+
+
+
+// utility function
+// generates a 16x16 shadow sprite from any tga file with transparent 
+// background color
+SpriteHandle generateShadowSprite( const char *inSourceTGAFile );
 
 
 #endif

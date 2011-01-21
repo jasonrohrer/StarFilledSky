@@ -33,7 +33,7 @@ Version 4   ???
 
 --Added drop shadows along wall edges.
 
---Added drop shadows under player, enemies, and bullets.
+--Added drop shadows under player, enemies, bullets, and crosshair.
 
 --Changed so that current powers are carried down when intentionally entering
   something (though not when unintentionally knocked-down).

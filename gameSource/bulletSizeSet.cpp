@@ -5,6 +5,7 @@
 
 #include "minorGems/util/stringUtils.h"
 
+#include "fixedSpriteBank.h"
 
 
 int maxBulletSize = 7;
@@ -24,54 +25,12 @@ void initBulletSizeSet() {
     for( int i=0; i<maxBulletSize; i++ ) {
         
         char *fileName = autoSprintf( "bullet%d.tga", i + 1 );
-        
 
         spriteBank[ i ] = loadSprite( fileName );
 
-        Image *spriteImage = readTGAFile( fileName );
-        
+        shadowSpriteBank[ i ] = generateShadowSprite( fileName );
+
         delete [] fileName;
-
-        int w = spriteImage->getWidth();
-        int h = spriteImage->getHeight();
-
-        // lower left corner
-        Color transColor = spriteImage->getColor( (h-1) * w );
-
-
-        Image shadowImage( 16, 16, 4, true );
-        
-        double *shadowAlpha = shadowImage.getChannel( 3 );
-        
-
-        int halfW = w/2;
-        int halfH = h/2;
-        
-
-        // shadow image is centered at 1/4 size to be blown up by texture
-        // scaling later
-        for( int y=0; y<h; y++ ) {
-            for( int x=0; x<w; x++ ) {
-                Color pixelColor = spriteImage->getColor( y*w + x );
-                
-                if( !pixelColor.equals( &transColor ) ) {
-                    
-                    // fill in shadow
-                    shadowAlpha[ ((y-halfH) / 4 + halfH) * w + 
-                                 ((x-halfW) / 4 + halfW) ] = 1;
-                    }
-                }  
-            }
-
-
-        shadowImage.filter( &filter, 3 );
-        shadowImage.filter( &filter, 3 );
-        shadowImage.filter( &filter, 3 );
-
-
-        delete spriteImage;
-        
-        shadowSpriteBank[ i ] = fillSprite( &shadowImage, false );
         }
     
 
