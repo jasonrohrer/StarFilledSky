@@ -786,6 +786,9 @@ static char lastRiseFreezeFrameDrawn = false;
 static void drawFrameNoUpdate( char inUpdate );
 
 
+#include "minorGems/util/TranslationManager.h"
+
+#define trans(x) TranslationManager::translate(x)
 
 void drawFrame( char inUpdate ) {
 
@@ -797,6 +800,41 @@ void drawFrame( char inUpdate ) {
         drawFrameNoUpdate( false );
 
         currentLevel->freezeLevel( oldFrozen );
+        
+        
+        // draw pause screen
+        
+        setDrawColor( 1, 1, 1, 0.5 );
+        
+        drawSquare( lastScreenViewCenter, 1.05 * ( viewWidth / 4 ) );
+        
+
+        setDrawColor( 0, 0, 0, 0.5 );
+        
+        drawSquare( lastScreenViewCenter, viewWidth / 4 );
+        
+
+        setDrawColor( 1, 1, 1, 1 );
+
+        doublePair messagePos = lastScreenViewCenter;
+
+        messagePos.y += 4.5;
+
+        mainFont2->drawString( trans( "pauseMessage1" ), 
+                               messagePos, alignCenter );
+
+        
+        messagePos = lastScreenViewCenter;
+
+        messagePos.y -= 3.75 * ( viewWidth / 20 );
+        mainFont2->drawString( trans( "pauseMessage2" ), 
+                               messagePos, alignCenter );
+
+        messagePos.y -= 0.625 * (viewWidth / 20);
+        mainFont2->drawString( trans( "pauseMessage3" ), 
+                               messagePos, alignCenter );
+        
+
         return;
         }
     
@@ -1937,6 +1975,21 @@ extern char toggleEdgeFade;
 
 
 void keyDown( unsigned char inASCII ) {
+    
+    if( isPaused() ) {
+        // block general keyboard control during pause
+
+        switch( inASCII ) {
+            case 13:  // enter
+                // unpause
+                pauseGame();
+                break;
+            }
+    
+        return;
+        }
+    
+    
     switch( inASCII ) {
         case 'w':
         case 'W':

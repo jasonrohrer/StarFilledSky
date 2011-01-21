@@ -72,6 +72,8 @@ Version 4   ???
 
 --Added musical sonar-type drum track to make finding rise marker easier.
 
+--Added pause screen.
+
 
 
 Version 3   2011-January-6

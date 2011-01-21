@@ -9,6 +9,15 @@ tutorial_enter2 "Enter anything..."
 
 
 
+pauseMessage1 "Press ENTER to resume"
+
+
+pauseMessage2 "Press ESC or CTRL-Q to quit"
+
+pauseMessage3 "(saves a level number bookmark)"
+
+
+
 
 enterDemoCode  "Enter a demo code:"
 checkingCode  "Checking demo permissions with server..."
