@@ -11,10 +11,11 @@ tutorial_enter2 "Enter anything..."
 
 pauseMessage1 "Press ENTER to resume"
 
+pauseMessage2 "or type something for posterity:"
 
-pauseMessage2 "Press ESC or CTRL-Q to quit"
+pauseMessage3 "Press ESC or CTRL-Q to quit"
 
-pauseMessage3 "(saves a level number bookmark)"
+pauseMessage4 "(saves a level number bookmark)"
 
 
 

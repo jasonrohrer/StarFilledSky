@@ -191,6 +191,9 @@ Font *mainFont;
 
 Font *mainFont2;
 
+static char *currentUserTypedMessage = NULL;
+
+
 
 char *tutorialMoveKeys;
 
@@ -524,6 +527,11 @@ void freeFrameDrawer() {
     delete mainFont;
     delete mainFont2;
     
+    if( currentUserTypedMessage != NULL ) {
+        delete [] currentUserTypedMessage;
+        currentUserTypedMessage = NULL;
+        }
+    
 
     for( int i=0; i<levelRiseStack.size(); i++ ) {
         delete *( levelRiseStack.getElement( i ) );
@@ -786,9 +794,13 @@ static char lastRiseFreezeFrameDrawn = false;
 static void drawFrameNoUpdate( char inUpdate );
 
 
+
+
 #include "minorGems/util/TranslationManager.h"
 
 #define trans(x) TranslationManager::translate(x)
+
+
 
 void drawFrame( char inUpdate ) {
 
@@ -800,6 +812,7 @@ void drawFrame( char inUpdate ) {
         drawFrameNoUpdate( false );
 
         currentLevel->freezeLevel( oldFrozen );
+        
         
         
         // draw pause screen
@@ -822,21 +835,42 @@ void drawFrame( char inUpdate ) {
 
         mainFont2->drawString( trans( "pauseMessage1" ), 
                                messagePos, alignCenter );
-
         
-        messagePos = lastScreenViewCenter;
-
-        messagePos.y -= 3.75 * ( viewWidth / 20 );
+        messagePos.y -= 1.25 * (viewWidth / 20);
         mainFont2->drawString( trans( "pauseMessage2" ), 
                                messagePos, alignCenter );
 
-        messagePos.y -= 0.625 * (viewWidth / 20);
+        if( currentUserTypedMessage != NULL ) {
+            setDrawColor( 1, 1, 0.5, 1 );
+            
+            messagePos.y -= 1.25 * (viewWidth / 20);
+            mainFont2->drawString( currentUserTypedMessage, 
+                                   messagePos, alignCenter );
+            }
+        
+
+        setDrawColor( 1, 1, 1, 1 );
+
+        messagePos = lastScreenViewCenter;
+
+        messagePos.y -= 3.75 * ( viewWidth / 20 );
         mainFont2->drawString( trans( "pauseMessage3" ), 
+                               messagePos, alignCenter );
+
+        messagePos.y -= 0.625 * (viewWidth / 20);
+        mainFont2->drawString( trans( "pauseMessage4" ), 
                                messagePos, alignCenter );
         
 
         return;
         }
+
+    // reset user-typed message
+    if( currentUserTypedMessage != NULL ) {
+        delete [] currentUserTypedMessage;
+        currentUserTypedMessage = NULL;
+        }
+    
     
 
     if( !firstDrawFrameCalled ) {
@@ -1985,7 +2019,19 @@ void keyDown( unsigned char inASCII ) {
                 pauseGame();
                 break;
             }
-    
+        
+        char *oldMessage = currentUserTypedMessage;
+        
+        if( oldMessage != NULL ) {
+            
+            currentUserTypedMessage = autoSprintf( "%s%c", 
+                                                   oldMessage, inASCII );
+            delete [] oldMessage;
+            }
+        else {
+            currentUserTypedMessage = autoSprintf( "%c", inASCII );
+            }
+
         return;
         }
     

@@ -72,7 +72,7 @@ Version 4   ???
 
 --Added musical sonar-type drum track to make finding rise marker easier.
 
---Added pause screen.
+--Added pause screen where player can type a message.
 
 
 
