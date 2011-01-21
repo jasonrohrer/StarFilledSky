@@ -3077,7 +3077,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     setPartLoudnessAndStereo( closestRisePosition, 
                               mPlayerPos,
                               PARTS-3,
-                              loudnessFalloffFactor,
+                              // longer fall-off
+                              400,
                               stereoSpread );
 
 
