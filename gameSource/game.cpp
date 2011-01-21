@@ -2020,18 +2020,33 @@ void keyDown( unsigned char inASCII ) {
                 break;
             }
         
+        
         char *oldMessage = currentUserTypedMessage;
         
-        if( oldMessage != NULL ) {
-            
-            currentUserTypedMessage = autoSprintf( "%s%c", 
-                                                   oldMessage, inASCII );
-            delete [] oldMessage;
+        if( inASCII == 127 || inASCII == 8 ) {
+            // subtract from it
+            if( oldMessage != NULL ) {
+
+                int length = strlen( oldMessage );
+                
+                if( length > 0 ) {
+                    oldMessage[ length - 1 ] = '\0';
+                    }
+                }
             }
         else {
-            currentUserTypedMessage = autoSprintf( "%c", inASCII );
+            // add to it
+            if( oldMessage != NULL ) {
+                
+                currentUserTypedMessage = autoSprintf( "%s%c", 
+                                                       oldMessage, inASCII );
+                delete [] oldMessage;
+                }
+            else {
+                currentUserTypedMessage = autoSprintf( "%c", inASCII );
+                }
             }
-
+        
         return;
         }
     
