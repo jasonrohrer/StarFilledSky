@@ -64,6 +64,9 @@ Version 4   ???
 
 --Enemies now aim ahead of moving player (perfect aim).
 
+--Added discrete segments to enemy health bars.
+
+--Made enemy health bar fade-out framerate independent.
 
 
 

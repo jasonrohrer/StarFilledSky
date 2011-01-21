@@ -2992,7 +2992,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         
         if( e->healthBarFade > 0 ) {
-            e->healthBarFade -= 0.03;
+            e->healthBarFade -= 0.015 * frameRateFactor;
             if( e->healthBarFade < 0 ) {
                 e->healthBarFade = 0;
                 }
@@ -3286,26 +3286,92 @@ void Level::drawEnemies( double inFade, int inLayer,
                     fade = sin( e->healthBarFade * M_PI );
                     }
             
+                int maxHealth = getEnemyMaxHealth( e->powers );
+                
+
+                double segmentWidth = 0.25;
+
+                char drawSegments = false;
+                
+                double redBarWidth;
+
+                
+                if( maxHealth <= 3 ) {
+                    redBarWidth = segmentWidth * maxHealth;
+                    drawSegments = true;
+                    }
+                else if( maxHealth <= 4 ) {
+                    // same total width as length 3 bar, as transition
+                    segmentWidth = 0.1875;
+                    
+                    redBarWidth = segmentWidth * maxHealth;
+                    
+                    drawSegments = true;
+                    }
+                else if( maxHealth <= 8 ) {
+                    segmentWidth = 0.125;
+                    
+                    redBarWidth = segmentWidth * maxHealth;
+                    
+                    drawSegments = true;
+                    }
+                else {
+                    redBarWidth = segmentWidth * 4;
+                    }
+
+                double halfRedBarWidth = redBarWidth / 2;
+
+                double borderWidth = 1.0 / 16.0;
+                
+                double barBGHalfWidth = halfRedBarWidth + borderWidth;
 
                 setDrawColor( 0.25, 0.25, 0.25, fade );
-                drawRect( pos.x - 0.5, pos.y + 0.5, 
-                          pos.x + 0.5, pos.y + 0.25 );
+                drawRect( pos.x - barBGHalfWidth, pos.y + 0.5, 
+                          pos.x + barBGHalfWidth, pos.y + 0.25 );
             
                 float healthFraction = e->health / 
                     (float)getEnemyMaxHealth( e->powers );
             
+                // black behind empty part
                 setDrawColor( 0, 0, 0, fade );
-                drawRect( pos.x - 0.4375 + 0.875 * healthFraction, 
+                drawRect( pos.x - halfRedBarWidth + 
+                              redBarWidth * healthFraction, 
                           pos.y + 0.4375, 
-                          pos.x + 0.4375, 
+                          pos.x + halfRedBarWidth, 
                           pos.y + 0.3125 );
             
     
-                setDrawColor( 0.85, 0, 0, fade );
-                drawRect( pos.x -0.4375, 
-                          pos.y + 0.4375,
-                          pos.x - 0.4375 + 0.875 * healthFraction, 
-                          pos.y + 0.3125 );
+                if( !drawSegments ) {
+                    // solid red bar
+                    setDrawColor( 0.85, 0, 0, fade );
+                    drawRect( pos.x - halfRedBarWidth, 
+                              pos.y + 0.4375,
+                              pos.x - halfRedBarWidth + 
+                                 redBarWidth * healthFraction, 
+                              pos.y + 0.3125 );
+                    }
+                else {
+                    int numSegments = e->health;
+        
+                    char swapColor = true;
+        
+                    for( int i=0; i<numSegments; i++ ) {
+            
+                        if( swapColor ) {
+                            setDrawColor( 0.85, 0, 0, fade );
+                            }
+                        else {
+                            setDrawColor( 0.65, 0, 0, fade );
+                            }
+                        swapColor = !swapColor;
+            
+                        drawRect( pos.x - halfRedBarWidth + i * segmentWidth, 
+                                  pos.y + 0.4375,
+                                  pos.x - halfRedBarWidth + 
+                                    (i+1) * segmentWidth, 
+                                  pos.y + 0.3125 );
+                        }
+                    }
                 }
             }
         }
