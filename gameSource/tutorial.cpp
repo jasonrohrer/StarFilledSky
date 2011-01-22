@@ -305,19 +305,21 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         levelVisited[ inLevelRisenTo ] = true;
         }
 
+
+    // force these to end, and the next to start, based on level progression
+    // even if required actions (moving NSEW or shooting enemy) not performed
+    // by player.
+    // Avoid falling behind.
+    if( inLevelRisenTo > 0 && inLevelRisenTo < 6 ) {
+        tutorialsDone[ inLevelRisenTo - 1 ] = true;
+        if( inLevelRisenTo < 5 ) {
+            tutorialsReady[ inLevelRisenTo ] = true;
+            }
+        }
+    
+    
+
     switch( inLevelRisenTo ) {
-        case 1:
-            tutorialsReady[1] = true;
-            break;
-        case 2:
-            tutorialsReady[2] = true;
-            break;
-        case 3:
-            tutorialsReady[3] = true;
-            break;
-        case 4:
-            tutorialsReady[4] = true;
-            break;
         case 6:
             rigPowerUpsForTeaching = false;
             break;
@@ -330,19 +332,6 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         // risen out of whatever was entered,
         // or at least in a good spot to suggest "entering anything..."
         tutorialsReady[6] = true;
-        }
-
-    // FIXME:  tutorial 2 can be shown too briefly if you shoot
-    // your first thing right before rising out.
-
-    if( tutorialsDone[1] && inLevelRisenTo >= 3 && !tutorialsDone[2] ) {
-        tutorialsDone[2] = true;
-        }
-    else if( tutorialsDone[2] && inLevelRisenTo >= 4  && !tutorialsDone[3]  ) {
-        tutorialsDone[3] = true;
-        }
-    else if( tutorialsDone[3] && inLevelRisenTo >= 5  && !tutorialsDone[4] ) {
-        tutorialsDone[4] = true;
         }
     }
 
