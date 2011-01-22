@@ -23,28 +23,36 @@ extern char *tutorialMoveKeys;
 
 
 
-#define numTut 7
+#define numTut 8
 
 static const char *tutorialKeys[ numTut ] = 
 { "tutorial_move", "tutorial_shoot", "tutorial_structure", 
   "tutorial_tokens", "tutorial_useTokens", 
-  "tutorial_enter1", "tutorial_enter2" };
+  "tutorial_enter1", "tutorial_enter2", "tutorial_gather" };
 
 #define numEnterTut 3
 
 static const char *tutorialEnterKeys[ numEnterTut ] =
 { "tutorial_enter2_self", "tutorial_enter2_enemy", "tutorial_enter2_token" };
 
-itemType currentEnter2TutorialType = player;
+static const char *tutorialGatherKeys[ numEnterTut ] =
+{ "tutorial_gather_self", "tutorial_gather_enemy", "tutorial_gather_token" };
+
+int currentEnter2TutorialType = -1;
 
 
 // init all to false
 static char tutorialsDone[ numTut ] = { false, false, false, false,
-                                        false, false, false };
+                                        false, false, false, false };
 
 // init first to true, rest to false
 static char tutorialsReady[ numTut ] = { true, false, false, false,
-                                         false, false, false };
+                                         false, false, false, false };
+
+static char shouldSkipTutorial6 = false;
+static char showOneMoreGatherTutorial = false;
+
+static const char *nextGatherKey = NULL;
 
 
 
@@ -329,7 +337,8 @@ void drawTutorial( doublePair inScreenCenter ) {
                     // check if we're really, really done with it
                     
                     if( enteredTypes[0] && enteredTypes[1] &&
-                        enteredTypes[2] ) {
+                        enteredTypes[2] &&
+                        ! showOneMoreGatherTutorial ) {
                         // really done
                         
                         currentTut = -1;
@@ -342,9 +351,22 @@ void drawTutorial( doublePair inScreenCenter ) {
                     else {
                         // still some left to enter
                         currentTut = 6;
-                        tutorialsReady[6] = false;
-                        tutorialsDone[6] = false;
+                        //tutorialsReady[6] = false;
+                        tutorialsDone[6] = shouldSkipTutorial6;
                         
+                
+                        tutorialsDone[7] = false;
+                        //tutorialsReady[7] = true;
+                        tutorialsReady[7] = showOneMoreGatherTutorial;
+                        
+                        tutorialKeys[7] = nextGatherKey;
+
+                        if( shouldSkipTutorial6 ) {
+                            showOneMoreGatherTutorial = false;
+                            currentTut = 7;
+                            }
+
+
                         tutorialFade = 0;
                         tutorialOffset = 0;
                         }
@@ -433,23 +455,62 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             break;
         }
 
+    if( tutorialsDone[5] && inLevelRisenTo < 8 ) {
+        tutorialsReady[6] = false;
+        }
+    
     if( tutorialsDone[5] && inLevelRisenTo >= 8 ) {
         // risen out of whatever was entered,
         // or at least in a good spot to other enter options 
-        tutorialsReady[6] = true;
-        if( !enteredTypes[0] ) {
-            tutorialKeys[6] = tutorialEnterKeys[0];
-            currentEnter2TutorialType = player;
+        
+        if( ! enteredTypes[0] ||
+            ! enteredTypes[1] ||
+            ! enteredTypes[2] ) {
+            
+            
+            tutorialsReady[6] = true;
+            shouldSkipTutorial6 = false;
+        
+            if( !enteredTypes[0] ) {
+                tutorialKeys[6] = tutorialEnterKeys[0];
+                currentEnter2TutorialType = player;
+                }
+            else if( !enteredTypes[1] ) {
+                tutorialKeys[6] = tutorialEnterKeys[1];
+                currentEnter2TutorialType = enemy;
+                }
+            else if( !enteredTypes[2] ) {
+                tutorialKeys[6] = tutorialEnterKeys[2];
+                currentEnter2TutorialType = power;
+                }
             }
-        else if( !enteredTypes[1] ) {
-            tutorialKeys[6] = tutorialEnterKeys[1];
-            currentEnter2TutorialType = enemy;
-            }
-        else if( !enteredTypes[2] ) {
-            tutorialKeys[6] = tutorialEnterKeys[2];
-            currentEnter2TutorialType = power;
-            }
+        else {
+            // totally done
+            if( currentTut != -1 &&
+                !tutorialsReady[currentTut] ) {
+                currentTut = -1;
+
+                tutorialCompletedCount ++;
+                
+                SettingsManager::setSetting( "tutorialCompletedCount",
+                                             tutorialCompletedCount );
+                }
+            
+            tutorialsReady[6] = true;
+            tutorialsDone[6] = true;
+            shouldSkipTutorial6 = true;
+
+            tutorialsReady[7] = true;
+            tutorialsDone[7] = true;
+            }    
         }
+
+    if( tutorialsReady[7] ) {
+        tutorialsDone[7] = true;
+        shouldSkipTutorial6 = false;
+        }
+    
+
     }
 
 
@@ -480,14 +541,44 @@ void tutorialSomethingEntered( itemType inType ) {
         
         
         if( tutorialsReady[5] ) {
-            enteredTypes[ (int)inType ] = true;
 
             tutorialsDone[5] = true;
 
-            if( tutorialsReady[6] && inType == currentEnter2TutorialType ) {
+            if( tutorialsReady[6] && 
+                ( currentEnter2TutorialType == -1 ||
+                  inType == currentEnter2TutorialType ) ) {
                 // entered something else
-                tutorialsDone[6] = true;
+                
                 }
+
+            tutorialsDone[6] = true;
+            shouldSkipTutorial6 = true;
+            
+            if( tutorialsReady[7] ) {
+                // already showing a Gather tutorial
+                // end it
+                tutorialsDone[7] = true;
+                }
+            if( !enteredTypes[ inType ] ) {
+                // entered something new
+                tutorialsReady[7] = true;
+
+                if( tutorialsDone[7] ) {
+                    // wait before changing key
+                    nextGatherKey = 
+                        tutorialGatherKeys[inType];
+                    }
+                else {
+                    // change key immediately
+                    tutorialKeys[7] = 
+                        tutorialGatherKeys[inType];
+                    }
+                
+                showOneMoreGatherTutorial = true;
+                }
+
+            
+            enteredTypes[ (int)inType ] = true;
             }
         }
     }

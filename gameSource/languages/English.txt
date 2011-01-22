@@ -21,6 +21,12 @@ tutorial_enter2_self "You can also enter yourself."
 tutorial_enter2_enemy "You can also enter enemies."
 tutorial_enter2_token "You can also enter tokens."
 
+tutorial_gather "Gathered tokens..."
+
+
+tutorial_gather_self "Gathered tokens change the self that you're inside."
+tutorial_gather_enemy "Gathered tokens change the enemy that you're inside."
+tutorial_gather_token "Gathered tokens change the token that you're inside."
 
 
 
