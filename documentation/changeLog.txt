@@ -76,6 +76,8 @@ Version 4   ???
 
 --Changed to fade out music during pause to avoid abrupt drop-out on quit.
 
+--Improved tutorial that explains EVERYTHING.
+
 
 
 Version 3   2011-January-6
