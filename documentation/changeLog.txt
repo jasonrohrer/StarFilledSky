@@ -74,6 +74,8 @@ Version 4   ???
 
 --Added pause screen where player can type a message.
 
+--Changed to fade out music during pause to avoid abrupt drop-out on quit.
+
 
 
 Version 3   2011-January-6

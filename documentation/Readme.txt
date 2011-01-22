@@ -10,10 +10,10 @@ This game has music.  Please use speakers or headphones.
 
 == Controls ==
 
+Press P to pause the game.
+
 Press ESC or Ctrl-Q to exit the game.  This will save a numerical bookmark 
 where you will start at next time.
-
-Press P to pause and resume.
 
 
 Keyboard and mouse controls for the game are quite simple, and brief

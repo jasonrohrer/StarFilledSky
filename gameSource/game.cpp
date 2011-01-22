@@ -475,7 +475,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         }
     
     initMusicPlayer();
-
+    setMusicLoudness( 0 );
 
     /*
     // demo:  fill grid with random
@@ -806,6 +806,7 @@ static void drawFrameNoUpdate( char inUpdate );
 
 
 
+
 void drawFrame( char inUpdate ) {
 
     if( !inUpdate ) {
@@ -983,9 +984,44 @@ void drawFrame( char inUpdate ) {
                 }
             }
         
+        // fade out music during pause
+        
+        double oldLoudness = getMusicLoudness();
+        
+        if( oldLoudness > 0 ) {
+            
+            oldLoudness -= ( 1.0 / 60 ) * frameRateFactor;
+
+            if( oldLoudness < 0 ) {
+                oldLoudness = 0;
+                }
+            setMusicLoudness( oldLoudness );
+            }
+        
+
 
         return;
         }
+
+
+    // not paused
+
+    // fade music in
+        
+    double oldLoudness = getMusicLoudness();
+    
+    if( oldLoudness < 1 ) {
+            
+        oldLoudness += ( 1.0 / 60 ) * frameRateFactor;
+
+        if( oldLoudness > 1 ) {
+            oldLoudness = 1;
+            }
+        setMusicLoudness( oldLoudness );
+        }
+
+
+
 
     // reset user-typed message
     if( currentUserTypedMessage != NULL ) {
