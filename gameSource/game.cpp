@@ -193,6 +193,10 @@ Font *mainFont2;
 
 static char *currentUserTypedMessage = NULL;
 
+// for delete key repeat during message typing
+static int holdDeleteKeySteps = -1;
+static int stepsBetweenDeleteRepeat;
+
 
 
 char *tutorialMoveKeys;
@@ -954,6 +958,30 @@ void drawFrame( char inUpdate ) {
         messagePos.y -= 0.625 * (viewWidth / 20);
         mainFont2->drawString( trans( "pauseMessage4" ), 
                                messagePos, alignCenter );
+        
+
+        // handle delete key repeat
+        if( holdDeleteKeySteps > -1 ) {
+            holdDeleteKeySteps ++;
+            
+            if( holdDeleteKeySteps > stepsBetweenDeleteRepeat ) {        
+                // delete repeat
+
+                // subtract from messsage
+                if( currentUserTypedMessage != NULL ) {
+                    
+                    int length = strlen( currentUserTypedMessage );
+                    
+                    if( length > 0 ) {
+                        currentUserTypedMessage[ length - 1 ] = '\0';
+                        }
+                    }
+            
+
+                // shorter delay for subsequent repeats
+                stepsBetweenDeleteRepeat = (int)( 10 / frameRateFactor );
+                }
+            }
         
 
         return;
@@ -2127,6 +2155,9 @@ void keyDown( unsigned char inASCII ) {
                     oldMessage[ length - 1 ] = '\0';
                     }
                 }
+            holdDeleteKeySteps = 0;
+            // start with long delay until first repeat
+            stepsBetweenDeleteRepeat = (int)( 30 / frameRateFactor );
             }
         else if( inASCII >= 32 ) {
             // add to it
@@ -2212,6 +2243,20 @@ void keyDown( unsigned char inASCII ) {
 
 
 void keyUp( unsigned char inASCII ) {
+    if( isPaused() ) {
+        // block general keyboard control during pause
+        
+        if( inASCII == 127 || inASCII == 8 ) {
+            // delete no longer held
+            holdDeleteKeySteps = -1;
+            }
+    
+        return;
+        }
+    
+
+
+
     switch( inASCII ) {
         case 'w':
         case 'W':
