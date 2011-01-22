@@ -81,6 +81,9 @@ static char forceFreshStart = false;
 static char forceEnd = false;
 
 
+static char tutorialBriefMode = false;
+
+
 void forceTutorialEnd() {
     forceEnd = true;
     
@@ -165,12 +168,21 @@ void resetTutorial() {
     if( currentTut == -1 ) {
         // not running;
         
-
+        // skip all but control tutorials
+        tutorialBriefMode = true;
+        
         for( int i=0; i<numTut; i++ ) {
-            tutorialsDone[i] = false;
+            tutorialsDone[i] = true;
+            tutorialsReady[i] = true;
             }
-        tutorialsReady[0] = true;
 
+        
+        tutorialsDone[0] = false;
+        tutorialsDone[1] = false;
+        tutorialsDone[5] = false;
+        
+        
+        
 
         finalStepFrameCount = 0;
 
@@ -179,8 +191,9 @@ void resetTutorial() {
             moveKeysPressed[i] = false;
             }
         
+        // skip these tutorials
         for( int i=0; i<3; i++ ) {
-            enteredTypes[i] = false;
+            enteredTypes[i] = true;
             }
 
         tutorialOffset = 0;
@@ -429,6 +442,11 @@ static char levelVisited[7] = { true, false, false,
 
 void tutorialRiseHappened( int inLevelRisenTo ) {
 
+    if( tutorialBriefMode ) {
+        return;
+        }
+    
+
     if( inLevelRisenTo >=0 && inLevelRisenTo < 7 ) {
         levelVisited[ inLevelRisenTo ] = true;
         }
@@ -538,9 +556,12 @@ void tutorialEnemyHit() {
 
 // report enter function used
 void tutorialSomethingEntered( itemType inType ) {
-    if( tutorialsDone[4] ) {
-        
-        
+    if( tutorialBriefMode ) {
+        tutorialsDone[5] = true;
+        }
+    
+
+    if( tutorialsDone[4] ) {        
         
         if( tutorialsReady[5] ) {
 
@@ -586,7 +607,13 @@ void tutorialSomethingEntered( itemType inType ) {
     }
 
 
+
 void tutorialPlayerKnockedDown() {
+    if( tutorialBriefMode ) {
+        return;
+        }
+    
+
     if( tutorialsReady[7] ) {
         // already showing a Gather tutorial
         // end it
