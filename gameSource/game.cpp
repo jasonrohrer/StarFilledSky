@@ -800,9 +800,6 @@ static void drawFrameNoUpdate( char inUpdate );
 
 
 
-#include "minorGems/util/TranslationManager.h"
-
-#define trans(x) TranslationManager::translate(x)
 
 
 
@@ -838,11 +835,11 @@ void drawFrame( char inUpdate ) {
 
         messagePos.y += 4.5;
 
-        mainFont2->drawString( trans( "pauseMessage1" ), 
+        mainFont2->drawString( translate( "pauseMessage1" ), 
                                messagePos, alignCenter );
         
         messagePos.y -= 1.25 * (viewWidth / 20);
-        mainFont2->drawString( trans( "pauseMessage2" ), 
+        mainFont2->drawString( translate( "pauseMessage2" ), 
                                messagePos, alignCenter );
 
         if( currentUserTypedMessage != NULL ) {
@@ -953,11 +950,11 @@ void drawFrame( char inUpdate ) {
         messagePos = lastScreenViewCenter;
 
         messagePos.y -= 3.75 * ( viewWidth / 20 );
-        mainFont2->drawString( trans( "pauseMessage3" ), 
+        mainFont2->drawString( translate( "pauseMessage3" ), 
                                messagePos, alignCenter );
 
         messagePos.y -= 0.625 * (viewWidth / 20);
-        mainFont2->drawString( trans( "pauseMessage4" ), 
+        mainFont2->drawString( translate( "pauseMessage4" ), 
                                messagePos, alignCenter );
         
 
