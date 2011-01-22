@@ -1404,7 +1404,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     allowFollow = true;
                     }
 
-                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 3, 
+                // don't have any leveled-up enemies until all power-ups
+                // are available
+                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 5, 
                                                 true, allowFollow );
                 
                 if( p->containsFollow() ) {
