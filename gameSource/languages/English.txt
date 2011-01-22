@@ -3,6 +3,12 @@ tutorial_move "W A S D	to move"
 
 tutorial_shoot "MOUSE to aim and hold BUTTON to shoot"
 
+tutorial_structure "(A) is you.  (B) is what you are inside."
+
+tutorial_tokens "Collected tokens affect what you are inside"
+
+tutorial_useTokens "Now you can use what you picked up inside yourself"
+
 tutorial_enter1 "Hold SPACE and move MOUSE to enter things"
 
 tutorial_enter2 "Enter anything..."

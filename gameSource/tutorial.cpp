@@ -23,14 +23,18 @@ extern char *tutorialMoveKeys;
 
 
 
-#define numTut 4
+#define numTut 7
 
 static const char *tutorialKeys[ numTut ] = 
-{ "tutorial_move", "tutorial_shoot", "tutorial_enter1", "tutorial_enter2" };
+{ "tutorial_move", "tutorial_shoot", "tutorial_structure", 
+  "tutorial_tokens", "tutorial_useTokens", 
+  "tutorial_enter1", "tutorial_enter2" };
 
-static char tutorialsDone[ numTut ] = { false, false, false, false };
+// init all to false
+static char tutorialsDone[ numTut ] = { false };
 
-static char tutorialsReady[ numTut ] = { true, false, false, false };
+// init all to true
+static char tutorialsReady[ numTut ] = { true };
 
 
 
@@ -305,18 +309,40 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         case 1:
             tutorialsReady[1] = true;
             break;
-        case 7:
+        case 2:
+            tutorialsReady[2] = true;
+            break;
+        case 3:
+            tutorialsReady[3] = true;
+            break;
+        case 4:
+            tutorialsReady[4] = true;
+            break;
+        case 6:
             rigPowerUpsForTeaching = false;
             break;
         case 8:
-            tutorialsReady[2] = true;
+            tutorialsReady[5] = true;
             break;
         }
 
-    if( tutorialsDone[2] && inLevelRisenTo >= 8 ) {
+    if( tutorialsDone[5] && inLevelRisenTo >= 8 ) {
         // risen out of whatever was entered,
         // or at least in a good spot to suggest "entering anything..."
-        tutorialsReady[3] = true;
+        tutorialsReady[6] = true;
+        }
+
+    // FIXME:  tutorial 2 can be shown too briefly if you shoot
+    // your first thing right before rising out.
+
+    if( tutorialsDone[1] && inLevelRisenTo >= 3 && !tutorialsDone[2] ) {
+        tutorialsDone[2] = true;
+        }
+    else if( tutorialsDone[2] && inLevelRisenTo >= 4  && !tutorialsDone[3]  ) {
+        tutorialsDone[3] = true;
+        }
+    else if( tutorialsDone[3] && inLevelRisenTo >= 5  && !tutorialsDone[4] ) {
+        tutorialsDone[4] = true;
         }
     }
 
@@ -343,19 +369,19 @@ void tutorialEnemyHit() {
 
 // report enter function used
 void tutorialSomethingEntered( itemType inType ) {
-    if( tutorialsDone[1] ) {
+    if( tutorialsDone[4] ) {
         
         
         
-        if( tutorialsReady[2] ) {
+        if( tutorialsReady[5] ) {
             enteredTypes[ (int)inType ] = true;
 
-            tutorialsDone[2] = true;
+            tutorialsDone[5] = true;
 
             if( enteredTypes[0] && enteredTypes[1] && enteredTypes[2] ) {
                 // entered all three types after basic enter tutorial shown
                 // maybe don't need to show "enter anything..."
-                tutorialsDone[3] = true;
+                tutorialsDone[6] = true;
                 }
             }
         }

@@ -1568,7 +1568,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                 }
                             }
                         }
-                    else if( mLevelNumber == 5 || mLevelNumber == 6 ) {
+                    else if( mLevelNumber == 5 ) {
                         
                         char heartPlaced = false;
                         if( levelAlreadyVisited( mLevelNumber ) ) {
