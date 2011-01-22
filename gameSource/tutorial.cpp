@@ -594,6 +594,10 @@ void tutorialPlayerKnockedDown() {
         shouldSkipTutorial6 = false;
         tutorialsReady[6] = false;
         }
+    
+    if( tutorialsReady[4] ) {
+        tutorialsDone[4] = true;
+        }
     }
 
 
