@@ -844,9 +844,103 @@ void drawFrame( char inUpdate ) {
             setDrawColor( 1, 1, 0.5, 1 );
             
             messagePos.y -= 1.25 * (viewWidth / 20);
-            mainFont2->drawString( currentUserTypedMessage, 
-                                   messagePos, alignCenter );
+            
+            double maxWidth = 0.95 * ( viewWidth / 2 );
+            
+            int maxLines = 8;
+            int numLines = 0;
+
+            SimpleVector<char *> *tokens = 
+                tokenizeString( currentUserTypedMessage );
+            
+            while( tokens->size() > 0 && numLines < maxLines ) {
+                
+                // build up a a line
+
+                // always take at least first token, even if it is too long
+                char *currentLineString = 
+                    stringDuplicate( *( tokens->getElement( 0 ) ) );
+                
+                delete [] *( tokens->getElement( 0 ) );
+                tokens->deleteElement( 0 );
+
+                char *nextLongerString = NULL;
+                
+                if( tokens->size() > 0 ) {
+                    nextLongerString =
+                        autoSprintf( "%s %s ",
+                                     currentLineString,
+                                     *( tokens->getElement( 0 ) ) );
+                    }
+                
+                while( nextLongerString != NULL 
+                       && 
+                       mainFont2->measureString( nextLongerString ) 
+                       < maxWidth 
+                       &&
+                       tokens->size() > 0 ) {
+                    
+                    delete [] currentLineString;
+                    
+                    currentLineString = nextLongerString;
+                    
+                    nextLongerString = NULL;
+                    
+                    // token consumed
+                    delete [] *( tokens->getElement( 0 ) );
+                    tokens->deleteElement( 0 );
+                    
+                    if( tokens->size() > 0 ) {
+                    
+                        nextLongerString = autoSprintf(
+                            "%s%s ",
+                            currentLineString, *( tokens->getElement( 0 ) ) );
+                        }
+                    }
+                
+                if( nextLongerString != NULL ) {    
+                    delete [] nextLongerString;
+                    }
+                
+                while( mainFont2->measureString( currentLineString ) > 
+                       maxWidth ) {
+                    
+                    // single token that is too long by itself
+                    // simply trim it and discard part of it 
+                    // (user typing nonsense anyway)
+                    
+                    currentLineString[ strlen( currentLineString ) - 1 ] =
+                        '\0';
+                    }
+                
+                if( currentLineString[ strlen( currentLineString ) - 1 ] 
+                    == ' ' ) {
+                    // trim last bit of whitespace
+                    currentLineString[ strlen( currentLineString ) - 1 ] = 
+                        '\0';
+                    }
+
+                
+                mainFont2->drawString( currentLineString, 
+                                       messagePos, alignCenter );
+
+                delete [] currentLineString;
+                
+                messagePos.y -= 0.625 * (viewWidth / 20);
+
+                numLines++;
+                }   
+
+            // delete remaining, excess tokens that would go off the bottom
+            // of the screen
+            for( int i=0; i<tokens->size(); i++ ) {
+                delete [] *( tokens->getElement( i ) );
+                }
+            
+
+            delete tokens;
             }
+        
         
 
         setDrawColor( 1, 1, 1, 1 );
@@ -2034,7 +2128,7 @@ void keyDown( unsigned char inASCII ) {
                     }
                 }
             }
-        else {
+        else if( inASCII >= 32 ) {
             // add to it
             if( oldMessage != NULL ) {
                 
