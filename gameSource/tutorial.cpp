@@ -583,3 +583,16 @@ void tutorialSomethingEntered( itemType inType ) {
         }
     }
 
+
+void tutorialPlayerKnockedDown() {
+    if( tutorialsReady[7] ) {
+        // already showing a Gather tutorial
+        // end it
+        tutorialsDone[7] = true;
+        showOneMoreGatherTutorial = false;
+        shouldSkipTutorial6 = false;
+        tutorialsReady[6] = false;
+        }
+    }
+
+

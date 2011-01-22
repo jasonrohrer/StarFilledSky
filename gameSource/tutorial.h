@@ -47,6 +47,8 @@ void tutorialEnemyHit();
 // report enter function used
 void tutorialSomethingEntered( itemType inType );
 
+void tutorialPlayerKnockedDown();
+
 
 
 // has no effect in middle of running tutorial

@@ -1170,6 +1170,10 @@ void drawFrame( char inUpdate ) {
                 // don't count forced entering
                 tutorialSomethingEntered( enteringType );
                 }
+            else {
+                tutorialPlayerKnockedDown();
+                }
+            
             
             
             levelRiseStack.push_back( currentLevel );
