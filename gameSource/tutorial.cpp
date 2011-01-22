@@ -30,6 +30,14 @@ static const char *tutorialKeys[ numTut ] =
   "tutorial_tokens", "tutorial_useTokens", 
   "tutorial_enter1", "tutorial_enter2" };
 
+#define numEnterTut 3
+
+static const char *tutorialEnterKeys[ numEnterTut ] =
+{ "tutorial_enter2_self", "tutorial_enter2_enemy", "tutorial_enter2_token" };
+
+itemType currentEnter2TutorialType = player;
+
+
 // init all to false
 static char tutorialsDone[ numTut ] = { false, false, false, false,
                                         false, false, false };
@@ -316,13 +324,30 @@ void drawTutorial( doublePair inScreenCenter ) {
                     tutorialOffset = 0;
                     }
                 else {
-                    // totally done
-                    currentTut = -1;
+                    // just finished entering2
 
-                    tutorialCompletedCount ++;
+                    // check if we're really, really done with it
                     
-                    SettingsManager::setSetting( "tutorialCompletedCount",
-                                                 tutorialCompletedCount );
+                    if( enteredTypes[0] && enteredTypes[1] &&
+                        enteredTypes[2] ) {
+                        // really done
+                        
+                        currentTut = -1;
+                        
+                        tutorialCompletedCount ++;
+                    
+                        SettingsManager::setSetting( "tutorialCompletedCount",
+                                                     tutorialCompletedCount );
+                        }
+                    else {
+                        // still some left to enter
+                        currentTut = 6;
+                        tutorialsReady[6] = false;
+                        tutorialsDone[6] = false;
+                        
+                        tutorialFade = 0;
+                        tutorialOffset = 0;
+                        }
                     }
                 }
             }
@@ -410,8 +435,20 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
 
     if( tutorialsDone[5] && inLevelRisenTo >= 8 ) {
         // risen out of whatever was entered,
-        // or at least in a good spot to suggest "entering anything..."
+        // or at least in a good spot to other enter options 
         tutorialsReady[6] = true;
+        if( !enteredTypes[0] ) {
+            tutorialKeys[6] = tutorialEnterKeys[0];
+            currentEnter2TutorialType = player;
+            }
+        else if( !enteredTypes[1] ) {
+            tutorialKeys[6] = tutorialEnterKeys[1];
+            currentEnter2TutorialType = enemy;
+            }
+        else if( !enteredTypes[2] ) {
+            tutorialKeys[6] = tutorialEnterKeys[2];
+            currentEnter2TutorialType = power;
+            }
         }
     }
 
@@ -447,9 +484,8 @@ void tutorialSomethingEntered( itemType inType ) {
 
             tutorialsDone[5] = true;
 
-            if( enteredTypes[0] && enteredTypes[1] && enteredTypes[2] ) {
-                // entered all three types after basic enter tutorial shown
-                // maybe don't need to show "enter anything..."
+            if( tutorialsReady[6] && inType == currentEnter2TutorialType ) {
+                // entered something else
                 tutorialsDone[6] = true;
                 }
             }

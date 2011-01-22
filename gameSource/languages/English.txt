@@ -9,13 +9,18 @@ tutorial_insideMarker "[X]"
 
 tutorial_youMarker "[Y]"
 
-tutorial_tokens "Collected tokens affect what you are inside."
+tutorial_tokens "Gathered tokens affect what you are inside."
 
 tutorial_useTokens "Now you can use what you picked up inside yourself."
 
 tutorial_enter1 "Hold SPACE and move MOUSE to enter things."
 
 tutorial_enter2 "Enter anything..."
+
+tutorial_enter2_self "You can also enter yourself."
+tutorial_enter2_enemy "You can also enter enemies."
+tutorial_enter2_token "You can also enter tokens."
+
 
 
 
