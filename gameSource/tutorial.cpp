@@ -266,7 +266,8 @@ void drawTutorial( doublePair inScreenCenter ) {
         mainFont2->drawString( tutMessage, 
                                tutorialPos, alignCenter );
 
-        if( currentTut == 2 || currentTut == 3 || currentTut == 4 ) {
+        if( currentTut == 2 || currentTut == 3 || currentTut == 4 ||
+            currentTut == 7 ) {
             // draw brackets
             
             doublePair bracketPos = inScreenCenter;
@@ -284,9 +285,9 @@ void drawTutorial( doublePair inScreenCenter ) {
                 }
                         
             
-            if( currentTut == 2 || currentTut == 3 ) {
+            if( currentTut == 2 || currentTut == 3 || currentTut == 7 ) {
                 
-                // second bracket for both 2 and 3
+                // second bracket for 2, 3 and 7
                 bracketPos.x -= 6.25;
                 
                 const char *secondBracketMarker = "";
