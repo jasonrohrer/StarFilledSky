@@ -471,7 +471,8 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             
             tutorialsReady[6] = true;
             shouldSkipTutorial6 = false;
-        
+            tutorialsDone[6] = false;
+            
             if( !enteredTypes[0] ) {
                 tutorialKeys[6] = tutorialEnterKeys[0];
                 currentEnter2TutorialType = player;
