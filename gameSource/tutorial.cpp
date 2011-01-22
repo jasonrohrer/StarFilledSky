@@ -31,10 +31,12 @@ static const char *tutorialKeys[ numTut ] =
   "tutorial_enter1", "tutorial_enter2" };
 
 // init all to false
-static char tutorialsDone[ numTut ] = { false };
+static char tutorialsDone[ numTut ] = { false, false, false, false,
+                                        false, false, false };
 
-// init all to true
-static char tutorialsReady[ numTut ] = { true };
+// init first to true, rest to false
+static char tutorialsReady[ numTut ] = { true, false, false, false,
+                                         false, false, false };
 
 
 
@@ -174,6 +176,47 @@ void resetTutorial() {
 
 
 
+
+static void drawBracket( doublePair inPos, float inFade,
+                         const char *inLabelTransKey ) {
+
+    setDrawColor( 1, 1, 1, 0.5 * inFade );
+    drawSprite( bracket,  inPos );
+    
+
+    if( strcmp( inLabelTransKey, "" ) != 0 ) {
+        
+        doublePair markerPos = inPos;
+        markerPos.y -= 0.625;
+        
+        // one sub-pixel tweak
+        markerPos.x += 0.03125;
+        
+
+        doublePair markerShadowPos = markerPos;
+    
+        markerShadowPos.x += 0.0625;
+        markerShadowPos.y -= 0.0625;
+    
+        setDrawColor( 0, 0, 0, 0.5 * inFade );
+    
+        const char *markerString = translate( inLabelTransKey );
+    
+        if( false )mainFont2->drawString( markerString,
+                               markerShadowPos, alignCenter );
+    
+
+        setDrawColor( 1, 1, 1, 0.5 * inFade );
+    
+        mainFont2->drawString( markerString,
+                               markerPos, alignCenter );
+        }
+    
+    }
+
+
+
+
 void drawTutorial( doublePair inScreenCenter ) {
 
 
@@ -206,6 +249,43 @@ void drawTutorial( doublePair inScreenCenter ) {
         setDrawColor( 1, 1, 1, tutorialFade );
         mainFont2->drawString( tutMessage, 
                                tutorialPos, alignCenter );
+
+        if( currentTut == 2 || currentTut == 3 || currentTut == 4 ) {
+            // draw brackets
+            
+            doublePair bracketPos = inScreenCenter;
+            bracketPos.y += 6.1875;
+            bracketPos.x -= 0.4375;
+            
+            if( currentTut == 2 || currentTut == 4 ) {
+                const char *firstBracketMarker = "";
+
+                if( currentTut == 2 ) {
+                    firstBracketMarker = "tutorial_youMarker";
+                    }
+                
+                drawBracket( bracketPos, tutorialFade, firstBracketMarker );
+                }
+                        
+            
+            if( currentTut == 2 || currentTut == 3 ) {
+                
+                // second bracket for both 2 and 3
+                bracketPos.x -= 6.25;
+                
+                const char *secondBracketMarker = "";
+                
+                if( currentTut == 2 ) {
+                    // only mark it in 2
+                    secondBracketMarker = "tutorial_insideMarker";
+                    }
+
+                drawBracket( bracketPos, tutorialFade, secondBracketMarker );
+                }
+            
+            }
+
+        
 
         if( tutorialOffset < 1 ) {
         

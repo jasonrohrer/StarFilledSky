@@ -55,7 +55,9 @@ void freeSpriteBank();
     F(enemyBehaviorDodge), \
     F(enemyBehaviorFast), \
     F(enemyBehaviorRandom), \
-    F(enemyBehaviorCircle)
+    F(enemyBehaviorCircle), \
+    F(bracket) \
+
                 
 
 
