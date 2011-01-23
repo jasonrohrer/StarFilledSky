@@ -78,6 +78,9 @@ Version 4   ???
 
 --Improved tutorial that explains EVERYTHING.
 
+--Enter verb is disabled in tutorial mode until it is explained (avoid 
+  confusion).
+
 
 
 Version 3   2011-January-6

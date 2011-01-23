@@ -2244,7 +2244,9 @@ void keyDown( unsigned char inASCII ) {
             break;
         case ' ':
         case 13:  // enter
-            entering = true;
+            if( ! shouldEnterBeBlocked() ) {
+                entering = true;
+                }
             break;
         case 'm':
         case 'M': {
@@ -2358,7 +2360,9 @@ void specialKeyDown( int inKey ) {
             break;
         case MG_KEY_LSHIFT:
         case MG_KEY_RSHIFT:
-            entering = true;
+            if( ! shouldEnterBeBlocked() ) {
+                entering = true;
+                }
             break;
         }
 

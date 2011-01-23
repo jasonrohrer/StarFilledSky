@@ -76,6 +76,8 @@ static char *modifiedMoveTutorial = NULL;
 
 static char rigPowerUpsForTeaching = true;
 
+static char blockEnterForTeaching = true;
+
 
 static char forceFreshStart = false;
 static char forceEnd = false;
@@ -123,6 +125,7 @@ void checkTutorial() {
 
         currentTut = -1;
         rigPowerUpsForTeaching = false;
+        blockEnterForTeaching = false;
         
         // don't space out tutorial across levels if player
         // asks for tutorial to be replayed later
@@ -160,6 +163,11 @@ void freeTutorial() {
 
 char shouldPowerUpsBeRigged() {
     return rigPowerUpsForTeaching;
+    }
+
+
+char shouldEnterBeBlocked() {
+    return blockEnterForTeaching;
     }
 
 
@@ -471,6 +479,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             break;
         case 8:
             tutorialsReady[5] = true;
+            blockEnterForTeaching = false;
             break;
         }
 

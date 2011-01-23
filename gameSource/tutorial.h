@@ -26,6 +26,9 @@ void drawTutorial( doublePair inScreenCenter );
 // in a certain order on various levels
 char shouldPowerUpsBeRigged();
 
+char shouldEnterBeBlocked();
+
+
 // check if we're revisiting a level in tutorial mode
 // allows us to stick some hearts there to prevent user from getting stuck
 // only tracks levels 0 through 6
