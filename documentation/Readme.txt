@@ -4,26 +4,22 @@ An infinite, recursive, tactical shooter by Jason Rohrer
 http://insideastarfilledsky.net
 
 
-This game has music.  Please use speakers or headphones.
+This game has interactive music.  Please use speakers or headphones.
 
 
 
 == Controls ==
 
-Press P to pause the game.
-
-Press ESC or Ctrl-Q to exit the game.  This will save a numerical bookmark 
-where you will start at next time.
-
+Press P or ESC to pause the game and view a menu screen.
 
 Keyboard and mouse controls for the game are quite simple, and brief
 instructions are included in the game.  To view the instructions again
 at any time, hit the "T" key.
 
 
-If W,A,S,D keys are not comfortable for movement control on your keyboard,
+If [W,A,S,D] keys are not comfortable for movement control on your keyboard,
 edit "settings/upDownLeftRightKeys.ini" with a text editor to specify your
-own set of four keys.  Note that arrow keys and I,J,K,L are already 
+own set of four keys.  Note that the arrow keys and [I,J,K,L] are already 
 built-in as alternatives for movement.
 
 

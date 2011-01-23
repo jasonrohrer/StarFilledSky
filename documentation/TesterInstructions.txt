@@ -27,10 +27,16 @@ Every time you play the game, your whole experience is saved in the "recordedGam
 
 == Tutorial mode ==
 
-The game includes a simple tutorial that both explains the controls and gradually exposes you to additional gameplay mechanics.  I arrived at the "gradual exposure" method after watching my wife struggle with all the new gameplay concepts in the game---I just dumped her right into the full matrix of mechanics, and it was a train wreck.  Now the game takes the Braid approach, exposing you to even the most basic mechanics one at a time.
+The game includes a simple tutorial that both explains the controls and gradually exposes you to additional gameplay mechanics.
 
-It was more clear to my wife that way, but she was already tainted by her first play-through.  So I need feedback from others.  I don't want to spell every little thing out in the tutorial, because I think there is a certain joy in figuring out how stuff works for yourself, and I hope that the visual cues provide enough hints to bootstrap that process.  
+This is the FOURTH iteration of this tutorial.  At this point I've pretty much
+given up on the "show, don't tell" approach, and almost everything is explained
+at some point with brief text messages.  The v3 tutorial worked for some
+people, but it was a horrible experience for others.  I don't want anyone to
+fall through the cracks, and the point of this game is not to figure out
+the basic mechanics anyway (the point is what emerges AFTER you figure out the 
+basic mechanics).
 
-Is it clear enough?  Were you able to figure out the various gameplay systems?
+But even with this verbose approach, something might be missing.  Is it clear enough?  Were you able to figure out the various gameplay systems?
 
 After you go through that whole process once, subsequent games will jump right into the full matrix of mechanics from the start.
