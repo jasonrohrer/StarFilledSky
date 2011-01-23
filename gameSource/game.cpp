@@ -191,6 +191,8 @@ Font *mainFont;
 
 Font *mainFont2;
 
+static float pauseScreenFade = 0;
+
 static char *currentUserTypedMessage = NULL;
 
 // for delete key repeat during message typing
@@ -800,6 +802,148 @@ static void drawFrameNoUpdate( char inUpdate );
 
 
 
+static void drawPauseScreen() {
+    setDrawColor( 1, 1, 1, 0.5 * pauseScreenFade );
+        
+    drawSquare( lastScreenViewCenter, 1.05 * ( viewWidth / 4 ) );
+        
+
+    setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
+        
+    drawSquare( lastScreenViewCenter, viewWidth / 4 );
+        
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    doublePair messagePos = lastScreenViewCenter;
+
+    messagePos.y += 4.5;
+
+    mainFont2->drawString( translate( "pauseMessage1" ), 
+                           messagePos, alignCenter );
+        
+    messagePos.y -= 1.25 * (viewWidth / 20);
+    mainFont2->drawString( translate( "pauseMessage2" ), 
+                           messagePos, alignCenter );
+
+    if( currentUserTypedMessage != NULL ) {
+        setDrawColor( 1, 1, 0.5, pauseScreenFade );
+            
+        messagePos.y -= 1.25 * (viewWidth / 20);
+            
+        double maxWidth = 0.95 * ( viewWidth / 2 );
+            
+        int maxLines = 8;
+        int numLines = 0;
+
+        SimpleVector<char *> *tokens = 
+            tokenizeString( currentUserTypedMessage );
+            
+        while( tokens->size() > 0 && numLines < maxLines ) {
+                
+            // build up a a line
+
+            // always take at least first token, even if it is too long
+            char *currentLineString = 
+                stringDuplicate( *( tokens->getElement( 0 ) ) );
+                
+            delete [] *( tokens->getElement( 0 ) );
+            tokens->deleteElement( 0 );
+
+            char *nextLongerString = NULL;
+                
+            if( tokens->size() > 0 ) {
+                nextLongerString =
+                    autoSprintf( "%s %s ",
+                                 currentLineString,
+                                 *( tokens->getElement( 0 ) ) );
+                }
+                
+            while( nextLongerString != NULL 
+                   && 
+                   mainFont2->measureString( nextLongerString ) 
+                   < maxWidth 
+                   &&
+                   tokens->size() > 0 ) {
+                    
+                delete [] currentLineString;
+                    
+                currentLineString = nextLongerString;
+                    
+                nextLongerString = NULL;
+                    
+                // token consumed
+                delete [] *( tokens->getElement( 0 ) );
+                tokens->deleteElement( 0 );
+                    
+                if( tokens->size() > 0 ) {
+                    
+                    nextLongerString = autoSprintf(
+                        "%s%s ",
+                        currentLineString, *( tokens->getElement( 0 ) ) );
+                    }
+                }
+                
+            if( nextLongerString != NULL ) {    
+                delete [] nextLongerString;
+                }
+                
+            while( mainFont2->measureString( currentLineString ) > 
+                   maxWidth ) {
+                    
+                // single token that is too long by itself
+                // simply trim it and discard part of it 
+                // (user typing nonsense anyway)
+                    
+                currentLineString[ strlen( currentLineString ) - 1 ] =
+                    '\0';
+                }
+                
+            if( currentLineString[ strlen( currentLineString ) - 1 ] 
+                == ' ' ) {
+                // trim last bit of whitespace
+                currentLineString[ strlen( currentLineString ) - 1 ] = 
+                    '\0';
+                }
+
+                
+            mainFont2->drawString( currentLineString, 
+                                   messagePos, alignCenter );
+
+            delete [] currentLineString;
+                
+            messagePos.y -= 0.625 * (viewWidth / 20);
+
+            numLines++;
+            }   
+
+        // delete remaining, excess tokens that would go off the bottom
+        // of the screen
+        for( int i=0; i<tokens->size(); i++ ) {
+            delete [] *( tokens->getElement( i ) );
+            }
+            
+
+        delete tokens;
+        }
+        
+        
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    messagePos = lastScreenViewCenter;
+
+    messagePos.y -= 3.75 * ( viewWidth / 20 );
+    mainFont2->drawString( translate( "pauseMessage3" ), 
+                           messagePos, alignCenter );
+
+    messagePos.y -= 0.625 * (viewWidth / 20);
+    mainFont2->drawString( translate( "pauseMessage4" ), 
+                           messagePos, alignCenter );
+
+    }
+
+
 
 
 
@@ -817,145 +961,8 @@ void drawFrame( char inUpdate ) {
         
         
         
-        // draw pause screen
+        drawPauseScreen();
         
-        setDrawColor( 1, 1, 1, 0.5 );
-        
-        drawSquare( lastScreenViewCenter, 1.05 * ( viewWidth / 4 ) );
-        
-
-        setDrawColor( 0, 0, 0, 0.5 );
-        
-        drawSquare( lastScreenViewCenter, viewWidth / 4 );
-        
-
-        setDrawColor( 1, 1, 1, 1 );
-
-        doublePair messagePos = lastScreenViewCenter;
-
-        messagePos.y += 4.5;
-
-        mainFont2->drawString( translate( "pauseMessage1" ), 
-                               messagePos, alignCenter );
-        
-        messagePos.y -= 1.25 * (viewWidth / 20);
-        mainFont2->drawString( translate( "pauseMessage2" ), 
-                               messagePos, alignCenter );
-
-        if( currentUserTypedMessage != NULL ) {
-            setDrawColor( 1, 1, 0.5, 1 );
-            
-            messagePos.y -= 1.25 * (viewWidth / 20);
-            
-            double maxWidth = 0.95 * ( viewWidth / 2 );
-            
-            int maxLines = 8;
-            int numLines = 0;
-
-            SimpleVector<char *> *tokens = 
-                tokenizeString( currentUserTypedMessage );
-            
-            while( tokens->size() > 0 && numLines < maxLines ) {
-                
-                // build up a a line
-
-                // always take at least first token, even if it is too long
-                char *currentLineString = 
-                    stringDuplicate( *( tokens->getElement( 0 ) ) );
-                
-                delete [] *( tokens->getElement( 0 ) );
-                tokens->deleteElement( 0 );
-
-                char *nextLongerString = NULL;
-                
-                if( tokens->size() > 0 ) {
-                    nextLongerString =
-                        autoSprintf( "%s %s ",
-                                     currentLineString,
-                                     *( tokens->getElement( 0 ) ) );
-                    }
-                
-                while( nextLongerString != NULL 
-                       && 
-                       mainFont2->measureString( nextLongerString ) 
-                       < maxWidth 
-                       &&
-                       tokens->size() > 0 ) {
-                    
-                    delete [] currentLineString;
-                    
-                    currentLineString = nextLongerString;
-                    
-                    nextLongerString = NULL;
-                    
-                    // token consumed
-                    delete [] *( tokens->getElement( 0 ) );
-                    tokens->deleteElement( 0 );
-                    
-                    if( tokens->size() > 0 ) {
-                    
-                        nextLongerString = autoSprintf(
-                            "%s%s ",
-                            currentLineString, *( tokens->getElement( 0 ) ) );
-                        }
-                    }
-                
-                if( nextLongerString != NULL ) {    
-                    delete [] nextLongerString;
-                    }
-                
-                while( mainFont2->measureString( currentLineString ) > 
-                       maxWidth ) {
-                    
-                    // single token that is too long by itself
-                    // simply trim it and discard part of it 
-                    // (user typing nonsense anyway)
-                    
-                    currentLineString[ strlen( currentLineString ) - 1 ] =
-                        '\0';
-                    }
-                
-                if( currentLineString[ strlen( currentLineString ) - 1 ] 
-                    == ' ' ) {
-                    // trim last bit of whitespace
-                    currentLineString[ strlen( currentLineString ) - 1 ] = 
-                        '\0';
-                    }
-
-                
-                mainFont2->drawString( currentLineString, 
-                                       messagePos, alignCenter );
-
-                delete [] currentLineString;
-                
-                messagePos.y -= 0.625 * (viewWidth / 20);
-
-                numLines++;
-                }   
-
-            // delete remaining, excess tokens that would go off the bottom
-            // of the screen
-            for( int i=0; i<tokens->size(); i++ ) {
-                delete [] *( tokens->getElement( i ) );
-                }
-            
-
-            delete tokens;
-            }
-        
-        
-
-        setDrawColor( 1, 1, 1, 1 );
-
-        messagePos = lastScreenViewCenter;
-
-        messagePos.y -= 3.75 * ( viewWidth / 20 );
-        mainFont2->drawString( translate( "pauseMessage3" ), 
-                               messagePos, alignCenter );
-
-        messagePos.y -= 0.625 * (viewWidth / 20);
-        mainFont2->drawString( translate( "pauseMessage4" ), 
-                               messagePos, alignCenter );
         
 
         // handle delete key repeat
@@ -996,12 +1003,26 @@ void drawFrame( char inUpdate ) {
             }
         
 
+        // fade in pause screen
+        if( pauseScreenFade < 1 ) {
+            pauseScreenFade += ( 1.0 / 30 ) * frameRateFactor;
+        
+            if( pauseScreenFade > 1 ) {
+                pauseScreenFade = 1;
+                }
+            }
+        
 
         return;
         }
 
 
     // not paused
+
+    
+    
+    
+
 
     // fade music in
         
@@ -1017,14 +1038,27 @@ void drawFrame( char inUpdate ) {
         setMusicLoudness( oldLoudness );
         }
 
-
-
-
-    // reset user-typed message
-    if( currentUserTypedMessage != NULL ) {
-        delete [] currentUserTypedMessage;
-        currentUserTypedMessage = NULL;
+    // fade pause screen out
+    if( pauseScreenFade > 0 ) {
+        pauseScreenFade -= ( 1.0 / 30 ) * frameRateFactor;
+        
+        if( pauseScreenFade < 0 ) {
+            pauseScreenFade = 0;
+            }
         }
+
+
+
+
+    if( pauseScreenFade == 0 ) {
+        
+        // reset user-typed message
+        if( currentUserTypedMessage != NULL ) {
+            delete [] currentUserTypedMessage;
+            currentUserTypedMessage = NULL;
+            }
+        }
+    
     
     
 
@@ -1610,6 +1644,13 @@ void drawFrame( char inUpdate ) {
 
     // now draw stuff AFTER all updates
     drawFrameNoUpdate( true );
+
+
+
+    // draw tail end of pause screen, if it is still visible
+    if( pauseScreenFade > 0 ) {
+        drawPauseScreen();
+        }
     }
 
 
