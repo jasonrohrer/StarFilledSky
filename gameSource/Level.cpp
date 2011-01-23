@@ -1300,6 +1300,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mPlayerPos.y = 0;
         }
 
+    mPlayerStartPos = mPlayerPos;
+    
+
     mPlayerVelocity.x = 0;
     mPlayerVelocity.y = 0;
 
@@ -3092,6 +3095,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         closestRisePosition = mRiseWorldPos2;
         }
 
+    // keep normal stereo computation
     setPartLoudnessAndStereo( closestRisePosition, 
                               mPlayerPos,
                               PARTS-4,
@@ -3106,7 +3110,26 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                               400,
                               stereoSpread );
 
-
+    
+    // override loudness to make it linear instead
+    // (always a straight build up from start position to rise marker)
+    // build up hits max at distance 3 from rise marker
+    double riseBeatLoudness = 1 - 
+        ( ( distance( closestRisePosition, mPlayerPos ) - 3 ) / 
+          ( distance( closestRisePosition, mPlayerStartPos ) - 3 ) );
+    
+    if( riseBeatLoudness < 0 ) {
+        riseBeatLoudness = 0;
+        }
+    else if( riseBeatLoudness > 1 ) {
+        riseBeatLoudness = 1;
+        }
+    
+    
+    partLoudness[ PARTS-4 ] = riseBeatLoudness;
+    partLoudness[ PARTS-3 ] = riseBeatLoudness;
+    
+    
     
     
     // further weight loudness based on edge fade, except for super-part

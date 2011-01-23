@@ -423,6 +423,7 @@ class Level {
 
         doublePair mMousePos;
         char mEnteringMouse;
+        doublePair mPlayerStartPos;
         doublePair mPlayerPos;
         doublePair mPlayerVelocity;
 
