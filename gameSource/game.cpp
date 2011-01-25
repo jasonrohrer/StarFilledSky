@@ -284,9 +284,7 @@ static void populateLevelRiseStack() {
 
 
 int getStartingLevelNumber() {
-    SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
     
-    SettingsManager::setHashingOn( true );
     
     // defaults to 9 if hash fails and tutorial completed
 
@@ -298,6 +296,11 @@ int getStartingLevelNumber() {
     if( tutorialCompletedCount == 0 ) {
         defaultLevel = 0;
         }
+
+
+    SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+    SettingsManager::setHashingOn( true );
 
     int startingLevelNumber = 
         SettingsManager::getIntSetting( "startAtLevel", defaultLevel );
