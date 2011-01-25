@@ -309,7 +309,8 @@ void drawTutorial( doublePair inScreenCenter ) {
             if( currentTut == 2 || currentTut == 3 || currentTut == 7 ) {
                 
                 // second bracket for 2, 3 and 7
-                bracketPos.x -= 6.25;
+                bracketPos.x -= viewWidth / 2;
+                bracketPos.x += 3.75;
                 
                 const char *secondBracketMarker = "";
                 
