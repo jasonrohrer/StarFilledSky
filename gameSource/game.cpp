@@ -288,19 +288,21 @@ int getStartingLevelNumber() {
     
     SettingsManager::setHashingOn( true );
     
-    // defaults to 9 if hash fails
-    int startingLevelNumber = 
-        SettingsManager::getIntSetting( "startAtLevel", 9 );
-    
-    SettingsManager::setHashingOn( false );
+    // defaults to 9 if hash fails and tutorial completed
 
-    int completedCount = 
+    int defaultLevel = 9;
+    
+    int tutorialCompletedCount = 
         SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
 
-    if( completedCount < 1 ) {
-        startingLevelNumber = 0;
+    if( tutorialCompletedCount == 0 ) {
+        defaultLevel = 0;
         }
+
+    int startingLevelNumber = 
+        SettingsManager::getIntSetting( "startAtLevel", defaultLevel );
     
+    SettingsManager::setHashingOn( false );    
         
     return startingLevelNumber;    
     }
@@ -316,15 +318,19 @@ char *getCustomRecordedGameData() {
     int tutorialOn = 1;
 
     if( completedCount >= 1 ) {
-        // don't force player back through boring level 0
-        levelNumber = getStartingLevelNumber();
         tutorialOn = 0;
         }
+
+    // don't force player back through boring level 0, even if player
+    // has not completed tutorial
+    levelNumber = getStartingLevelNumber();
+
+    int tutorialBookmark = SettingsManager::getIntSetting( 
+        "tutorialBookmark", 0 );
     
     
-    
-    
-    char * result = autoSprintf( "%d_%d", levelNumber, tutorialOn );
+    char * result = autoSprintf( "%d_%d_%d", levelNumber, tutorialOn,
+                                 tutorialBookmark );
     
     return result;
     }
@@ -432,31 +438,32 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     // override default with data from recorded game
     int tutorialOn = 0;
-    int numRead = sscanf( inCustomRecordedGameData, "%d_%d", &levelNumber,
-                          &tutorialOn );
+    int tutorialBookmark = 0;
     
-    if( numRead != 2 ) {
+    int numRead = sscanf( inCustomRecordedGameData, "%d_%d_%d", &levelNumber,
+                          &tutorialOn, &tutorialBookmark );
+    
+    if( numRead != 3 ) {
+        // no recorded game?
 
-        int completedCount = 
-            SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
-
-        if( completedCount >= 1 ) {
-            // don't force player back through boring level 0
-            levelNumber = getStartingLevelNumber();
-            }
+        // don't force player back through boring level 0, even if
+        // player hasn't finished tutorial yet
+        levelNumber = getStartingLevelNumber();
         }
     else {
-        // override
+        // override with passed-in values
         
         // (keep levelNumber that was read from data)
 
         if( !tutorialOn ) {
             forceTutorialEnd();
             }
-        else {
+        else if( tutorialBookmark == 0 ) {
             forceTutorialFreshStart();
             }
-        
+        else {
+            forceTutorialBookmark( tutorialBookmark );
+            }        
         }
     
 

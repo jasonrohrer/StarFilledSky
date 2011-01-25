@@ -82,6 +82,10 @@ static char blockEnterForTeaching = true;
 static char forceFreshStart = false;
 static char forceEnd = false;
 
+static char forceBookmark = false;
+static int forcedBookmarkValue = 0;
+
+
 
 static char tutorialBriefMode = false;
 
@@ -106,6 +110,79 @@ void forceTutorialFreshStart() {
         }
     */    
     }
+
+
+void forceTutorialBookmark( int inBookmark ) {
+    forceBookmark = true;
+    forcedBookmarkValue = inBookmark;
+    }
+
+
+
+void loadTutorialBookmark() {
+    int bookmark = SettingsManager::getIntSetting( "tutorialBookmark",
+                                                   0 );
+
+    if( forceBookmark ) {
+        bookmark = forcedBookmarkValue;
+        }
+
+    
+    if( bookmark > 0 && bookmark < 5 ) {
+        currentTut = bookmark;
+        
+        for( int i=0; i<currentTut; i++ ) {
+            tutorialsDone[i] = true;
+            }
+        
+        if( currentTut == 4 ) {
+            // no sense in showing this one again, because it
+            // assumes player just picked up tokens in previous level
+            tutorialsDone[currentTut] = true;
+            currentTut++;
+            }
+        else {
+            tutorialsReady[currentTut] = true;
+            }
+        }
+    else if( bookmark >= 5 ) {
+        rigPowerUpsForTeaching = false;
+        
+        currentTut = 5;
+
+        for( int i=0; i<currentTut; i++ ) {
+            tutorialsDone[i] = true;
+            }
+        
+        // wait until player rises again before showing it
+        blockEnterForTeaching = true;
+        tutorialsReady[ currentTut ] = false;
+        }
+    }
+
+
+
+void saveTutorialBookmark() {
+
+    int spotToSave = currentTut;
+    
+    if( ! tutorialsReady[ currentTut ] ) {
+        // hasn't been shown yet
+    
+        // revert to re-showing previous tutorial one more time
+        spotToSave --;
+        
+        if( spotToSave < 0 ) {
+            spotToSave = 0;
+            }
+        }
+    
+
+    SettingsManager::setSetting( "tutorialBookmark",
+                                 spotToSave );
+    }
+
+
 
 
 void checkTutorial() {
@@ -134,6 +211,9 @@ void checkTutorial() {
         for( int i=0; i<numTut; i++ ) {
             tutorialsReady[i] = true;
             }        
+        }
+    else if( tutorialCompletedCount == 0 && !forceFreshStart && !forceEnd) {
+        loadTutorialBookmark();
         }
     }
 
@@ -399,6 +479,13 @@ void drawTutorial( doublePair inScreenCenter ) {
     
     
         if( tutorialFade == 1 ) {
+
+            if( tutorialOffset == 0 ) {
+                // save bookmark to this tutorial as soon
+                // as it has been full faded in
+                saveTutorialBookmark();
+                }
+            
         
             tutorialOffset += 0.0125 * frameRateFactor;
         
@@ -446,7 +533,10 @@ void tutorialKeyPressed( int inKeyNum ) {
 // start at level 0, so it is already visited
 static char levelVisited[7] = { true, false, false,
                                 false, false, false };
-                                
+                     
+
+static int baseLevelForEnterTutorials = 8;
+
 
 
 void tutorialRiseHappened( int inLevelRisenTo ) {
@@ -474,21 +564,23 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
     
     
 
-    switch( inLevelRisenTo ) {
-        case 6:
-            rigPowerUpsForTeaching = false;
-            break;
-        case 8:
-            tutorialsReady[5] = true;
-            blockEnterForTeaching = false;
-            break;
+    if( inLevelRisenTo >= 6 ) {
+        rigPowerUpsForTeaching = false;
+        }
+    if( inLevelRisenTo >= 8 ) {
+        
+        if( !tutorialsReady[5] ) {
+            baseLevelForEnterTutorials = inLevelRisenTo;
+            }
+        tutorialsReady[5] = true;
+        blockEnterForTeaching = false;
         }
 
-    if( tutorialsDone[5] && inLevelRisenTo < 8 ) {
+    if( tutorialsDone[5] && inLevelRisenTo < baseLevelForEnterTutorials ) {
         tutorialsReady[6] = false;
         }
     
-    if( tutorialsDone[5] && inLevelRisenTo >= 8 ) {
+    if( tutorialsDone[5] && inLevelRisenTo >= baseLevelForEnterTutorials ) {
         // risen out of whatever was entered,
         // or at least in a good spot to other enter options 
         

@@ -7,6 +7,9 @@
 void forceTutorialEnd();
 void forceTutorialFreshStart();
 
+void forceTutorialBookmark( int inBookmark );
+
+
 
 // check if tutorial should run, even if we're not ready to init it yet
 void checkTutorial();
