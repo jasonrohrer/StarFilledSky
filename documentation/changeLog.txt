@@ -2,6 +2,10 @@ Version 5
 
 --Fixed tutorial crash (thanks Stephen Lavelle).
 
+--Added support for non-4:3 monitors (without black bars on sides).
+
+
+
 
 Version 4   2011-January-23
 
