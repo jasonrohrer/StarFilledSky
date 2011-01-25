@@ -593,6 +593,10 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             shouldSkipTutorial6 = false;
             tutorialsDone[6] = false;
             
+            if( currentTut == 6 ) {
+                tutorialsReady[7] = false;
+                }
+            
             if( !enteredTypes[0] ) {
                 tutorialKeys[6] = tutorialEnterKeys[0];
                 currentEnter2TutorialType = player;
@@ -676,12 +680,19 @@ void tutorialSomethingEntered( itemType inType ) {
                 
                 }
 
-            tutorialsDone[6] = true;
+            if( currentTut == 6 &&
+                !tutorialsReady[6] ) {
+                // tutorial 6 not showing
+                // don't get stuck waiting for it to be ready
+                currentTut = 7;
+                }
+            
+
             shouldSkipTutorial6 = false;
 
             showOneMoreGatherTutorial = false;
 
-            if( tutorialsReady[7] ) {
+            if( currentTut == 7 && tutorialsReady[7] ) {
                 // already showing a Gather tutorial
                 // end it
                 tutorialsDone[7] = true;
@@ -689,6 +700,7 @@ void tutorialSomethingEntered( itemType inType ) {
                 }
             if( !enteredTypes[ inType ] ) {
                 // entered something new
+                tutorialsDone[6] = true;
                 tutorialsReady[7] = true;
                 
                 shouldSkipTutorial6 = true;
