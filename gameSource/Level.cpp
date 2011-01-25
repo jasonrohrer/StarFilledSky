@@ -1303,6 +1303,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mPlayerStartPos = mPlayerPos;
     
 
+
     mPlayerVelocity.x = 0;
     mPlayerVelocity.y = 0;
 
@@ -1314,6 +1315,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
     
     generateReproducibleData();
+
+
+    mStartStepsToRiseMarker = getStepsToRiseMarker( mPlayerStartPos );
+    mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
     
     
     // negative levels get harder and harder the farther you go down
@@ -1813,7 +1818,19 @@ void insertSearchRecord( pathSearchQueue *inQueue,
 
 
 GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld, 
-                         GridPos inGoal, double inMoveSpeed ) {
+                         GridPos inGoal, double inMoveSpeed,
+                         int *outNumStepsToGoal ) {
+
+    // watch for degen case where start and goal are equal
+    if( equal( inStart, inGoal ) ) {
+        
+        if( outNumStepsToGoal != NULL ) {
+            *outNumStepsToGoal = 0;
+            }
+        return inStart;
+        }
+        
+
 
     // insertion-sorted queue of records waiting to be searched
     pathSearchQueue recordsToSearch;
@@ -1993,6 +2010,10 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
             doneQueue.getElement( currentRecord->predIndex );
         
         }
+
+    if( outNumStepsToGoal != NULL ) {
+        *outNumStepsToGoal = finalPath.size() - 1;
+        }
     
 
     // found next step away from start
@@ -2150,6 +2171,31 @@ static void setPartLoudnessAndStereo( doublePair inSourcePos,
     partStereo[ inPartIndex ] = 
         vectorCosine * inStereoSpread + 0.5;
     }
+
+
+
+int Level::getStepsToRiseMarker( doublePair inPos ) {
+    // loudness for closest rise markers
+    doublePair closestRisePosition = mRiseWorldPos;
+    
+    GridPos closestRiseGrid = mRisePosition;
+
+    if( mSymmetrical && 
+        distance( mRiseWorldPos2, inPos ) < 
+        distance( mRiseWorldPos, inPos ) ) {
+        
+        closestRisePosition = mRiseWorldPos2;
+        closestRiseGrid = mRisePosition2;
+        }
+
+    int numStepsToRise;
+    
+    pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
+              0.01, &numStepsToRise );
+
+    return numStepsToRise;
+    }
+
 
 
 
@@ -2659,6 +2705,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     
     
     mNextEnemyPathFindIndex ++;
+    char enemyPathFindingDoneThisStep = false;
     if( mNextEnemyPathFindIndex > mEnemies.size() - 1 ) {
         mNextEnemyPathFindIndex = 0;
         }
@@ -2745,6 +2792,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     GridPos targetGridPos = pathFind( start, e->position,
                                                       goal,
                                                       moveSpeed );
+                    enemyPathFindingDoneThisStep = true;
                     
                     e->followNextWaypoint = 
                         sGridWorldSpots[ targetGridPos.y ]
@@ -3047,6 +3095,16 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         e->sprite->setLookVector( lookDir );
         }
 
+    
+    // only one path finding operation per timestep
+    if( ! enemyPathFindingDoneThisStep ) {
+        
+        // path find to rise marker outside audio lock, too
+        mLastComputedStepsToRiseMarker = getStepsToRiseMarker( mPlayerPos );
+        }
+    
+
+
 
     // don't roll this into enemy behavior loop.
     // don't want to block audio thread during enemy behavior calculations
@@ -3085,38 +3143,22 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         }
 
 
-    // loudness for closest rise markers
-    doublePair closestRisePosition = mRiseWorldPos;
     
-    if( mSymmetrical && 
-        distance( mRiseWorldPos2, mPlayerPos ) < 
-        distance( mRiseWorldPos, mPlayerPos ) ) {
-        
-        closestRisePosition = mRiseWorldPos2;
-        }
 
     // keep normal stereo computation
-    setPartLoudnessAndStereo( closestRisePosition, 
-                              mPlayerPos,
-                              PARTS-4,
-                              // longer fall-off
-                              400,
-                              stereoSpread );
-
-    setPartLoudnessAndStereo( closestRisePosition, 
-                              mPlayerPos,
-                              PARTS-3,
-                              // longer fall-off
-                              400,
-                              stereoSpread );
+    // always keep beat centered
+    partStereo[ PARTS-4 ] = 0.5;
+    partStereo[ PARTS-3 ] = 0.5;
+    
 
     
     // override loudness to make it linear instead
     // (always a straight build up from start position to rise marker)
     // build up hits max at distance 3 from rise marker
     double riseBeatLoudness = 1 - 
-        ( ( distance( closestRisePosition, mPlayerPos ) - 3 ) / 
-          ( distance( closestRisePosition, mPlayerStartPos ) - 3 ) );
+        ( ( (double)mLastComputedStepsToRiseMarker - 3 ) / 
+          ( (double)mStartStepsToRiseMarker - 3 ) );
+
     
     if( riseBeatLoudness < 0 ) {
         riseBeatLoudness = 0;

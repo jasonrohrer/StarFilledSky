@@ -305,9 +305,11 @@ class Level {
 
         GridPos getGridPos( doublePair inWorldPos );
 
+        // if outNumStepsToGoal pointer provided, call stops after
+        // this is computed
         GridPos pathFind( GridPos inStart, doublePair inStartWorld,
                           GridPos inGoal,
-                          double inMoveSpeed );
+                          double inMoveSpeed, int *outNumStepsToGoal = NULL );
         
         void generateEnemyDestructionSmoke( Enemy *inE );
         
@@ -427,6 +429,12 @@ class Level {
         doublePair mPlayerPos;
         doublePair mPlayerVelocity;
 
+
+        int mStartStepsToRiseMarker;
+        int mLastComputedStepsToRiseMarker;
+        int getStepsToRiseMarker( doublePair inPos );
+        
+        
 
         int mPlayerStepsUntilNextGlowTrail;
         
