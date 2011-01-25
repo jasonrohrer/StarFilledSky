@@ -9,6 +9,8 @@ Version 5
 --Rise marker sonar beat now modulated by path-finding distance instead of
   crow-flies distance for better feedback.
 
+--Raised loudness of rise marker beat and lowered loudness of player part.
+
 
 
 Version 4   2011-January-23

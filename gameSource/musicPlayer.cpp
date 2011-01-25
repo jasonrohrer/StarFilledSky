@@ -1123,7 +1123,7 @@ void setDefaultMusicSounds() {
     // rise marker parts
     
     // snare type sound
-    musicTimbres[20] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+    musicTimbres[20] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                    keyFrequency/2,
                                    heightPerTimbre, smoothedWhiteNoise,
                                    // extra periods per table so that
@@ -1139,7 +1139,7 @@ void setDefaultMusicSounds() {
 
 
     // kick drum type sound
-    musicTimbres[21] = new Timbre( sampleRate, 0.8 * loudnessPerTimbre,
+    musicTimbres[21] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
                                    keyFrequency,
                                    heightPerTimbre, kickWave,
                                    // extra periods in table to make room
@@ -1159,7 +1159,7 @@ void setDefaultMusicSounds() {
 
 
     // player part
-    musicTimbres[PARTS-2] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+    musicTimbres[PARTS-2] = new Timbre( sampleRate, 0.5 * loudnessPerTimbre,
                                         keyFrequency/2,
                                         heightPerTimbre, harmonicSine ); 
     
