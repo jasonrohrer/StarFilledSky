@@ -385,9 +385,18 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
-    setViewSize( viewWidth );
 
     viewHeightFraction = inHeight / (double)inWidth;
+
+    // monitors vary in width relative to height
+    // keep visible vertical view span constant (15)
+    // which is what it would be for a view width of 20 at a 4:3 aspect
+    // ratio
+    viewWidth = 15 * 1.0 / viewHeightFraction;
+    
+    
+    setViewSize( viewWidth );
+
 
     
     double mouseParam = 0.000976562;
