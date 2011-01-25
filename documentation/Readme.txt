@@ -17,10 +17,10 @@ instructions are included in the game.  To view the instructions again
 at any time, hit the "T" key.
 
 
-If [W,A,S,D] keys are not comfortable for movement control on your keyboard,
-edit "settings/upDownLeftRightKeys.ini" with a text editor to specify your
-own set of four keys.  Note that the arrow keys and [I,J,K,L] are already 
-built-in as alternatives for movement.
+If [W,A,S,D] keys are not comfortable for movement control on your 
+keyboard, edit "settings/upDownLeftRightKeys.ini" with a text editor to 
+specify your own set of four keys.  Note that the arrow keys and 
+[I,J,K,L] are already built-in as alternatives for movement.
 
 
 
