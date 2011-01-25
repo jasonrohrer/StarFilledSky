@@ -812,14 +812,17 @@ static void drawFrameNoUpdate( char inUpdate );
 
 
 static void drawPauseScreen() {
+
+    double viewHeight = viewHeightFraction * viewWidth;
+
     setDrawColor( 1, 1, 1, 0.5 * pauseScreenFade );
         
-    drawSquare( lastScreenViewCenter, 1.05 * ( viewWidth / 4 ) );
+    drawSquare( lastScreenViewCenter, 1.05 * ( viewHeight / 3 ) );
         
 
     setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
         
-    drawSquare( lastScreenViewCenter, viewWidth / 4 );
+    drawSquare( lastScreenViewCenter, viewHeight / 3 );
         
 
     setDrawColor( 1, 1, 1, pauseScreenFade );
@@ -831,16 +834,16 @@ static void drawPauseScreen() {
     mainFont2->drawString( translate( "pauseMessage1" ), 
                            messagePos, alignCenter );
         
-    messagePos.y -= 1.25 * (viewWidth / 20);
+    messagePos.y -= 1.25 * (viewHeight / 15);
     mainFont2->drawString( translate( "pauseMessage2" ), 
                            messagePos, alignCenter );
 
     if( currentUserTypedMessage != NULL ) {
         setDrawColor( 1, 1, 0.5, pauseScreenFade );
             
-        messagePos.y -= 1.25 * (viewWidth / 20);
+        messagePos.y -= 1.25 * (viewHeight / 15);
             
-        double maxWidth = 0.95 * ( viewWidth / 2 );
+        double maxWidth = 0.95 * ( viewHeight / 1.5 );
             
         int maxLines = 8;
         int numLines = 0;
@@ -921,7 +924,7 @@ static void drawPauseScreen() {
 
             delete [] currentLineString;
                 
-            messagePos.y -= 0.625 * (viewWidth / 20);
+            messagePos.y -= 0.625 * (viewHeight / 15);
 
             numLines++;
             }   
@@ -942,11 +945,11 @@ static void drawPauseScreen() {
 
     messagePos = lastScreenViewCenter;
 
-    messagePos.y -= 3.75 * ( viewWidth / 20 );
+    messagePos.y -= 3.75 * ( viewHeight / 15 );
     mainFont2->drawString( translate( "pauseMessage3" ), 
                            messagePos, alignCenter );
 
-    messagePos.y -= 0.625 * (viewWidth / 20);
+    messagePos.y -= 0.625 * (viewHeight / 15);
     mainFont2->drawString( translate( "pauseMessage4" ), 
                            messagePos, alignCenter );
 
