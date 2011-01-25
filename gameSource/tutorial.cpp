@@ -584,16 +584,21 @@ void tutorialSomethingEntered( itemType inType ) {
                 }
 
             tutorialsDone[6] = true;
-            shouldSkipTutorial6 = true;
-            
+            shouldSkipTutorial6 = false;
+
+            showOneMoreGatherTutorial = false;
+
             if( tutorialsReady[7] ) {
                 // already showing a Gather tutorial
                 // end it
                 tutorialsDone[7] = true;
+                tutorialsReady[6] = false;
                 }
             if( !enteredTypes[ inType ] ) {
                 // entered something new
                 tutorialsReady[7] = true;
+                
+                shouldSkipTutorial6 = true;
 
                 if( tutorialsDone[7] ) {
                     // wait before changing key
