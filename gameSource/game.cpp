@@ -1690,8 +1690,8 @@ void drawFrameNoUpdate( char inUpdate ) {
     double viewSize = viewWidth;
     
     // even multiple of 16
-    // each pixel in portal sprite maps to 4x4 block of tiles in sub-level
-    double zoomScale = 63;
+    // each pixel in portal sprite maps to 5x5 block of tiles in sub-level
+    double zoomScale = 79;
     double zoomScaleTweaked = zoomScale + 1;
     
     if( lastLevel != NULL ) {
