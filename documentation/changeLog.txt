@@ -4,6 +4,7 @@ Version 5
 
 --Added support for non-4:3 monitors (without black bars on sides).
 
+--Added tutorial bookmarking.
 
 
 
