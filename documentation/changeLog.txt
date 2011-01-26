@@ -4,6 +4,9 @@ Version 6
 
 --Fixed so that playback of recorded games doesn't save tutorial bookmarks.
 
+--Fixed bug that caused a tutorial message to be shown twice (thanks Allen).
+
+
 
 
 Version 5   2011-January-25

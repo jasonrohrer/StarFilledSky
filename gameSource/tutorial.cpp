@@ -636,6 +636,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
 
             tutorialsReady[7] = true;
             tutorialsDone[7] = true;
+            showOneMoreGatherTutorial = false;
             }    
         }
 
