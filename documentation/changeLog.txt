@@ -8,6 +8,7 @@ Version 6
 
 --Player-typed text on pause screen can now scroll off top of typing area.
 
+--Fixed text delete rate when user holds delete for longer than 5 seconds. 
 
 
 

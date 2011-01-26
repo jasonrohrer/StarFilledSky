@@ -1051,6 +1051,12 @@ void drawFrame( char inUpdate ) {
             if( holdDeleteKeySteps > stepsBetweenDeleteRepeat ) {        
                 // delete repeat
 
+                // platform layer doesn't receive event for key held down
+                // tell it we are still active so that it doesn't
+                // reduce the framerate during long, held deletes
+                wakeUpPauseFrameRate();
+                
+
                 // subtract from messsage
                 if( currentUserTypedMessage != NULL ) {
                     
