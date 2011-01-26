@@ -1,4 +1,4 @@
-Version 5
+Version 5   2011-January-25
 
 --Fixed tutorial crash (thanks Stephen Lavelle).
 
@@ -10,6 +10,7 @@ Version 5
   crow-flies distance for better feedback.
 
 --Raised loudness of rise marker beat and lowered loudness of player part.
+
 
 
 
