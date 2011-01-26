@@ -7,8 +7,6 @@ int main() {
     
     double yD = x * 3;
 
-    int yI = (int)(  yD );
-
     FILE *outFile = fopen( "testDouble.txt", "w" );
     
     fprintf( outFile, 
