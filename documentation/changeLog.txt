@@ -2,6 +2,8 @@ Version 6
 
 --Fixed a rounding error on some CPUs in screen aspect ratio calculation.
 
+--Fixed so that playback of recorded games doesn't save tutorial bookmarks.
+
 
 
 Version 5   2011-January-25

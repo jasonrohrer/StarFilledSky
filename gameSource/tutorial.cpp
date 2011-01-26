@@ -162,7 +162,15 @@ void loadTutorialBookmark() {
 
 
 
+extern char gamePlayingBack;
+
+
 void saveTutorialBookmark() {
+
+    if( gamePlayingBack ) {
+        return;
+        }
+    
 
     int spotToSave = currentTut;
     
