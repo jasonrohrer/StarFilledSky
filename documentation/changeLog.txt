@@ -6,6 +6,8 @@ Version 6
 
 --Fixed bug that caused a tutorial message to be shown twice (thanks Allen).
 
+--Player-typed text on pause screen can now scroll off top of typing area.
+
 
 
 

@@ -849,19 +849,22 @@ static void drawPauseScreen() {
                            messagePos, alignCenter );
 
     if( currentUserTypedMessage != NULL ) {
-        setDrawColor( 1, 1, 0.5, pauseScreenFade );
             
         messagePos.y -= 1.25 * (viewHeight / 15);
             
         double maxWidth = 0.95 * ( viewHeight / 1.5 );
             
         int maxLines = 8;
-        int numLines = 0;
 
         SimpleVector<char *> *tokens = 
             tokenizeString( currentUserTypedMessage );
+
+
+        // collect all lines before drawing them
+        SimpleVector<char *> lines;
+        
             
-        while( tokens->size() > 0 && numLines < maxLines ) {
+        while( tokens->size() > 0 ) {
                 
             // build up a a line
 
@@ -929,24 +932,78 @@ static void drawPauseScreen() {
                 }
 
                 
+            lines.push_back( currentLineString );
+            }   
+
+
+        // all tokens deleted above
+        delete tokens;
+
+
+        double messageLineSpacing = 0.625 * (viewHeight / 15);
+        
+        int numLinesToSkip = lines.size() - maxLines;
+
+        if( numLinesToSkip < 0 ) {
+            numLinesToSkip = 0;
+            }
+        
+        
+        for( int i=0; i<numLinesToSkip-1; i++ ) {
+            char *currentLineString = *( lines.getElement( i ) );
+            delete [] currentLineString;
+            }
+        
+        int lastSkipLine = numLinesToSkip - 1;
+
+        if( lastSkipLine >= 0 ) {
+            
+            char *currentLineString = *( lines.getElement( lastSkipLine ) );
+
+            // draw above and faded out somewhat
+
+            doublePair lastSkipLinePos = messagePos;
+            
+            lastSkipLinePos.y += messageLineSpacing;
+
+            setDrawColor( 1, 1, 0.5, 0.125 * pauseScreenFade );
+
+            mainFont2->drawString( currentLineString, 
+                                   lastSkipLinePos, alignCenter );
+
+            
+            delete [] currentLineString;
+            }
+        
+
+        setDrawColor( 1, 1, 0.5, pauseScreenFade );
+
+        for( int i=numLinesToSkip; i<lines.size(); i++ ) {
+            char *currentLineString = *( lines.getElement( i ) );
+            
+            if( false && lastSkipLine >= 0 ) {
+            
+                if( i == numLinesToSkip ) {
+                    // next to last
+                    setDrawColor( 1, 1, 0.5, 0.25 * pauseScreenFade );
+                    }
+                else if( i == numLinesToSkip + 1 ) {
+                    // next after that
+                    setDrawColor( 1, 1, 0.5, 0.5 * pauseScreenFade );
+                    }
+                else if( i == numLinesToSkip + 2 ) {
+                    // rest are full fade
+                    setDrawColor( 1, 1, 0.5, pauseScreenFade );
+                    }
+                }
+            
             mainFont2->drawString( currentLineString, 
                                    messagePos, alignCenter );
 
             delete [] currentLineString;
                 
-            messagePos.y -= 0.625 * (viewHeight / 15);
-
-            numLines++;
-            }   
-
-        // delete remaining, excess tokens that would go off the bottom
-        // of the screen
-        for( int i=0; i<tokens->size(); i++ ) {
-            delete [] *( tokens->getElement( i ) );
+            messagePos.y -= messageLineSpacing;
             }
-            
-
-        delete tokens;
         }
         
         
