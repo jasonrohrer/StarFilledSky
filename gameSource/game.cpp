@@ -702,7 +702,7 @@ void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
     else {
         // segments
       
-        int numSegments = (int)( inHealthFraction * inMaxSegments );
+        int numSegments = (int)( roundf( inHealthFraction * inMaxSegments ) );
         
         char swapColor = true;
         
