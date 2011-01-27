@@ -10,6 +10,8 @@ Version 6
 
 --Fixed text delete rate when user holds delete for longer than 5 seconds. 
 
+--Rise markers are now never placed on floor bottlenecks.
+
 
 
 Version 5   2011-January-25

@@ -314,6 +314,12 @@ class Level {
         void generateEnemyDestructionSmoke( Enemy *inE );
         
 
+        // find cut vertices in floor using Hopcroft and Tarjan's 1973 alg
+        void findCutPointsRecursive( int inCurrentIndex,
+                                     int *inDepths,
+                                     int *inLowpoints );
+        
+
 
         // generate data that can be reproduced from the seed
         void generateReproducibleData();
@@ -375,6 +381,11 @@ class Level {
         char *mWallFlagsIndexed;
         GridPos *mIndexToGridMap;
         doublePair **mGridWorldSpots;
+
+        // maps floor indices to flags, where true means that floor
+        // spot is a cut vertex that disconnects two parts of the graph
+        char *mCutVertexFloorFlags;
+        
         
         
         // to speed-up drawing of zoom-in,

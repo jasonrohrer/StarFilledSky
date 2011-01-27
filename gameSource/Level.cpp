@@ -208,6 +208,64 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
 
 
 
+void Level::findCutPointsRecursive( int inCurrentIndex,
+                                    int *inDepths,
+                                    int *inLowpoints ) {
+    // recurse on each neighbor
+
+    GridPos currentPos = mIndexToGridMap[ inCurrentIndex ];
+
+    GridPos neighbors[4] = { currentPos, currentPos, currentPos, currentPos };
+    
+    neighbors[0].x -= 1;
+    neighbors[1].x += 1;
+    neighbors[2].y -= 1;
+    neighbors[3].y += 1;
+    
+    for( int i=0; i<4; i++ ) {
+        
+        GridPos n = neighbors[i];
+
+        int nIndex = mSquareIndices[n.y][n.x];
+
+        if( mWallFlagsIndexed[ nIndex ] == 1 ) {
+            // a floor neighbor
+
+            // already seen?
+            if( inDepths[ nIndex ] != -1 ) {
+                if( inDepths[ nIndex ] < inLowpoints[ inCurrentIndex ] ) {
+                    
+                    // take this node's depth as new lowpoint for current node
+                    inLowpoints[ inCurrentIndex ] = inDepths[ nIndex ];
+                    }
+                }
+            else {
+                // new node!
+                
+                inDepths[ nIndex ] = inDepths[ inCurrentIndex ] + 1;
+                inLowpoints[ nIndex ] = inDepths[ inCurrentIndex ];
+
+                // recurse into it
+
+                findCutPointsRecursive( nIndex, inDepths, inLowpoints );
+                
+                // done exploring this neighbor.
+
+                if( inLowpoints[ nIndex ] == inDepths[ inCurrentIndex ] ) {
+                    // this node is a cut vertex!
+                    mCutVertexFloorFlags[ inCurrentIndex ] = true;
+                    }
+                else if( inLowpoints[ nIndex ] < 
+                         inLowpoints[ inCurrentIndex ] ) {
+                    
+                    // new lowpoint reachable from this node
+                    inLowpoints[ inCurrentIndex ] = inLowpoints[ nIndex ];
+                    }
+                    
+                }
+            }
+        }
+    }
 
 
 
@@ -634,6 +692,44 @@ void Level::generateReproducibleData() {
         }
     
 
+
+    // make indexed versions of these for quick looping later
+    mWallFlagsIndexed = new char[mNumUsedSquares];
+    mGridWorldSpots = new doublePair*[mNumUsedSquares];
+
+    for( int i=0; i<mNumUsedSquares; i++ ) {
+        int x = mIndexToGridMap[i].x;
+        int y = mIndexToGridMap[i].y;
+
+        mGridWorldSpots[ i ] = &( sGridWorldSpots[y][x] );
+
+        mWallFlagsIndexed[ i ] = mWallFlags[y][x];
+        }
+
+
+    mCutVertexFloorFlags = new char[ mNumFloorSquares ];
+    
+    memset( mCutVertexFloorFlags, false, mNumFloorSquares );
+    
+
+    int *depthInSearch = new int[ mNumFloorSquares ];
+    int *lowpointInSearch = new int[ mNumFloorSquares ];
+    
+    for( int i=0; i<mNumFloorSquares; i++ ) {
+        depthInSearch[i] = -1;
+        lowpointInSearch[i] = 0;
+        }
+    findCutPointsRecursive( 0, depthInSearch, lowpointInSearch );
+
+    delete [] depthInSearch;
+    delete [] lowpointInSearch;
+
+
+
+
+
+
+
     // place rise marker in random floor spot
     // also away from player
     char placed = false;
@@ -642,7 +738,9 @@ void Level::generateReproducibleData() {
         int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
         int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
 
-        if( mWallFlags[y][x] == 1 ) {
+        if( mWallFlags[y][x] == 1 &&
+            // never place rise markers on cut points.
+            ! mCutVertexFloorFlags[ mSquareIndices[y][x] ] ) {
         
             doublePair spot = sGridWorldSpots[y][x];
             
@@ -671,19 +769,8 @@ void Level::generateReproducibleData() {
 
 
 
-    // make indexed versions of these for quick looping later
-    mWallFlagsIndexed = new char[mNumUsedSquares];
-    mGridWorldSpots = new doublePair*[mNumUsedSquares];
-
-    for( int i=0; i<mNumUsedSquares; i++ ) {
-        int x = mIndexToGridMap[i].x;
-        int y = mIndexToGridMap[i].y;
-
-        mGridWorldSpots[ i ] = &( sGridWorldSpots[y][x] );
-
-        mWallFlagsIndexed[ i ] = mWallFlags[y][x];
-        }
-
+        
+    
 
 
 
@@ -1110,6 +1197,9 @@ void Level::freeReproducibleData() {
         delete [] mWallFlagsIndexed;
         delete [] mIndexToGridMap;
         delete [] mGridWorldSpots;
+
+        delete [] mCutVertexFloorFlags;
+        
 
         for( int i=0; i<mEnemies.size(); i++ ) {
             Enemy *e = mEnemies.getElement( i );
