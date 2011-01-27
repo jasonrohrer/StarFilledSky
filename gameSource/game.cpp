@@ -1243,6 +1243,11 @@ void drawFrame( char inUpdate ) {
         
         int parentEnemyDifficultyLevel = 0;
 
+        int parentTokenLevel = 0;
+        
+        int parentFloorTokenLevel = currentLevel->getFloorTokenLevel();
+        
+
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
             
@@ -1285,6 +1290,9 @@ void drawFrame( char inUpdate ) {
                 }
 
             insidePowerUp = true;
+            
+
+            parentTokenLevel = hitPowerUp.level;
             
             // one step deeper
             tokenRecursionDepth = currentLevel->getTokenRecursionDepth() + 1;
@@ -1387,7 +1395,9 @@ void drawFrame( char inUpdate ) {
                                       symmetrical, insideEnemy, insidePowerUp,
                                       knockDown,
                                       tokenRecursionDepth,
-                                      parentEnemyDifficultyLevel );
+                                      parentEnemyDifficultyLevel,
+                                      parentTokenLevel,
+                                      parentFloorTokenLevel );
 
             currentLevel->pushAllMusicIntoPlayer();
             

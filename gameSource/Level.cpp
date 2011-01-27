@@ -1233,7 +1233,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               char inInsidePowerUp,
               char inIsKnockDown,
               int inTokenRecursionDepth,
-              int inParentEnemyDifficultyLevel ) 
+              int inParentEnemyDifficultyLevel,
+              int inParentTokenLevel,
+              int inParentFloorTokenLevel ) 
         : mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
           mPlayerSprite( inPlayerColors ) {
@@ -1416,39 +1418,84 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     // negative levels get harder and harder the farther you go down
     int levelForDifficulty = mLevelNumber;
-    
     if( levelForDifficulty < 0 ) {
         levelForDifficulty *= -1;
         }
+
+    if( mInsideEnemy && 
+        levelForDifficulty < inParentEnemyDifficultyLevel - 1 ) {
     
+        // make sure level is appropriate difficulty based on enemy entered
 
-
-    int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
-
-    if( mInsideEnemy ) {
-        powerUpMaxLevel = inParentEnemyDifficultyLevel / POWER_SET_SIZE;
+        levelForDifficulty = inParentEnemyDifficultyLevel - 1;
         }
     
-    if( powerUpMaxLevel < 1 ) {
-        powerUpMaxLevel = 1;
-        }
 
 
     // levels get harder the deeper we go inside power-ups
+    int tokenFactor;
+
+    // or if we enter an already-high (or low!) token 
+    // (through previous leveling) that is inside player
+
+    if( !mInsideEnemy ) {
+        if( inInsidePowerUp ) {
+            // recursion depth equal to parent token level
+            tokenFactor = inParentTokenLevel;
+            }
+        else {
+            // no token factor
+            tokenFactor = 0;
+            }        
+        }
+    else {
+        // inside enemy
+        
+        
+        if( inInsidePowerUp ) {
+            
+            // can't get useful information from parent token, because it rises
+            // at higher levels and offers no indication of recursion depth
+            
+            // instead, use tracked recursion depth directly
+            tokenFactor = mTokenRecursionDepth;
+
+
+            if( inParentTokenLevel != inParentFloorTokenLevel ) {
+                // we're inside a token that is already lower or higher than
+                // it should be
+
+                // force an effectively deeper/shallower recursion when we
+                // re-enter a power-up that we've already entered before.
+                tokenFactor += 
+                    ( inParentFloorTokenLevel - inParentTokenLevel );
+
+                if( tokenFactor < 0 ) {
+                    tokenFactor = 0;
+                    }
+                }            
+            }
+        else {
+            // no token factor
+            tokenFactor = 0;
+            }    
+        }
     
-    if( mTokenRecursionDepth > 0 ) {
+    
+    if( tokenFactor > 0 ) {
         // raise difficulty level based on recursion into power-ups
 
-        levelForDifficulty = levelForDifficulty + mTokenRecursionDepth
-            + ( mTokenRecursionDepth - 1 ) * levelForDifficulty;
+        levelForDifficulty = levelForDifficulty + tokenFactor
+            + ( tokenFactor - 1 ) * levelForDifficulty;
 
-        if( mTokenRecursionDepth > 1 ) {
+        if( tokenFactor > 1 ) {
             levelForDifficulty += 
-                ( mTokenRecursionDepth - 2 ) * ( mTokenRecursionDepth - 2 );
+                ( tokenFactor - 2 ) * ( tokenFactor - 2 );
             }
         
         }
-    
+    printf( "Level number (%d) with difficulty (%d)\n", mLevelNumber,
+            levelForDifficulty );
 
 
 
@@ -1592,6 +1639,47 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // skip to power-up parts (even if not all enemy parts used above)
     musicPartIndex = 10;
     
+
+
+
+
+    mFloorTokenLevel = 1;
+    
+    if( mInsideEnemy ) {
+        // set to max, encourage sub-recursion into enemy        
+        
+        if( inInsidePowerUp ) {
+            // floor power-ups grow weaker by one step the deeper we
+            // recurse into sub-tokens
+
+            // this is based purely in parent token level
+            mFloorTokenLevel = inParentTokenLevel - 1;
+            }
+        else {
+            // just inside an enemy, set based on difficulty of parent only
+            mFloorTokenLevel = inParentEnemyDifficultyLevel / POWER_SET_SIZE;
+            }
+        
+        
+        if( mFloorTokenLevel < 1 ) {
+            mFloorTokenLevel = 1;
+            }
+        }
+    else {
+        // set to min... encourage more sub-recursion
+        // into self
+        mFloorTokenLevel = 1;
+
+        if( inInsidePowerUp ) {    
+            // floor power ups are stronger the deeper we recurse
+            // into a power-up
+            mFloorTokenLevel += inParentTokenLevel;
+            }
+        }
+
+
+
+
     
     
 
@@ -1655,34 +1743,17 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
             if( hit ) {
                 
 
-                PowerUp mainPower = getRandomPowerUp( powerUpMaxLevel );
+                PowerUp mainPower = getRandomPowerUp( mFloorTokenLevel );
                 
                 // NEVER put empty power-ups on the floor
                 while( mainPower.powerType == powerUpEmpty ) {
                     // re-roll
-                    mainPower = getRandomPowerUp( powerUpMaxLevel );
+                    mainPower = getRandomPowerUp( mFloorTokenLevel );
                     }
                 
-
-                if( mInsideEnemy ) {
-                    // set to max, encourage sub-recursion into enemy
-
-                    // floor power-ups grow weaker the deeper we
-                    // recurse into sub-tokens
-
-                    mainPower.level = powerUpMaxLevel - mTokenRecursionDepth;
-                    if( mainPower.level < 1 ) {
-                        mainPower.level = 1;
-                        }
-                    }
-                else {
-                    // set to min... encourage more sub-recursion
-                    // into self
-
-                    // floor power ups are stronger the deeper we recurse
-                    // into a power-up
-                    mainPower.level = 1 + mTokenRecursionDepth;
-                    }
+                // all tokens on floor have same, fixed level
+                mainPower.level = mFloorTokenLevel;
+                
 
 
                 if( shouldPowerUpsBeRigged() ) {
@@ -5175,6 +5246,11 @@ char Level::isInsideEnemy() {
 
 int Level::getTokenRecursionDepth() {
     return mTokenRecursionDepth;
+    }
+
+
+int Level::getFloorTokenLevel() {
+    return mFloorTokenLevel;
     }
 
 

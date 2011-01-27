@@ -146,7 +146,9 @@ class Level {
                char inInsidePowerUp=false,
                char inIsKnockDown=false,
                int inTokenRecursionDepth=0,
-               int inParentEnemyDifficultyLevel=0);
+               int inParentEnemyDifficultyLevel=0,
+               int inParentTokenLevel=0,
+               int inParentFloorTokenLevel=0 );
 
 
         ~Level();
@@ -290,6 +292,8 @@ class Level {
         
         int getTokenRecursionDepth();
         
+        int getFloorTokenLevel();
+
 
     protected:
         
@@ -350,6 +354,9 @@ class Level {
         
         int mTokenRecursionDepth;
         
+        int mFloorTokenLevel;
+        
+
 
         // background notes for this level
         NoteSequence mHarmonyNotes;        
