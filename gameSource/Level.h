@@ -144,7 +144,7 @@ class Level {
                char inInsideEnemy=false,
                char inInsidePowerUp=false,
                char inIsKnockDown=false,
-               int inParentPowerLevel=0 );
+               int inTokenRecursionDepth=0 );
 
 
         ~Level();
@@ -283,6 +283,8 @@ class Level {
 
         char isInsideEnemy();
         
+        int getTokenRecursionDepth();
+        
 
     protected:
         
@@ -340,6 +342,8 @@ class Level {
         char mSymmetrical;
 
         char mInsideEnemy;
+        
+        int mTokenRecursionDepth;
         
 
         // background notes for this level

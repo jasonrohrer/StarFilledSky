@@ -1239,7 +1239,7 @@ void drawFrame( char inUpdate ) {
         
         char insidePowerUp = false;
         
-        int parentPowerLevel = 0;
+        int tokenRecursionDepth = 0;
         
 
         if( playerHealth > 0 && 
@@ -1282,7 +1282,8 @@ void drawFrame( char inUpdate ) {
 
             insidePowerUp = true;
             
-            parentPowerLevel = hitPowerUp.level;
+            // one step deeper
+            tokenRecursionDepth = currentLevel->getTokenRecursionDepth() + 1;
 
             // could be inside a power-up sub-chain in an enemy
             insideEnemy = currentLevel->isInsideEnemy();
@@ -1381,7 +1382,7 @@ void drawFrame( char inUpdate ) {
                                       subLevelNumber,
                                       symmetrical, insideEnemy, insidePowerUp,
                                       knockDown,
-                                      parentPowerLevel );
+                                      tokenRecursionDepth );
 
             currentLevel->pushAllMusicIntoPlayer();
             
