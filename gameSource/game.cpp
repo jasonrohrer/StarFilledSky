@@ -1246,6 +1246,8 @@ void drawFrame( char inUpdate ) {
         int parentTokenLevel = 0;
         
         int parentFloorTokenLevel = currentLevel->getFloorTokenLevel();
+
+        int parentDifficultyLevel = currentLevel->getDifficultyLevel();
         
 
         if( playerHealth > 0 && 
@@ -1397,7 +1399,8 @@ void drawFrame( char inUpdate ) {
                                       tokenRecursionDepth,
                                       parentEnemyDifficultyLevel,
                                       parentTokenLevel,
-                                      parentFloorTokenLevel );
+                                      parentFloorTokenLevel,
+                                      parentDifficultyLevel );
 
             currentLevel->pushAllMusicIntoPlayer();
             

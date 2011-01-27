@@ -1235,7 +1235,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               int inTokenRecursionDepth,
               int inParentEnemyDifficultyLevel,
               int inParentTokenLevel,
-              int inParentFloorTokenLevel ) 
+              int inParentFloorTokenLevel,
+              int inParentLevelDifficulty ) 
         : mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
           mPlayerSprite( inPlayerColors ) {
@@ -1417,19 +1418,26 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     
     // negative levels get harder and harder the farther you go down
-    int levelForDifficulty = mLevelNumber;
-    if( levelForDifficulty < 0 ) {
-        levelForDifficulty *= -1;
+    mDifficultyLevel = mLevelNumber;
+    if( mDifficultyLevel < 0 ) {
+        mDifficultyLevel *= -1;
         }
 
-    if( mInsideEnemy && 
-        levelForDifficulty < inParentEnemyDifficultyLevel - 1 ) {
     
-        // make sure level is appropriate difficulty based on enemy entered
+    if( mDifficultyLevel < inParentLevelDifficulty - 1 ) {
+    
+        // make sure level is appropriately difficult based on parent level
 
-        levelForDifficulty = inParentEnemyDifficultyLevel - 1;
+        if( mLevelNumber >= 0 ) {
+            // no more that one step less difficult
+            mDifficultyLevel = inParentLevelDifficulty - 1;
+            }
+        else {
+            // no less than one step more difficult
+            mDifficultyLevel = inParentLevelDifficulty + 1;
+            }
         }
-    
+
 
 
     // levels get harder the deeper we go inside power-ups
@@ -1485,17 +1493,22 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     if( tokenFactor > 0 ) {
         // raise difficulty level based on recursion into power-ups
 
-        levelForDifficulty = levelForDifficulty + tokenFactor
-            + ( tokenFactor - 1 ) * levelForDifficulty;
+        mDifficultyLevel = mDifficultyLevel + tokenFactor
+            + ( tokenFactor - 1 ) * mDifficultyLevel;
 
         if( tokenFactor > 1 ) {
-            levelForDifficulty += 
+            mDifficultyLevel += 
                 ( tokenFactor - 2 ) * ( tokenFactor - 2 );
             }
         
         }
+
+
+    
+
+
     printf( "Level number (%d) with difficulty (%d)\n", mLevelNumber,
-            levelForDifficulty );
+            mDifficultyLevel );
 
 
 
@@ -1505,14 +1518,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // fewer enemies in lower levels
     int maxNumEnemies = 10;
 
-    if( levelForDifficulty * 2 < 10 ) {
-        maxNumEnemies = levelForDifficulty * 2;
+    if( mDifficultyLevel * 2 < 10 ) {
+        maxNumEnemies = mDifficultyLevel * 2;
         }
     
     // count number of enemies that have follow behavior
     int followCount = 0;
     
-    int maxFollowCount = ( levelForDifficulty - 12 ) / 2;
+    int maxFollowCount = ( mDifficultyLevel - 12 ) / 2;
     
     if( maxFollowCount < 1 ) {
         maxFollowCount = 1;
@@ -1583,7 +1596,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 // don't have any leveled-up enemies until all power-ups
                 // are available
-                int enemyDifficultyLevel = levelForDifficulty - 5;
+                int enemyDifficultyLevel = mDifficultyLevel - 5;
                 
                 PowerUpSet *p = new PowerUpSet( enemyDifficultyLevel, 
                                                 true, allowFollow );
@@ -5251,6 +5264,11 @@ int Level::getTokenRecursionDepth() {
 
 int Level::getFloorTokenLevel() {
     return mFloorTokenLevel;
+    }
+
+
+int Level::getDifficultyLevel() {
+    return mDifficultyLevel;
     }
 
 
