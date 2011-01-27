@@ -7,3 +7,25 @@ gnuplot> plot [x=0:20] g(x), f(x), x/(x+20)
 gnuplot> plot [x=0:20] g(x), f(x), x/(x+20), x/(x+3)
 gnuplot> plot [x=0:20] g(x), f(x), x/(x+20), x/(x+3), x/(x+2), x/(x+5)
 gnuplot> plot [x=0:30] g(x), f(x), x/(x+20), x/(x+3), x/(x+2), x/(x+5) 
+
+
+
+
+// testing power curves for sub-token recursion
+
+// basic formula, where l is base level difficulty (perhaps based on 
+// parent level difficulty) and p is token factor
+
+f(l,p) = l + p + (p>0?((p-1) * l):0) + ( p>1?(p-2)**2:0 )
+
+// alternate basic formula
+g(l,p) = l + p + (p>1? 0.5 * l:0)
+
+
+// recursive formula that applies f (because l is based on parent difficulty
+// level)
+h(l,p) = (p > 0 )? f( h(l+1, p-1) - 1, p ) : l
+
+
+// recurisive formula for alternate
+k(l,p) = (p > 0 )? g( k(l+1, p-1) - 1, p ) : l
