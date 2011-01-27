@@ -90,6 +90,7 @@ typedef struct Enemy {
         RandomWalkerSet walkerSet;
         NoteSequence musicNotes;
         int stepsUntilNextGlowTrail;
+        int difficultyLevel;
     } Enemy;
 
 
@@ -144,7 +145,8 @@ class Level {
                char inInsideEnemy=false,
                char inInsidePowerUp=false,
                char inIsKnockDown=false,
-               int inTokenRecursionDepth=0 );
+               int inTokenRecursionDepth=0,
+               int inParentEnemyDifficultyLevel=0);
 
 
         ~Level();
@@ -250,6 +252,9 @@ class Level {
         doublePair getEnemyCenter( int inEnemyIndex );
         doublePair getPowerUpCenter( int inPowerUpIndex );
         
+        int getEnemyDifficultyLevel( int inEnemyIndex );
+        
+
 
         // freeze level step updates during drawLevel
         void freezeLevel( char inFrozen );

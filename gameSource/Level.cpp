@@ -1232,7 +1232,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               int inLevelNumber, char inSymmetrical, char inInsideEnemy,
               char inInsidePowerUp,
               char inIsKnockDown,
-              int inTokenRecursionDepth ) 
+              int inTokenRecursionDepth,
+              int inParentEnemyDifficultyLevel ) 
         : mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
           mPlayerSprite( inPlayerColors ) {
@@ -1425,7 +1426,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
 
     if( mInsideEnemy ) {
-        powerUpMaxLevel = (levelForDifficulty - 3) / POWER_SET_SIZE;
+        powerUpMaxLevel = inParentEnemyDifficultyLevel / POWER_SET_SIZE;
         }
     
     if( powerUpMaxLevel < 1 ) {
@@ -1535,7 +1536,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 // don't have any leveled-up enemies until all power-ups
                 // are available
-                PowerUpSet *p = new PowerUpSet( levelForDifficulty - 5, 
+                int enemyDifficultyLevel = levelForDifficulty - 5;
+                
+                PowerUpSet *p = new PowerUpSet( enemyDifficultyLevel, 
                                                 true, allowFollow );
                 
                 if( p->containsFollow() ) {
@@ -1559,7 +1562,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             walkerSet,
                             generateRandomNoteSequence( musicPartIndex ),
                             (int)( stepsBetweenGlowTrails / 
-                                   frameRateFactor ) };
+                                   frameRateFactor ),
+                            enemyDifficultyLevel };
                 
                 musicPartIndex ++;
                 
@@ -4285,6 +4289,13 @@ doublePair Level::getEnemyCenter( int inEnemyIndex ) {
 doublePair Level::getPowerUpCenter( int inPowerUpIndex ) {
     PowerUpToken *t = mPowerUpTokens.getElement( inPowerUpIndex );
     return t->position;
+    }
+
+
+
+int Level::getEnemyDifficultyLevel( int inEnemyIndex ) {
+    Enemy *e = mEnemies.getElement( inEnemyIndex );
+    return e->difficultyLevel;
     }
 
 
