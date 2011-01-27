@@ -51,6 +51,7 @@
 #include "RandomWalkerSet.h"
 #include "tutorial.h"
 #include "musicPlayer.h"
+#include "numerals.h"
 
 
 // should we output level maps as images?
@@ -152,6 +153,9 @@ const char *getDemoCodeServerURL() {
 
 
 int levelNumber = 0;
+
+int extraDifficultyNumber = 0;
+
 Color levelNumberColor( 1, 1, 1, .5 );
 
 
@@ -420,7 +424,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     setCursorVisible( false );
-    grabInput( true );
+    grabInput( false );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -764,6 +768,15 @@ static void saveLevelBookmark() {
 static void updateLevelNumber() {
     levelNumber = currentLevel->getLevelNumber();
     
+    int levelDifficulty = currentLevel->getDifficultyLevel();
+    
+    extraDifficultyNumber = 0;
+    
+    if( levelDifficulty != (int)fabs( levelNumber ) ) {
+        extraDifficultyNumber = levelDifficulty - (int)fabs( levelNumber );
+        }
+
+
     LevelPositionInfo *lastLevelInfo = 
         levelRisePositionInfoStack.getElement( 
             levelRisePositionInfoStack.size() - 1 );
@@ -2037,6 +2050,13 @@ void drawFrameNoUpdate( char inUpdate ) {
     mainFont->drawString( levelString, levelNumberPos, alignRight );
     
     delete [] levelString;
+
+    if( extraDifficultyNumber > 0 ) {
+        setDrawColor( 1, 0, 0, 0.75 );
+
+        drawNumber( extraDifficultyNumber, levelNumberPos, alignRight, true );
+        }
+    
 
 
     Level *nextAbove = getNextAbove();

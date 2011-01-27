@@ -5,7 +5,8 @@
 #include "minorGems/util/stringUtils.h"
 
 
-static SpriteHandle spriteMap[10];
+// 11th is plus sign
+static SpriteHandle spriteMap[11];
 
 
 void initNumerals( const char *inTGAFileName ) {
@@ -16,9 +17,9 @@ void initNumerals( const char *inTGAFileName ) {
     int subW = spriteImage->getWidth();
 
     // extra pixel spaces between numerals
-    int subH = ( spriteImage->getHeight() + 1 ) / 10;
+    int subH = ( spriteImage->getHeight() + 1 ) / 11;
     
-    for( int i=0; i<10; i++ ) {
+    for( int i=0; i<11; i++ ) {
         
         Image *numImage = spriteImage->getSubImage( 0, i * subH,
                                                     subW, subH - 1 );
@@ -32,7 +33,7 @@ void initNumerals( const char *inTGAFileName ) {
 
 
 void freeNumerals() {
-    for( int i=0; i<10; i++ ) {
+    for( int i=0; i<11; i++ ) {
         freeSprite( spriteMap[i] );
         }
     }
@@ -44,18 +45,32 @@ static double scaleFactor = 1 / 16.0;
 
 static void drawNumeral( char inNumeral, doublePair inPosition ) {
     
-    drawSprite( spriteMap[ (int)inNumeral - 48 ], inPosition,
-                scaleFactor );
+    if( inNumeral == '+' ) {
+        drawSprite( spriteMap[ 10 ], inPosition,
+                    scaleFactor );
+        }
+    else {
+        drawSprite( spriteMap[ (int)inNumeral - 48 ], inPosition,
+                    scaleFactor );
+        }
+    
     }
 
 
 
 
 void drawNumber( unsigned int inNumber, doublePair inPosition, 
-                 TextAlignment inAlign ) {
+                 TextAlignment inAlign, char inPrependPlus ) {
     
 
-    char *numberString = autoSprintf( "%d", inNumber );
+    char *numberString;
+    
+    if( inPrependPlus ) {
+        numberString = autoSprintf( "+%d", inNumber );
+        }
+    else {
+        numberString = autoSprintf( "%d", inNumber );
+        }
     
     int numNumerals = strlen( numberString );
     
