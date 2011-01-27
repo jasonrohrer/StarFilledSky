@@ -1239,6 +1239,8 @@ void drawFrame( char inUpdate ) {
         
         char insidePowerUp = false;
         
+        int parentPowerLevel = 0;
+        
 
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
@@ -1266,8 +1268,10 @@ void drawFrame( char inUpdate ) {
             enteringType = power;
             symmetrical = false;
 
-            spriteID powerType = 
-                currentLevel->peekPowerUp( mousePos ).powerType;
+            PowerUp hitPowerUp = 
+                currentLevel->peekPowerUp( mousePos );
+
+            spriteID powerType = hitPowerUp.powerType;
 
             if( powerType == powerUpEmpty ||
                 powerType == powerUpBulletSize ||
@@ -1278,6 +1282,8 @@ void drawFrame( char inUpdate ) {
 
             insidePowerUp = true;
             
+            parentPowerLevel = hitPowerUp.level;
+
             // could be inside a power-up sub-chain in an enemy
             insideEnemy = currentLevel->isInsideEnemy();
             }
@@ -1374,7 +1380,8 @@ void drawFrame( char inUpdate ) {
                                       setPlayerPowers,
                                       subLevelNumber,
                                       symmetrical, insideEnemy, insidePowerUp,
-                                      knockDown );
+                                      knockDown,
+                                      parentPowerLevel );
 
             currentLevel->pushAllMusicIntoPlayer();
             

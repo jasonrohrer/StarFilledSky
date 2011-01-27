@@ -143,7 +143,8 @@ class Level {
                char inSymmetrical=true,
                char inInsideEnemy=false,
                char inInsidePowerUp=false,
-               char inIsKnockDown=false );
+               char inIsKnockDown=false,
+               int inParentPowerLevel=0 );
 
 
         ~Level();

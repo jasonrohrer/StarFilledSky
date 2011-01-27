@@ -1231,7 +1231,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               PowerUpSet *inSetPlayerPowers,
               int inLevelNumber, char inSymmetrical, char inInsideEnemy,
               char inInsidePowerUp,
-              char inIsKnockDown ) 
+              char inIsKnockDown,
+              int inParentPowerLevel ) 
         : mLevelNumber( inLevelNumber ), 
           mPlayerSprite( inPlayerColors ) {
 
@@ -1546,7 +1547,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     
 
-    // no power ups in lowest levels
+    // no power ups in lowest levels during tutorial
     int maxNumPowerUps = 10;
     
     if( mLevelNumber < 3 && shouldPowerUpsBeRigged() ) {
@@ -1639,7 +1640,25 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 if( mInsideEnemy ) {
                     // set to max, encourage sub-recursion into enemy
-                    mainPower.level = powerUpMaxLevel;    
+                    mainPower.level = powerUpMaxLevel;
+                    
+                    if( inInsidePowerUp ) {
+                        // inside power-up inside an enemy
+
+                        // floor power-ups grow weaker the deeper we
+                        // recurse
+
+                        mainPower.level = inParentPowerLevel - 1;
+                        
+                        if( mainPower.level < 1 ) {
+                            mainPower.level = 1;
+                            }
+                        }    
+                    }
+                else if( inInsidePowerUp ) {
+                    // floor power ups are stronger the deeper we recurse
+                    // into a power-up
+                    mainPower.level = 1 + inParentPowerLevel;
                     }
                 else {
                     // set to min... encourage more sub-recursion
