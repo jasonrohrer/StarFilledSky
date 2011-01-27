@@ -1493,12 +1493,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     if( tokenFactor > 0 ) {
         // raise difficulty level based on recursion into power-ups
 
-        mDifficultyLevel = mDifficultyLevel + tokenFactor
-            + ( tokenFactor - 1 ) * mDifficultyLevel;
-
+        mDifficultyLevel = mDifficultyLevel + tokenFactor;
+        
         if( tokenFactor > 1 ) {
-            mDifficultyLevel += 
-                ( tokenFactor - 2 ) * ( tokenFactor - 2 );
+            mDifficultyLevel += mDifficultyLevel / 2;
             }
         
         }
