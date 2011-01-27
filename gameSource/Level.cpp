@@ -1421,6 +1421,53 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
 
 
+    int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
+
+    if( mInsideEnemy ) {
+        powerUpMaxLevel = (levelForDifficulty - 3) / POWER_SET_SIZE;
+        }
+    
+    if( powerUpMaxLevel < 1 ) {
+        powerUpMaxLevel = 1;
+        }
+
+
+    // levels get harder the deeper we go inside power-ups
+    int powerUpFactor = 0;
+    
+    if( mInsideEnemy && inInsidePowerUp ) {
+        
+        // difference between what 
+        int whatFloorPowerShouldBe = powerUpMaxLevel;
+        int whatFloorPowersAre = inParentPowerLevel - 1;
+        
+        powerUpFactor = whatFloorPowerShouldBe - whatFloorPowersAre;
+        
+        if( powerUpFactor < 0 ) {
+            powerUpFactor = 0;
+            }
+        }
+    else if( inInsidePowerUp ) {
+        // player power
+        powerUpFactor = inParentPowerLevel;
+        }
+    
+    if( powerUpFactor > 0 ) {
+        // raise difficulty level based on recursion into power-ups
+
+        levelForDifficulty = levelForDifficulty + powerUpFactor
+            + ( powerUpFactor - 1 ) * levelForDifficulty;
+
+        if( powerUpFactor > 1 ) {
+            levelForDifficulty += 
+                ( powerUpFactor - 2 ) * ( powerUpFactor - 2 );
+            }
+        
+        }
+    
+
+
+
     // place enemies in random floor spots
     int musicPartIndex = 0;
     
@@ -1558,15 +1605,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // skip to power-up parts (even if not all enemy parts used above)
     musicPartIndex = 10;
     
-    int powerUpMaxLevel = levelForDifficulty / POWER_SET_SIZE;
-
-    if( mInsideEnemy ) {
-        powerUpMaxLevel = (levelForDifficulty - 3) / POWER_SET_SIZE;
-        }
     
-    if( powerUpMaxLevel < 1 ) {
-        powerUpMaxLevel = 1;
-        }
     
 
     // for tutorial-mode power-up placement
