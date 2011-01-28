@@ -17,6 +17,8 @@ Version 6
 
 --Added a shadow over bottom of dashboard to push it back visually.
 
+--Player-typed messages on pause screen are now cumulative.
+
 
 
 Version 5   2011-January-25

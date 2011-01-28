@@ -884,7 +884,7 @@ static void drawPauseScreen() {
         
             
         while( tokens->size() > 0 ) {
-                
+
             // build up a a line
 
             // always take at least first token, even if it is too long
@@ -893,17 +893,35 @@ static void drawPauseScreen() {
                 
             delete [] *( tokens->getElement( 0 ) );
             tokens->deleteElement( 0 );
+            
+            
 
+            
+
+            
+            char nextTokenIsFileSeparator = false;
+                
             char *nextLongerString = NULL;
                 
             if( tokens->size() > 0 ) {
-                nextLongerString =
-                    autoSprintf( "%s %s ",
-                                 currentLineString,
-                                 *( tokens->getElement( 0 ) ) );
+
+                char *nextToken = *( tokens->getElement( 0 ) );
+                
+                if( nextToken[0] == 28 ) {
+                    nextTokenIsFileSeparator = true;
+                    }
+                else {
+                    nextLongerString =
+                        autoSprintf( "%s %s ",
+                                     currentLineString,
+                                     *( tokens->getElement( 0 ) ) );
+                    }
+                
                 }
                 
-            while( nextLongerString != NULL 
+            while( !nextTokenIsFileSeparator 
+                   &&
+                   nextLongerString != NULL 
                    && 
                    mainFont2->measureString( nextLongerString ) 
                    < maxWidth 
@@ -922,9 +940,17 @@ static void drawPauseScreen() {
                     
                 if( tokens->size() > 0 ) {
                     
-                    nextLongerString = autoSprintf(
-                        "%s%s ",
-                        currentLineString, *( tokens->getElement( 0 ) ) );
+                    char *nextToken = *( tokens->getElement( 0 ) );
+                
+                    if( nextToken[0] == 28 ) {
+                        nextTokenIsFileSeparator = true;
+                        }
+                    else {
+                        nextLongerString =
+                            autoSprintf( "%s%s ",
+                                         currentLineString,
+                                         *( tokens->getElement( 0 ) ) );
+                        }
                     }
                 }
                 
@@ -952,6 +978,18 @@ static void drawPauseScreen() {
 
                 
             lines.push_back( currentLineString );
+
+            
+            if( nextTokenIsFileSeparator ) {
+                // file separator
+
+                // put a paragraph separator in
+                lines.push_back( stringDuplicate( "---" ) );
+
+                // token consumed
+                delete [] *( tokens->getElement( 0 ) );
+                tokens->deleteElement( 0 );
+                }
             }   
 
 
@@ -1043,6 +1081,28 @@ static void drawPauseScreen() {
 
 
 
+void deleteCharFromUserTypedMessage() {
+    if( currentUserTypedMessage != NULL ) {
+                    
+        int length = strlen( currentUserTypedMessage );
+        
+        char fileSeparatorDeleted = false;
+        if( length > 2 ) {
+            if( currentUserTypedMessage[ length - 2 ] == 28 ) {
+                // file separator with spaces around it
+                // delete whole thing with one keypress
+                currentUserTypedMessage[ length - 3 ] = '\0';
+                fileSeparatorDeleted = true;
+                }
+            }
+        if( !fileSeparatorDeleted && length > 0 ) {
+            currentUserTypedMessage[ length - 1 ] = '\0';
+            }
+        }
+    }
+
+
+
 
 
 
@@ -1076,16 +1136,11 @@ void drawFrame( char inUpdate ) {
                 wakeUpPauseFrameRate();
                 
 
+
                 // subtract from messsage
-                if( currentUserTypedMessage != NULL ) {
-                    
-                    int length = strlen( currentUserTypedMessage );
-                    
-                    if( length > 0 ) {
-                        currentUserTypedMessage[ length - 1 ] = '\0';
-                        }
-                    }
-            
+                deleteCharFromUserTypedMessage();
+                
+                            
 
                 // shorter delay for subsequent repeats
                 stepsBetweenDeleteRepeat = (int)( 10 / frameRateFactor );
@@ -1148,21 +1203,18 @@ void drawFrame( char inUpdate ) {
         
         if( pauseScreenFade < 0 ) {
             pauseScreenFade = 0;
+            if( currentUserTypedMessage != NULL ) {
+
+                // insert at file separator (ascii 28)
+
+                char *oldMessage = currentUserTypedMessage;
+                
+                currentUserTypedMessage = autoSprintf( "%s %c ", oldMessage,
+                                                       28 );
+                delete [] oldMessage;
+                }
             }
-        }
-
-
-
-
-    if( pauseScreenFade == 0 ) {
-        
-        // reset user-typed message
-        if( currentUserTypedMessage != NULL ) {
-            delete [] currentUserTypedMessage;
-            currentUserTypedMessage = NULL;
-            }
-        }
-    
+        }    
     
     
 
@@ -2045,8 +2097,6 @@ void drawFrameNoUpdate( char inUpdate ) {
     
     mainFont->drawString( levelString, levelNumberPos, alignRight );
     
-    double levelNumberWidth = mainFont->measureString( levelString );
-
     delete [] levelString;
 
 
@@ -2411,26 +2461,22 @@ void keyDown( unsigned char inASCII ) {
             }
         
         
-        char *oldMessage = currentUserTypedMessage;
         
         if( inASCII == 127 || inASCII == 8 ) {
             // subtract from it
-            if( oldMessage != NULL ) {
 
-                int length = strlen( oldMessage );
-                
-                if( length > 0 ) {
-                    oldMessage[ length - 1 ] = '\0';
-                    }
-                }
+            deleteCharFromUserTypedMessage();
+
             holdDeleteKeySteps = 0;
             // start with long delay until first repeat
             stepsBetweenDeleteRepeat = (int)( 30 / frameRateFactor );
             }
         else if( inASCII >= 32 ) {
             // add to it
-            if( oldMessage != NULL ) {
+            if( currentUserTypedMessage != NULL ) {
                 
+                char *oldMessage = currentUserTypedMessage;
+
                 currentUserTypedMessage = autoSprintf( "%s%c", 
                                                        oldMessage, inASCII );
                 delete [] oldMessage;
