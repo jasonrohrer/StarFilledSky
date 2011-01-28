@@ -2445,7 +2445,8 @@ static void movementKeyChange() {
 
 
 
-extern char toggleEdgeFade;
+
+extern int testBulletValue;
 
 
 void keyDown( unsigned char inASCII ) {
@@ -2547,11 +2548,13 @@ void keyDown( unsigned char inASCII ) {
         case '=':
             saveScreenShot( "screen" );
             break;
-        case 'b':
-        case 'B':
-            toggleEdgeFade++;
-            if( toggleEdgeFade > 2 ) {
-                toggleEdgeFade = 0;
+        case '2':
+            testBulletValue ++;
+            break;
+        case '1':
+            testBulletValue --;
+            if( testBulletValue < 0 ) {
+                testBulletValue = 0;
                 }
             break;
         }

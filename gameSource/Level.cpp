@@ -3759,7 +3759,6 @@ static void computeVisBoundaries( doublePair inViewCenter, double inViewSize,
 
     
 
-char toggleEdgeFade = 1;
 
 
 
@@ -3887,9 +3886,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     doublePair fullMapPos = { -.5, 0.5 };
 
-    if( toggleEdgeFade == 1 && edgeFade > 0 ) {
+    if( edgeFade > 0 ) {
         
-        // soft glow over everything
+        // soft glow over walls only
         setDrawColor( 1, 1, 1, 0.50 );
         //toggleAdditiveBlend( true );
         toggleLinearMagFilter( true );
@@ -4101,20 +4100,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             drawPowerUp( p->power, p->position, 1.0 );
             }
         }
-    
-
-
-    if( toggleEdgeFade == 2 && edgeFade > 0 ) {
-        
-        // soft glow over everything
-        setDrawColor( 1, 1, 1, 0.50 );
-        //toggleAdditiveBlend( true );
-        toggleLinearMagFilter( true );
-        drawSprite( mFullMapSprite, fullMapPos, 1.0 );
-        toggleLinearMagFilter( false );
-        //toggleAdditiveBlend( false );
-        }
-
     
 
 
