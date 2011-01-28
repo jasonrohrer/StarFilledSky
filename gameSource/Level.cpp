@@ -1502,11 +1502,6 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         }
 
 
-    
-
-
-    printf( "Level number (%d) with difficulty (%d)\n", mLevelNumber,
-            mDifficultyLevel );
 
 
 
@@ -2852,8 +2847,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
                 // angle between bullets shrinks as explode parameter grows
                 double angleBetweenBullets = 2 * M_PI / ( b->explode + 1 );
-                printf( "Angle between bullets = %f\n", angleBetweenBullets );
-
+                
                 // minimum 2 sub-bullets
                 // keep adding bullets until full angle spread is at least
                 // a half-circle (when angle is small, more bullets are
@@ -2867,8 +2861,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     totalAngle += angleBetweenBullets;
                     }
                 
-                printf( "%d bullets at %f total angle\n", numSubBullets,
-                        totalAngle );
                 
                 double startAngle =  - totalAngle / 2;
                 
