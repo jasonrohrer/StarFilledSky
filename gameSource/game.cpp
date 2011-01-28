@@ -424,7 +424,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     setCursorVisible( false );
-    grabInput( false );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -2049,12 +2049,32 @@ void drawFrameNoUpdate( char inUpdate ) {
     
     mainFont->drawString( levelString, levelNumberPos, alignRight );
     
+    double levelNumberWidth = mainFont->measureString( levelString );
+
     delete [] levelString;
 
     if( extraDifficultyNumber > 0 ) {
-        setDrawColor( 1, 0, 0, 0.75 );
 
-        drawNumber( extraDifficultyNumber, levelNumberPos, alignRight, true );
+        // FIXME:  draw a true quad here so that we can darken bottom
+        // of numeral on a gradient
+
+        // darken bottom of level number to make difficulty modifier visible
+        setDrawColor( 0, 0, 0, 0.5 );
+        
+        drawRect( levelNumberPos.x - levelNumberWidth, 
+                  levelNumberPos.y - 0.25, 
+                  levelNumberPos.x, levelNumberPos.y - 0.125 );
+
+
+        setDrawColor( 1, 0, 0, 1 );
+
+        doublePair difficultyPosition = levelNumberPos;
+        difficultyPosition.x -= 0.375;
+
+        difficultyPosition.y -= 0.3125;
+
+        drawNumber( extraDifficultyNumber, difficultyPosition, 
+                    alignRight, true );
         }
     
 
