@@ -19,6 +19,8 @@ Version 6
 
 --Player-typed messages on pause screen are now cumulative.
 
+--Dramatically weakened spread power at lower levels.
+
 
 
 Version 5   2011-January-25

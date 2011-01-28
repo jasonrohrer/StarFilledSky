@@ -134,16 +134,31 @@ float getAccuracy( PowerUpSet *inSet ) {
 
 
 
-float spreadD1 = 0.5;
+float spreadD1 = 1.5;
 float spreadD2 = 0.06;
 
 
+float spreadParam = 20;
+
+float spreadCurveOffset = ( - 1 / (1 + spreadParam) ) + 0.01;
+
+int testBulletValue = 0;
 
 float getSpread( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpSpread );
+    
+    // skip calculation for level 0 to avoid returning negative, given
+    // offset that is used
+    if( totalLevel == 0 ) {
+        return 0;
+        }
 
-    // first bound to 0:1
-    float boundedSpread = bulletCurve( totalLevel );
+
+    // first bound to 0:1    
+    float boundedSpread = totalLevel / ( totalLevel + spreadParam );
+
+    // now push level 1 right above 0
+    boundedSpread += spreadCurveOffset;
 
     // bound to 0:10
     boundedSpread *= 10;
