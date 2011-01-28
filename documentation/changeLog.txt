@@ -21,6 +21,8 @@ Version 6
 
 --Dramatically weakened spread power at lower levels.
 
+--Dramatically weakened explosion power at lower levels.
+
 
 
 Version 5   2011-January-25

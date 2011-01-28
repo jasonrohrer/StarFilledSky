@@ -2847,28 +2847,36 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 // no sub-explosions
                 explosionTemplate.explode = 0;
                 
-                // start pointing back at shooter
-                explosionTemplate.velocity.x *= -1;
-                explosionTemplate.velocity.y *= -1;
-                
+                // keep bullet velocity unchanged
 
-                int numSubBullets = 3 + (int)( b->explode );
-                
-                double extra = b->explode - (int)( b->explode );
-                
-                double sepAngle = 2 * M_PI / numSubBullets;
 
-                // as we approach next explosion level, get closer
-                // to "perfect" explosion that sends no sub-bullet back
-                // at shooter
-                // move toward start angle that evenly splits back-facing
-                // bullets on either side of original aim vector
-                double startAngle = extra * sepAngle / 2;
+                // angle between bullets shrinks as explode parameter grows
+                double angleBetweenBullets = 2 * M_PI / ( b->explode + 1 );
+                printf( "Angle between bullets = %f\n", angleBetweenBullets );
+
+                // minimum 2 sub-bullets
+                // keep adding bullets until full angle spread is at least
+                // a half-circle (when angle is small, more bullets are
+                // needed to fill a half-circle)
+                int numSubBullets = 2;
+                
+                double totalAngle = angleBetweenBullets;
+                
+                while( totalAngle < M_PI ) {
+                    numSubBullets++;
+                    totalAngle += angleBetweenBullets;
+                    }
+                
+                printf( "%d bullets at %f total angle\n", numSubBullets,
+                        totalAngle );
+                
+                double startAngle =  - totalAngle / 2;
                 
                 for( int s=0; s<numSubBullets; s++ ) {
                     Bullet subBullet = explosionTemplate;
                     subBullet.velocity = rotate( subBullet.velocity,
-                                                 startAngle + s * sepAngle );
+                                                 startAngle + 
+                                                 s * angleBetweenBullets );
                     
                     mBullets.push_back( subBullet );
                     }

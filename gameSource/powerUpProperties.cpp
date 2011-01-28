@@ -5,6 +5,12 @@
 extern double frameRateFactor;
 
 
+// used for test-toggling a bullet property level with external (game.cpp)
+// keyboard input
+int testBulletValue = 0;
+
+
+
 
 static int getTotalLevel( PowerUpSet *inSet, 
                           spriteID inPowerType ) {
@@ -142,7 +148,6 @@ float spreadParam = 20;
 
 float spreadCurveOffset = ( - 1 / (1 + spreadParam) ) + 0.01;
 
-int testBulletValue = 0;
 
 float getSpread( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpSpread );
@@ -158,6 +163,7 @@ float getSpread( PowerUpSet *inSet ) {
     float boundedSpread = totalLevel / ( totalLevel + spreadParam );
 
     // now push level 1 right above 0
+    // to extract most variety out of low-end of curve
     boundedSpread += spreadCurveOffset;
 
     // bound to 0:10
@@ -217,14 +223,33 @@ int getBounce( PowerUpSet *inSet ) {
 
 
 
+float explodeParam = 15;
+
+float explodeCurveOffset = ( - 1 / (1 + explodeParam) ) + 0.02;
+
+
 float getExplode( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpExplode );
 
-    // first bound to 0:1
-    float boundedExplode = bulletCurve( totalLevel );
+    
+    // skip calculation for level 0 to avoid returning negative, given
+    // offset that is used
+    if( totalLevel == 0 ) {
+        return 0;
+        }
 
-    // bound to 0:5
-    boundedExplode *= 10;
+
+    // first bound to 0:1
+    //float boundedExplode = bulletCurve( totalLevel );
+    
+    float boundedExplode = totalLevel / ( totalLevel + explodeParam );
+
+    // now push level 1 right above 0
+    // to extract most variety out of low-end of curve
+    boundedExplode += explodeCurveOffset;
+
+    // bound to 0:13
+    boundedExplode *= 13;
     
     return boundedExplode;
     }
