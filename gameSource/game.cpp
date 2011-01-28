@@ -2065,12 +2065,27 @@ void drawFrameNoUpdate( char inUpdate ) {
         // of numeral on a gradient
 
         // darken bottom of level number to make difficulty modifier visible
-        setDrawColor( 0, 0, 0, 0.5 );
+        float vertexColors[] =  { 0, 0, 0, 1,
+                                  0, 0, 0, 1,
+                                  0, 0, 0, 0,
+                                  0, 0, 0, 0 };
+        double vertices[] = 
+            { levelNumberPos.x - levelNumberWidth,
+              levelNumberPos.y - 0.375,
+              levelNumberPos.x,
+              levelNumberPos.y - 0.375,
+              levelNumberPos.x,
+              levelNumberPos.y + 0.125,
+              levelNumberPos.x - levelNumberWidth,
+              levelNumberPos.y + 0.125 };
         
+        drawQuads( 1, vertices, vertexColors );
+        
+        /*
         drawRect( levelNumberPos.x - levelNumberWidth, 
                   levelNumberPos.y - 0.25, 
                   levelNumberPos.x, levelNumberPos.y - 0.125 );
-
+        */
 
         setDrawColor( 0, 0.5, 0, 1 );
 
