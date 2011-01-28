@@ -2008,17 +2008,7 @@ void drawFrameNoUpdate( char inUpdate ) {
     setViewCenterPosition( lastScreenViewCenter.x, 
                            lastScreenViewCenter.y );
     
-    // border around panel
-    setDrawColor( 0.3, 0.3, 0.3, 1 );
-    
-    
 
-    drawRect( lastScreenViewCenter.x - viewWidth /2,
-              // off top, just in case
-              lastScreenViewCenter.y + viewWidth /2,
-              lastScreenViewCenter.x + viewWidth /2,
-              lastScreenViewCenter.y + 
-                viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
 
     // body of panel
     setDrawColor( 0, 0, 0, 1 );
@@ -2060,57 +2050,10 @@ void drawFrameNoUpdate( char inUpdate ) {
     delete [] levelString;
 
 
-    // darken bottom of level number to make difficulty modifier visible
-    float vertexColors[] =  { 0, 0, 0, 1,
-                              0, 0, 0, 1,
-                              0, 0, 0, 0,
-                              0, 0, 0, 0 };
-    double vertices[] = 
-        { levelNumberPos.x - levelNumberWidth,
-          levelNumberPos.y - 0.375,
-          levelNumberPos.x,
-          levelNumberPos.y - 0.375,
-          levelNumberPos.x,
-          levelNumberPos.y + 0.125,
-          levelNumberPos.x - levelNumberWidth,
-          levelNumberPos.y + 0.125 };
     
-    drawQuads( 1, vertices, vertexColors );
 
 
 
-    if( extraDifficultyNumber > 0 ) {
-
-        // FIXME:  draw a true quad here so that we can darken bottom
-        // of numeral on a gradient
-
-        
-        /*
-        drawRect( levelNumberPos.x - levelNumberWidth, 
-                  levelNumberPos.y - 0.25, 
-                  levelNumberPos.x, levelNumberPos.y - 0.125 );
-        */
-
-        setDrawColor( 0, 0.5, 0, 1 );
-
-        doublePair difficultyPosition = levelNumberPos;
-
-        const char *difficultyWord = translate( "difficultyTag" );
-
-        double wordLength = tinyFont->measureString( difficultyWord );
-
-        difficultyPosition.x -= 0.1875 + wordLength;
-
-        difficultyPosition.y -= 0.25;
-        
-        tinyFont->drawString( difficultyWord, difficultyPosition, alignLeft );
-
-
-        difficultyPosition.x -= 0.375;
-
-        drawNumber( extraDifficultyNumber, difficultyPosition, 
-                    alignRight, true );
-        }
     
 
 
@@ -2268,6 +2211,67 @@ void drawFrameNoUpdate( char inUpdate ) {
                        zoomProgress );
         }
 
+
+    // darken bottom of entire panel to push it back a bit
+    float vertexColors[] =  { 0, 0, 0, .75,
+                              0, 0, 0, .75,
+                              0, 0, 0, 0,
+                              0, 0, 0, 0 };    
+
+    double vertices[] = 
+        { lastScreenViewCenter.x - viewWidth /2,
+          lastScreenViewCenter.y + 
+          viewHeightFraction * viewWidth /2 - dashHeight,
+          lastScreenViewCenter.x + viewWidth /2,
+          lastScreenViewCenter.y + 
+          viewHeightFraction * viewWidth /2 - dashHeight,
+          lastScreenViewCenter.x + viewWidth /2,
+          lastScreenViewCenter.y + 
+          viewHeightFraction * viewWidth /2 - dashHeight + 3*dashHeight/4,
+          lastScreenViewCenter.x - viewWidth /2,
+          lastScreenViewCenter.y + 
+          viewHeightFraction * viewWidth /2 - dashHeight + 3*dashHeight/4 };
+        
+    drawQuads( 1, vertices, vertexColors );
+
+
+
+    // draw this flag on top, above shadows
+    if( extraDifficultyNumber > 0 ) {
+
+        setDrawColor( 0, 0.5, 0, 1 );
+
+        doublePair difficultyPosition = levelNumberPos;
+
+        const char *difficultyWord = translate( "difficultyTag" );
+
+        double wordLength = tinyFont->measureString( difficultyWord );
+
+        difficultyPosition.x -= 0.1875 + wordLength;
+
+        difficultyPosition.y -= 0.25;
+        
+        tinyFont->drawString( difficultyWord, difficultyPosition, alignLeft );
+
+
+        difficultyPosition.x -= 0.375;
+
+        drawNumber( extraDifficultyNumber, difficultyPosition, 
+                    alignRight, true );
+        }
+
+
+
+
+    // border around panel, draw on top so that powers move under it
+    setDrawColor( 0.3, 0.3, 0.3, 1 );
+
+    drawRect( lastScreenViewCenter.x - viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 - dashHeight,
+              lastScreenViewCenter.x + viewWidth /2,
+              lastScreenViewCenter.y + 
+                viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
 
 
     drawTutorial( lastScreenViewCenter );

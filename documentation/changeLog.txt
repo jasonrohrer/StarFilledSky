@@ -12,6 +12,11 @@ Version 6
 
 --Rise markers are now never placed on floor bottlenecks.
 
+--Improved risk/reward of deep power-up recursion (power-ups levels get higher
+  at deeper levels, but sub-levels get harder).
+
+--Added a shadow over bottom of dashboard to push it back visually.
+
 
 
 Version 5   2011-January-25
