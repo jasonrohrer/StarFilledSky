@@ -195,6 +195,9 @@ Font *mainFont;
 
 Font *mainFont2;
 
+Font *tinyFont;
+
+
 static float pauseScreenFade = 0;
 
 static char *currentUserTypedMessage = NULL;
@@ -440,6 +443,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
     
+    tinyFont = new Font( "font_4_8.tga", 1, 2, false );
+
     initNumerals( "numerals.tga" );
     
 
@@ -555,6 +560,7 @@ void freeFrameDrawer() {
 
     delete mainFont;
     delete mainFont2;
+    delete tinyFont;
     
     if( currentUserTypedMessage != NULL ) {
         delete [] currentUserTypedMessage;
@@ -2066,12 +2072,22 @@ void drawFrameNoUpdate( char inUpdate ) {
                   levelNumberPos.x, levelNumberPos.y - 0.125 );
 
 
-        setDrawColor( 1, 0, 0, 1 );
+        setDrawColor( 0, 0.5, 0, 1 );
 
         doublePair difficultyPosition = levelNumberPos;
-        difficultyPosition.x -= 0.375;
 
-        difficultyPosition.y -= 0.3125;
+        const char *difficultyWord = translate( "difficultyTag" );
+
+        double wordLength = tinyFont->measureString( difficultyWord );
+
+        difficultyPosition.x -= 0.1875 + wordLength;
+
+        difficultyPosition.y -= 0.25;
+        
+        tinyFont->drawString( difficultyWord, difficultyPosition, alignLeft );
+
+
+        difficultyPosition.x -= 0.375;
 
         drawNumber( extraDifficultyNumber, difficultyPosition, 
                     alignRight, true );

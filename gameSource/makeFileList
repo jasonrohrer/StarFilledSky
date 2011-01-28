@@ -43,6 +43,7 @@ NoteSequence.cpp \
 
 GAME_GRAPHICS = \
 graphics/font_8_16.tga \
+graphics/font_4_8.tga \
 graphics/numerals.tga \
 graphics/riseMarker.tga \
 graphics/riseIcon.tga \

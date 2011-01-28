@@ -39,6 +39,9 @@ pauseMessage3 "Press ESC or CTRL-Q to quit"
 pauseMessage4 "(saves a level number bookmark)"
 
 
+difficultyTag "DIFFICULTY"
+
+
 
 
 enterDemoCode  "Enter a demo code:"
