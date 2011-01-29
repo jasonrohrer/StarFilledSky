@@ -144,7 +144,7 @@ float spreadD1 = 1.5;
 float spreadD2 = 0.06;
 
 
-float spreadParam = 20;
+float spreadParam = 15;
 
 float spreadCurveOffset = ( - 1 / (1 + spreadParam) ) + 0.01;
 
