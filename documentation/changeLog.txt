@@ -25,6 +25,9 @@ Version 6
 
 --Fixed volume glitch when entering a sub-level.
 
+--Gave following enemies a bullet speed and distance boost.
+
+
 
 
 Version 5   2011-January-25

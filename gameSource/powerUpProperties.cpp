@@ -102,6 +102,8 @@ int getStepsBetweenBullets( PowerUpSet *inSet ) {
 
 float bulletSpeedParam = 2;
 
+extern double maxEnemySpeed;
+
 float getBulletSpeed( PowerUpSet *inSet ) {
     int totalLevel = getTotalLevel( inSet, powerUpBulletSpeed );
 
@@ -112,7 +114,41 @@ float getBulletSpeed( PowerUpSet *inSet ) {
     boundedSpeed *= ( 0.25 );
     
     boundedSpeed += 0.15;
+
+    // if enemy following, or chasing and fast, compensate by making
+    // faster bullets (so enemy doesn't leave it's own bullets behind)
+    char follow = false;
+    char fast = false;
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( inSet->mPowers[i].powerType == enemyBehaviorFollow ) {
+            follow = true;
+            }
+        else if( inSet->mPowers[i].powerType == enemyBehaviorFast ) {
+            fast = true;
+            }
+        }
     
+    // can do all this before appling frameRateFactor
+    if( follow ) {
+        double speedAddition = maxEnemySpeed;
+        if( fast ) {
+            speedAddition *= 2;
+            }
+
+        // extra boost
+        speedAddition *= 2;
+
+
+        boundedSpeed += speedAddition;
+
+        if( boundedSpeed > 0.4 ) {
+            // cap
+            boundedSpeed = 0.4;
+            }
+        }
+    
+    
+
     boundedSpeed *= frameRateFactor;
 
     return boundedSpeed;
@@ -199,6 +235,33 @@ float getBulletDistance( PowerUpSet *inSet ) {
     
     boundedDistance += 5;
     
+
+    // if enemy following, or chasing and fast, compensate by making
+    // longer bullets (so enemy doesn't leave it's own bullets behind)
+    char follow = false;
+    char fast = false;
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( inSet->mPowers[i].powerType == enemyBehaviorFollow ) {
+            follow = true;
+            }
+        else if( inSet->mPowers[i].powerType == enemyBehaviorFast ) {
+            fast = true;
+            }
+        }
+    
+    if( follow ) {
+        double distanceAddition = 7;
+        
+        boundedDistance += distanceAddition;
+
+        if( boundedDistance > 30 ) {
+            // cap
+            boundedDistance = 30;
+            }
+        }
+
+
+
     return boundedDistance;
     }
 
