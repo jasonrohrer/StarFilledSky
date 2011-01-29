@@ -3663,6 +3663,17 @@ void Level::drawEnemies( double inFade, int inLayer,
             
                 float healthFraction = e->health / 
                     (float)getEnemyMaxHealth( e->powers );
+
+                if( !drawSegments ) {
+                    // round to nearest sub-pixel
+                
+                    healthFraction *= 32;
+                    
+                    healthFraction = roundf( healthFraction );
+                    
+                    healthFraction /= 32;
+                    }
+                
             
                 // black behind empty part
                 setDrawColor( 0, 0, 0, fade );

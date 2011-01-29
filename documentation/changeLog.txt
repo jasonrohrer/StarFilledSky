@@ -27,6 +27,8 @@ Version 6
 
 --Gave following enemies a bullet speed and distance boost.
 
+--Fixed enemy health bar rounding jitter at high max health levels.
+
 
 
 
