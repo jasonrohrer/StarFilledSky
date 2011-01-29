@@ -1,4 +1,4 @@
-Version 6   
+Version 6    2011-January-29
 
 --Fixed a rounding error on some CPUs in screen aspect ratio calculation.
 
