@@ -23,6 +23,8 @@ Version 6
 
 --Dramatically weakened explosion power at lower levels.
 
+--Fixed volume glitch when entering a sub-level.
+
 
 
 Version 5   2011-January-25

@@ -2402,6 +2402,86 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
 
 
 
+void Level::setLoudnessForAllParts() {
+    
+    // zero-out parts to account for destroyed enemies and picked-up power
+    // tokens
+    for( int p=0; p<PARTS-2; p++ ) {
+        partLoudness[p] = 0;
+        }
+    double loudnessFalloffFactor = 40;
+    double stereoSpread = 0.1;
+
+    int i;
+    
+    // enemy loudness
+    for( i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
+        
+        setPartLoudnessAndStereo( e->position, 
+                                  mPlayerPos,
+                                  e->musicNotes.partIndex,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
+        }
+    
+    
+    // set loudness for tokens, too
+    for( i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+        setPartLoudnessAndStereo( p->position, 
+                                  mPlayerPos,
+                                  p->musicNotes.partIndex,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
+        }
+
+
+    
+
+    // keep normal stereo computation
+    // always keep beat centered
+    partStereo[ PARTS-4 ] = 0.5;
+    partStereo[ PARTS-3 ] = 0.5;
+    
+
+    
+    // override loudness to make it linear instead
+    // (always a straight build up from start position to rise marker)
+    // build up hits max at distance 3 from rise marker
+    double riseBeatLoudness = 1 - 
+        ( ( (double)mLastComputedStepsToRiseMarker - 3 ) / 
+          ( (double)mStartStepsToRiseMarker - 3 ) );
+
+    
+    if( riseBeatLoudness < 0 ) {
+        riseBeatLoudness = 0;
+        }
+    else if( riseBeatLoudness > 1 ) {
+        riseBeatLoudness = 1;
+        }
+    
+    
+    partLoudness[ PARTS-4 ] = riseBeatLoudness;
+    partLoudness[ PARTS-3 ] = riseBeatLoudness;
+    
+    
+    
+    
+    // further weight loudness based on edge fade, except for super-part
+    // and player part
+    
+    
+    // now weight them all, except rise marker parts, player part,
+    // and harmony part
+    for( int p=0; p<PARTS-4; p++ ) {
+        partLoudness[p] *= mLastComputedEdgeFade;
+        }
+
+    }
+
+
 
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
@@ -3319,80 +3399,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // don't want to block audio thread during enemy behavior calculations
     lockAudio();
 
-    // zero-out parts to account for destroyed enemies and picked-up power
-    // tokens
-    for( int p=0; p<PARTS-2; p++ ) {
-        partLoudness[p] = 0;
-        }
-    double loudnessFalloffFactor = 40;
-    double stereoSpread = 0.1;
-
-    
-    // enemy loudness
-    for( i=0; i<mEnemies.size(); i++ ) {
-        Enemy *e = mEnemies.getElement( i );
-        
-        setPartLoudnessAndStereo( e->position, 
-                                  mPlayerPos,
-                                  e->musicNotes.partIndex,
-                                  loudnessFalloffFactor,
-                                  stereoSpread );
-        }
-    
-    
-    // set loudness for tokens, too
-    for( i=0; i<mPowerUpTokens.size(); i++ ) {
-        PowerUpToken *p = mPowerUpTokens.getElement( i );
-        
-        setPartLoudnessAndStereo( p->position, 
-                                  mPlayerPos,
-                                  p->musicNotes.partIndex,
-                                  loudnessFalloffFactor,
-                                  stereoSpread );
-        }
-
-
-    
-
-    // keep normal stereo computation
-    // always keep beat centered
-    partStereo[ PARTS-4 ] = 0.5;
-    partStereo[ PARTS-3 ] = 0.5;
-    
-
-    
-    // override loudness to make it linear instead
-    // (always a straight build up from start position to rise marker)
-    // build up hits max at distance 3 from rise marker
-    double riseBeatLoudness = 1 - 
-        ( ( (double)mLastComputedStepsToRiseMarker - 3 ) / 
-          ( (double)mStartStepsToRiseMarker - 3 ) );
-
-    
-    if( riseBeatLoudness < 0 ) {
-        riseBeatLoudness = 0;
-        }
-    else if( riseBeatLoudness > 1 ) {
-        riseBeatLoudness = 1;
-        }
-    
-    
-    partLoudness[ PARTS-4 ] = riseBeatLoudness;
-    partLoudness[ PARTS-3 ] = riseBeatLoudness;
-    
-    
-    
-    
-    // further weight loudness based on edge fade, except for super-part
-    // and player part
-    
-    
-    // now weight them all, except rise marker parts, player part,
-    // and harmony part
-    for( int p=0; p<PARTS-4; p++ ) {
-        partLoudness[p] *= mLastComputedEdgeFade;
-        }
-
+    setLoudnessForAllParts();
 
     unlockAudio();
 
@@ -5228,6 +5235,8 @@ void Level::pushAllMusicIntoPlayer() {
 
     setNoteSequence( harmonyCopy );
     
+    setLoudnessForAllParts();
+
     unlockAudio();    
     }
 

@@ -335,6 +335,10 @@ class Level {
                                      int *inLowpoints );
         
 
+        // must lock audio around this call
+        void setLoudnessForAllParts();
+        
+
 
         // generate data that can be reproduced from the seed
         void generateReproducibleData();
