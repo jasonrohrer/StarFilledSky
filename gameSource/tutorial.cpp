@@ -571,6 +571,12 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         }
     
     
+    char tutorial6Showing = false;
+    
+    if( tutorialsReady[6] && ! tutorialsDone[6] ) {
+        tutorial6Showing = true;
+        }
+
 
     if( inLevelRisenTo >= 6 ) {
         rigPowerUpsForTeaching = false;
@@ -584,7 +590,9 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         blockEnterForTeaching = false;
         }
 
-    if( tutorialsDone[5] && inLevelRisenTo < baseLevelForEnterTutorials ) {
+    if( tutorialsDone[5] && !tutorial6Showing &&
+        inLevelRisenTo < baseLevelForEnterTutorials ) {
+        
         tutorialsReady[6] = false;
         }
     
@@ -742,7 +750,7 @@ void tutorialPlayerKnockedDown() {
         }
     
 
-    if( tutorialsReady[7] ) {
+    if( tutorialsReady[7] && currentTut == 7 ) {
         // already showing a Gather tutorial
         // end it
         tutorialsDone[7] = true;
