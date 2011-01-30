@@ -1,3 +1,11 @@
+Version 7
+
+--Fixed so that multiple paragraph separators are not inserted when player
+  closes pause screen without typing anything.
+
+
+
+
 Version 6    2011-January-29
 
 --Fixed a rounding error on some CPUs in screen aspect ratio calculation.

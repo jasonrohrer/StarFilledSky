@@ -1205,13 +1205,24 @@ void drawFrame( char inUpdate ) {
             pauseScreenFade = 0;
             if( currentUserTypedMessage != NULL ) {
 
-                // insert at file separator (ascii 28)
+                // make sure it doesn't already end with a file separator
+                // (never insert two in a row, even when player closes
+                //  pause screen without typing anything)
+                int lengthCurrent = strlen( currentUserTypedMessage );
 
-                char *oldMessage = currentUserTypedMessage;
-                
-                currentUserTypedMessage = autoSprintf( "%s %c ", oldMessage,
-                                                       28 );
-                delete [] oldMessage;
+                if( lengthCurrent < 2 ||
+                    currentUserTypedMessage[ lengthCurrent - 2 ] != 28 ) {
+                         
+                        
+                    // insert at file separator (ascii 28)
+                    
+                    char *oldMessage = currentUserTypedMessage;
+                    
+                    currentUserTypedMessage = autoSprintf( "%s %c ", 
+                                                           oldMessage,
+                                                           28 );
+                    delete [] oldMessage;
+                    }
                 }
             }
         }    
