@@ -5,6 +5,10 @@ Version 7
 
 --Added extra tutorial message explaining entering sub-tokens.
 
+--Changed so that first sub-level inside tokens has level-1 tokens on floor.
+
+
+
 
 
 Version 6    2011-January-29

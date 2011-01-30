@@ -1450,6 +1450,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         if( inInsidePowerUp ) {
             // recursion depth equal to parent token level
             tokenFactor = inParentTokenLevel;
+            
+            if( inParentTokenLevel > 1 || mTokenRecursionDepth > 1 ) {
+                tokenFactor++;
+                }
             }
         else {
             // no token factor
@@ -1679,7 +1683,17 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         if( inInsidePowerUp ) {    
             // floor power ups are stronger the deeper we recurse
             // into a power-up
-            mFloorTokenLevel += inParentTokenLevel;
+            
+            // but first recursion keeps 1 tokens
+            
+            if( inParentTokenLevel == 1 && mTokenRecursionDepth == 1 ) {
+                mFloorTokenLevel = 1;
+                }
+            else {
+                // deeper recursion, or an already-raised parent token
+                // that has been re-entered
+                mFloorTokenLevel += inParentTokenLevel;
+                }
             }
         }
 
