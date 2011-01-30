@@ -340,6 +340,22 @@ static void drawBracket( doublePair inPos, float inFade,
     }
 
 
+static void drawMessage( const char *inMessage, doublePair inPosition,
+                         float inFade  ) {
+
+    double messageWidth = mainFont2->measureString( inMessage );
+            
+    setDrawColor( 0, 0, 0, 0.5 * inFade );
+    drawRect( inPosition.x - messageWidth / 2 - 0.25, 
+              inPosition.y - 0.375, 
+              inPosition.x + messageWidth / 2 + 0.25, 
+              inPosition.y + 0.5 );
+    setDrawColor( 1, 1, 1, inFade );
+    mainFont2->drawString( inMessage, 
+                           inPosition, alignCenter );
+    }
+
+
 
 
 void drawTutorial( doublePair inScreenCenter ) {
@@ -364,16 +380,33 @@ void drawTutorial( doublePair inScreenCenter ) {
         
         tutorialPos.y -= sineSmooth * offsetLimit;
 
-        double messageWidth = mainFont2->measureString( tutMessage );
-    
-        setDrawColor( 0, 0, 0, 0.5 * tutorialFade );
-        drawRect( tutorialPos.x - messageWidth / 2 - 0.25, 
-                  tutorialPos.y - 0.4, 
-                  tutorialPos.x + messageWidth / 2 + 0.25, 
-                  tutorialPos.y + 0.5 );
-        setDrawColor( 1, 1, 1, tutorialFade );
-        mainFont2->drawString( tutMessage, 
-                               tutorialPos, alignCenter );
+        if( strstr( tutMessage, "##" ) != NULL ) {
+            // multi-line message
+            
+            int numSubMessages;
+        
+            char **subMessages = split( tutMessage, "##", &numSubMessages );
+            
+            
+            for( int i=numSubMessages-1; i>= 0; i-- ) {
+                
+                doublePair thisMessagePos = tutorialPos;
+                
+                thisMessagePos.y += ( numSubMessages - i - 1 ) * 0.875;
+                
+                drawMessage( subMessages[i], thisMessagePos, tutorialFade );
+                
+                delete [] subMessages[i];
+                }
+
+            delete [] subMessages;
+            }
+        else {
+            // just a single message
+
+            drawMessage( tutMessage, tutorialPos, tutorialFade );
+            }
+        
 
         if( currentTut == 2 || currentTut == 3 || currentTut == 4 ||
             currentTut == 7 ) {

@@ -3,6 +3,7 @@ Version 7
 --Fixed so that multiple paragraph separators are not inserted when player
   closes pause screen without typing anything.
 
+--Added extra tutorial message explaining entering sub-tokens.
 
 
 

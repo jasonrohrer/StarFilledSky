@@ -26,7 +26,7 @@ tutorial_gather "Gathered tokens..."
 
 tutorial_gather_self "Gathered tokens change the self that you're inside."
 tutorial_gather_enemy "Gathered tokens change the enemy that you're inside."
-tutorial_gather_token "Gathered tokens change the token that you're inside."
+tutorial_gather_token "Gathered tokens change the token that you're inside.##Sub-tokens hold even better tokens, but difficulty increases."
 
 
 
