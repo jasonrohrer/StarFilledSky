@@ -34,6 +34,7 @@ RectPodRandomWalker.cpp \
 DiagRandomWalker.cpp \
 RandomWalkerSet.cpp \
 tutorial.cpp \
+tipDisplay.cpp \
 musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \

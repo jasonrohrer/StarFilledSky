@@ -32,6 +32,8 @@ Version 7
 --Improved dashboard appearance by having player healthbars move with their 
   corresponding power-up set during zoom.
 
+--Added tool-tip text explaining each power-up.
+
 
 
 Version 6    2011-January-29

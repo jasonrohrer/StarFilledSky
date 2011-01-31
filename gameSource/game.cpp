@@ -50,6 +50,7 @@
 #include "powerUpProperties.h"
 #include "RandomWalkerSet.h"
 #include "tutorial.h"
+#include "tipDisplay.h"
 #include "musicPlayer.h"
 #include "numerals.h"
 
@@ -485,6 +486,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     checkTutorial();
     
 
+    initTipDisplay();
+    
+
 
     currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, NULL, 
                               levelNumber );
@@ -560,6 +564,8 @@ void freeFrameDrawer() {
     
     freeTutorial();
     
+    freeTipDisplay();
+
 
     delete levelNumberFont;
     delete levelNumberReducedFont;
@@ -1532,6 +1538,20 @@ void drawFrame( char inUpdate ) {
         }
     
 
+    // trigger tool tips for power-ups that are moused over
+    int itemIndex;
+    if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
+        
+        PowerUp hitPowerUp = 
+            currentLevel->peekPowerUp( mousePos );
+
+        // keep active as long as mouse stays over, but fade out quickly 
+        // after mouse leaves
+        triggerTip( hitPowerUp.powerType, 0.3 );
+        }
+    
+
+
 
     // if current level still frozen, last freeze frame not drawn yet,
     // and next level on stack not decompacted yet.
@@ -1600,6 +1620,8 @@ void drawFrame( char inUpdate ) {
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
         s->pushPower( p, powerPos );
+
+        triggerTip( p.powerType );
         }
     
 
@@ -2392,7 +2414,8 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
     drawTutorial( lastScreenViewCenter );
-    
+
+    drawTipDisplay( lastScreenViewCenter );
     }
 
 

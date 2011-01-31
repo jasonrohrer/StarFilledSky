@@ -76,6 +76,11 @@ enum spriteID {
 extern const char *spriteIDNames[];
 
 
+// maps each spriteID to a translation key for the tip associated with
+// that sprite (some sprites may not actually have tips defined).
+
+extern const char *spriteIDTipTranslateKeys[];
+
 
 
 extern int firstPowerUpID;

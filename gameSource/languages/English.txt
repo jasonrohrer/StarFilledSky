@@ -45,6 +45,18 @@ difficultyTag "DIFFICULTY"
 
 
 
+powerUpHeart_tip          "HEALTH BAR CAPACITY"
+powerUpBulletSize_tip     "BULLET SIZE"
+powerUpRapidFire_tip      "SHOT RATE"
+powerUpBulletSpeed_tip    "SHOT SPEED"
+powerUpSpread_tip         "SPREAD SHOT"
+powerUpHeatSeek_tip       "HEAT SEEK"
+powerUpBulletDistance_tip "SHOT RANGE"
+powerUpBounce_tip         "BOUNCE SHOT"
+powerUpExplode_tip        "EXPLODING SHOT"
+
+
+
 
 enterDemoCode  "Enter a demo code:"
 checkingCode  "Checking demo permissions with server..."

@@ -24,6 +24,18 @@ const char *fixedSpriteFileNames[] = {
 
 
 
+// redefine F so that it expands each name into a _tip translation key
+// constant
+#undef F
+#define F(inName) #inName "_tip"
+
+const char *spriteIDTipTranslateKeys[] = {
+	FIXED_SPRITE_NAMES
+    };
+
+
+
+
 static SpriteHandle spriteBank[ endSpriteID ];
 static Color blurredColors[ endSpriteID ];
 
