@@ -1531,6 +1531,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxFollowCount = 4;
         }
     
+    
+    // limit how many enemies are near each other at lower levels
+    int maxClusterSize = 2;
+    
+    if( mDifficultyLevel > 10 ) {
+        maxClusterSize += ( mDifficultyLevel - 10  );
+        }
+    
 
 
     for( int i=0; i<maxNumEnemies; i++ ) {
@@ -1565,14 +1573,28 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     }
                 }
             
+            // count enemies that are already near this spot
+            // limit on too many enemies right in same area
+            int numClose = 0;
+            
+            for( int j=0; j<mEnemies.size(); j++ ) {
+                Enemy *otherEnemy = mEnemies.getElement( j );
+                
+                double otherDistance = distance( spot, otherEnemy->position );
 
+                if( otherDistance < 15 ) {
+                    numClose++;
+                    }                
+                }
 
             // keep enemies away from player starting spot (fair)
             // unless on fixed spots
 
             doublePair playerSpot = {0,0};
             
-            if( fixedSpot || distance( spot, playerSpot ) > 20 ) {
+            if( fixedSpot || 
+                ( numClose < maxClusterSize && 
+                  distance( spot, playerSpot ) > 20 ) ) {
                 
                 // random starting velocity
                 doublePair baseMoveDirection = 

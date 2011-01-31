@@ -19,7 +19,11 @@ Version 7
   dynamically shrinking the font.
 
 --Enemy bullets quickly terminate after firing enemy is destroyed (thanks 
-  Richard Lemarachand).
+  Richard Lemarchand).
+
+--Fixed more aspect ratio bugs.
+
+--Limit on enemy cluster sizes at lower levels (thanks Richard Lemarchand). 
 
 
 
