@@ -18,6 +18,9 @@ Version 7
 --Prevented level-number collision with health bar at super-high levels by
   dynamically shrinking the font.
 
+--Enemy bullets quickly terminate after firing enemy is destroyed (thanks 
+  Richard Lemarachand).
+
 
 
 

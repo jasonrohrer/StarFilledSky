@@ -1620,7 +1620,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             generateRandomNoteSequence( musicPartIndex ),
                             (int)( stepsBetweenGlowTrails / 
                                    frameRateFactor ),
-                            enemyDifficultyLevel };
+                            enemyDifficultyLevel,
+                            // use enemy's initial index as its bullet marker
+                            i };
                 
                 musicPartIndex ++;
                 
@@ -2826,6 +2828,25 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                         }
                                     }
                                 
+                                // force-finish bullets that enemy fired
+                                for( int b=0; b<mBullets.size(); b++ ) {
+                                    Bullet *bullet =
+                                        mBullets.getElement( b );
+                                
+                                    if( bullet->enemyMarker ==
+                                        e->bulletMarker ) {
+
+                                        // prevent future explosion
+                                        bullet->explode = 0;
+                                        
+                                        if( bullet->distanceLeft > 1 ) {
+                                            // curtail it's tradjectory
+                                            bullet->distanceLeft = 1;
+                                            }
+                                        }
+                                    }
+                                
+
 
                                 delete e->sprite;
                                 delete e->powers;
@@ -3376,7 +3397,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             addBullet( e->position, aimPos, 
                        e->powers,
                        mPlayerPos,
-                       bulletSpeed, false, i );
+                       bulletSpeed, false, e->bulletMarker );
             
 
             //e->stepsTilNextBullet = e->stepsBetweenBullets;
@@ -5022,7 +5043,7 @@ void Level::addBullet( doublePair inPosition,
                        PowerUpSet *inPowers,
                        doublePair inHeatSeekWaypoint,
                        double inSpeed, char inPlayerBullet,
-                       int inEnemyIndex ) {
+                       char inEnemyBulletMarker ) {
 
     //double exactAimDist = distance( inAimPosition, inPosition );
 
@@ -5037,7 +5058,9 @@ void Level::addBullet( doublePair inPosition,
     int bounce = getBounce( inPowers );
     
     double explode = getExplode( inPowers );
-    
+
+    float size = getBulletSize( inPowers );
+
 
     /*
       // for testing
@@ -5061,15 +5084,6 @@ void Level::addBullet( doublePair inPosition,
     */
 
 
-
-    float size = 1;
-
-    if( inPlayerBullet ) {
-        size = getBulletSize( mPlayerPowers );
-        }
-    else {
-        size = getBulletSize( mEnemies.getElement( inEnemyIndex )->powers );
-        }
 
 
     // velocity for center bullet
@@ -5119,7 +5133,7 @@ void Level::addBullet( doublePair inPosition,
                      bounce,
                      bounce,
                      explode,
-                     inPlayerBullet, size };
+                     inPlayerBullet, size, inEnemyBulletMarker };
         mBullets.push_back( b );
 
 
@@ -5140,7 +5154,7 @@ void Level::addBullet( doublePair inPosition,
                       bounce,
                       bounce,
                       explode,
-                      inPlayerBullet, size };
+                      inPlayerBullet, size, inEnemyBulletMarker };
         mBullets.push_back( br );
 
 
@@ -5173,7 +5187,7 @@ void Level::addBullet( doublePair inPosition,
                              bounce,
                              bounce,
                              explode,
-                             inPlayerBullet, size };
+                             inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( b );
 
 
@@ -5194,7 +5208,7 @@ void Level::addBullet( doublePair inPosition,
                               bounce,
                               bounce,
                               explode,
-                              inPlayerBullet, size };
+                              inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( br );
                 }
             
@@ -5210,7 +5224,7 @@ void Level::addBullet( doublePair inPosition,
                  bounce,
                  bounce,
                  explode,
-                 inPlayerBullet, size };
+                 inPlayerBullet, size, inEnemyBulletMarker };
     mBullets.push_back( b );
     
 

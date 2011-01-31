@@ -37,6 +37,8 @@ typedef struct Bullet {
         double explode;
         char playerFlag;
         float size;
+        // matches firing enemy's bulletMarker
+        char enemyMarker;
     } Bullet;
 
 
@@ -91,6 +93,8 @@ typedef struct Enemy {
         NoteSequence musicNotes;
         int stepsUntilNextGlowTrail;
         int difficultyLevel;
+        // int used to mark bullets that were fired by this enemy
+        char bulletMarker;
     } Enemy;
 
 
@@ -282,7 +286,7 @@ class Level {
                         PowerUpSet *inPowers,
                         doublePair inHeatSeekWaypoint,
                         double inSpeed, char inPlayerBullet,
-                        int inEnemyIndex = -1 );
+                        char inEnemyBulletMarker = -1 );
 
 
         void pushAllMusicIntoPlayer();
