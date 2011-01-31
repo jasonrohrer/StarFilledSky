@@ -191,7 +191,8 @@ double zoomSpeed = 0.01;
 double zoomDirection = 1;
 
 
-Font *mainFont;
+Font *levelNumberFont;
+Font *levelNumberReducedFont;
 
 Font *mainFont2;
 
@@ -439,7 +440,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     initSpriteBank();
     initBulletSizeSet();
     
-    mainFont = new Font( getFontTGAFileName(), -2, 4, true, 2.0 );
+    levelNumberFont = new Font( getFontTGAFileName(), -2, 4, true, 2.0 );
+    levelNumberReducedFont = 
+        new Font( getFontTGAFileName(), -2, 4, true, 1.0 );
 
     mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
     
@@ -558,7 +561,8 @@ void freeFrameDrawer() {
     freeTutorial();
     
 
-    delete mainFont;
+    delete levelNumberFont;
+    delete levelNumberReducedFont;
     delete mainFont2;
     delete tinyFont;
     
@@ -641,9 +645,10 @@ static Level *getNextAbove() {
 
 
 
-void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
-                    int inMaxSegments,
-                    float inFade ) {
+// returns maximum x extent (to right) of health bar
+static double drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
+                             int inMaxSegments,
+                             float inFade ) {
     
     double redBarWidth;
     
@@ -734,6 +739,9 @@ void drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
                 inBarLeftEdge.y + 0.125 );
             }
         }
+
+    return inBarLeftEdge.x + fullBarWidth;
+
     /*
     // segment markers
     if( inMaxSegments < 10 ) {
@@ -2094,28 +2102,14 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
 
-    // level number display on dash
-    setDrawColor( levelNumberColor.r, levelNumberColor.g, levelNumberColor.b, 
-                  levelNumberColor.a );
-    
+    // compute level number position here, because we use it as a base
+    // for other positions on dashboard
+
     doublePair levelNumberPos = { lastScreenViewCenter.x +
                                   viewWidth /2,
                                   lastScreenViewCenter.y +
                                   viewHeightFraction * viewWidth /2 - 0.625 };
-    
-    
-    char *levelString = autoSprintf( "%d", levelNumber );
-    
-    mainFont->drawString( levelString, levelNumberPos, alignRight );
-    
-    delete [] levelString;
 
-
-    
-
-
-
-    
 
 
     Level *nextAbove = getNextAbove();
@@ -2258,9 +2252,10 @@ void drawFrameNoUpdate( char inUpdate ) {
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
 
-    drawHealthBar( barPos, playerHealthFraction, playerMax, 
+    double healthBarMaxX =
+        drawHealthBar( barPos, playerHealthFraction, playerMax, 
                    1 - zoomProgress );
-
+    
     
     if( levelToGetCurrentFrom != currentLevel ) {
         // draw faded in on top
@@ -2268,9 +2263,48 @@ void drawFrameNoUpdate( char inUpdate ) {
         currentLevel->getPlayerHealth( &playerHealth, &playerMax );
         float playerHealthFraction = playerHealth / (float)playerMax;
 
-        drawHealthBar( barPos, playerHealthFraction, playerMax,
-                       zoomProgress );
+        double thisMaxX = 
+            drawHealthBar( barPos, playerHealthFraction, playerMax,
+                           zoomProgress );
+        if( thisMaxX > healthBarMaxX ) {
+            healthBarMaxX = thisMaxX;
+            }
         }
+
+
+
+    // level number display on dash
+    // shrink it to avoid hitting health bar if necessary
+    setDrawColor( levelNumberColor.r, levelNumberColor.g, levelNumberColor.b, 
+                  levelNumberColor.a );
+    
+    
+    
+    char *levelString = autoSprintf( "%d", levelNumber );
+    
+    double stringWidth = levelNumberFont->measureString( levelString );
+    
+    if( levelNumberPos.x - stringWidth < healthBarMaxX ) {
+        // hits health bar
+
+        // draw it smaller, and a bit up more
+        doublePair smallNumberPos = levelNumberPos;
+        
+        smallNumberPos.y += 0.0625;
+        
+        levelNumberReducedFont->drawString( levelString, 
+                                            smallNumberPos, alignRight );
+        }
+    else {
+        levelNumberFont->drawString( levelString, levelNumberPos, alignRight );
+        }
+    
+    delete [] levelString;
+
+
+
+
+
 
 
     // darken bottom of entire panel to push it back a bit

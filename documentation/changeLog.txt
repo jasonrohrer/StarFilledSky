@@ -15,6 +15,9 @@ Version 7
 
 --Shorted some tutorial phrases to fit on a 5:3 (SXGA) aspect ratio monitor.
 
+--Prevented level-number collision with health bar at super-high levels by
+  dynamically shrinking the font.
+
 
 
 
