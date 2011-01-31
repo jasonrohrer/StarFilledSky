@@ -1284,6 +1284,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     getPlayerHealth( &health, &max );
     mPlayerHealth = max;
     
+    mPlayerHealthBarJittering = false;
+    mPlayerHealthBarJitterProgress = 0;
+    
+
     mNextEnemyPathFindIndex = 0;
     
     
@@ -2891,6 +2895,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         mPlayerHealth -= 1;
                         mPlayerSprite.startSquint();
 
+                        mPlayerHealthBarJittering = true;
+                        mPlayerHealthBarJitterProgress = 0;
+
                         if( mPlayerHealth < 0 ) {
                             mPlayerHealth = 0;
                             }
@@ -3870,6 +3877,15 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             t--;
             }
         }
+
+    // step health bar jitter even when frozen
+    if( mPlayerHealthBarJittering ) {
+        mPlayerHealthBarJitterProgress += 0.025;
+        if( mPlayerHealthBarJitterProgress > 1 ) {
+            mPlayerHealthBarJittering = false;
+            }
+        }
+    
 
 
         
@@ -4857,6 +4873,22 @@ void Level::restorePlayerHealth() {
     int v, m;
     getPlayerHealth( &v, &m );
     mPlayerHealth = m;
+    }
+
+
+
+doublePair Level::getPlayerHealthBarJitter() {
+    doublePair jitter = { 0, 0 };
+    
+    if( mPlayerHealthBarJittering ) {
+        
+        jitter.y = 
+            0.375 *
+            (1 - mPlayerHealthBarJitterProgress) *
+            sin( mPlayerHealthBarJitterProgress * 20 );
+
+        }
+    return jitter;
     }
 
 

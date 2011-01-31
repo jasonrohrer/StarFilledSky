@@ -2252,9 +2252,14 @@ void drawFrameNoUpdate( char inUpdate ) {
     levelToGetCurrentFrom->getPlayerHealth( &playerHealth, &playerMax );
     float playerHealthFraction = playerHealth / (float)playerMax;
 
+    doublePair thisBarPos = 
+        add( barPos, 
+             levelToGetCurrentFrom->getPlayerHealthBarJitter() );
+    
+
     double healthBarMaxX =
-        drawHealthBar( barPos, playerHealthFraction, playerMax, 
-                   1 - zoomProgress );
+        drawHealthBar( thisBarPos, playerHealthFraction, playerMax, 
+                       1 - zoomProgress );
     
     
     if( levelToGetCurrentFrom != currentLevel ) {
@@ -2263,8 +2268,13 @@ void drawFrameNoUpdate( char inUpdate ) {
         currentLevel->getPlayerHealth( &playerHealth, &playerMax );
         float playerHealthFraction = playerHealth / (float)playerMax;
 
+        doublePair thisBarPos = 
+            add( barPos, 
+                 currentLevel->getPlayerHealthBarJitter() );
+
+
         double thisMaxX = 
-            drawHealthBar( barPos, playerHealthFraction, playerMax,
+            drawHealthBar( thisBarPos, playerHealthFraction, playerMax,
                            zoomProgress );
         if( thisMaxX > healthBarMaxX ) {
             healthBarMaxX = thisMaxX;

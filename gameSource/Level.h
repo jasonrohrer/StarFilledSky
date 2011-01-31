@@ -250,6 +250,9 @@ class Level {
         void getPlayerHealth( int *outValue, int *outMax );
         void restorePlayerHealth();
         
+        // jitter after player hit
+        doublePair getPlayerHealthBarJitter();
+        
 
 
 
@@ -486,6 +489,8 @@ class Level {
         
         int mPlayerHealth;
         
+        char mPlayerHealthBarJittering;
+        double mPlayerHealthBarJitterProgress;
 
 
         ColorScheme mColors;
