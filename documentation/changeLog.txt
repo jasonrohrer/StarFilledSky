@@ -13,6 +13,8 @@ Version 7
 
 --Improved tutorial wording.
 
+--Shorted some tutorial phrases to fit on a 5:3 (SXGA) aspect ratio monitor.
+
 
 
 
