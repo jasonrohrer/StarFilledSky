@@ -140,6 +140,7 @@ void loadTutorialBookmark() {
             // assumes player just picked up tokens in previous level
             tutorialsDone[currentTut] = true;
             currentTut++;
+            rigPowerUpsForTeaching = false;
             }
         else {
             tutorialsReady[currentTut] = true;
@@ -204,7 +205,9 @@ void checkTutorial() {
         tutorialCompletedCount = readCount;
         }
 
-    if( ( tutorialCompletedCount >= 1 && ! forceFreshStart )
+    if( ( tutorialCompletedCount >= 1 && 
+          ! forceFreshStart && 
+          ! forceBookmark )
         ||
         forceEnd ) {
 
@@ -220,7 +223,12 @@ void checkTutorial() {
             tutorialsReady[i] = true;
             }        
         }
-    else if( tutorialCompletedCount == 0 && !forceFreshStart && !forceEnd) {
+    else if( ( forceBookmark || tutorialCompletedCount == 0 ) 
+             && 
+             !forceFreshStart 
+             && 
+             !forceEnd) {
+
         loadTutorialBookmark();
         }
     }

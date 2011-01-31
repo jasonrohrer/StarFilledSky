@@ -7,6 +7,9 @@ Version 7
 
 --Changed so that first sub-level inside tokens has level-1 tokens on floor.
 
+--Fixed tutorial completed detection when playing back a recorded game.
+
+--Fixed bug in tutorial power-up rigging when resuming tutorial after quitting.
 
 
 
