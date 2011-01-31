@@ -9,7 +9,7 @@ tutorial_insideMarker "[X]"
 
 tutorial_youMarker "[Y]"
 
-tutorial_tokens "Gathered tokens affect what you are inside."
+tutorial_tokens "Gathered tokens combine to affect what you are inside."
 
 tutorial_useTokens "Now you can use what you picked up inside yourself."
 
@@ -24,9 +24,9 @@ tutorial_enter2_token "You can also enter tokens."
 tutorial_gather "Gathered tokens..."
 
 
-tutorial_gather_self "Gathered tokens change the self that you're inside."
-tutorial_gather_enemy "Gathered tokens change the enemy that you're inside."
-tutorial_gather_token "Gathered tokens change the token that you're inside.##Sub-tokens hold even better tokens, but difficulty increases."
+tutorial_gather_self "Gathered tokens combine to change the self that you entered."
+tutorial_gather_enemy "Gathered tokens combine to change the enemy that you entered."
+tutorial_gather_token "Gathered tokens change the token that you entered by majority.##Enter sub-tokens for bigger upgrades, but difficulty increases."
 
 
 

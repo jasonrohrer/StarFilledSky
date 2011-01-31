@@ -11,6 +11,8 @@ Version 7
 
 --Fixed bug in tutorial power-up rigging when resuming tutorial after quitting.
 
+--Improved tutorial wording.
+
 
 
 
