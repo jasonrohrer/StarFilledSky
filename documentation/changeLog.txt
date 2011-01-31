@@ -25,6 +25,7 @@ Version 7
 
 --Limit on enemy cluster sizes at lower levels (thanks Richard Lemarchand). 
 
+--Switched ESC to just toggle pause, and F4 to quit from pause screen.
 
 
 

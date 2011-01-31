@@ -36,7 +36,7 @@ pauseMessage1 "Press ENTER to resume"
 
 pauseMessage2 "or type something for posterity:"
 
-pauseMessage3 "Press ESC or CTRL-Q to quit"
+pauseMessage3 "Press F4 to quit"
 
 pauseMessage4 "(saves a level number bookmark)"
 
