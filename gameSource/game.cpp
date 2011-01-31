@@ -1547,7 +1547,8 @@ void drawFrame( char inUpdate ) {
 
         // keep active as long as mouse stays over, but fade out quickly 
         // after mouse leaves
-        triggerTip( hitPowerUp.powerType, 0.3 );
+        // keepy showing, with a delay, after quota of showings filled
+        triggerTip( hitPowerUp.powerType, true, 0.3 );
         }
     
 
