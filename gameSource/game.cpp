@@ -2241,10 +2241,36 @@ void drawFrameNoUpdate( char inUpdate ) {
     drawSprite( riseMarker, markerPos );
 
     setDrawColor( 1, 1, 1, 1 );
+
+
+    double healthBarMaxX = - DBL_MAX;
+
+    if( levelToGetCurrentFrom != currentLevel ) {
+        // draw faded in underneath, always centered
+        
+        doublePair currentBarPos = { lastScreenViewCenter.x, setPos.y };
+        currentBarPos.x += 1.75;
+
+        int playerHealth, playerMax;
+
+        currentLevel->getPlayerHealth( &playerHealth, &playerMax );
+        float playerHealthFraction = playerHealth / (float)playerMax;
+
+        doublePair thisBarPos = 
+            add( currentBarPos, 
+                 currentLevel->getPlayerHealthBarJitter() );
+
+
+        healthBarMaxX = 
+            drawHealthBar( thisBarPos, playerHealthFraction, playerMax,
+                           zoomProgress );
+        }
+
+
     
 
-    // health bar
-    doublePair barPos = { lastScreenViewCenter.x, setPos.y };
+    // top health bar, moves with set during zoom
+    doublePair barPos = setPos;
     barPos.x += 1.75;
 
     int playerHealth, playerMax;
@@ -2257,29 +2283,15 @@ void drawFrameNoUpdate( char inUpdate ) {
              levelToGetCurrentFrom->getPlayerHealthBarJitter() );
     
 
-    double healthBarMaxX =
+    double thisMaxX =
         drawHealthBar( thisBarPos, playerHealthFraction, playerMax, 
                        1 - zoomProgress );
     
-    
-    if( levelToGetCurrentFrom != currentLevel ) {
-        // draw faded in on top
-        
-        currentLevel->getPlayerHealth( &playerHealth, &playerMax );
-        float playerHealthFraction = playerHealth / (float)playerMax;
-
-        doublePair thisBarPos = 
-            add( barPos, 
-                 currentLevel->getPlayerHealthBarJitter() );
-
-
-        double thisMaxX = 
-            drawHealthBar( thisBarPos, playerHealthFraction, playerMax,
-                           zoomProgress );
-        if( thisMaxX > healthBarMaxX ) {
-            healthBarMaxX = thisMaxX;
-            }
+    if( thisMaxX > healthBarMaxX ) {
+        healthBarMaxX = thisMaxX;
         }
+    
+    
 
 
 

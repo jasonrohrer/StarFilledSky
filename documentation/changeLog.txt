@@ -27,6 +27,11 @@ Version 7
 
 --Switched ESC to just toggle pause, and F4 to quit from pause screen.
 
+--Added player health bar jitter when player hit.
+
+--Improved dashboard appearance by having player healthbars move with their 
+  corresponding power-up set during zoom.
+
 
 
 Version 6    2011-January-29
