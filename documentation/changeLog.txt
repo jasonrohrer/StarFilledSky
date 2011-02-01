@@ -42,6 +42,8 @@ Version 7
 --Fixed to prevent blocking symmetrical rise markers in narrow vertical 
   corridor at center of level.
 
+--Added path highlight on floor to closest rise marker.
+
 
 
 

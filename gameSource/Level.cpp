@@ -2068,13 +2068,17 @@ void insertSearchRecord( pathSearchQueue *inQueue,
 
 GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld, 
                          GridPos inGoal, double inMoveSpeed,
-                         int *outNumStepsToGoal ) {
+                         int *outNumStepsToGoal,
+                         GridPos **outFullPath ) {
 
     // watch for degen case where start and goal are equal
     if( equal( inStart, inGoal ) ) {
         
         if( outNumStepsToGoal != NULL ) {
             *outNumStepsToGoal = 0;
+            }
+        if( outFullPath != NULL ) {
+            *outFullPath = NULL;
             }
         return inStart;
         }
@@ -2263,6 +2267,10 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
     if( outNumStepsToGoal != NULL ) {
         *outNumStepsToGoal = finalPath.size() - 1;
         }
+    if( outFullPath != NULL ) {
+        *outFullPath = finalPath.getElementArray();
+        }
+    
     
 
     // found next step away from start
@@ -2423,6 +2431,18 @@ static void setPartLoudnessAndStereo( doublePair inSourcePos,
 
 
 
+
+
+
+static char wasBeatHit = false;
+
+void beatHit() {
+    wasBeatHit = true;
+    }
+
+
+
+
 int Level::getStepsToRiseMarker( doublePair inPos ) {
     // loudness for closest rise markers
     doublePair closestRisePosition = mRiseWorldPos;
@@ -2438,9 +2458,97 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
         }
 
     int numStepsToRise;
+
+
+    if( !wasBeatHit ) {
+
+        // not on beat, or player shooting
+
+        wasBeatHit = false;
+        
+
+        // just count steps, don't mark full path
+        pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
+                  0.01, &numStepsToRise  );
+        
+        
+        }
+    else {
+        // beat just hit
+        wasBeatHit = false;
+        
+        // mark full path
+
+        GridPos *fullPath;
+
+
+
+        pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
+                  0.01, &numStepsToRise, &fullPath );
+
+        if( fullPath != NULL ) {
+
+            float baseFade = 1;
+            
+            if( numStepsToRise < 20 ) {
+                
+                if( numStepsToRise < 15 ) {
+                    baseFade = 0;
+                    }
+                else {
+                    baseFade = (numStepsToRise - 15) / 5.0f;
+                    }
+                }
+            
+                
+            int fullPathLength = numStepsToRise + 1;
+            
+            int fadeSteps = 4;
+                
+            int fadeSkip = 2;
+            
+
+            int fadeStart = fullPathLength - fadeSkip - fadeSteps;
+
+            for( int i=0; i<fullPathLength; i++ ) {
+                    
+                GridPos p = fullPath[i];
+                
+                int squareIndex = mSquareIndices[ p.y ][ p.x ];
+                
+                float fade = 1;
+                
+                if( i > fadeStart ) {
+                    
+                    if( i -  fadeStart < fadeSteps ) {
+                        
+                        fade = 1.0f - 
+                            ( i - fadeStart + 1 ) / (float)fadeSteps;    
+                        }
+                    else {
+                        fade = 0;
+                        }
+                    }
+                
+                
+                fade *= baseFade;
+
+                float totalWeight = 1 + fade;
+
+                mGridColors[ squareIndex ].r += fade * mColors.special.r;
+                mGridColors[ squareIndex ].g += fade * mColors.special.g;
+                mGridColors[ squareIndex ].b += fade * mColors.special.b;
+                
+                mGridColors[ squareIndex ].r /= totalWeight;
+                mGridColors[ squareIndex ].g /= totalWeight;
+                mGridColors[ squareIndex ].b /= totalWeight;
+                }
+
+            delete [] fullPath;        
+            }
+        }
     
-    pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
-              0.01, &numStepsToRise );
+    
 
     return numStepsToRise;
     }

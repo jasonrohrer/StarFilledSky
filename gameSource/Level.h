@@ -329,9 +329,12 @@ class Level {
 
         // if outNumStepsToGoal pointer provided, call stops after
         // this is computed
+        // full path destroyed by caller if requested and result not NULL
+        // full path contains ( outNumStepsToGoal + 1 ) positions in it
         GridPos pathFind( GridPos inStart, doublePair inStartWorld,
                           GridPos inGoal,
-                          double inMoveSpeed, int *outNumStepsToGoal = NULL );
+                          double inMoveSpeed, int *outNumStepsToGoal = NULL,
+                          GridPos **outFullPath = NULL );
         
         void generateEnemyDestructionSmoke( Enemy *inE );
         

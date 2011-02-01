@@ -4,6 +4,8 @@
 #include "Timbre.h"
 #include "Envelope.h"
 
+#include "beatTracker.h"
+
 
 #include "minorGems/game/game.h"
 
@@ -16,6 +18,8 @@
 #include <stdlib.h>
 
 
+
+static int beatPart = 20;
 
 
 // whether note is currently on and playing or not
@@ -365,6 +369,12 @@ void getSoundSamples( Uint8 *inBuffer, int inLengthToFillInBytes ) {
                     // new note
                     note = note->copy();
                     
+                    if( si == beatPart ) {
+                        // report beat hit
+                        beatHit();
+                        }
+                    
+
                     currentlyPlayingNotes.push_back( note );
                     
                     // save pointer to active envelope and timbre
