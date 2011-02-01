@@ -33,6 +33,8 @@ int delayStepCount = 0;
 int delaySteps;
 
 
+double maxTipStringWidth = 0;
+
 
 
 // use fixedSpriteBank's macro 
@@ -53,7 +55,21 @@ static int tipShownCount[] = {
 void initTipDisplay() {
 
     delaySteps = (int)( 60 / frameRateFactor );
+
+
+    for( int p=powerUpHeart; p<=powerUpExplode; p++ ) {
+        
+        const char *tipString = 
+            translate( spriteIDTipTranslateKeys[ p ] );
+
+        double width = tinyFont->measureString( tipString );
+        
+        if( width > maxTipStringWidth ) {
+            maxTipStringWidth = width;
+            }
+        }
     }
+
 
 
 
@@ -93,6 +109,12 @@ void drawTipDisplay( doublePair inScreenCenter ) {
             }
         
         doublePair tipPos = inScreenCenter;
+
+        tipPos.x += viewWidth / 2;
+        
+        tipPos.x -= maxTipStringWidth / 2 + 0.25;
+
+
         
         tipPos.y += (viewWidth * viewHeightFraction) /  2;
         
