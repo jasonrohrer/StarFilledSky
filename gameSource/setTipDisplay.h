@@ -14,7 +14,7 @@ void drawSetTipDisplay( doublePair inScreenCenter );
 
 // inSet can be destroyed by caller immediately after this call returns
 void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket=false,
-                    char inFadeIn=false );
+                    char inFadeIn=false, char inBlocking=false );
 
 
 

@@ -26,6 +26,9 @@ static float tipFadeIn = 1.0f;
 
 static char tipUnderMiddleBracket = false;
 
+static char tipIsBlocking = false;
+
+
 
 #define SET_TIP_CAPACITY 4
 
@@ -121,6 +124,7 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
             if( tipProgress > 1 ) {
                 tipShowing = false;
                 tipProgress = 0;
+                tipIsBlocking = false;
                 }
             }
         }
@@ -130,9 +134,17 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
 
 
 void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
-                    char inFadeIn ) {
+                    char inFadeIn, char inBlocking ) {
 
+    if( tipIsBlocking ) {
+        // already showing a blocking tip
+        // ignore this one
+        return;
+        }
     
+    
+
+
     tipShowing = true;
     
     // reset progress (instant jump)
@@ -146,6 +158,8 @@ void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
     else {
         tipFadeIn = 1;
         }
+
+    tipIsBlocking = inBlocking;
     
 
     

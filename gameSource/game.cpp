@@ -2777,7 +2777,7 @@ char getUsesSound() {
 
 void triggerCurrentPlayerSetTip() {
     
-    triggerSetTip( currentLevel->getPlayerPowers(), true, true );
+    triggerSetTip( currentLevel->getPlayerPowers(), true, true, true );
     }
 
 
