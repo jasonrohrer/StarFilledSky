@@ -736,7 +736,9 @@ void Level::generateReproducibleData() {
     char placed = false;
 
     while( !placed ) {
-        int x = randSource.getRandomBoundedInt( 0, MAX_LEVEL_H - 1 );
+        // place first rise marker on right side, if symmetrical, since
+        // we only compute cut points on right side
+        int x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
         int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
 
         if( mWallFlags[y][x] == 1 &&
