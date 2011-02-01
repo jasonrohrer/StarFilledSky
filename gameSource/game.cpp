@@ -429,7 +429,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     setCursorVisible( false );
-    grabInput( true );
+    grabInput( false );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -1546,7 +1546,8 @@ void drawFrame( char inUpdate ) {
             currentLevel->peekPowerUp( mousePos );
 
         // keepy showing, with a delay, after quota of showings filled
-        triggerTip( hitPowerUp.powerType, true );
+        // start at 0.5 to only hold solid for 1 second after mouse leaves 
+        triggerTip( hitPowerUp.powerType, true, 0.5 );
         }
     
 
@@ -1620,7 +1621,9 @@ void drawFrame( char inUpdate ) {
 
         s->pushPower( p, powerPos );
 
-        triggerTip( p.powerType );
+        // don't trigger at all after quota filled
+        // show for 2 seconds before a 1-second fade
+        triggerTip( p.powerType, false, 0.25 );
         }
     
 

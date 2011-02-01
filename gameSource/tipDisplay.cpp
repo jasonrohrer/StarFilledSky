@@ -70,8 +70,8 @@ void drawTipDisplay( doublePair inScreenCenter ) {
 
         float fade = 1;
         
-        if( tipProgress > 0.5 ) {
-            fade = 1 - ( tipProgress - 0.5 ) / 0.5;
+        if( tipProgress > 0.75 ) {
+            fade = 1 - ( tipProgress - 0.75 ) / 0.25;
             }
         
         doublePair tipPos = inScreenCenter;
@@ -98,7 +98,7 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         tinyFont->drawString( currentTipString, 
                               tipPos, alignCenter );
         
-        tipProgress += 0.01 * frameRateFactor;
+        tipProgress += 0.005 * frameRateFactor;
         
         if( tipProgress > 1 ) {
             tipShowing = false;
