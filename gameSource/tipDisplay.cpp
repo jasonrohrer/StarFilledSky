@@ -126,7 +126,7 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         drawTip( currentTipString, tipPos, fade );
         
         
-        tipProgress += 0.005 * frameRateFactor;
+        tipProgress += 0.00417 * frameRateFactor;
         
         if( tipProgress > 1 ) {
             tipShowing = false;

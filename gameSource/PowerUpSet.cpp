@@ -4,6 +4,7 @@
 
 #include "drawUtils.h"
 #include "setTipDisplay.h"
+#include "tutorial.h"
 
 
 #include "minorGems/util/random/CustomRandomSource.h"
@@ -551,8 +552,10 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
             
             mPowers[ POWER_SET_SIZE - 1 ] = mPowerToPush;
 
-            // show tip for this new combo
-            triggerSetTip( this );
+            if( shouldSetTipsBeShown() ) {    
+                // show tip for this new combo
+                triggerSetTip( this );
+                }
             
 
             recomputeDimFlags();

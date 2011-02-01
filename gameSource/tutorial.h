@@ -31,6 +31,9 @@ char shouldPowerUpsBeRigged();
 
 char shouldEnterBeBlocked();
 
+char shouldSetTipsBeShown();
+
+
 
 // check if we're revisiting a level in tutorial mode
 // allows us to stick some hearts there to prevent user from getting stuck

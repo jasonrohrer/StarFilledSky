@@ -21,6 +21,12 @@ static char tipShowing = false;
 
 static float tipProgress = 0;
 
+static float tipFadeIn = 1.0f;
+
+
+static char tipUnderMiddleBracket = false;
+
+
 #define SET_TIP_CAPACITY 4
 
 static int numFilledStrings = 0;
@@ -52,7 +58,6 @@ void freeSetTipDisplay() {
 
 
 
-
 void drawSetTipDisplay( doublePair inScreenCenter ) {
     
     if( tipShowing ) {
@@ -60,14 +65,27 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
 
         float fade = 1;
         
-        if( tipProgress > 0.75 ) {
-            fade = 1 - ( tipProgress - 0.75 ) / 0.25;
+        if( tipFadeIn == 1 ) {
+            // fade out at end of progress
+            if( tipProgress > 0.75 ) {
+                fade = 1 - ( tipProgress - 0.75 ) / 0.25;
+                }
             }
+        else {
+            // still fading in
+            fade = tipFadeIn;
+            }
+        
         
         doublePair tipPos = inScreenCenter;
         
-        tipPos.x -= viewWidth / 2;
-        tipPos.x += 3.3125;
+        if( tipUnderMiddleBracket ) {
+            tipPos.x -= 0.4375;
+            }
+        else {
+            tipPos.x -= viewWidth / 2;
+            tipPos.x += 3.3125;
+            }
         
 
         tipPos.y += (viewWidth * viewHeightFraction) /  2;
@@ -87,11 +105,23 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
             tipPos.y -= 0.5;
             }
         
-        tipProgress += 0.005 * frameRateFactor;
-        
-        if( tipProgress > 1 ) {
-            tipShowing = false;
-            tipProgress = 0;
+        if( tipFadeIn < 1 ) {
+            tipFadeIn += 0.01 * frameRateFactor;
+            
+            if( tipFadeIn > 1 ) {
+                tipFadeIn = 1;
+                }
+            }
+        else {
+            // fade-in complete
+            // start progress
+
+            tipProgress += 0.00417 * frameRateFactor;
+            
+            if( tipProgress > 1 ) {
+                tipShowing = false;
+                tipProgress = 0;
+                }
             }
         }
     }
@@ -99,14 +129,25 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
 
 
 
-void triggerSetTip( PowerUpSet *inSet ) {
+void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
+                    char inFadeIn ) {
 
     
     tipShowing = true;
     
     // reset progress (instant jump)
     tipProgress = 0;
+
+    tipUnderMiddleBracket = inUnderMiddleBracket;
     
+    if( inFadeIn ) {
+        tipFadeIn = 0;
+        }
+    else {
+        tipFadeIn = 1;
+        }
+    
+
     
     clearTipStrings();
 

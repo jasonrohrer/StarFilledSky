@@ -7,6 +7,7 @@
 
 #include "Font.h"
 #include "drawUtils.h"
+#include "setTipDisplay.h"
 
 
 #include <math.h>
@@ -267,6 +268,13 @@ char shouldEnterBeBlocked() {
     }
 
 
+char shouldSetTipsBeShown() {
+    // keep showing as long as enter is blocked
+    return blockEnterForTeaching;
+    }
+
+
+
 
 void resetTutorial() {
     if( currentTut == -1 ) {
@@ -457,6 +465,11 @@ void drawTutorial( doublePair inScreenCenter ) {
 
         if( tutorialOffset < 1 ) {
         
+            if( tutorialFade == 0 && currentTut == 4 ) {
+                triggerCurrentPlayerSetTip();
+                }
+
+
             tutorialFade += 0.01 * frameRateFactor;
     
             if( tutorialFade > 1 ) {
