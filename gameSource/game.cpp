@@ -2013,6 +2013,11 @@ void drawFrameNoUpdate( char inUpdate ) {
                                         lastLevelCurrentViewSize );
             }
 
+        
+        // force the end of any tips that were started DURING zoom
+        forceTipEnd();
+        forceSetTipEnd();
+
         // step zoom and check for zoom end
         if( inUpdate ) {
             zoomProgress += zoomSpeed * zoomDirection * frameRateFactor;

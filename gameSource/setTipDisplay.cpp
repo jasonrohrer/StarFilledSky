@@ -132,6 +132,17 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
 
 
 
+void forceSetTipEnd() {
+    if( tipProgress < 0.75 ) {
+        // jump right to end fade-out
+        tipFadeIn = 1;
+        tipProgress = 0.75;
+        }
+    }
+
+
+
+
 
 void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
                     char inFadeIn, char inBlocking ) {

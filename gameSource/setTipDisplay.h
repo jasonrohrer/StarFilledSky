@@ -17,6 +17,9 @@ void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket=false,
                     char inFadeIn=false, char inBlocking=false );
 
 
+void forceSetTipEnd();
+
+
 
 // this call implimented by game.cpp file
 void triggerCurrentPlayerSetTip();

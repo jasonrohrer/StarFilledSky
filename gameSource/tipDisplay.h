@@ -24,6 +24,9 @@ void triggerTip( spriteID inPowerType,
                  float inStartingProgress = 0 );
 
 
+void forceTipEnd();
+
+
 // utility function shared by setTipDisplay
 
 void drawTip( const char *inMessage, doublePair inPos, float inFade );

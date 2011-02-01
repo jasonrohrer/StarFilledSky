@@ -141,6 +141,15 @@ void drawTipDisplay( doublePair inScreenCenter ) {
 
 
 
+void forceTipEnd() {
+    if( tipProgress < 0.75 ) {
+        // jump right to end fade-out
+        tipProgress = 0.75;
+        }
+    }
+
+
+
 void triggerTip( spriteID inPowerType, char inShowAfterQuota, 
                  float inStartingProgress ) {
 
