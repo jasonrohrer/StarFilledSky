@@ -76,6 +76,9 @@ void drawSetTipDisplay( doublePair inScreenCenter ) {
         
         tipPos.y -= 0.4375;
         
+        // scoot down lower to avoid tutorial bracket
+        tipPos.y -= 0.375;
+
         
         for( int i=0; i<numFilledStrings; i++ ) {
             
