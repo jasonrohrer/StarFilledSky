@@ -34,6 +34,8 @@ Version 7
 
 --Added tool-tip text explaining each power-up.
 
+--Added tips for power-up combos to tutorial.
+
 --Fixed tutorial to wait until you rise back to where you started before 
   displaying the next (You can also enter...) tip.
 
