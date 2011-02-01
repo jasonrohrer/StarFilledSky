@@ -49,11 +49,11 @@ powerUpHeart_tip          "HEALTH BAR CAPACITY"
 powerUpBulletSize_tip     "BULLET SIZE"
 powerUpRapidFire_tip      "RATE OF FIRE"
 powerUpBulletSpeed_tip    "BULLET SPEED"
-powerUpSpread_tip         "SPREAD BULLETS"
-powerUpHeatSeek_tip       "HEAT SEEKING BULLETS"
+powerUpSpread_tip         "SPREAD"
+powerUpHeatSeek_tip       "HEAT SEEK"
 powerUpBulletDistance_tip "BULLET RANGE"
-powerUpBounce_tip         "BOUNCING BULLETS"
-powerUpExplode_tip        "EXPLODING BULLETS"
+powerUpBounce_tip         "BOUNCE"
+powerUpExplode_tip        "BURST"
 
 
 
