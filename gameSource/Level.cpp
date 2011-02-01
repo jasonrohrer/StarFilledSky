@@ -210,7 +210,7 @@ void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel,
 
 void Level::findCutPointsRecursive( int inCurrentIndex,
                                     int *inDepths,
-                                    int *inLowpoints ) {
+                                    int *inLowpoints, int inXLowerLimit ) {
     // recurse on each neighbor
 
     GridPos currentPos = mIndexToGridMap[ inCurrentIndex ];
@@ -228,7 +228,7 @@ void Level::findCutPointsRecursive( int inCurrentIndex,
 
         int nIndex = mSquareIndices[n.y][n.x];
 
-        if( mWallFlagsIndexed[ nIndex ] == 1 ) {
+        if( n.x >= inXLowerLimit && mWallFlagsIndexed[ nIndex ] == 1 ) {
             // a floor neighbor
 
             // already seen?
@@ -247,7 +247,8 @@ void Level::findCutPointsRecursive( int inCurrentIndex,
 
                 // recurse into it
 
-                findCutPointsRecursive( nIndex, inDepths, inLowpoints );
+                findCutPointsRecursive( nIndex, inDepths, inLowpoints, 
+                                        inXLowerLimit );
                 
                 // done exploring this neighbor.
 
@@ -719,7 +720,7 @@ void Level::generateReproducibleData() {
         depthInSearch[i] = -1;
         lowpointInSearch[i] = 0;
         }
-    findCutPointsRecursive( 0, depthInSearch, lowpointInSearch );
+    findCutPointsRecursive( 0, depthInSearch, lowpointInSearch, xLimit );
 
     delete [] depthInSearch;
     delete [] lowpointInSearch;

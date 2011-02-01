@@ -339,7 +339,7 @@ class Level {
         // find cut vertices in floor using Hopcroft and Tarjan's 1973 alg
         void findCutPointsRecursive( int inCurrentIndex,
                                      int *inDepths,
-                                     int *inLowpoints );
+                                     int *inLowpoints, int inXLowerLimit );
         
 
         // must lock audio around this call

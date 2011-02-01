@@ -37,6 +37,9 @@ Version 7
 --Fixed tutorial to wait until you rise back to where you started before 
   displaying the next (You can also enter...) tip.
 
+--Fixed to prevent blocking symmetrical rise markers in narrow vertical 
+  corridor at center of level.
+
 
 
 
