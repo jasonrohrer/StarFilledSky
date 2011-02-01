@@ -1,5 +1,12 @@
 #include "PowerUpSet.h"
 
+
+// get total level sum for a given power type
+int getTotalLevel( PowerUpSet *inSet, 
+                   spriteID inPowerType );
+
+
+
 int getMaxHealth( PowerUpSet *inSet );
 
 

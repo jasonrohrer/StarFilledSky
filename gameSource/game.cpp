@@ -51,6 +51,7 @@
 #include "RandomWalkerSet.h"
 #include "tutorial.h"
 #include "tipDisplay.h"
+#include "setTipDisplay.h"
 #include "musicPlayer.h"
 #include "numerals.h"
 
@@ -1620,10 +1621,6 @@ void drawFrame( char inUpdate ) {
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
         s->pushPower( p, powerPos );
-
-        // don't trigger at all after quota filled
-        // show for 2 seconds before a 1-second fade
-        triggerTip( p.powerType, false, 0.25 );
         }
     
 
@@ -2418,6 +2415,7 @@ void drawFrameNoUpdate( char inUpdate ) {
     drawTutorial( lastScreenViewCenter );
 
     drawTipDisplay( lastScreenViewCenter );
+    drawSetTipDisplay( lastScreenViewCenter );
     }
 
 

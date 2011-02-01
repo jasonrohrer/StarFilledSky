@@ -11,9 +11,9 @@ int testBulletValue = 0;
 
 
 
-
-static int getTotalLevel( PowerUpSet *inSet, 
-                          spriteID inPowerType ) {
+ 
+int getTotalLevel( PowerUpSet *inSet, 
+                   spriteID inPowerType ){
     
     int totalLevel = 0;
     for( int i=0; i<POWER_SET_SIZE; i++ ) {

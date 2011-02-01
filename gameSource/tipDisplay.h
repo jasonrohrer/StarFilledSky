@@ -22,3 +22,8 @@ void drawTipDisplay( doublePair inScreenCenter );
 void triggerTip( spriteID inPowerType, 
                  char inShowAfterQuota = false,
                  float inStartingProgress = 0 );
+
+
+// utility function shared by setTipDisplay
+
+void drawTip( const char *inMessage, doublePair inPos, float inFade );

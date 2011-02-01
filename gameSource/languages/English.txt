@@ -55,6 +55,8 @@ powerUpBulletDistance_tip "BULLET RANGE"
 powerUpBounce_tip         "BOUNCE"
 powerUpExplode_tip        "BURST"
 
+powerUpHeartSetCombo_tip  "MAX HEALTH"
+
 
 
 

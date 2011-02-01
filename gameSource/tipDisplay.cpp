@@ -62,6 +62,24 @@ void freeTipDisplay() {
 
 
 
+void drawTip( const char *inMessage, doublePair inPos, float inFade ) {
+    double messageWidth = tinyFont->measureString( inMessage );
+            
+        
+    setDrawColor( 0, 0, 0, 0.5 * inFade );
+    drawRect( inPos.x - messageWidth / 2 - 0.125, 
+              inPos.y - 0.25, 
+              inPos.x + messageWidth / 2 + 0.125, 
+              inPos.y + 0.25 );
+    setDrawColor( 1, 1, 1, inFade );
+
+    // shift by one sub-pixel, font drawing code is currently a bit off
+    inPos.x += 0.03125;
+    tinyFont->drawString( inMessage, 
+                          inPos, alignCenter );
+    }
+
+
 
 void drawTipDisplay( doublePair inScreenCenter ) {
     
@@ -83,20 +101,8 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         tipPos.y -= 0.4375;
         
         
-        double messageWidth = tinyFont->measureString( currentTipString );
-            
+        drawTip( currentTipString, tipPos, fade );
         
-        setDrawColor( 0, 0, 0, 0.5 * fade );
-        drawRect( tipPos.x - messageWidth / 2 - 0.125, 
-                  tipPos.y - 0.25, 
-                  tipPos.x + messageWidth / 2 + 0.125, 
-                  tipPos.y + 0.25 );
-        setDrawColor( 1, 1, 1, fade );
-
-        // shift by one sub-pixel, font drawing code is currently a bit off
-        tipPos.x += 0.03125;
-        tinyFont->drawString( currentTipString, 
-                              tipPos, alignCenter );
         
         tipProgress += 0.005 * frameRateFactor;
         

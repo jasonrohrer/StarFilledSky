@@ -35,6 +35,7 @@ DiagRandomWalker.cpp \
 RandomWalkerSet.cpp \
 tutorial.cpp \
 tipDisplay.cpp \
+setTipDisplay.cpp \
 musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
