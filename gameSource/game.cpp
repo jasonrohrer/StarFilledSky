@@ -1621,6 +1621,16 @@ void drawFrame( char inUpdate ) {
         PowerUpSet *s = nextAbove->getLastEnterPointPowers();
 
         s->pushPower( p, powerPos );
+
+        if( !shouldSetTipsBeShown() ) {
+            // if we're done showing set combo tips, revert to showing
+            // pick-up tips until we meet our quota for each type
+            
+            // don't trigger at all after quota filled
+            // show for 2 seconds before a 1-second fade
+            triggerTip( p.powerType, false, 0.25 );
+            }
+        
         }
     
 
