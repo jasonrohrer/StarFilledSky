@@ -630,6 +630,13 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             }
         }
     
+    if( inLevelRisenTo > 4 && inLevelRisenTo < 8 &&
+        shouldSetTipsBeShown() ) {
+        
+        triggerCurrentPlayerSetTip();
+        }
+    
+
     
     char tutorial6Showing = false;
     
