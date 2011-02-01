@@ -23,7 +23,7 @@ const char *currentTipString = NULL;
 spriteID currentTipSpriteID = endSpriteID;
 
 
-static int timesToShowEachTip = 5;
+static int timesToShowEachTip = 3;
 
 
 // delay counter before showing a tip after it has been shown the base
@@ -123,7 +123,7 @@ void triggerTip( spriteID inPowerType, char inShowAfterQuota,
         }
     
 
-    if( freshShow && tipShownCount[ inPowerType ] > timesToShowEachTip ) {
+    if( freshShow && tipShownCount[ inPowerType ] >= timesToShowEachTip ) {
     
         if( !inShowAfterQuota ) {
             // never show this tip again

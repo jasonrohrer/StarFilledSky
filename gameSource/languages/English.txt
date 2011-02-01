@@ -47,13 +47,13 @@ difficultyTag "DIFFICULTY"
 
 powerUpHeart_tip          "HEALTH BAR CAPACITY"
 powerUpBulletSize_tip     "BULLET SIZE"
-powerUpRapidFire_tip      "SHOT RATE"
-powerUpBulletSpeed_tip    "SHOT SPEED"
-powerUpSpread_tip         "SPREAD SHOT"
-powerUpHeatSeek_tip       "HEAT SEEK"
-powerUpBulletDistance_tip "SHOT RANGE"
-powerUpBounce_tip         "BOUNCE SHOT"
-powerUpExplode_tip        "EXPLODING SHOT"
+powerUpRapidFire_tip      "RATE OF FIRE"
+powerUpBulletSpeed_tip    "BULLET SPEED"
+powerUpSpread_tip         "SPREAD BULLETS"
+powerUpHeatSeek_tip       "HEAT SEEKING BULLETS"
+powerUpBulletDistance_tip "BULLET RANGE"
+powerUpBounce_tip         "BOUNCING BULLETS"
+powerUpExplode_tip        "EXPLODING BULLETS"
 
 
 

@@ -1545,10 +1545,8 @@ void drawFrame( char inUpdate ) {
         PowerUp hitPowerUp = 
             currentLevel->peekPowerUp( mousePos );
 
-        // keep active as long as mouse stays over, but fade out quickly 
-        // after mouse leaves
         // keepy showing, with a delay, after quota of showings filled
-        triggerTip( hitPowerUp.powerType, true, 0.3 );
+        triggerTip( hitPowerUp.powerType, true );
         }
     
 
