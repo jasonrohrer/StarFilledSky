@@ -587,8 +587,14 @@ static char levelVisited[7] = { true, false, false,
 static int baseLevelForEnterTutorials = 8;
 
 
+static int lastLevelRisenTo = 0;
+
+
 
 void tutorialRiseHappened( int inLevelRisenTo ) {
+
+    lastLevelRisenTo = inLevelRisenTo;
+    
 
     if( tutorialBriefMode ) {
         return;
@@ -623,10 +629,6 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         rigPowerUpsForTeaching = false;
         }
     if( inLevelRisenTo >= 8 ) {
-        
-        if( !tutorialsReady[5] ) {
-            baseLevelForEnterTutorials = inLevelRisenTo;
-            }
         tutorialsReady[5] = true;
         blockEnterForTeaching = false;
         }
@@ -720,10 +722,17 @@ void tutorialEnemyHit() {
 
 // report enter function used
 void tutorialSomethingEntered( itemType inType ) {
+    if( tutorialsReady[5] && ! tutorialsDone[5] ) {
+        baseLevelForEnterTutorials = lastLevelRisenTo;
+        }
+    
+
     if( tutorialBriefMode ) {
         tutorialsDone[5] = true;
         }
     
+
+
 
     if( tutorialsDone[4] ) {        
         
