@@ -44,6 +44,8 @@ Version 7
 
 --Added path highlight on floor to closest rise marker.
 
+--Changed first three power-up tutorial levels to include heart tokens.
+
 
 
 

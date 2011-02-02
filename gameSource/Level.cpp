@@ -1823,24 +1823,24 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             mainPower.powerType = powerUpBulletSize;
                             }
                         
-                        if( levelAlreadyVisited( mLevelNumber ) ) {
-                            heartToggle ++;
-                            if( heartToggle == 2 ) {
-                                heartToggle = 0;
-                                mainPower.powerType = powerUpHeart;
-                                }
+                        // always give player option of hearts
+                        // place 50%
+                        heartToggle ++;
+                        if( heartToggle == 2 ) {
+                            heartToggle = 0;
+                            mainPower.powerType = powerUpHeart;
                             }
                         }
                     else if( mLevelNumber == 5 ) {
                         
                         char heartPlaced = false;
-                        if( levelAlreadyVisited( mLevelNumber ) ) {
-                            heartToggle ++;
-                            if( heartToggle == 3 ) {
-                                heartToggle = 0;
-                                mainPower.powerType = powerUpHeart;
-                                heartPlaced = true;
-                                }
+                        // always give player option of hearts
+                        // place 50% hearts
+                        heartToggle ++;
+                        if( heartToggle == 3 ) {
+                            heartToggle = 0;
+                            mainPower.powerType = powerUpHeart;
+                            heartPlaced = true;
                             }
                         
                         if( !heartPlaced ) {    
