@@ -70,6 +70,12 @@ typedef struct GlowSpriteTrail {
     } GlowSpriteTrail;
 
 
+typedef struct RiseMarkerPathStep {
+        int floorIndex;
+        float blendFactor;
+    } RiseMarkerPathStep;
+
+
 
 
 
@@ -447,6 +453,10 @@ class Level {
         SimpleVector<BloodStain> mBloodStains;
         
         SimpleVector<GlowSpriteTrail> mGlowTrails;
+
+        
+        SimpleVector<RiseMarkerPathStep> mRiseMarkerPathSteps;
+        float mRiseMarkerPathStepFadeProgress;
 
 
         GridPos mRisePosition, mRisePosition2;

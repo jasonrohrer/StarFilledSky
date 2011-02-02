@@ -2510,50 +2510,54 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
                 baseFade = 0;
                 }
             
+            if( baseFade > 0 ) {
+                
+                // clear any existing path
+                mRiseMarkerPathSteps.deleteAll();
 
                 
-            int fullPathLength = numStepsToRise + 1;
+                int fullPathLength = numStepsToRise + 1;
             
-            int fadeSteps = 4;
+                int fadeSteps = 4;
                 
-            int fadeSkip = 0;
+                int fadeSkip = 0;
             
 
-            int fadeStart = fullPathLength - fadeSkip - fadeSteps;
+                int fadeStart = fullPathLength - fadeSkip - fadeSteps;
 
-            for( int i=0; i<fullPathLength; i++ ) {
+                for( int i=0; i<fullPathLength; i++ ) {
                     
-                GridPos p = fullPath[i];
+                    GridPos p = fullPath[i];
                 
-                int squareIndex = mSquareIndices[ p.y ][ p.x ];
-                
-                float fade = 1;
-                
-                if( i > fadeStart ) {
+                    int squareIndex = mSquareIndices[ p.y ][ p.x ];
                     
-                    if( i -  fadeStart < fadeSteps ) {
-                        
-                        fade = 1.0f - 
-                            ( i - fadeStart ) / (float)fadeSteps;    
+                    float fade = 1;
+                
+                    if( i > fadeStart ) {
+                    
+                        if( i -  fadeStart < fadeSteps ) {
+                            
+                            fade = 1.0f - 
+                                ( i - fadeStart ) / (float)fadeSteps;    
+                            }
+                        else {
+                            fade = 0;
+                            }
                         }
-                    else {
-                        fade = 0;
-                        }
+                
+                
+                    fade *= baseFade;
+
+
+                    RiseMarkerPathStep step =
+                        { squareIndex, fade };
+                    
+                    mRiseMarkerPathSteps.push_back( step );
                     }
-                
-                
-                fade *= baseFade;
 
-                float totalWeight = 1 + fade;
-
-                mGridColors[ squareIndex ].r += fade * mColors.special.r;
-                mGridColors[ squareIndex ].g += fade * mColors.special.g;
-                mGridColors[ squareIndex ].b += fade * mColors.special.b;
-                
-                mGridColors[ squareIndex ].r /= totalWeight;
-                mGridColors[ squareIndex ].g /= totalWeight;
-                mGridColors[ squareIndex ].b /= totalWeight;
+                mRiseMarkerPathStepFadeProgress = 1;
                 }
+            // else don't add a path, because it would be invisible anyway
 
             delete [] fullPath;        
             }
@@ -4034,6 +4038,18 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+    // step rise path steps, even when frozen
+    if( mRiseMarkerPathSteps.size() > 0 ) {
+        
+        mRiseMarkerPathStepFadeProgress -= 0.025 * frameRateFactor;
+        
+        if( mRiseMarkerPathStepFadeProgress < 0 ) {
+            mRiseMarkerPathStepFadeProgress = 0;
+            
+            mRiseMarkerPathSteps.deleteAll();
+            }
+        }    
+
 
 
         
@@ -4220,6 +4236,34 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             drawSquare( *( mGridWorldSpots[ stain->floorIndex ] ), 0.5 );
             }
 
+
+        
+        // rise marker path steps under shadow, same color as rise marker
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, 1 );
+
+        float pathFade = 0.75 * mRiseMarkerPathStepFadeProgress;
+        
+        for( int s=0; s<mRiseMarkerPathSteps.size(); s++ ) {
+            RiseMarkerPathStep *step = mRiseMarkerPathSteps.getElement( s );
+            
+            GridPos pos = mIndexToGridMap[ step->floorIndex ];
+            
+            if( pos.y >= visStartGrid.y && pos.y <= visEndGrid.y 
+                &&
+                pos.x >= visStartGrid.x && pos.x <= visEndGrid.x ) {
+        
+                if( step->blendFactor > 0 ) {
+
+                    setDrawFade( step->blendFactor * pathFade );
+            
+                    drawSquare( *( mGridWorldSpots[ step->floorIndex ] ), 
+                                0.5 );
+                    }
+                }
+            }
+        
         
         
         
