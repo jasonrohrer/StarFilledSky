@@ -4143,7 +4143,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
     // step health bar jitter even when frozen
     if( mPlayerHealthBarJittering ) {
-        mPlayerHealthBarJitterProgress += 0.025;
+        mPlayerHealthBarJitterProgress += 0.0125 * frameRateFactor;
         if( mPlayerHealthBarJitterProgress > 1 ) {
             mPlayerHealthBarJittering = false;
             }
