@@ -1596,8 +1596,12 @@ void drawFrame( char inUpdate ) {
         currentLevel->drawFloorEdges( false );
 
 
-        if( currentLevel->isInsidePlayer() && lastLevel->isInsidePlayer() ) {
-            // copy player's collected tokens upward
+        if( currentLevel->isInsidePlayer() && lastLevel->isInsidePlayer() 
+            &&
+            ! currentLevel->isKnockDown() ) {
+
+            // copy player's collected tokens upward, but not if rising
+            // out of a knock-down
 
             Level *nextHigherLevel = 
                 *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );

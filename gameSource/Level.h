@@ -312,6 +312,8 @@ class Level {
         
         char isInsidePlayer();
         
+        char isKnockDown();
+        
 
         int getTokenRecursionDepth();
         
@@ -385,6 +387,9 @@ class Level {
         char mInsideEnemy;
         
         char mInsidePowerUp;
+
+        char mKnockDown;
+        
 
         int mTokenRecursionDepth;
         

@@ -46,7 +46,8 @@ Version 7
 
 --Changed first three power-up tutorial levels to include heart tokens.
 
---Powers are now carried with you as you rise up.
+--Powers are now carried with you as you rise up (except when rising out of 
+  a knock-down).
 
 --Number of powers on floor reduced from constant 10 to a geometric random
   variable (10 powers on one floor is now very rare).

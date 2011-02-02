@@ -1325,6 +1325,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
     mInsideEnemy = inInsideEnemy;
     mInsidePowerUp = inInsidePowerUp;
+    mKnockDown = inIsKnockDown;
     
 
     if( inColors != NULL ) {
@@ -5650,6 +5651,12 @@ char Level::isInsideEnemy() {
 
 char Level::isInsidePlayer() {
     return !( mInsideEnemy || mInsidePowerUp );
+    }
+
+
+
+char Level::isKnockDown() {
+    return mKnockDown;
     }
 
 
