@@ -46,6 +46,8 @@ Version 7
 
 --Changed first three power-up tutorial levels to include heart tokens.
 
+--Powers are now carried with you as you rise up.
+
 
 
 

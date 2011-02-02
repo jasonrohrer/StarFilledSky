@@ -309,6 +309,13 @@ PowerUpSet::PowerUpSet( int inTotalLevel, spriteID inType ) {
 
 PowerUpSet::PowerUpSet( PowerUpSet *inSetToCopy ) {
     fillDefaultSet();
+
+    copySet( inSetToCopy );
+    }
+
+
+
+void PowerUpSet::copySet( PowerUpSet *inSetToCopy ) {
     
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i] = inSetToCopy->mPowers[i];

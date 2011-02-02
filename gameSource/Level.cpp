@@ -1322,6 +1322,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mSymmetrical = inSymmetrical;
     
     mInsideEnemy = inInsideEnemy;
+    mInsidePowerUp = inInsidePowerUp;
     
 
     if( inColors != NULL ) {
@@ -5045,6 +5046,11 @@ NoteSequence *Level::getPlayerNoteSequence() {
 
 
 
+void Level::setPlayerPowers( PowerUpSet *inPowers ) {
+    mPlayerPowers->copySet( inPowers );
+    }
+
+
 
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
     int max = 1 + getMaxHealth( mPlayerPowers );
@@ -5530,6 +5536,11 @@ void Level::pushAllMusicIntoPlayer() {
 
 char Level::isInsideEnemy() {
     return mInsideEnemy;
+    }
+
+
+char Level::isInsidePlayer() {
+    return !( mInsideEnemy || mInsidePowerUp );
     }
 
 

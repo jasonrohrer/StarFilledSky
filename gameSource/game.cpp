@@ -1594,6 +1594,18 @@ void drawFrame( char inUpdate ) {
         zoomProgress = 1;
         zoomDirection = -1;
         currentLevel->drawFloorEdges( false );
+
+
+        if( currentLevel->isInsidePlayer() && lastLevel->isInsidePlayer() ) {
+            // copy player's collected tokens upward
+
+            Level *nextHigherLevel = 
+                *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+
+            nextHigherLevel->setPlayerPowers( lastLevel->getPlayerPowers() );
+            }
+        
+
         }
 
 

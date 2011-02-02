@@ -68,6 +68,8 @@ class PowerUpSet {
         PowerUpSet( PowerUpSet *inSetToCopy );
         
 
+        void copySet( PowerUpSet *inSetToCopy );
+
 
         void pushPower( PowerUp inPower, doublePair inPowerPos );
         

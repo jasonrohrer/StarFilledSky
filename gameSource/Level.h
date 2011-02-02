@@ -252,6 +252,11 @@ class Level {
         
         NoteSequence *getPlayerNoteSequence();
         
+
+        // copied internally
+        void setPlayerPowers( PowerUpSet *inPowers );
+        
+
         
         void getPlayerHealth( int *outValue, int *outMax );
         void restorePlayerHealth();
@@ -304,6 +309,9 @@ class Level {
 
         char isInsideEnemy();
         
+        char isInsidePlayer();
+        
+
         int getTokenRecursionDepth();
         
         int getFloorTokenLevel();
@@ -375,6 +383,8 @@ class Level {
 
         char mInsideEnemy;
         
+        char mInsidePowerUp;
+
         int mTokenRecursionDepth;
         
         int mFloorTokenLevel;
