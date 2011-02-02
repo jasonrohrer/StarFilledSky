@@ -430,7 +430,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     setCursorVisible( false );
-    grabInput( false );
+    grabInput( true );
     
     // raw screen coordinates
     setMouseReportingMode( false );
