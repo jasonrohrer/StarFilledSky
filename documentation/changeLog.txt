@@ -48,6 +48,9 @@ Version 7
 
 --Powers are now carried with you as you rise up.
 
+--Number of powers on floor reduced from constant 10 to a geometric random
+  variable (10 powers on one floor is now very rare).
+
 
 
 

@@ -21,6 +21,8 @@
 #include "minorGems/io/file/File.h"
 #include "minorGems/graphics/filters/FastBlurFilter.h"
 
+#include "minorGems/math/probability/ProbabilityMassFunction.h"
+
 #include <math.h>
 
 
@@ -1681,11 +1683,36 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxNumPowerUps = 0;
         }
 
+    if( !shouldPowerUpsBeRigged() ) {
+    
+        // random number of power ups, chosen from a probability distribution
+        // 9 possible values, in [2..10]
+
+        double probabilities[9];
+        
+        // geometric
+        for( int i=0; i<9; i++ ) {
+            probabilities[i] = 0.3 * pow( 0.7, i );
+            }
+        
+        ProbabilityMassFunction pmf( &randSource, 9, probabilities );
+        
+        
+        maxNumPowerUps = pmf.sampleElement() + 2;
+        }
+    
 
     // skip to power-up parts (even if not all enemy parts used above)
     musicPartIndex = 10;
     
-
+    // pick a random, unused part, in range, for each power up
+    // (since we're placing <10 power ups many times, and we don't want
+    // to get stuck with less variety when we have 10 instruments available)
+    char musicPartsUsed[ PARTS ];
+    for( int p=musicPartIndex; p<PARTS; p++ ) {
+        musicPartsUsed[p] = false;
+        }
+    
 
 
 
@@ -1863,6 +1890,17 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 PowerUpSet *subPowers = new PowerUpSet( mainPower.level,
                                                         mainPower.powerType );
                 
+                int thisPartIndex = 
+                    randSource.getRandomBoundedInt( musicPartIndex,
+                                                    musicPartIndex + 9 );
+                
+                while( musicPartsUsed[ thisPartIndex ] ) {
+                    thisPartIndex = 
+                        randSource.getRandomBoundedInt( musicPartIndex,
+                                                        musicPartIndex + 9 );
+                    }
+                
+                musicPartsUsed[ thisPartIndex ] = true;
 
                 PowerUpToken t = { mainPower,
                                    pickPos,
@@ -1871,11 +1909,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                                       subPowers ),
                                    subPowers,
                                    generateRandomNoteSequence( 
-                                       musicPartIndex ),
+                                       thisPartIndex ),
                                    (int)( stepsBetweenGlowTrails / 
                                           frameRateFactor ) };
-                
-                musicPartIndex++;
 
                 mPowerUpTokens.push_back( t );
                 }
