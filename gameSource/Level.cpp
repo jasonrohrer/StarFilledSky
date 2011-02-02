@@ -2976,7 +2976,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             // bullet has escaped out of bounds, kill it
             hit = true;
             }
-        else {
+        // for in-bound bullets, only consider those that are not past
+        // the end of their life (or are exploding this step)
+        else if( b->distanceLeft > 0 || b->explode > 0 ){
             // in bounds of tiles, safe to look up square index
             int squareIndex = mSquareIndices[p.y][p.x];
 
@@ -2995,6 +2997,49 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     // of explosion sub bullets through thin walls
                     b->position = stopMoveWithWall( oldBulletPos, 
                                                     b->velocity );
+
+                    // do true intersection-point computation
+                    // (otherwise, bullet smoke slides along wall in final 
+                    //  frame and looks strange)
+                    
+                    doublePair desiredPos = add( oldBulletPos, b->velocity );
+                    
+                    if( ! equal( desiredPos, b->position ) ) {
+                        
+                        doublePair actualVelocity = 
+                            sub( b->position, oldBulletPos );
+                    
+                        // find which velocity component was cut off more
+                        double xVelocityFraction = 
+                            actualVelocity.x / b->velocity.x;
+                        double yVelocityFraction = 
+                            actualVelocity.y / b->velocity.y;
+                        
+                        double minVelocityFraction = xVelocityFraction;
+                        if( yVelocityFraction < minVelocityFraction ) {
+                            minVelocityFraction = yVelocityFraction;
+                            }
+
+                        if( minVelocityFraction > 0 ) {
+                            
+
+                            doublePair finalVelocityStep = 
+                                mult( b->velocity,
+                                      minVelocityFraction );
+
+                            // true intersection
+                            b->position = add( oldBulletPos, 
+                                               finalVelocityStep );
+                            }
+                        else {
+                            // old position already beyond where
+                            // stopMoveWithWall allows us to go
+                       
+                            // one more frame of old position
+                            b->position = oldBulletPos;
+                            }
+                        
+                        }
                     }
                 else {
                     b->bouncesLeft --;
@@ -3173,10 +3218,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             // bullet done
             
             if( bulletOnScreen &&
-                ( hit || b->explode > 0 ) && 
-                ( !destroyed || ! b->playerFlag ) ) {
-                // target not destroyed by hit, or player destroyed, 
-                // draw smoke
+                ( hit || b->explode > 0 ) ) {
+                // draw smoke whenever bullet hits something or explodes
 
                 char type = 0;
                 if( damage ) {
@@ -3190,10 +3233,21 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 
                 double progress = 0;
                 if( destroyed && ! b->playerFlag ) {
-                    // start bigger
+                    // start bigger if player knocked down
+                    // (as feedback for player)
+                    // this happens on freeze frame of zoom-in, so
+                    // it is framerate independent
                     progress = 0.25;
                     }
+                else if( b->explode > 0 ) {
+                    // or for exploding bullets, so it looks more
+                    // like smoke is "throwing" other bullets out
+                    // this must take framerate into account
+                    progress = 0.125 * frameRateFactor;
+                    }
 
+                printf( "Adding hit smoke at %f,%f\n", 
+                        b->position.x, b->position.y );
                 HitSmoke s = { b->position, progress, 0.5, type, c };
                 
                 mSmokeClouds.push_back( s );
@@ -3285,7 +3339,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             
-            if( damage ) {
+            if( damage || b->explode > 0 ) {
                 // draw one more frame of this bullet, THEN delete it
                 // immediately on next step (so we can see the bullet
                 // that hit whatever it hit)
@@ -4450,14 +4504,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         float fade = 1;
                     
                         if( b->explode == 0 && b->distanceLeft < 1 ) {
-                            // immediately jump out of fade on final frame
-                            if( ! b->finalFrame ) {
-                                fade = b->distanceLeft;
-
-                                if( fade <= 0.5 ) {
-                                    b->halfFadedOut = true;
-                                    }
-                                }
+                            fade = b->distanceLeft;
                             }
                     
                         setDrawColor( 1, 1, 1, fade * shadowLevel );
@@ -4569,6 +4616,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
             if( b->explode == 0 && b->distanceLeft < 1 ) {
                 fade = b->distanceLeft;
+
+                if( fade <= 0.5 ) {
+                    b->halfFadedOut = true;
+                    }
                 }
 
             

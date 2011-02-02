@@ -5,6 +5,9 @@ Version 8
 
 --Made bullets impotent during last half of their final fade-out.
 
+--Improved appearance of bullet intersections with walls.
+
+--Improved appearance of bullet explosions.
 
 
 
