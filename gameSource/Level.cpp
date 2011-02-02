@@ -1522,7 +1522,6 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
 
 
-
     // place enemies in random floor spots
     int musicPartIndex = 0;
     
@@ -1686,19 +1685,19 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     if( !shouldPowerUpsBeRigged() ) {
     
         // random number of power ups, chosen from a probability distribution
-        // 9 possible values, in [2..10]
+        // 8 possible values, in [3..10]
 
-        double probabilities[9];
+        double probabilities[8];
         
         // geometric
-        for( int i=0; i<9; i++ ) {
+        for( int i=0; i<8; i++ ) {
             probabilities[i] = 0.3 * pow( 0.7, i );
             }
         
-        ProbabilityMassFunction pmf( &randSource, 9, probabilities );
+        ProbabilityMassFunction pmf( &randSource, 8, probabilities );
         
         
-        maxNumPowerUps = pmf.sampleElement() + 2;
+        maxNumPowerUps = pmf.sampleElement() + 3;
         }
     
 
@@ -1761,7 +1760,50 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         }
 
 
+    int maxFloorTokenLevel, minFloorTokenLevel;
+    
+    if( mInsideEnemy ) {
+        maxFloorTokenLevel = mFloorTokenLevel;
+        minFloorTokenLevel = 1;
+        }
+    else {
+        // inside player or power-up inside player
 
+        // raise whole range the deeper we go into power-ups
+        maxFloorTokenLevel = ( mDifficultyLevel / 2 ) * mFloorTokenLevel;
+        minFloorTokenLevel = mFloorTokenLevel;    
+        }
+    
+
+
+    int numValues = maxFloorTokenLevel - minFloorTokenLevel + 1;
+    double *probabilities = new double[ numValues ];
+    
+    double pmfParam = 0.3;
+
+    if( mInsideEnemy ) {
+        // weights increase toward higher token levels (harder to find
+        // low-value tokens inside enemy)
+
+        // inverted geometric
+        for( int i=0; i<numValues; i++ ) {
+            probabilities[i] = pmfParam * pow( 1 - pmfParam, 
+                                               ( numValues - i - 1 ) );
+            }
+        }
+    else {
+        // weights increase toward lower token levels (harder to find
+        // high-value tokens inside player)
+
+        // straight geometric
+        for( int i=0; i<numValues; i++ ) {
+            probabilities[i] = pmfParam * pow( 1 - pmfParam, i );
+            }
+        }
+    
+    ProbabilityMassFunction powerLevelPMF( &randSource, numValues,
+                                           probabilities );
+    delete [] probabilities;
 
     
     
@@ -1834,8 +1876,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     mainPower = getRandomPowerUp( mFloorTokenLevel );
                     }
                 
-                // all tokens on floor have same, fixed level
-                mainPower.level = mFloorTokenLevel;
+                // all tokens on floor have levels sampled from PMF
+                mainPower.level = 
+                    powerLevelPMF.sampleElement() + minFloorTokenLevel;
                 
 
 

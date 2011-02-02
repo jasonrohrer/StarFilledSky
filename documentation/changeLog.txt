@@ -51,6 +51,9 @@ Version 7
 --Number of powers on floor reduced from constant 10 to a geometric random
   variable (10 powers on one floor is now very rare).
 
+--Floor power token levels now placed on a probability distribution (good
+  tokens are rare, but possible).
+
 
 
 
