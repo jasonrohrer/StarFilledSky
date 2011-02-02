@@ -2864,6 +2864,19 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
     
     // step bullets
+    
+    // first, remove any that are on their final frame
+    // they shouldn't take any more steps or do any more damage
+    for( i=0; i<mBullets.size(); i++ ) {
+        Bullet *b = mBullets.getElement( i );
+        
+        if( b->finalFrame ) {
+            mBullets.deleteElement( i );
+            i--;
+            }
+        }
+    
+
     for( i=0; i<mBullets.size(); i++ ) {
         
         Bullet *b = mBullets.getElement( i );
@@ -3267,9 +3280,17 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             
-                
-            mBullets.deleteElement( i );
-            i--;
+            if( damage ) {
+                // draw one more frame of this bullet, THEN delete it
+                // immediately on next step (so we can see the bullet
+                // that hit us)
+                b->finalFrame = true;
+                }
+            else {
+                // bullet done now
+                mBullets.deleteElement( i );
+                i--;
+                }
             }
         
         
@@ -4424,7 +4445,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         float fade = 1;
                     
                         if( b->explode == 0 && b->distanceLeft < 1 ) {
-                            fade = b->distanceLeft;
+                            // immediately jump out of fade on final frame
+                            if( ! b->finalFrame ) {
+                                fade = b->distanceLeft;
+                                }
                             }
                     
                         setDrawColor( 1, 1, 1, fade * shadowLevel );
@@ -5497,7 +5521,7 @@ void Level::addBullet( doublePair inPosition,
                      bounce,
                      bounce,
                      explode,
-                     inPlayerBullet, size, inEnemyBulletMarker };
+                     inPlayerBullet, size, inEnemyBulletMarker, false };
         mBullets.push_back( b );
 
 

@@ -1,3 +1,11 @@
+Version 8
+
+--Changed to draw bullet for one final frame after it does damage to something,
+  and to force-fade-in a damaging bullet that is partially faded out.
+
+
+
+
 Version 7    2011-February-2
 
 --Fixed so that multiple paragraph separators are not inserted when player

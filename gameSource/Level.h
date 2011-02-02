@@ -39,6 +39,8 @@ typedef struct Bullet {
         float size;
         // matches firing enemy's bulletMarker
         char enemyMarker;
+        // draw one last frame after a bullet hits a non-wall
+        char finalFrame;
     } Bullet;
 
 
