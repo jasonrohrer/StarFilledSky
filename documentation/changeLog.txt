@@ -1,4 +1,4 @@
-Version 7
+Version 7    2011-February-2
 
 --Fixed so that multiple paragraph separators are not inserted when player
   closes pause screen without typing anything.
