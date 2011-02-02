@@ -1682,8 +1682,12 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxNumPowerUps = 0;
         }
 
-    if( !shouldPowerUpsBeRigged() ) {
-    
+    // keep 10 on floor during tutorial to give player enough to experiment
+    // with
+    // but forget about it if level 10 already reached (2 above where
+    // entering things is first explained)
+    if( ! isFullTutorialRunning() || levelAlreadyVisited( 10 ) ) {
+
         // random number of power ups, chosen from a probability distribution
         // 8 possible values, in [3..10]
 
@@ -1772,6 +1776,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         // raise whole range the deeper we go into power-ups
         maxFloorTokenLevel = ( mDifficultyLevel / 2 ) * mFloorTokenLevel;
         minFloorTokenLevel = mFloorTokenLevel;    
+
+        if( isFullTutorialRunning() && ! levelAlreadyVisited( 10 ) ) {
+            // don't let player stumble into a dangerous power-up level
+            // during tutorial
+            // (but stop protecting them if they've already risen to level 10)
+            maxFloorTokenLevel = mFloorTokenLevel;
+            }
         }
     
 

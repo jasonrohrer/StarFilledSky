@@ -274,6 +274,14 @@ char shouldSetTipsBeShown() {
     }
 
 
+char isFullTutorialRunning() {
+    if( currentTut != -1 && ! tutorialBriefMode ) {
+        return true;
+        }
+
+    return false;
+    }
+
 
 
 void resetTutorial() {
@@ -593,8 +601,11 @@ void tutorialKeyPressed( int inKeyNum ) {
 
 
 // start at level 0, so it is already visited
-static char levelVisited[7] = { true, false, false,
-                                false, false, false };
+static char levelVisited[14] = { true, false, false,
+                                 false, false, false,
+                                 false, false, false,
+                                 false, false, false,
+                                 false, false };
                      
 
 static int baseLevelForEnterTutorials = 8;
@@ -614,7 +625,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         }
     
 
-    if( inLevelRisenTo >=0 && inLevelRisenTo < 7 ) {
+    if( inLevelRisenTo >=0 && inLevelRisenTo < 14 ) {
         levelVisited[ inLevelRisenTo ] = true;
         }
 
@@ -722,7 +733,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
 
 
 char levelAlreadyVisited( int inLevelNumber ) {
-    if( inLevelNumber < 7 ) {
+    if( inLevelNumber < 14 ) {
         return levelVisited[ inLevelNumber ];
         }
     else {

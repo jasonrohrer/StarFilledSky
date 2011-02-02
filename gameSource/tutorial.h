@@ -34,6 +34,10 @@ char shouldEnterBeBlocked();
 char shouldSetTipsBeShown();
 
 
+// false if running in brief mode
+char isFullTutorialRunning();
+
+
 
 // check if we're revisiting a level in tutorial mode
 // allows us to stick some hearts there to prevent user from getting stuck
