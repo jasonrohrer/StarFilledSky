@@ -29,13 +29,7 @@ Every time you play the game, your whole experience is saved in the "recordedGam
 
 The game includes a simple tutorial that both explains the controls and gradually exposes you to additional gameplay mechanics.
 
-This is the FOURTH iteration of this tutorial.  At this point I've pretty much
-given up on the "show, don't tell" approach, and almost everything is explained
-at some point with brief text messages.  The v3 tutorial worked for some
-people, but it was a horrible experience for others.  I don't want anyone to
-fall through the cracks, and the point of this game is not to figure out
-the basic mechanics anyway (the point is what emerges AFTER you figure out the 
-basic mechanics).
+This is the SEVENTH iteration of this tutorial.  At this point I've pretty much given up on the "show, don't tell" approach, and almost everything is explained at some point with brief text messages.  Previous tutorials worked for some people, but were a horrible experience for others.  I don't want anyone to fall through the cracks, and the point of this game is not to figure out the basic mechanics anyway (the point is what emerges AFTER you figure out the basic mechanics).
 
 But even with this verbose approach, something might be missing.  Is it clear enough?  Were you able to figure out the various gameplay systems?
 
