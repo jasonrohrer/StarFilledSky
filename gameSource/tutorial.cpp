@@ -687,6 +687,11 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
                 tutorialsReady[7] = false;
                 }
             
+            if( currentTut == 7 && !tutorialsReady[7] ) {
+                // safe to jump right to 6
+                currentTut = 6;
+                }
+
             if( !enteredTypes[0] ) {
                 tutorialKeys[6] = tutorialEnterKeys[0];
                 currentEnter2TutorialType = player;
