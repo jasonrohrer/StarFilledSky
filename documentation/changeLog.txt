@@ -3,6 +3,8 @@ Version 8
 --Changed to draw bullet for one final frame after it does damage to something,
   and to force-fade-in a damaging bullet that is partially faded out.
 
+--Made bullets impotent during last half of their final fade-out.
+
 
 
 

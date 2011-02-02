@@ -3040,7 +3040,12 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
                 float hitRadius = 0.5 + b->size / 16;
             
-                if( b->playerFlag ) {
+                // did it hit a player or enemy?
+                
+                // ignore bullets that are half faded out (no effect)
+
+
+                if( b->playerFlag && ! b->halfFadedOut ) {
                     // check if hit enemy
                                     
                     
@@ -3138,7 +3143,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             }
                         }
                     }
-                else if( mPlayerImmortalSteps <= 0 ) {
+                else if( mPlayerImmortalSteps <= 0 && ! b->halfFadedOut ) {
 
                     // check if hit player
                     if( distance( mPlayerPos, b->position ) < hitRadius ) {
@@ -3283,7 +3288,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             if( damage ) {
                 // draw one more frame of this bullet, THEN delete it
                 // immediately on next step (so we can see the bullet
-                // that hit us)
+                // that hit whatever it hit)
                 b->finalFrame = true;
                 }
             else {
@@ -4448,6 +4453,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                             // immediately jump out of fade on final frame
                             if( ! b->finalFrame ) {
                                 fade = b->distanceLeft;
+
+                                if( fade <= 0.5 ) {
+                                    b->halfFadedOut = true;
+                                    }
                                 }
                             }
                     
@@ -5521,7 +5530,7 @@ void Level::addBullet( doublePair inPosition,
                      bounce,
                      bounce,
                      explode,
-                     inPlayerBullet, size, inEnemyBulletMarker, false };
+                     inPlayerBullet, size, inEnemyBulletMarker, false, false };
         mBullets.push_back( b );
 
 

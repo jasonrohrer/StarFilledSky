@@ -41,6 +41,9 @@ typedef struct Bullet {
         char enemyMarker;
         // draw one last frame after a bullet hits a non-wall
         char finalFrame;
+        // bullet should have no effect at the end of it's life when
+        // it is barely visible
+        char halfFadedOut;
     } Bullet;
 
 
