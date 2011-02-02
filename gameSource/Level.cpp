@@ -1423,6 +1423,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mStartStepsToRiseMarker = getStepsToRiseMarker( mPlayerStartPos );
     mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
     
+    mLastCloseStepsToRiseMarker = mStartStepsToRiseMarker;
+    mGettingFartherAwayFromRiseMarker = false;
+
+
     
     // negative levels get harder and harder the farther you go down
     mDifficultyLevel = mLevelNumber;
@@ -2490,22 +2494,29 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
 
             float baseFade = 1;
             
-            if( numStepsToRise < 20 ) {
+            if( numStepsToRise < 25 ) {
                 
-                if( numStepsToRise < 15 ) {
+                if( numStepsToRise < 20 ) {
                     baseFade = 0;
                     }
                 else {
-                    baseFade = (numStepsToRise - 15) / 5.0f;
+                    baseFade = (numStepsToRise - 20) / 5.0f;
                     }
                 }
             
+            // only mark path if we are getting farther from last closest
+            // point to rise marker, and only if substantially farther
+            if( numStepsToRise <= mLastCloseStepsToRiseMarker + 20 ) {
+                baseFade = 0;
+                }
+            
+
                 
             int fullPathLength = numStepsToRise + 1;
             
             int fadeSteps = 4;
                 
-            int fadeSkip = 2;
+            int fadeSkip = 0;
             
 
             int fadeStart = fullPathLength - fadeSkip - fadeSteps;
@@ -2523,7 +2534,7 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
                     if( i -  fadeStart < fadeSteps ) {
                         
                         fade = 1.0f - 
-                            ( i - fadeStart + 1 ) / (float)fadeSteps;    
+                            ( i - fadeStart ) / (float)fadeSteps;    
                         }
                     else {
                         fade = 0;
@@ -3563,8 +3574,34 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // only one path finding operation per timestep
     if( ! enemyPathFindingDoneThisStep ) {
         
+        int oldSteps = mLastComputedStepsToRiseMarker;
+
         // path find to rise marker outside audio lock, too
         mLastComputedStepsToRiseMarker = getStepsToRiseMarker( mPlayerPos );
+        
+
+        if( mGettingFartherAwayFromRiseMarker &&
+            oldSteps > mLastComputedStepsToRiseMarker ) {
+            
+            // was getting farther away, but just turned around
+            
+            // reset our closest step cound
+            mLastCloseStepsToRiseMarker = mLastComputedStepsToRiseMarker;
+
+            mGettingFartherAwayFromRiseMarker = false;
+            }
+        
+        
+
+        if( mLastComputedStepsToRiseMarker < mLastCloseStepsToRiseMarker ) {
+            mLastCloseStepsToRiseMarker = mLastComputedStepsToRiseMarker;
+            mGettingFartherAwayFromRiseMarker = false;
+            }
+        else if( mLastComputedStepsToRiseMarker > 
+                 mLastCloseStepsToRiseMarker ) {
+            mGettingFartherAwayFromRiseMarker = true;
+            }
+        
         }
     
 

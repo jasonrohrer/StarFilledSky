@@ -480,6 +480,9 @@ class Level {
         int mLastComputedStepsToRiseMarker;
         int getStepsToRiseMarker( doublePair inPos );
         
+        int mLastCloseStepsToRiseMarker;
+        char mGettingFartherAwayFromRiseMarker;
+
         
 
         int mPlayerStepsUntilNextGlowTrail;
