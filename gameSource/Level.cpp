@@ -1641,11 +1641,14 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 RandomWalkerSet walkerSet;
                 
+                int maxHealth = getEnemyMaxHealth( p );
+
                 Enemy e = { spot, v, a, baseMoveDirection, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
                             new EnemySprite(),
                             p,
-                            getEnemyMaxHealth( p ),
+                            maxHealth,
+                            maxHealth,
                             0,
                             spot,
                             NULL,
@@ -3039,9 +3042,25 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             int maxHealth = 
                                 getEnemyMaxHealth( e->powers );
                         
-                            if( e->health > maxHealth ) {
-                                e->health = maxHealth;
+                            if( maxHealth < e->lastMaxHealth ) {
+                                // max health has been lowered
+                                if( e->health > maxHealth ) {
+                                    e->health = maxHealth;
+                                    }
                                 }
+                            else if( maxHealth > e->lastMaxHealth ) {
+                                // max health has been raised
+                                
+                                // keep whatever health was missing
+                                // from the old health bar
+
+                                int oldMissingHealth =
+                                    e->lastMaxHealth - e->health;
+                            
+                                e->health = maxHealth - oldMissingHealth;
+                                }
+                            
+                            e->lastMaxHealth = maxHealth;
 
                             e->health --;
                             e->sprite->startSquint();

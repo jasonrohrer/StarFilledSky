@@ -90,6 +90,7 @@ typedef struct Enemy {
         EnemySprite *sprite;
         PowerUpSet *powers;
         int health;
+        int lastMaxHealth;
         float healthBarFade;
         doublePair followNextWaypoint;
         Bullet *dodgeBullet;

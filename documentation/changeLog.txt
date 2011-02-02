@@ -54,6 +54,9 @@ Version 7
 --Floor power token levels now placed on a probability distribution (good
   tokens are rare, but possible).
 
+--Fixed so that picking up hearts inside an enemy can increase the health of 
+  the enemy.
+
 
 
 
