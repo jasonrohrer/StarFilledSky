@@ -22,6 +22,9 @@ Version 8
   difficulty modifier is in effect (so that getting knocked down inside a hard 
   power-up sub-level isn't fatal).
 
+--Saved level bookmark never saves for negative levels, so player cannot be 
+  trapped in the inverted negative difficulty progression after quitting.
+
 
 
 Version 7    2011-February-2

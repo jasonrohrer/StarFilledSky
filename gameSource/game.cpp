@@ -773,7 +773,8 @@ static double drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
 static void saveLevelBookmark() {
     // only save bookmark to this level if local player is actually playing
     // (not for playback games from others)
-    if( !gamePlayingBack ) {
+    // also, never trap player down in negative levels after they quit
+    if( !gamePlayingBack && levelNumber >= 0) {
         SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
     
         SettingsManager::setHashingOn( true );
