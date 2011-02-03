@@ -15,9 +15,12 @@ Version 8
   be picked.
 
 --Added an always-safe, enemy-free buffer at level 0 (regardless of difficulty 
-  modifier) to ensure that player does knocked down into the inverted negative 
-  levels by accident.
+  modifier) to ensure that player does not get knocked down into the inverted 
+  negative levels by accident.
 
+--Changed to give player a partial difficulty break on knock-down when a 
+  difficulty modifier is in effect (so that getting knocked down inside a hard 
+  power-up sub-level isn't fatal).
 
 
 

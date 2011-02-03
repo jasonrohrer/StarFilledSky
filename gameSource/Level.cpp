@@ -1438,21 +1438,42 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         mDifficultyLevel *= -1;
         }
 
-    
-    if( mDifficultyLevel < inParentLevelDifficulty - 1 ) {
-    
-        // make sure level is appropriately difficult based on parent level
 
-        if( mLevelNumber >= 0 ) {
+
+    // make sure level is appropriately difficult based on parent level
+    
+    if( mLevelNumber >= 0 && mDifficultyLevel < inParentLevelDifficulty - 1 ) {
+        
+        if( !mKnockDown ) {
             // no more that one step less difficult
             mDifficultyLevel = inParentLevelDifficulty - 1;
             }
         else {
+            // give player a break on knock-down
+            // halfway between level's base difficulty and difficulty
+            // suggested by parent
+            mDifficultyLevel = 
+                ( mDifficultyLevel + inParentLevelDifficulty - 1 ) / 2;
+            }
+        }
+    else if( mLevelNumber < 0 && 
+             mDifficultyLevel < inParentLevelDifficulty + 1 ) {
+        
+        // difficulty inverted for negative levels
+
+        if( !mKnockDown ) {
             // no less than one step more difficult
             mDifficultyLevel = inParentLevelDifficulty + 1;
             }
+        else {   
+            // give player a break on knock-down
+            // halfway between level's base difficulty and difficulty
+            // suggested by parent
+            mDifficultyLevel = 
+                ( mDifficultyLevel + inParentLevelDifficulty + 1 ) / 2;
+            }
         }
-
+        
 
 
     // levels get harder the deeper we go inside power-ups
