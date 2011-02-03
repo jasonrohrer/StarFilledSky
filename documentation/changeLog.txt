@@ -9,6 +9,8 @@ Version 8
 
 --Improved appearance of bullet explosions.
 
+--Fixed crash triggered by power-up probability distributions around level 0.
+
 
 
 Version 7    2011-February-2

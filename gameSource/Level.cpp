@@ -1782,6 +1782,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxFloorTokenLevel = ( mDifficultyLevel / 2 ) * mFloorTokenLevel;
         minFloorTokenLevel = mFloorTokenLevel;    
 
+        if( maxFloorTokenLevel < minFloorTokenLevel ) {
+            maxFloorTokenLevel = minFloorTokenLevel;
+            }
+
         if( isFullTutorialRunning() && ! levelAlreadyVisited( 10 ) &&
             mLevelNumber < 10 ) {
             // don't let player stumble into a dangerous power-up level
