@@ -11,6 +11,9 @@ Version 8
 
 --Fixed crash triggered by power-up probability distributions around level 0.
 
+--Fixed aspect ratio bug that could cause resolution SMALLER than 640x480 to
+  be picked.
+
 
 
 Version 7    2011-February-2
