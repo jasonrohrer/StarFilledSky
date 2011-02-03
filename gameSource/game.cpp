@@ -1403,6 +1403,9 @@ void drawFrame( char inUpdate ) {
         
 
         if( enteringHit ) {
+            // force entering to STOP here, so player doesn't get confused
+            // if holding down enter key accidentally
+            entering = false;
             
             if( playerHealth > 0 ) {
                 // don't count forced entering

@@ -28,6 +28,9 @@ Version 8
 --Switch to SPACE as shooting alternative for trackpad users, and SHIFT to 
   enter things.
 
+--Disabled entering immediately after entering something, to avoid double-enter
+  confusion.
+
 
 
 Version 7    2011-February-2
