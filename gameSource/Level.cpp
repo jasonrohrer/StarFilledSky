@@ -1533,6 +1533,15 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         maxNumEnemies = mDifficultyLevel * 2;
         }
     
+    if( mLevelNumber == 0 ) {
+        // always have 0 enemies at level zero, as a safe buffer zone
+        // against inverse-difficulty-progression negative levels.
+
+        // Don't want player to get knocked negative by accident.
+        maxNumEnemies = 0;
+        }
+    
+
     // count number of enemies that have follow behavior
     int followCount = 0;
     

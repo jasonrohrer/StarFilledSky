@@ -14,6 +14,11 @@ Version 8
 --Fixed aspect ratio bug that could cause resolution SMALLER than 640x480 to
   be picked.
 
+--Added an always-safe, enemy-free buffer at level 0 (regardless of difficulty 
+  modifier) to ensure that player does knocked down into the inverted negative 
+  levels by accident.
+
+
 
 
 Version 7    2011-February-2
