@@ -25,6 +25,9 @@ Version 8
 --Saved level bookmark never saves for negative levels, so player cannot be 
   trapped in the inverted negative difficulty progression after quitting.
 
+--Switch to SPACE as shooting alternative for trackpad users, and SHIFT to 
+  enter things.
+
 
 
 Version 7    2011-February-2

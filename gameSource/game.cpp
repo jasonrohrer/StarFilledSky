@@ -2643,6 +2643,8 @@ void keyDown( unsigned char inASCII ) {
             movementKeyChange();
             break;
         case ' ':
+            shooting = true;
+            break;
         case 13:  // enter
             if( ! shouldEnterBeBlocked() ) {
                 entering = true;
@@ -2728,6 +2730,8 @@ void keyUp( unsigned char inASCII ) {
             movementKeyChange();
             break;
         case ' ':
+            shooting = false;
+            break;
         case 13:  // enter
             entering = false;
             break;
