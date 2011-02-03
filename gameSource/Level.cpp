@@ -3078,6 +3078,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 else {
                     b->bouncesLeft --;
                     
+                    // give bullet a new lease on life, distance-wise
+                    // so that it can live out more of its bounces
+                    b->distanceLeft = b->startDistance;
+
                     doublePair oldPos = 
                         sub( b->position, b->velocity );        
 

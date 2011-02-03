@@ -31,6 +31,9 @@ Version 8
 --Disabled entering immediately after entering something, to avoid double-enter
   confusion.
 
+--Improved bounce as a stand-alone power-up by renewing bullet distance limit 
+  after each bounce.
+
 
 
 Version 7    2011-February-2
