@@ -3280,8 +3280,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     progress = 0.125 * frameRateFactor;
                     }
 
-                printf( "Adding hit smoke at %f,%f\n", 
-                        b->position.x, b->position.y );
                 HitSmoke s = { b->position, progress, 0.5, type, c };
                 
                 mSmokeClouds.push_back( s );
