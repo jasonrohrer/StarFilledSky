@@ -32,7 +32,7 @@ Version 8
   confusion.
 
 --Improved bounce as a stand-alone power-up by renewing bullet distance limit 
-  after each bounce.
+  after each bounce (thanks Rico).
 
 
 
