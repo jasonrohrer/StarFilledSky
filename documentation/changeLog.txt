@@ -1,4 +1,4 @@
-Version 8
+Version 8   2011-February-4
 
 --Changed to draw bullet for one final frame after it does damage to something,
   and to force-fade-in a damaging bullet that is partially faded out.
