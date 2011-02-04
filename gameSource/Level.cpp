@@ -2118,6 +2118,8 @@ void Level::setItemWindowPosition( doublePair inPosition, itemType inType ) {
 typedef struct pathSearchRecord {
         GridPos pos;
         
+        int squareIndex;
+        
         int cost;
         double estimate;
         double total;
@@ -2135,7 +2137,9 @@ double getGridDistance( GridPos inA, GridPos inB ) {
     int dX = inA.x - inB.x;
     int dY = inA.y - inB.y;
     
-    return sqrt( dX * dX + dY * dY );
+    // manhattan distance
+    return abs( dX ) + abs( dY );
+    //return sqrt( dX * dX + dY * dY );
     }
 
 
@@ -2148,6 +2152,27 @@ char equal( GridPos inA, GridPos inB ) {
 typedef struct pathSearchQueue {
         pathSearchRecord *head;
     } pathSearchQueue;
+
+
+// returns true if A better than B (sorting function
+inline static char isRecordBetter( pathSearchRecord *inA, 
+                                   pathSearchRecord *inB ) {
+    
+    if( inA->total <= inB->total ) {
+        
+        if( inA->total == inB->total ) {
+            
+            // pick record with lower estimated cost to break tie
+            if( inA->estimate < inB->estimate ) {
+                return true;
+                }
+            }
+        else {
+            return true;
+            }
+        }
+    return false;
+    }
 
     
 
@@ -2162,7 +2187,7 @@ void insertSearchRecord( pathSearchQueue *inQueue,
         }
 
     // better than head
-    if( inQueue->head->total > inRecordToInsert->total ) {
+    if( isRecordBetter( inRecordToInsert, inQueue->head ) ) {
         inRecordToInsert->nextSearchRecord = inQueue->head;    
         inQueue->head = inRecordToInsert;
         return;
@@ -2172,12 +2197,10 @@ void insertSearchRecord( pathSearchQueue *inQueue,
     
     pathSearchRecord *currentRecord = inQueue->head;
     pathSearchRecord *nextRecord = currentRecord->nextSearchRecord;
-    
-    double newRecordTotal = inRecordToInsert->total;
 
     while( nextRecord != NULL ) {
         
-        if( nextRecord->total > newRecordTotal ) {
+        if( isRecordBetter( inRecordToInsert, nextRecord ) ) {
             
             // insert here
             inRecordToInsert->nextSearchRecord = nextRecord;
@@ -2195,6 +2218,55 @@ void insertSearchRecord( pathSearchQueue *inQueue,
 
     // hit null, insert at end
     currentRecord->nextSearchRecord = inRecordToInsert;
+    }
+
+
+
+// sorted removal
+pathSearchRecord *pullSearchRecord( pathSearchQueue *inQueue, 
+                                    int inSquareIndex ) {
+
+    if( inQueue->head == NULL ) {
+        return NULL;
+        }
+
+    if( inQueue->head->squareIndex == inSquareIndex ) {
+        // pull head
+        pathSearchRecord *currentRecord = inQueue->head;
+
+        inQueue->head = currentRecord->nextSearchRecord;
+
+        currentRecord->nextSearchRecord = NULL;
+
+        return currentRecord;
+        }
+    
+
+    pathSearchRecord *previousRecord = inQueue->head;
+    pathSearchRecord *currentRecord = previousRecord->nextSearchRecord;
+    
+
+    while( currentRecord != NULL && 
+           currentRecord->squareIndex != inSquareIndex ) {
+    
+        previousRecord = currentRecord;
+        
+        currentRecord = previousRecord->nextSearchRecord;
+        }
+    
+    if( currentRecord == NULL ) {
+        return NULL;
+        }
+    
+    // else pull it
+
+    // skip it in the pointer chain
+    previousRecord->nextSearchRecord = currentRecord->nextSearchRecord;
+    
+    
+    currentRecord->nextSearchRecord = NULL;
+
+    return currentRecord;
     }
 
 
@@ -2233,14 +2305,18 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
     
     
 
-    // quick lookup of touched (either done or in search queue) squares
+    // quick lookup of touched but not done squares
     // indexed by floor square index number
-    char *touchedMap = new char[ mNumFloorSquares ];
-    memset( touchedMap, false, mNumFloorSquares );
+    char *openMap = new char[ mNumFloorSquares ];
+    memset( openMap, false, mNumFloorSquares );
+
+    char *doneMap = new char[ mNumFloorSquares ];
+    memset( doneMap, false, mNumFloorSquares );
 
             
     pathSearchRecord startRecord = 
         { inStart,
+          mSquareIndices[ inStart.y ][ inStart.x ],
           0,
           getGridDistance( inStart, inGoal ),
           getGridDistance( inStart, inGoal ),
@@ -2258,7 +2334,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
     recordsToSearch.head = heapRecord;
 
 
-    touchedMap[ mSquareIndices[ inStart.y ][ inStart.x ] ] = true;
+    openMap[ startRecord.squareIndex ] = true;
     
 
 
@@ -2281,6 +2357,9 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                     bestRecord.pos.x, bestRecord.pos.y,
                     bestRecord.cost, bestRecord.total,
                     bestRecord.predIndex, doneQueue.size() );
+        
+        doneMap[ bestRecord.squareIndex ] = true;
+        openMap[ bestRecord.squareIndex ] = false;
 
         
         doneQueue.push_back( bestRecord );
@@ -2322,9 +2401,13 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                     int neighborSquareIndex = 
                         mSquareIndices[ neighbors[n].y ][ neighbors[n].x ];
                     
-                    char alreadyTouched = touchedMap[ neighborSquareIndex ];
-                            
-                    if( !alreadyTouched ) {
+                    char alreadyOpen = openMap[ neighborSquareIndex ];
+                    char alreadyDone = doneMap[ neighborSquareIndex ];
+                    
+                    if( !alreadyOpen && !alreadyDone ) {
+                        
+                        // for testing, color touched nodes
+                        // mGridColors[ neighborSquareIndex ].r = 1;
                         
                         // add this neighbor
                         double dist = 
@@ -2333,6 +2416,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                             
                         // track how we got here (pred)
                         pathSearchRecord nRecord = { neighbors[n],
+                                                     neighborSquareIndex,
                                                      cost,
                                                      dist,
                                                      dist + cost,
@@ -2346,7 +2430,27 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
                         insertSearchRecord( 
                             &recordsToSearch, heapRecord );
 
-                        touchedMap[ neighborSquareIndex ] = true;
+                        openMap[ neighborSquareIndex ] = true;
+                        }
+                    else if( alreadyOpen ) {
+                        pathSearchRecord *heapRecord =
+                            pullSearchRecord( &recordsToSearch,
+                                              neighborSquareIndex );
+                        
+                        // did we reach this node through a shorter path
+                        // than before?
+                        if( cost < heapRecord->cost ) {
+                            
+                            // update it!
+                            heapRecord->cost = cost;
+                            heapRecord->total = heapRecord->estimate + cost;
+                            
+                            // found a new predecessor for this node
+                            heapRecord->predIndex = predIndex;
+                            }
+
+                        // reinsert
+                        insertSearchRecord( &recordsToSearch, heapRecord );
                         }
                             
                     }
@@ -2356,7 +2460,8 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
             }
         }
 
-    delete [] touchedMap;
+    delete [] openMap;
+    delete [] doneMap;
     
     for( int i=0; i<searchQueueRecords.size(); i++ ) {
         delete *( searchQueueRecords.getElement( i ) );

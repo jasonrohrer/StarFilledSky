@@ -34,6 +34,11 @@ Version 8
 --Improved bounce as a stand-alone power-up by renewing bullet distance limit 
   after each bounce (thanks Rico).
 
+--Corrected implementation of A* pathfinding, and improved its efficiency.
+
+--Fixed a memory leak in the power set tip display.
+
+
 
 
 Version 7    2011-February-2
