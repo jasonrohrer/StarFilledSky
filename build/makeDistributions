@@ -73,5 +73,9 @@ zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky_$1
 
 
 
+# build a batch file for making a windows SFX bundle
+
+echo "set version=$1" > makeWindowsExtractor.bat; cat ../makeWindowsExtractor_template >> makeWindowsExtractor.bat
+
 
 
