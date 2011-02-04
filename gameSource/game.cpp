@@ -566,7 +566,8 @@ void freeFrameDrawer() {
     freeTutorial();
     
     freeTipDisplay();
-
+    freeSetTipDisplay();
+    
 
     delete levelNumberFont;
     delete levelNumberReducedFont;
