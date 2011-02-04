@@ -17,13 +17,15 @@ include( "header.php" );
 <br>
 <center>
 <font size=6>Inside a Star-filled Sky</font><br>
-a recursive game for one player by
+an infinite, recursive, tactical shooter for one player by
 <a href="http://hcsoftware.sf.net/jason-rohrer">Jason Rohrer</a><br>
 <br>
+Coming soon for Windows, Mac, and GNU/Linux.
 <br>
-Coming soon as a <i>Name Your Donation</i> download for Windows, Mac, and GNU/Linux.
+<br>
+<b>Update:</b>  Beta testing is progressing.  The game is now polished and working well.  Just a bit more tweaking and balancing before release.  Here are some screen shots:
 
-
+<!--
 <?php
 
 $mapFiles = glob( "maps/map*.png" );
@@ -37,7 +39,7 @@ foreach( $mapFiles as $f ) {
 <br>
 
 [<a href="enter.zip">enter.zip</a>]
-
+-->
 </center>
 
 <?php include( "footer.php" ); ?>
