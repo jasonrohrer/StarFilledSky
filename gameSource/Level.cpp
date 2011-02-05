@@ -5904,5 +5904,23 @@ int Level::getDifficultyLevel() {
 
 
 
+
+doublePair Level::getNextPlayerPosTowardRise( double inMoveSpeed ) {    
+    GridPos closestRiseGrid = mRisePosition;
+
+    if( mSymmetrical && 
+        distance( mRiseWorldPos2, mPlayerPos ) < 
+        distance( mRiseWorldPos, mPlayerPos ) ) {
+        
+        closestRiseGrid = mRisePosition2;
+        }
+
+    GridPos nextStepGrid = pathFind( getGridPos( mPlayerPos ),
+                                     mPlayerPos, closestRiseGrid, 
+                                     inMoveSpeed );
+    
+    return sGridWorldSpots[ nextStepGrid.y ][ nextStepGrid.x ];
+    }
+
     
 

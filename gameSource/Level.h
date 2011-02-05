@@ -327,6 +327,13 @@ class Level {
         int getDifficultyLevel();
         
 
+        // for supporting robot-player test that always moves toward goal
+        // returns next-step world pos toward goal
+        // pass in player's basic move speed
+        doublePair getNextPlayerPosTowardRise( double inMoveSpeed );
+        
+
+
     protected:
         
         

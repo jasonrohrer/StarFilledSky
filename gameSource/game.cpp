@@ -59,6 +59,9 @@
 // should we output level maps as images?
 char outputMapImages = false;
 
+// should player move toward rise marker automatically?
+char enableRobotPlayer = false;
+
 
 
 // height of dashboard at top of screen
@@ -396,6 +399,13 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     if( outputMapsSetting == 1 ) {
         outputMapImages = true;
+        }
+
+    int enableRobotPlayerSetting = 
+        SettingsManager::getIntSetting( "enableRobotPlayer", 0 );
+    
+    if( enableRobotPlayerSetting == 1 ) {
+        enableRobotPlayer = true;
         }
     
 
@@ -1117,6 +1127,10 @@ void deleteCharFromUserTypedMessage() {
             }
         }
     }
+
+
+
+static void playerAutoMove();
 
 
 
@@ -1894,6 +1908,15 @@ void drawFrame( char inUpdate ) {
 
 
 
+    // is player auto-movement on?
+    if( enableRobotPlayer ) {    
+        playerAutoMove();
+        }
+    
+
+    
+
+
 
     // now draw stuff AFTER all updates
     drawFrameNoUpdate( true );
@@ -2566,6 +2589,40 @@ static void movementKeyChange() {
 
 
     memcpy( lastMovementKeysDown, movementKeysDown, 4 );
+    }
+
+
+
+void playerAutoMove() {
+    
+    doublePair nextPos = currentLevel->getNextPlayerPosTowardRise( moveSpeed );
+
+    if( nextPos.y < playerPos.y - 0.3 ) {
+        movementKeysDown[1] = true;
+        movementKeysDown[0] = false;
+        }
+    else if( nextPos.y > playerPos.y + 0.3 ) {
+        movementKeysDown[1] = false;
+        movementKeysDown[0] = true;
+        }
+    else {
+        movementKeysDown[1] = false;
+        movementKeysDown[0] = false;
+        }
+
+    if( nextPos.x < playerPos.x - 0.3 ) {
+        movementKeysDown[3] = true;
+        movementKeysDown[2] = false;
+        }
+    else if( nextPos.x > playerPos.x + 0.3 ) {
+        movementKeysDown[3] = false;
+        movementKeysDown[2] = true;
+        }
+    else {
+        movementKeysDown[3] = false;
+        movementKeysDown[2] = false;
+        }
+    movementKeyChange();
     }
 
 
