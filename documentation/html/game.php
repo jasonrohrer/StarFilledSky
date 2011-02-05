@@ -23,7 +23,31 @@ an infinite, recursive, tactical shooter for one player by
 Coming soon for Windows, Mac, and GNU/Linux.
 <br>
 <br>
-<b>Update:</b>  Beta testing is progressing.  The game is now polished and working well.  Just a bit more tweaking and balancing before release.  Here are some screen shots:
+</center>
+<b>Update</b> (February 4, 2011):  Beta testing is in progress.  The game is now polished and working well.  Just a bit more tweaking and balancing before release.  Here are some fresh screen shots (click to enlarge):
+
+<center>
+<br>
+<br>
+
+
+<a href="screen00011.png"><img width="427" height="240" border=0 src="screen00011_thumb.png"></a><br><br><br><br>
+
+<a href="screen00014.png"><img width="427" height="240" border=0 src="screen00014_thumb.png"></a><br><br><br><br>
+
+
+<?php
+
+$screenFiles = glob( "progressionScreens/thumbs/screen*.png" );
+
+foreach( $screenFiles as $f ) {
+
+    $bigFile = preg_replace( "#/thumbs#", "", $f );
+    
+    echo "<a href=\"$bigFile\"><img width=\"427\" height=\"240\" border=0 src=\"$f\"></a><br><br><br><br>\n";
+    }
+?>
+
 
 <!--
 <?php
