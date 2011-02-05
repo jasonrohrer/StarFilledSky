@@ -7,6 +7,8 @@ header('Pragma: no-cache');
 
 error_reporting( E_ALL );
 
+$pathToRoot = "../";
+
 
 include( "../header.php" );
 
