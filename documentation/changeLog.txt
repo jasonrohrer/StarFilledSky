@@ -5,6 +5,8 @@ Version 8b
 --Fixed crash on pause after picking up a token that was recently entered 
   (thanks Rico).
 
+--Fixed a crash caused by high-level burst bullets (thanks Alexey Zubkov). 
+
 
 
 

@@ -3468,6 +3468,13 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     
                     mBullets.push_back( subBullet );
                     }
+                
+                
+                // data elements may move when bullets are pushed into
+                // vector (vector may increase in size)
+
+                // update pointer to b
+                b = mBullets.getElement( i );
                 }
             
 
