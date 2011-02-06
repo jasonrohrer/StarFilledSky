@@ -2,6 +2,8 @@ Version 8b
 
 --Added a robot-player mode for testing.
 
+--Fixed crash on pause after picking up a token that was recently entered 
+  (thanks Rico).
 
 
 

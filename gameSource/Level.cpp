@@ -5077,6 +5077,14 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
             delete t->sprite;
             delete t->subPowers;
 
+
+            if( j == mLastEnterPointPowerTokenIndex ) {
+                // picked up a token that was our last enter point
+                // thus, the enter point is no longer valid!
+                mLastEnterPointPowerTokenIndex = -1;
+                }
+
+
             mPowerUpTokens.deleteElement( j );
             
 
