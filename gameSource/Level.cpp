@@ -3460,6 +3460,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 
                 double startAngle =  - totalAngle / 2;
                 
+
+                mBullets.setPrintMessageOnVectorExpansion( true,
+                                                           "mBullets" );
                 for( int s=0; s<numSubBullets; s++ ) {
                     Bullet subBullet = explosionTemplate;
                     subBullet.velocity = rotate( subBullet.velocity,
@@ -3468,6 +3471,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     
                     mBullets.push_back( subBullet );
                     }
+                mBullets.setPrintMessageOnVectorExpansion( false );
                 }
             
 
