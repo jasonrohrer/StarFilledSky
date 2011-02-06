@@ -7,6 +7,9 @@ Version 8b
 
 --Fixed a crash caused by high-level burst bullets (thanks Alexey Zubkov). 
 
+--Fixed to stop playback and print message when end of recorded game file is
+  reached (helpful for debugging).
+
 
 
 
