@@ -2879,6 +2879,37 @@ void triggerCurrentPlayerSetTip() {
 
 
 
+void drawString( int inX, int inY, const char *inString ) {
+    
+    setDrawColor( 1, 1, 1, 0.75 );
+
+    doublePair messagePos = lastScreenViewCenter;
+
+    messagePos.x -= viewWidth / 2;
+        
+    messagePos.x +=  0.25;
+    
+
+    
+    messagePos.y += (viewWidth * viewHeightFraction) /  2;
+    
+    messagePos.y -= dashHeight;
+
+    // avoid tutorial bracket
+    messagePos.y -= 0.375;
+
+    // avoid 4 set tip messages
+    messagePos.y -= 2.5;
+    
+    messagePos.y -= 0.4375;
+    messagePos.y -= 0.5;
+    
+
+    mainFont2->drawString( inString, 
+                           messagePos, alignLeft );
+    }
+
+
 /*
 // gets the next buffer-full of sound samples from the game engine
 // inBuffer should be filled with stereo Sint16 samples, little endian,

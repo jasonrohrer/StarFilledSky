@@ -10,6 +10,8 @@ Version 8b
 --Fixed to stop playback and print message when end of recorded game file is
   reached (helpful for debugging).
 
+--Display rough estimate of playback fraction on screen.
+
 
 
 
