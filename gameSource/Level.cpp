@@ -6028,5 +6028,17 @@ doublePair Level::getNextPlayerPosTowardRise( double inMoveSpeed ) {
     return sGridWorldSpots[ nextStepGrid.y ][ nextStepGrid.x ];
     }
 
+
+
+
+
+void Level::rewindLevel() {
+    
+    // delete all bullets
+    mBullets.deleteAll();
+    
+    }
+
+
     
 

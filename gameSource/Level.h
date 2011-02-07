@@ -344,6 +344,11 @@ class Level {
         // pass in player's basic move speed
         doublePair getNextPlayerPosTowardRise( double inMoveSpeed );
         
+        
+
+        // returns level to starting state
+        void rewindLevel();
+        
 
 
     protected:
