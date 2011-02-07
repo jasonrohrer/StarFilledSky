@@ -16,6 +16,9 @@ Version 8b
 
 --Changed the way that heart tokens work (drop-off when player/enemy hit).
 
+--Fixed a potentially fatal bug in the way enemies track the bullet they are 
+  dodging.
+
 
 
 Version 8   2011-February-4

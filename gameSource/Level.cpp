@@ -1294,6 +1294,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
     mNextEnemyPathFindIndex = 0;
     
+
+    mNextBulletID = 0;
+    
     
     //Thread::staticSleep( 1000 );
     
@@ -1681,7 +1684,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             maxHealth,
                             0,
                             spot,
-                            NULL,
+                            // not dodging any bullet
+                            -1,
+                            0,
+                            // circle direction
                             false,
                             randSource.getRandomBoundedDouble( 0.1, 0.8 ),
                             walkerSet,
@@ -2894,6 +2900,36 @@ void Level::setLoudnessForAllParts() {
 
 
 
+void Level::deleteBullet( int inIndex ) {
+    
+    Bullet *b = mBullets.getElement( inIndex );
+
+    // clear out any enemy pointer to this bullet
+    // AND update any dodge index pointers that will be affected
+    // when this bullet is removed
+    for( int j=0; j<mEnemies.size(); j++ ) {
+        Enemy *e = mEnemies.getElement( j );
+        
+        if( e->dodgeBulletID == b->uniqueID ) {
+            // this enemy is doging this bullet
+            // stop
+            e->dodgeBulletIndex = -1;
+            e->dodgeBulletID = 0;
+            }
+        else if( e->dodgeBulletIndex > inIndex ) {
+            // this index pointer comes after the removed bullet
+            // it will now be off by one
+            e->dodgeBulletIndex --;
+            }
+        }
+
+
+
+    mBullets.deleteElement( inIndex );
+    }
+
+
+
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
     
@@ -3017,7 +3053,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         Bullet *b = mBullets.getElement( i );
         
         if( b->finalFrame ) {
-            mBullets.deleteElement( i );
+            deleteBullet( i );
             i--;
             }
         }
@@ -3506,6 +3542,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                                  startAngle + 
                                                  s * angleBetweenBullets );
                     
+                    subBullet.uniqueID = mNextBulletID++;
+
                     mBullets.push_back( subBullet );
                     }
                 mBullets.setPrintMessageOnVectorExpansion( false );
@@ -3519,14 +3557,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             
 
-            // clear out any enemy pointer to this bullet
-            for( int j=0; j<mEnemies.size(); j++ ) {
-                Enemy *e = mEnemies.getElement( j );
-                
-                if( e->dodgeBullet == b ) {
-                    e->dodgeBullet = NULL;
-                    }
-                }
             
             if( damage || b->explode > 0 ) {
                 // draw one more frame of this bullet, THEN delete it
@@ -3536,7 +3566,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             else {
                 // bullet done now
-                mBullets.deleteElement( i );
+                deleteBullet( i );
+                
                 i--;
                 }
             }
@@ -3634,7 +3665,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
         // search for behaviors
         char follow = false;
-        char dodge = false;
+        char dodge = true;
         char random = false;
         char circle = false;
         char moveStyle = false;
@@ -3669,7 +3700,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
 
         // temporarily disable follow during dodge
-        if( follow && e->dodgeBullet == NULL ) {
+        if( follow && e->dodgeBulletIndex == -1 ) {
 
             if( mNextEnemyPathFindIndex == i ) {
                 
@@ -3744,20 +3775,44 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 if( closestIndex != -1 &&
                     // ignore too far away to dodge
                     closestDistance < 5 ) {
-                    e->dodgeBullet = mBullets.getElement( closestIndex );
+                    Bullet *b = mBullets.getElement( closestIndex );
+                    
+                    e->dodgeBulletIndex = closestIndex;
+                    e->dodgeBulletID = b->uniqueID;
                     }
                 else {
-                    e->dodgeBullet = NULL;
+                    e->dodgeBulletIndex = -1;
+                    e->dodgeBulletID = 0;
                     }
                 }
             
 
-            if( e->dodgeBullet != NULL ) {
+            if( e->dodgeBulletIndex != -1 ) {
                 
-                Bullet *bullet = e->dodgeBullet;
+
+                // bullet indexing can change out from under us
+                Bullet *bullet = NULL;
                 
-                // indexing in mBullets may change as bullets expire
-                if( bullet->playerFlag ) {
+                // it SHOULDN'T ever happen, but be safe
+                if( mBullets.size() > e->dodgeBulletIndex ) {
+                    
+                    bullet = 
+                        mBullets.getElement( e->dodgeBulletIndex );
+                    
+                    if( bullet->uniqueID != e->dodgeBulletID ) {
+                        // this is not our bullet
+
+                        e->dodgeBulletIndex = -1;
+                        e->dodgeBulletID = 0;
+                        bullet = NULL;
+
+                        printf( "ERROR: could not find the bullet that enemy "
+                                "should be dodging (stale index?)\n" );
+                        }
+                    }
+                        
+                
+                if( bullet != NULL ) {
                     
                     doublePair moveChoiceA = { bullet->velocity.y,
                                                -bullet->velocity.x };
@@ -5821,7 +5876,8 @@ void Level::addBullet( doublePair inPosition,
                                outsiderAimPos,
                                inSpeed );
 
-        Bullet b = { inPosition, bulletVelocity, 
+        Bullet b = { mNextBulletID++,
+                     inPosition, bulletVelocity, 
                      inSpeed, inHeatSeek, inHeatSeekWaypoint,
                      distance,
                      distance,
@@ -5842,7 +5898,8 @@ void Level::addBullet( doublePair inPosition,
                                outsiderAimPos,
                                inSpeed );
         
-        Bullet br = { inPosition, bulletVelocity,
+        Bullet br = { mNextBulletID++,
+                      inPosition, bulletVelocity,
                       inSpeed, inHeatSeek, inHeatSeekWaypoint,
                       distance,
                       distance,
@@ -5875,7 +5932,8 @@ void Level::addBullet( doublePair inPosition,
                                        packMemberAimPos,
                                        inSpeed );
 
-                Bullet b = { inPosition, bulletVelocity,
+                Bullet b = { mNextBulletID++,
+                             inPosition, bulletVelocity,
                              inSpeed, inHeatSeek, inHeatSeekWaypoint,
                              distance,
                              distance,
@@ -5896,7 +5954,8 @@ void Level::addBullet( doublePair inPosition,
                                        packMemberAimPos,
                                        inSpeed );
 
-                Bullet br = { inPosition, bulletVelocity,
+                Bullet br = { mNextBulletID++,
+                              inPosition, bulletVelocity,
                               inSpeed, inHeatSeek, inHeatSeekWaypoint,
                               distance,
                               distance,
@@ -5912,7 +5971,8 @@ void Level::addBullet( doublePair inPosition,
         }
     
     // finally, one centered bullet on top
-    Bullet b = { inPosition, bulletVelocity, inSpeed, inHeatSeek,
+    Bullet b = { mNextBulletID++,
+                 inPosition, bulletVelocity, inSpeed, inHeatSeek,
                  inHeatSeekWaypoint,
                  distance,
                  distance,

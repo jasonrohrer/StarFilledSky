@@ -25,6 +25,7 @@
 #define MAX_LEVEL_SQUARES 7030
 
 typedef struct Bullet {
+        unsigned int uniqueID;
         doublePair position;
         doublePair velocity;
         double speed;
@@ -98,7 +99,8 @@ typedef struct Enemy {
         int lastMaxHealth;
         float healthBarFade;
         doublePair followNextWaypoint;
-        Bullet *dodgeBullet;
+        int dodgeBulletIndex;
+        unsigned int dodgeBulletID;
         char circleDirection;
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;
@@ -395,6 +397,9 @@ class Level {
         void setLoudnessForAllParts();
         
 
+        void deleteBullet( int inIndex );
+        
+
 
         // generate data that can be reproduced from the seed
         void generateReproducibleData();
@@ -487,6 +492,8 @@ class Level {
         static char sGridWorldSpotsComputed;
         static doublePair sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
 
+
+        unsigned int mNextBulletID;
 
         SimpleVector<Bullet> mBullets;
         SimpleVector<HitSmoke> mSmokeClouds;
