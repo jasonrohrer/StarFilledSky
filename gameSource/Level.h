@@ -107,6 +107,18 @@ typedef struct Enemy {
         int difficultyLevel;
         // int used to mark bullets that were fired by this enemy
         char bulletMarker;
+
+
+        // flag enemies as dead instead of deleting them
+        // this allows full level rewind when player knocked down
+        char dead;
+        
+        // used for rewind when player knocked down
+        doublePair startPosition;
+        doublePair startVelocity;
+        doublePair startAccel;
+        doublePair startBaseMoveDirection;
+        
     } Enemy;
 
 

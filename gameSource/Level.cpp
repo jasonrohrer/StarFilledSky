@@ -1690,7 +1690,11 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                    frameRateFactor ),
                             enemyDifficultyLevel,
                             // use enemy's initial index as its bullet marker
-                            i };
+                            i,
+                            // not dead
+                            false,
+                            // starting information for rewind
+                            spot, v, a, baseMoveDirection };
                 
                 musicPartIndex ++;
                 
@@ -2820,7 +2824,11 @@ void Level::setLoudnessForAllParts() {
     // enemy loudness
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
-        
+
+        if( e->dead ) {
+            continue;
+            }
+
         setPartLoudnessAndStereo( e->position, 
                                   mPlayerPos,
                                   e->musicNotes.partIndex,
@@ -3035,28 +3043,34 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             if( b->playerFlag ) {
             
                 shouldAdjustVelocity = false;
-                if( mEnemies.size() > 0 ) {
-                    shouldAdjustVelocity = true;
-                    
-                    // search for closest enemy to waypoint 
-                    // (closest to reticle at time of firing)
                 
-                    double minDistance = DBL_MAX;
-                    int minIndex = -1;
-                    for( int j=0; j<mEnemies.size(); j++ ) {
-                        Enemy *e = mEnemies.getElement( j );
+                // search for closest enemy to waypoint 
+                // (closest to reticle at time of firing)
+                
+                double minDistance = DBL_MAX;
+                int minIndex = -1;
+                for( int j=0; j<mEnemies.size(); j++ ) {
+                    Enemy *e = mEnemies.getElement( j );
                         
-                        double dist = distance( e->position, 
-                                                b->heatSeekWaypoint );
-                        if( dist < minDistance ) {
-                            minDistance = dist;
-                            minIndex = j;
-                            }
+                    if( e->dead ) {
+                        continue;
                         }
+
+                    double dist = distance( e->position, 
+                                            b->heatSeekWaypoint );
+                    if( dist < minDistance ) {
+                        minDistance = dist;
+                        minIndex = j;
+                        }
+                    }
                 
+                if( minIndex >= 0 ) {
+                    shouldAdjustVelocity = true;
+
+
                     Enemy *e = mEnemies.getElement( minIndex );
                     closestTarget = e->position;
-
+                        
                     // update heat seek waypoint... stick to the first enemy
                     // that we've started tracking, even if it moves,
                     // and then switch to the next closest enemy if the 
@@ -3064,6 +3078,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     b->heatSeekWaypoint = closestTarget;
                     }
                 }
+            
             
             
             if( shouldAdjustVelocity ) {
@@ -3246,6 +3261,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     for( int j=0; j<mEnemies.size() && !hit; j++ ) {
                         Enemy *e = mEnemies.getElement( j );
                     
+                        if( e->dead ) {
+                            continue;
+                            }
+                        
+
                         if( distance( e->position, b->position ) < 
                             hitRadius  ) {
                             
@@ -3340,11 +3360,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                     }
                                 
 
-
-                                delete e->sprite;
-                                delete e->powers;
-                                
-                                mEnemies.deleteElement( j );
+                                e->dead = true;
                                 }
                             else {
                                 // redisplay health bar
@@ -3567,11 +3583,19 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     
     
     mNextEnemyPathFindIndex ++;
-    char enemyPathFindingDoneThisStep = false;
+
+    // don't give pathfinding slot to dead enemies
+    while( mNextEnemyPathFindIndex < mEnemies.size() 
+           && mEnemies.getElement( mNextEnemyPathFindIndex )->dead ) {
+        mNextEnemyPathFindIndex++;
+        }
+    
+
     if( mNextEnemyPathFindIndex > mEnemies.size() - 1 ) {
         mNextEnemyPathFindIndex = 0;
         }
     
+    char enemyPathFindingDoneThisStep = false;
 
 
     
@@ -3581,6 +3605,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // step enemies
     for( i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
+
+        if( e->dead ) {
+            continue;
+            }
+        
 
         e->stepsUntilNextGlowTrail --;
         
@@ -4200,6 +4229,11 @@ void Level::drawEnemies( double inFade, int inLayer,
     for( int i=startIndex; i<endIndex; i++ ) {
         Enemy *e = mEnemies.getElement( i );
 
+        if( e->dead ) {
+            continue;
+            }
+        
+
         doublePair pos = e->position;
         
         if( pos.x >= inVisStart.x && pos.y >= inVisStart.y &&
@@ -4726,6 +4760,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             for( int i=0; i<mEnemies.size(); i++ ) {
                 Enemy *e = mEnemies.getElement( i );
                 
+                if( e->dead ) {
+                    continue;
+                    }
+                    
                 doublePair pos = e->position;
                 
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
@@ -5056,6 +5094,11 @@ char Level::isEnemy( doublePair inPos, int *outEnemyIndex ) {
     for( int j=0; j<mEnemies.size(); j++ ) {
         Enemy *e = mEnemies.getElement( j );
         
+        if( e->dead ) {
+            continue;
+            }
+        
+
         double thisDist = distance( e->position, inPos );
         if( thisDist < closestDistance ) {
             closestDistance = thisDist;
@@ -5891,7 +5934,7 @@ void Level::pushAllMusicIntoPlayer() {
     
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
-        
+
         setNoteSequence( e->musicNotes );
         }
 
