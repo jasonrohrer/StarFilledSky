@@ -386,6 +386,87 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
 
 
 
+void PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
+    
+    // what we should be reduced to as a result of this knock
+    PowerUpSet newSet( this );
+    
+    int numLeftToKnock = inNumToKnock;
+    
+    for( int i=0; i<POWER_SET_SIZE && numLeftToKnock > 0; i++ ) {
+        
+        if( newSet.mPowers[i].powerType == powerUpHeart ) {
+            
+            if( newSet.mPowers[i].level > numLeftToKnock ) {
+                // partially exhausts this heart slot
+
+                newSet.mPowers[i].level -= numLeftToKnock;
+                
+                numLeftToKnock = 0;
+                }
+            else {
+                // exhausts this heart slot completely
+
+                numLeftToKnock -= newSet.mPowers[i].level;
+                
+                newSet.mPowers[i].powerType = powerUpEmpty;
+                newSet.mPowers[i].level = 0;
+                }
+            }
+        }
+    
+    if( inInstant ) {
+        copySet( &newSet );
+        }
+    else if( ! equals( &newSet ) ) {
+        // show difference between two sets dropping off
+
+        
+        if( mPowersBeingDropped != NULL ) {
+            delete mPowersBeingDropped;
+            mPowersBeingDropped = NULL;
+            }
+        
+        mDropping = true;
+        mDropProgress = 0;
+
+
+        mPowersBeingDropped = new PowerUpSet( this );
+
+        for( int i=0; i<POWER_SET_SIZE; i++ ) {
+            
+            if( mPowers[i].powerType == powerUpHeart &&
+                mPowers[i].level != newSet.mPowers[i].level ) {
+                
+                // hearts dropping off this slot
+
+                mPowersBeingDropped->mPowers[i].level = 
+                    mPowers[i].level - newSet.mPowers[i].level;
+                }
+            else {
+                // no change in this slot
+
+                // put empty power there as marker
+                mPowersBeingDropped->mPowers[i].powerType = powerUpEmpty;
+                mPowersBeingDropped->mPowers[i].behavior = false;
+                mPowersBeingDropped->mPowers[i].level = 0;
+                }
+            }
+
+        // switch to new set underneath dropping-off tokens
+        copySet( &newSet );
+        }
+    
+    }
+
+
+        
+void PowerUpSet::knockOffHeart() {
+    knockOffHearts( 1, true );
+    }
+
+
+
 void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
     if( mPowersBeingDropped != NULL ) {
         delete mPowersBeingDropped;
@@ -397,7 +478,25 @@ void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
     
     // copy our powers into the drop animation set
     mPowersBeingDropped = new PowerUpSet( this );
+
+
+    // leave "empty" tokens in places where set is the same as the one
+    // we already have
+
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType == inNewSet->mPowers[i].powerType
+            &&
+            mPowers[i].behavior == inNewSet->mPowers[i].behavior
+            &&
+            mPowers[i].level == inNewSet->mPowers[i].level ) {
+            
+            mPowersBeingDropped->mPowers[i].powerType = powerUpEmpty;
+            mPowersBeingDropped->mPowers[i].behavior = false;
+            mPowersBeingDropped->mPowers[i].level = 0;
+            }
+        }
     
+
     // replace our powers with these new ones
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i] = inNewSet->mPowers[i];
@@ -449,7 +548,7 @@ char PowerUpSet::equals( PowerUpSet *inOtherSet ) {
 
 
 void PowerUpSet::drawSet( doublePair inPosition, float inFade, 
-                          char inDrawSlots ) {
+                          char inDrawSlots, char inDrawEmptyPowers ) {
     
     int centerIndex = POWER_SET_CENTERED_INDEX;
     
@@ -503,6 +602,12 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
 
     // draw existing slot contents
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        
+        if( ! inDrawEmptyPowers && mPowers[i].powerType == powerUpEmpty ) {
+            // skip this power
+            continue;
+            }
+
         doublePair drawPos = slotContentsPos;
         drawPos.x += ( i - centerIndex ) * slotSize;
 
@@ -541,7 +646,9 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
         inPosition.y -= mDropProgress;
         
         // don't draw slots for the set that's dropping off
-        mPowersBeingDropped->drawSet( inPosition, 1 - mDropProgress, false );
+        // don't draw empties (which mark slots that are not changing)
+        mPowersBeingDropped->drawSet( inPosition, 1 - mDropProgress, false,
+                                      false );
         }
     
     

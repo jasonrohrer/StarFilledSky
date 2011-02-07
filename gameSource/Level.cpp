@@ -1285,9 +1285,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
 
 
-    int health, max;
-    getPlayerHealth( &health, &max );
-    mPlayerHealth = max;
+    mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
+    mPlayerHealth = mPlayerHealthMax;
     
     mPlayerHealthBarJittering = false;
     mPlayerHealthBarJitterProgress = 0;
@@ -3015,6 +3014,13 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         }
     
+    // number of bullets that hit player this step
+    int totalPlayerHealthKnock = 0;
+    
+    int currentPlayerHealth = getMaxHealth( mPlayerPowers ) + 1;
+    
+        
+
 
     for( i=0; i<mBullets.size(); i++ ) {
         
@@ -3337,16 +3343,15 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     if( distance( mPlayerPos, b->position ) < hitRadius ) {
                         hit = true;
                         damage = true;
-                        mPlayerHealth -= 1;
+
+                        totalPlayerHealthKnock ++;
+                        
                         mPlayerSprite.startSquint();
 
                         mPlayerHealthBarJittering = true;
                         mPlayerHealthBarJitterProgress = 0;
 
-                        if( mPlayerHealth < 0 ) {
-                            mPlayerHealth = 0;
-                            }
-                        if( mPlayerHealth == 0 ) {
+                        if( currentPlayerHealth <= totalPlayerHealthKnock ) {
                             destroyed = true;
                             }                                
                         }
@@ -3506,6 +3511,23 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         
         }
+
+
+    if( totalPlayerHealthKnock > 0 ) {
+        
+        // apply accumulated health knock, from all bullets that hit player
+        // this step
+
+        mPlayerPowers->knockOffHearts( totalPlayerHealthKnock, false );
+
+        if( mPlayerHealth == 1 ) {
+            mPlayerHealth = 0;
+            }
+        else {
+            mPlayerHealth = getMaxHealth( mPlayerPowers ) + 1;
+            }
+        }
+    
 
 
     // step smoke
@@ -4358,6 +4380,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             t->power.powerType = t->subPowers->getMajorityType();
             t->power.level = t->subPowers->getLevelSum( t->power.powerType );
             }
+
+        // keep max player health updated while frozen
+        mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
+        mPlayerHealth = mPlayerHealthMax;
         }
     
 
@@ -5409,8 +5435,8 @@ void Level::setPlayerPowers( PowerUpSet *inPowers ) {
 
 
 void Level::getPlayerHealth( int *outValue, int *outMax ) {
-    int max = 1 + getMaxHealth( mPlayerPowers );
-    *outMax = max;
+    int max = mPlayerHealthMax;
+    *outMax = mPlayerHealthMax;
     
     // truncate player health, incase it was restored before a power-up
     // pickup that reduced max health

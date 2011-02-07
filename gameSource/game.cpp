@@ -1604,11 +1604,6 @@ void drawFrame( char inUpdate ) {
         // from last frame of previous rise-up
 
         lastLevel->freezeLevel( true );
-        if( lastLevel->getLastEnterPointSprite() == 
-            lastLevel->getPlayerSprite() ) {
-            // rising out of player, restore health
-            lastLevel->restorePlayerHealth();
-            }
         
         zoomProgress = 1;
         zoomDirection = -1;

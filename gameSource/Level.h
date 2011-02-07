@@ -531,6 +531,7 @@ class Level {
         RandomWalkerSet mPlayerWalkerSet;
         NoteSequence mPlayerMusicNotes;
         
+        int mPlayerHealthMax;
         int mPlayerHealth;
         
         char mPlayerHealthBarJittering;

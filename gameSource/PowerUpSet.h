@@ -75,8 +75,15 @@ class PowerUpSet {
         
 
         void drawSet( doublePair inPosition, float inFade=1, 
-                      char inDrawSlots = true );
+                      char inDrawSlots = true, char inDrawEmptyPowers = true );
         
+        // knocks a certain number of heart powers
+        void knockOffHearts( int inNumToKnock, char inInstant );
+        
+        // instantly knocks off a heart
+        void knockOffHeart();
+        
+
 
         // whole-sale replace all 3 powers, displaying a "dropping off" 
         // animation
@@ -133,7 +140,8 @@ class PowerUpSet {
         
         char mDropping;
         double mDropProgress;
-        PowerUpSet *mPowersBeingDropped;
+        PowerUpSet *mPowersBeingDropped;        
+
         
         char mDimMinority;
         // true if corresponding power dimmed
