@@ -3252,6 +3252,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             hit = true;
                             damage = true;
                             
+                            
                             // make sure enemy health is up-to-date
                             // (its power-ups may have been modified)
                             int maxHealth = 
@@ -3259,28 +3260,43 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         
                             if( maxHealth < e->lastMaxHealth ) {
                                 // max health has been lowered
+                                // trim health as a result
                                 if( e->health > maxHealth ) {
                                     e->health = maxHealth;
                                     }
+                                
+                                // but keep capacity of health bar the same
+                                // (lastMaxHealth)
+
                                 }
                             else if( maxHealth > e->lastMaxHealth ) {
-                                // max health has been raised
+                                // max health has been raised past old capacity
+                                // of health bar
                                 
-                                // keep whatever health was missing
-                                // from the old health bar
+                                // extend health
+                                e->health = maxHealth;
 
-                                int oldMissingHealth =
-                                    e->lastMaxHealth - e->health;
-                            
-                                e->health = maxHealth - oldMissingHealth;
+                                // new capacity for health bar
+                                e->lastMaxHealth = maxHealth;
                                 }
-                            
-                            e->lastMaxHealth = maxHealth;
 
-                            e->health --;
+                            // knock off one heart, if there are any
+                            e->powers->knockOffHeart();
+
+                            
+                            // health should always go down by
+                            // one every hit (and not just track max
+                            // health based on heart tokens, because 
+                            // behavior tokens contribute health too, and
+                            // they don't get knocked off)
+                            
+                            e->health--;
+                                                            
+
+
                             e->sprite->startSquint();
                             
-
+                            
                             tutorialEnemyHit();
 
                             if( e->health == 0 ) {
@@ -4200,7 +4216,9 @@ void Level::drawEnemies( double inFade, int inLayer,
                     fade = sin( e->healthBarFade * M_PI );
                     }
             
-                int maxHealth = getEnemyMaxHealth( e->powers );
+                // hold health bar capacity steady as heart tokens
+                // are knocked out of enemy
+                int maxHealth = e->lastMaxHealth;
                 
 
                 double segmentWidth = 0.25;
