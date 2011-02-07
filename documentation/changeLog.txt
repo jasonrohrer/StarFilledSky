@@ -12,6 +12,7 @@ Version 8b
 
 --Display rough estimate of playback fraction on screen.
 
+--Fixed player positioning round-off errors that were causing sprite artifacts.
 
 
 

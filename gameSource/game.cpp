@@ -1729,28 +1729,19 @@ void drawFrame( char inUpdate ) {
         double componentVelocity = 0.09375 * frameRateFactor;
         
 
-        // to avoid diagonal accel glitches, just use stronger velocity
-        // component until the other one catches up
+        // cap either component if it rises above max diagonal component
+        // velocity
 
-        if( fabs( velocityY ) == moveSpeed && 
-            fabs( velocityX ) == moveSpeed ) {
+        if( fabs( velocityX ) > componentVelocity ) {
             
-            velocity.x = velocity.x / moveSpeed * componentVelocity;
-            velocity.y = velocity.y / moveSpeed * componentVelocity;
+            // divide by fabs to extract sign
+            velocity.x = componentVelocity * velocityX / fabs( velocityX );
             }
-        else {
-            // leave weaker component unmodified
+        if( fabs( velocityY ) > componentVelocity ) {
             
-            if( fabs( velocityY ) > fabs( velocityX ) ) {
-                
-                velocity.y = velocity.y / moveSpeed * componentVelocity;
-                velocity.x = velocityX;
-                }
-            else {
-                velocity.x = velocity.x / moveSpeed * componentVelocity;
-                velocity.y = velocityY;
-                }
-            }        
+            // divide by fabs to extract sign
+            velocity.y = componentVelocity * velocityY / fabs( velocityY );
+            }
         }
     
 
