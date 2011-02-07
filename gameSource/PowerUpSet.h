@@ -45,6 +45,9 @@ typedef struct powerPushRecord {
     } powerPushRecord;
 
 
+extern char defaultDrawToggleArray[3];
+
+
 
 class PowerUpSet {
         
@@ -75,7 +78,8 @@ class PowerUpSet {
         
 
         void drawSet( doublePair inPosition, float inFade=1, 
-                      char inDrawSlots = true, char inDrawEmptyPowers = true );
+                      char inDrawSlots = true, 
+                      const char inDrawToggles[3] = defaultDrawToggleArray );
         
         // knocks a certain number of heart powers
         void knockOffHearts( int inNumToKnock, char inInstant );
@@ -141,6 +145,8 @@ class PowerUpSet {
         char mDropping;
         double mDropProgress;
         PowerUpSet *mPowersBeingDropped;        
+
+        char mDropDrawToggles[3];
 
         char mDroppingHearts;
         
