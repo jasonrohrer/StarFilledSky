@@ -113,14 +113,7 @@ typedef struct Enemy {
 
         // flag enemies as dead instead of deleting them
         // this allows full level rewind when player knocked down
-        char dead;
-        
-        // used for rewind when player knocked down
-        doublePair startPosition;
-        doublePair startVelocity;
-        doublePair startAccel;
-        doublePair startBaseMoveDirection;
-        
+        char dead;        
     } Enemy;
 
 
@@ -198,6 +191,9 @@ class Level {
         void setMousePos( doublePair inPos );
         
         void setEnteringMouse( char inEntering );
+        
+
+        doublePair getPlayerPos();
         
 
 
@@ -499,7 +495,13 @@ class Level {
         SimpleVector<HitSmoke> mSmokeClouds;
         
         SimpleVector<Enemy> mEnemies;
+
+        // copies of stack data for enemies
+        // pointers to same heap data
+        // makes rewinding enemies fool-proof
+        SimpleVector<Enemy> mEnemiesStart;
         
+
         SimpleVector<PowerUpToken> mPowerUpTokens;
         
         SimpleVector<BloodStain> mBloodStains;

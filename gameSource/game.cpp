@@ -1605,6 +1605,19 @@ void drawFrame( char inUpdate ) {
 
         lastLevel->freezeLevel( true );
         
+        if( currentLevel->isKnockDown() ) {
+            // reset level we're rising into after knock-down
+            lastLevel->rewindLevel();
+
+            // ignore position info that was used to zoom-in
+            // re-center on player
+            lastLevelPosition.playerPos = lastLevel->getPlayerPos();
+            lastLevelPosition.lastScreenViewCenter = lastLevel->getPlayerPos();
+            lastLevelPosition.entryPosition = lastLevel->getPlayerPos();
+            lastLevelPosition.mousePos = lastLevel->getPlayerPos();
+            }
+        
+
         zoomProgress = 1;
         zoomDirection = -1;
         currentLevel->drawFloorEdges( false );

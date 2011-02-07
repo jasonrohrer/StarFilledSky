@@ -1698,13 +1698,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             // use enemy's initial index as its bullet marker
                             i,
                             // not dead
-                            false,
-                            // starting information for rewind
-                            spot, v, a, baseMoveDirection };
+                            false };
                 
                 musicPartIndex ++;
                 
                 mEnemies.push_back( e );
+                mEnemiesStart.push_back( e );
+                
                 hit = true;
                 }
             else {
@@ -2093,6 +2093,10 @@ void Level::setEnteringMouse( char inEntering ) {
     mEnteringMouse = inEntering;
     }
 
+
+doublePair Level::getPlayerPos() {
+    return mPlayerPos;
+    }
 
 
 
@@ -3665,7 +3669,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
         // search for behaviors
         char follow = false;
-        char dodge = true;
+        char dodge = false;
         char random = false;
         char circle = false;
         char moveStyle = false;
@@ -6096,7 +6100,31 @@ void Level::rewindLevel() {
     
     // delete all bullets
     mBullets.deleteAll();
+
+    for( int i=0; i<mEnemies.size(); i++ ) {
+        Enemy *e = mEnemies.getElement( i );
     
+        Enemy *startState = mEnemiesStart.getElement( i );
+
+        *e = *startState;
+        
+        // FIXME:
+        // this copies enemie's CURRENT power set, which is correct
+        // most of the time (we want to preserve work player already 
+        // did if they entered an enemy to depower it).
+
+        // but we DON'T want to keep current heart tokens!
+        // player may have shot enemy before being knocked down,
+        // and we don't want them to be able to rise up and chip
+        // away a bit more (skill-free)
+        }
+    
+    mPlayerPos = mPlayerStartPos;
+    
+    mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
+    
+    mLastCloseStepsToRiseMarker = mStartStepsToRiseMarker;
+    mGettingFartherAwayFromRiseMarker = false;
     }
 
 
