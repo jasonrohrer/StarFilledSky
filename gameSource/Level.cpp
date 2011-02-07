@@ -3518,12 +3518,12 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         // apply accumulated health knock, from all bullets that hit player
         // this step
 
-        mPlayerPowers->knockOffHearts( totalPlayerHealthKnock, false );
-
         if( mPlayerHealth == 1 ) {
+            // final knock, no tokens left!
             mPlayerHealth = 0;
             }
         else {
+            mPlayerPowers->knockOffHearts( totalPlayerHealthKnock, false );
             mPlayerHealth = getMaxHealth( mPlayerPowers ) + 1;
             }
         }

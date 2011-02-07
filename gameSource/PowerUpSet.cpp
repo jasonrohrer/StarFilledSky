@@ -101,6 +101,9 @@ void PowerUpSet::fillDefaultSet() {
     mDropping = false;
     mPowersBeingDropped = NULL;
     
+    mDroppingHearts = false;
+    
+
     mDimMinority = false;
 
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
@@ -422,16 +425,28 @@ void PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
         // show difference between two sets dropping off
 
         
-        if( mPowersBeingDropped != NULL ) {
-            delete mPowersBeingDropped;
-            mPowersBeingDropped = NULL;
+        if( ! mDroppingHearts ) {
+            
+
+            if( mPowersBeingDropped != NULL ) {
+                delete mPowersBeingDropped;
+                mPowersBeingDropped = NULL;
+                }
+        
+            mDropping = true;
+            mDroppingHearts = true;
+            mDropProgress = 0;
+
+            // base is empty set
+            mPowersBeingDropped = new PowerUpSet();
+            }
+        else {
+            // already dropping hearts, keep existing drop set and add to it
+        
+            // don't  update drop progress either
             }
         
-        mDropping = true;
-        mDropProgress = 0;
 
-
-        mPowersBeingDropped = new PowerUpSet( this );
 
         for( int i=0; i<POWER_SET_SIZE; i++ ) {
             
@@ -440,16 +455,12 @@ void PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
                 
                 // hearts dropping off this slot
 
-                mPowersBeingDropped->mPowers[i].level = 
+                mPowersBeingDropped->mPowers[i].powerType = powerUpHeart;
+                
+                // add to it (works both for fresh heart drop and augmentation
+                // of a heart drop already in progress)
+                mPowersBeingDropped->mPowers[i].level += 
                     mPowers[i].level - newSet.mPowers[i].level;
-                }
-            else {
-                // no change in this slot
-
-                // put empty power there as marker
-                mPowersBeingDropped->mPowers[i].powerType = powerUpEmpty;
-                mPowersBeingDropped->mPowers[i].behavior = false;
-                mPowersBeingDropped->mPowers[i].level = 0;
                 }
             }
 
@@ -697,6 +708,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
         mDropProgress += 0.025 * frameRateFactor;
         if( mDropProgress >= 1 ) {
             mDropping = false;
+            mDroppingHearts = false;
             
             delete mPowersBeingDropped;
             mPowersBeingDropped = NULL;

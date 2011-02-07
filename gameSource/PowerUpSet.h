@@ -142,6 +142,9 @@ class PowerUpSet {
         double mDropProgress;
         PowerUpSet *mPowersBeingDropped;        
 
+        char mDroppingHearts;
+        
+
         
         char mDimMinority;
         // true if corresponding power dimmed
