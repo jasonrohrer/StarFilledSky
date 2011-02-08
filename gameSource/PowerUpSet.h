@@ -82,10 +82,12 @@ class PowerUpSet {
                       const char inDrawToggles[3] = defaultDrawToggleArray );
         
         // knocks a certain number of heart powers
-        void knockOffHearts( int inNumToKnock, char inInstant );
+        // return the number actually knocked off
+        int knockOffHearts( int inNumToKnock, char inInstant );
         
         // instantly knocks off a heart
-        void knockOffHeart();
+        // returns true if one knocked off
+        char  knockOffHeart();
         
 
 

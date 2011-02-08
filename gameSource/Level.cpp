@@ -1671,6 +1671,11 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                     }
                 
 
+                // FIXME:
+                p->mPowers[0].powerType = powerUpHeart;
+                p->mPowers[0].level = 3;
+                
+
 
                 RandomWalkerSet walkerSet;
                 
@@ -1682,6 +1687,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             p,
                             maxHealth,
                             maxHealth,
+                            // no hearts knocked off yet
+                            0,
                             0,
                             spot,
                             // not dodging any bullet
@@ -3351,7 +3358,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                 }
 
                             // knock off one heart, if there are any
-                            e->powers->knockOffHeart();
+                            if( e->powers->knockOffHeart() ) {
+                                e->numHeartsKnockedOff ++;
+                                }
+                            
 
                             
                             // health should always go down by
@@ -3359,10 +3369,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                             // health based on heart tokens, because 
                             // behavior tokens contribute health too, and
                             // they don't get knocked off)
-                            
-                            e->health--;
-                                                            
 
+                            e->health--;
+
+                            
 
                             e->sprite->startSquint();
                             
@@ -6131,20 +6141,47 @@ void Level::rewindLevel() {
     // revive and rewind all enemies
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
+
+        int numHeartsKnocked = e->numHeartsKnockedOff;
+
     
         Enemy *startState = mEnemiesStart.getElement( i );
 
         *e = *startState;
         
-        // FIXME:
-        // this copies enemie's CURRENT power set, which is correct
-        // most of the time (we want to preserve work player already 
+        // this copies enemy's CURRENT power set, which is correct
+        // (we want to preserve work player already 
         // did if they entered an enemy to depower it).
 
         // but we DON'T want to keep current heart tokens!
         // player may have shot enemy before being knocked down,
         // and we don't want them to be able to rise up and chip
         // away a bit more (skill-free)
+        
+        // restore any hearts that were knocked off
+        
+        if( numHeartsKnocked > 0 ) {
+
+            // stick them all in right-most slot available slot
+            char done = false;
+            for( int s=POWER_SET_SIZE-1; s>=0 && !done; s-- ) {
+                if( e->powers->mPowers[s].powerType == powerUpEmpty ) {
+                    e->powers->mPowers[s].powerType = powerUpHeart;
+                    }
+            
+                if( e->powers->mPowers[s].powerType == powerUpHeart ) {
+                    e->powers->mPowers[s].level += numHeartsKnocked;
+                    done = true;
+                    }
+                }
+            }
+
+        
+        // raise health back up to full based on restored hearts
+        int maxHealth = getEnemyMaxHealth( e->powers );
+
+        e->health = maxHealth;
+        e->lastMaxHealth = maxHealth;
         }
 
     // restore all floor tokens

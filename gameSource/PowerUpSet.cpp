@@ -398,7 +398,7 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
 
 
 
-void PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
+int PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
     
     // what we should be reduced to as a result of this knock
     PowerUpSet newSet( this );
@@ -483,12 +483,15 @@ void PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
         copySet( &newSet );
         }
     
+    return inNumToKnock - numLeftToKnock;
     }
 
 
         
-void PowerUpSet::knockOffHeart() {
-    knockOffHearts( 1, true );
+char PowerUpSet::knockOffHeart() {
+    int numKnocked = knockOffHearts( 1, true );
+
+    return (numKnocked == 1);
     }
 
 

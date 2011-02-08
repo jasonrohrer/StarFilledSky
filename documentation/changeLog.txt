@@ -19,6 +19,9 @@ Version 8b
 --Fixed a potentially fatal bug in the way enemies track the bullet they are 
   dodging.
 
+--After rising back from a knock-down, level is completely reset (to thwart 
+  skill-free grinding play).
+
 
 
 Version 8   2011-February-4

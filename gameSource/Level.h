@@ -97,6 +97,9 @@ typedef struct Enemy {
         PowerUpSet *powers;
         int health;
         int lastMaxHealth;
+        // count how many hearts have been knocked off this enemy
+        // we should restore these when level rewinds
+        int numHeartsKnockedOff;
         float healthBarFade;
         doublePair followNextWaypoint;
         int dodgeBulletIndex;
