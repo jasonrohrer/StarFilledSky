@@ -45,7 +45,7 @@ difficultyTag "DIFFICULTY"
 
 
 
-powerUpHeart_tip          "HEALTH BAR CAPACITY"
+powerUpHeart_tip          "HEALTH"
 powerUpBulletSize_tip     "BULLET SIZE"
 powerUpRapidFire_tip      "RATE OF FIRE"
 powerUpBulletSpeed_tip    "BULLET SPEED"
@@ -55,7 +55,9 @@ powerUpBulletDistance_tip "BULLET RANGE"
 powerUpBounce_tip         "BOUNCE"
 powerUpExplode_tip        "BURST"
 
-powerUpHeartSetCombo_tip  "MAX HEALTH"
+powerUpHeartSetCombo_tipPart1  "SURVIVE"
+powerUpHeartSetCombo_tipPart2  "HITS"
+powerUpHeartSetCombo_tipPart2_singular  "HIT"
 
 
 

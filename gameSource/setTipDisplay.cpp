@@ -178,10 +178,21 @@ void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
 
     // first string is always health
 
+    const char *tipPart2;
+    int heartLevel = getTotalLevel( inSet, powerUpHeart );
+    
+    if( heartLevel != 1 ) {
+        tipPart2 = translate( "powerUpHeartSetCombo_tipPart2" );
+        }
+    else {
+        tipPart2 = translate( "powerUpHeartSetCombo_tipPart2_singular" );
+        }
+    
     currentTipStrings[0] = 
-        autoSprintf( "%s %d",
-                     translate( "powerUpHeartSetCombo_tip" ),
-                     getTotalLevel( inSet, powerUpHeart ) + 1 );
+        autoSprintf( "%s %d %s",
+                     translate( "powerUpHeartSetCombo_tipPart1" ),
+                     heartLevel,
+                     tipPart2 );
     
     numFilledStrings++;
     
