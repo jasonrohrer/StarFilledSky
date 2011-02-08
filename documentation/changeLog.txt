@@ -24,6 +24,9 @@ Version 8b
 
 --Changed to soften knock-down by leaving players with SOME of their powers. 
 
+--Changed the conditions under which powers are passed upward.
+
+
 
 
 Version 8   2011-February-4

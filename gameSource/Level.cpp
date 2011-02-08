@@ -1258,7 +1258,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
     if( inSetPlayerPowers != NULL ) {
         // copy player powers (intentionally entering
-        mPlayerPowers = new PowerUpSet( inSetPlayerPowers );
+        mPlayerPowers = new PowerUpSet( inSetPlayerPowers );        
         }
     else {
         // this is the next level up, or an unintentional knock-down
@@ -1281,6 +1281,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
             }
         }
     
+    // keep a copy of it for restoring later, if needed
+    mStartingPlayerPowers = new PowerUpSet( mPlayerPowers );
+
     
 
 
@@ -2059,6 +2062,7 @@ Level::~Level() {
         }
 
     delete mPlayerPowers;
+    delete mStartingPlayerPowers;
     }
 
 
@@ -5574,6 +5578,11 @@ PlayerSprite *Level::getPlayerSprite() {
 
 PowerUpSet *Level::getPlayerPowers() {
     return mPlayerPowers;
+    }
+
+
+PowerUpSet *Level::getStartingPlayerPowers() {
+    return mStartingPlayerPowers;
     }
 
 

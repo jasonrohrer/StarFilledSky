@@ -1676,7 +1676,30 @@ void drawFrame( char inUpdate ) {
             Level *nextHigherLevel = 
                 *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
 
-            nextHigherLevel->setPlayerPowers( lastLevel->getPlayerPowers() );
+            if( nextHigherLevel->getStepCount() == 0 || 
+                lastLevel->isKnockDown() ) {
+                // pass gathered powers up through a knock-down chain OR
+                // a fresh-level chain
+
+                // like a full rewind of rising back into lastLevel
+                // (if we got there by rising there or by being knocked there)
+                nextHigherLevel->setPlayerPowers( 
+                    lastLevel->getPlayerPowers() );
+                }
+            else if( ! lastLevel->isKnockDown() && 
+                     nextHigherLevel->getStepCount() > 0 ) {
+                
+                // reached lastLevel by entering self from next-higher
+                
+                // restore the tokens that we intentionally entered
+                // lastLevel with from next higher level (full rewind
+                //   as if we're starting lastLevel fresh from exactly
+                //  how we got there)
+
+                nextHigherLevel->setPlayerPowers(
+                    lastLevel->getStartingPlayerPowers() );
+                }
+            
             }
         
 

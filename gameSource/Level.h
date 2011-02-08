@@ -269,7 +269,11 @@ class Level {
 
         PlayerSprite *getPlayerSprite();
         
+        // current
         PowerUpSet *getPlayerPowers();
+
+        // powers that were set when level was constructed
+        PowerUpSet *getStartingPlayerPowers();
         
         NoteSequence *getPlayerNoteSequence();
         
@@ -565,6 +569,8 @@ class Level {
 
         PlayerSprite mPlayerSprite;
         PowerUpSet *mPlayerPowers;
+        PowerUpSet *mStartingPlayerPowers;
+
         RandomWalkerSet mPlayerWalkerSet;
         NoteSequence mPlayerMusicNotes;
         
