@@ -3491,7 +3491,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     // it is framerate independent
                     progress = 0.25;
                     }
-                else if( b->explode > 0 ) {
+                else if( b->explode > 0 && !hit ) {
                     // or for exploding bullets, so it looks more
                     // like smoke is "throwing" other bullets out
                     // this must take framerate into account
@@ -3535,7 +3535,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     }
                 }
             
-            if( b->explode > 0 ) {
+
+            // bullets do NOT explode if they hit something
+            // only if they complete their tradjectory in open space
+            if( b->explode > 0 && !hit ) {
                 // make explosion happen
                 
                 Bullet explosionTemplate = *b;
@@ -3594,10 +3597,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             
 
             
-            if( damage || b->explode > 0 ) {
+            if( damage || ( b->explode > 0 && !hit ) ) {
                 // draw one more frame of this bullet, THEN delete it
                 // immediately on next step (so we can see the bullet
-                // that hit whatever it hit)
+                // that hit whatever it hit OR see bullet that exploded)
                 b->finalFrame = true;
                 }
             else {

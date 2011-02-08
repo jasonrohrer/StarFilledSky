@@ -41,6 +41,10 @@ Version 8b
 --Improved power-up slots in dashboard to separate set visually from power that
   we're inside.
 
+--Changed BURST power so that it only bursts in open space, not if it hits 
+  something (thanks Rico).
+
+
 
 
 Version 8   2011-February-4
