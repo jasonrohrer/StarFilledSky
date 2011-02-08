@@ -407,6 +407,14 @@ class Level {
         
 
         void deleteBullet( int inIndex );
+
+
+        // recursively fixes floor gaps created by a new floor tile placement
+        // respects the floor tile limit recursively
+        void fixFloorGap( int inNewFloorIndex,
+                          SimpleVector<Color> *inGridColorsWorking,
+                          int *inOutFloorColorIndex,
+                          int *inOutNumFloorPlacementsRemaining );
         
 
 

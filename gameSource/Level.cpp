@@ -275,6 +275,82 @@ void Level::findCutPointsRecursive( int inCurrentIndex,
 
 
 
+void Level::fixFloorGap( int inNewFloorIndex,
+                         SimpleVector<Color> *inGridColorsWorking,
+                         int *inOutFloorColorIndex,
+                         int *inOutNumFloorPlacementsRemaining ) {
+
+
+    int x = mIndexToGridMap[inNewFloorIndex].x;
+    int y = mIndexToGridMap[inNewFloorIndex].y;
+    
+    
+    GridPos corners[4] = { {x-1, y-1}, {x+1, y-1}, {x+1, y+1}, {x-1, y+1} };
+    
+    for( int i=0; i<4 && *inOutNumFloorPlacementsRemaining > 0; i++ ) {
+        
+        int cx = corners[i].x;
+        int cy = corners[i].y;
+        
+
+        if( mWallFlags[cy][cx] == 1 ) {
+            
+            // look at both shared neighbors with this corner
+            
+            if( mWallFlags[cy][x] == 0 &&
+                mWallFlags[y][cx] ) {
+            
+                // a gap!
+
+                // fill in one of the shared neighbors to make it connected
+                
+                // just pick one
+                int fx = x;
+                int fy = cy;
+                
+
+                mNumFloorSquares++;
+
+            
+                mSquareIndices[fy][fx] = mNumUsedSquares;
+                mIndexToGridMap[mNumUsedSquares].x = fx;
+                mIndexToGridMap[mNumUsedSquares].y = fy;
+                
+                int placementIndex = mNumUsedSquares;
+                
+                mNumUsedSquares++;
+                
+                int floorColorIndex = *inOutFloorColorIndex;
+    
+
+                inGridColorsWorking->push_back(
+                    mColors.secondary.elements[floorColorIndex] );
+
+                floorColorIndex = (floorColorIndex + 1) % 3;
+
+
+                *inOutFloorColorIndex = floorColorIndex;
+
+                *inOutNumFloorPlacementsRemaining --;
+    
+
+                if( *inOutNumFloorPlacementsRemaining > 0 ) {    
+                    fixFloorGap( placementIndex,
+                                 inGridColorsWorking,
+                                 inOutFloorColorIndex, 
+                                 inOutNumFloorPlacementsRemaining );
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
+
+
+
 
 
 
@@ -386,17 +462,28 @@ void Level::generateReproducibleData() {
             mIndexToGridMap[mNumUsedSquares].x = x;
             mIndexToGridMap[mNumUsedSquares].y = y;
             
+            int placementIndex = mNumUsedSquares;
+
             mNumUsedSquares++;
             
             gridColorsWorking.push_back(
                 mColors.secondary.elements[floorColorIndex] );
 
             floorColorIndex = (floorColorIndex + 1) % 3;
+        
+            mWallFlags[y][x] = 1;
+
+            
+            int numPlacementsLeft = numFloorSquaresMax - mNumFloorSquares;
+
+            fixFloorGap( placementIndex, &gridColorsWorking, 
+                         &floorColorIndex,
+                         &numPlacementsLeft );
             }
         
         
 
-        mWallFlags[y][x] = 1;
+        
         
         GridPos p = { x, y };
         
