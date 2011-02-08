@@ -4149,6 +4149,55 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                               mult( mPlayerVelocity, hitTime ) );
                 }            
 
+            char pathFindingForAimDone = false;
+            
+            if( mNextEnemyPathFindIndex == i && 
+                ! enemyPathFindingDoneThisStep ) {
+                
+                // conduct pathfinding search
+                GridPos start = getGridPos( e->position );
+                
+                GridPos goal = getGridPos( aimPos );
+
+                GridPos targetGridPos = pathFind( start, e->position,
+                                                  goal,
+                                                  bulletSpeed );
+                enemyPathFindingDoneThisStep = true;
+                    
+                e->followNextWaypoint = 
+                    sGridWorldSpots[ targetGridPos.y ]
+                    [ targetGridPos.x ];
+                pathFindingForAimDone = true;
+                
+                if( false )mGridColors[ mSquareIndices
+                             [ targetGridPos.y ]
+                             [ targetGridPos.x ] ].r = 1;
+
+                }
+            else if( mNextEnemyPathFindIndex == i &&
+                     enemyPathFindingDoneThisStep ) {
+                // already done (we're following player)
+                
+                // so use this waypoint, but ONLY if there's no
+                // straight-line path to aim pos
+
+                pathFindingForAimDone = true;
+                }
+            
+            if( pathFindingForAimDone ) {
+                if( ! equal( getGridPos( aimPos ), 
+                             getGridPos( e->followNextWaypoint ) ) ) {
+                    aimPos = e->followNextWaypoint;
+                    }
+                if(false)printf( "Player at %f,%f, enemy at %f,%f, aiming at %f,%f\n",
+                        mPlayerPos.x, mPlayerPos.y, 
+                        e->position.x, e->position.y,
+                        aimPos.x, aimPos.y );
+
+                }
+            
+            
+
 
             addBullet( e->position, aimPos, 
                        e->powers,
