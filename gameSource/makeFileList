@@ -58,6 +58,8 @@ graphics/eyesTogetherSquint.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
 graphics/powerUpSlot.tga \
+graphics/powerUpSlotLeft.tga \
+graphics/powerUpSlotRight.tga \
 graphics/powerUpBorder.tga \
 graphics/powerUpEmpty.tga \
 graphics/powerUpFullMask.tga \

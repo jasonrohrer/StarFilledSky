@@ -39,6 +39,8 @@ void freeSpriteBank();
     F(crosshair), \
     F(enterCrosshair), \
     F(powerUpSlot), \
+    F(powerUpSlotLeft), \
+    F(powerUpSlotRight), \
     F(powerUpBorder), \
     F(powerUpEmpty), \
     F(powerUpHeart), \

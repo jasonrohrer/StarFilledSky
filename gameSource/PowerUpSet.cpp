@@ -601,8 +601,17 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
             drawPos.x += ( i - centerIndex ) * slotSize;
         
             setDrawColor( 1, 1, 1, inFade );
-            drawSprite( powerUpSlot, drawPos );
-            } 
+            
+            if( i==0 ) {
+                drawSprite( powerUpSlotLeft, drawPos );
+                }
+            else if( i == POWER_SET_SIZE - 1 ) {
+                drawSprite( powerUpSlotRight, drawPos );
+                }
+            else {
+                drawSprite( powerUpSlot, drawPos );
+                } 
+            }
         }
     
 

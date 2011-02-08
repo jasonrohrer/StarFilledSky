@@ -38,6 +38,9 @@ Version 8b
 --Changed [X] and [Y] in tutorial to [That] and [This] to avoid keyboard 
   confusion.
 
+--Improved power-up slots in dashboard to separate set visually from power that
+  we're inside.
+
 
 
 Version 8   2011-February-4
