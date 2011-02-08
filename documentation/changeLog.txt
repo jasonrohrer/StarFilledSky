@@ -48,6 +48,8 @@ Version 8b
 
 --The mouse speed setting is now saved in recorded game files.
 
+--Alt-tab now minimizes game out of full-screen mode (thanks Andrew McClure).
+
 
 
 Version 8   2011-February-4
