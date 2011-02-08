@@ -145,6 +145,8 @@ typedef struct PowerUpToken {
         PowerUpSet *subPowers;
         NoteSequence musicNotes;
         int stepsUntilNextGlowTrail;
+
+        char pickedUp;
     };
 
 

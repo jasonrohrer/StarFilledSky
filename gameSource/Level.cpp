@@ -2014,7 +2014,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                                    generateRandomNoteSequence( 
                                        thisPartIndex ),
                                    (int)( stepsBetweenGlowTrails / 
-                                          frameRateFactor ) };
+                                          frameRateFactor ),
+                                   false };
 
                 mPowerUpTokens.push_back( t );
                 }
@@ -2851,6 +2852,10 @@ void Level::setLoudnessForAllParts() {
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
+        if( p->pickedUp ) {
+            continue;
+            }
+
         setPartLoudnessAndStereo( p->position, 
                                   mPlayerPos,
                                   p->musicNotes.partIndex,
@@ -2977,6 +2982,11 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
     // step token glow trails
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( i );
+
+        if( t->pickedUp ) {
+            continue;
+            }
+
 
         t->stepsUntilNextGlowTrail --;
         
@@ -4837,6 +4847,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             for( int i=0; i<mPowerUpTokens.size(); i++ ) {
                 PowerUpToken *p = mPowerUpTokens.getElement( i );
                 
+                if( p->pickedUp ) {
+                    continue;
+                    }
+
                 doublePair pos = p->position;
                 
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
@@ -4861,6 +4875,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     for( i=0; i<mPowerUpTokens.size(); i++ ) {
         PowerUpToken *p = mPowerUpTokens.getElement( i );
         
+        if( p->pickedUp ) {
+            continue;
+            }
+
         doublePair pos = p->position;
         
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
@@ -5198,6 +5216,10 @@ char Level::isPowerUp( doublePair inPos, int *outPowerUpIndex,
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
         
+        if( t->pickedUp ) {
+            continue;
+            }
+
         if( distance( t->position, inPos ) < radius ) {
             if( outPowerUpIndex != NULL ) {
                 *outPowerUpIndex = j;
@@ -5214,6 +5236,11 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
         
+        if( t->pickedUp ) {
+            continue;
+            }
+
+
         if( distance( t->position, inPos ) < widePickUpRadius ) {
             
             PowerUp p = t->power;
@@ -5231,10 +5258,6 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
                 }
 
 
-            delete t->sprite;
-            delete t->subPowers;
-
-
             if( j == mLastEnterPointPowerTokenIndex ) {
                 // picked up a token that was our last enter point
                 // thus, the enter point is no longer valid!
@@ -5242,7 +5265,7 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
                 }
 
 
-            mPowerUpTokens.deleteElement( j );
+            t->pickedUp = true;
             
 
             return p;
@@ -5258,7 +5281,11 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
 PowerUp Level::peekPowerUp( doublePair inPos ) {
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
-        
+
+        if( t->pickedUp ) {
+            continue;
+            }
+
         if( distance( t->position, inPos ) < 0.5 ) {
             
             PowerUp p = t->power;
@@ -6101,6 +6128,7 @@ void Level::rewindLevel() {
     // delete all bullets
     mBullets.deleteAll();
 
+    // revive and rewind all enemies
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
     
@@ -6118,6 +6146,17 @@ void Level::rewindLevel() {
         // and we don't want them to be able to rise up and chip
         // away a bit more (skill-free)
         }
+
+    // restore all floor tokens
+    // (Keep whatever configuration player may have updated them to 
+    //  by entering them before getting knocked down---don't make them
+    //  repeat that work)
+    for( int i=0; i<mPowerUpTokens.size(); i++ ) {
+        PowerUpToken *p = mPowerUpTokens.getElement( i );
+        
+        p->pickedUp = false;
+        }
+    
     
     mPlayerPos = mPlayerStartPos;
     
