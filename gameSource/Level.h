@@ -334,6 +334,9 @@ class Level {
         
         char isKnockDown();
         
+        // step count resets after rewind
+        unsigned int getStepCount();
+
 
         int getTokenRecursionDepth();
         
@@ -425,6 +428,9 @@ class Level {
 
         char mKnockDown;
         
+        unsigned int mStepCount;
+        
+
 
         int mTokenRecursionDepth;
         

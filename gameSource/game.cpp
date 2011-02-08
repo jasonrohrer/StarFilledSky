@@ -1664,10 +1664,14 @@ void drawFrame( char inUpdate ) {
 
         if( currentLevel->isInsidePlayer() && lastLevel->isInsidePlayer() 
             &&
-            ! currentLevel->isKnockDown() ) {
+            lastLevel->getStepCount() == 0 ) {
 
-            // copy player's collected tokens upward, but not if rising
-            // out of a knock-down
+            // copy player's collected tokens upward
+            // ONLY if we're rising up to a fresh level OR if we're rising
+            // up from a knock-down (rewind)
+
+            // DO NOT pass up if we're rising up from entering self or
+            // enemy or token
 
             Level *nextHigherLevel = 
                 *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );

@@ -1328,7 +1328,10 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mInsideEnemy = inInsideEnemy;
     mInsidePowerUp = inInsidePowerUp;
     mKnockDown = inIsKnockDown;
+
+    mStepCount = 0;
     
+
 
     if( inColors != NULL ) {
         // copy
@@ -4156,6 +4159,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         }
+    
+    mStepCount++;
     }
 
 
@@ -6088,6 +6093,12 @@ char Level::isKnockDown() {
     }
 
 
+unsigned int Level::getStepCount() {
+    return mStepCount;
+    }
+
+
+
 
 int Level::getTokenRecursionDepth() {
     return mTokenRecursionDepth;
@@ -6201,6 +6212,8 @@ void Level::rewindLevel() {
     
     mLastCloseStepsToRiseMarker = mStartStepsToRiseMarker;
     mGettingFartherAwayFromRiseMarker = false;
+
+    mStepCount = 0;
     }
 
 
