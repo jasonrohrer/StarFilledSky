@@ -298,15 +298,25 @@ void Level::fixFloorGap( int inNewFloorIndex,
             // look at both shared neighbors with this corner
             
             if( mWallFlags[cy][x] == 0 &&
-                mWallFlags[y][cx] ) {
+                mWallFlags[y][cx] == 0 ) {
             
                 // a gap!
 
                 // fill in one of the shared neighbors to make it connected
                 
-                // just pick one
-                int fx = x;
-                int fy = cy;
+                // just pick one, doesn't matter which
+                
+                // Deciing to fill neighbor that's in same row as 
+                // the recently-placed square (inNewFloorIndex) because this
+                // prevents extra pixels from being added around filled 
+                // random walker pods (our gap detection is triggered as
+                // these pods get filled in row-by-row, as new squares in
+                // new rows create temporary gaps with previous row).
+                // With this choice of neighbor to fill, we end up filling
+                // in the next square in our row, which would be filled in
+                // in the next step anyway, causing no distortion to pod shape.
+                int fx = cx;
+                int fy = y;
                 
 
                 mNumFloorSquares++;
@@ -331,15 +341,15 @@ void Level::fixFloorGap( int inNewFloorIndex,
 
                 *inOutFloorColorIndex = floorColorIndex;
 
-                *inOutNumFloorPlacementsRemaining --;
+                (*inOutNumFloorPlacementsRemaining) --;
     
+                mWallFlags[fy][fx] = 1;
+                
 
-                if( *inOutNumFloorPlacementsRemaining > 0 ) {    
-                    fixFloorGap( placementIndex,
-                                 inGridColorsWorking,
-                                 inOutFloorColorIndex, 
-                                 inOutNumFloorPlacementsRemaining );
-                    }
+                fixFloorGap( placementIndex,
+                             inGridColorsWorking,
+                             inOutFloorColorIndex, 
+                             inOutNumFloorPlacementsRemaining );
                 }
             }
         }
