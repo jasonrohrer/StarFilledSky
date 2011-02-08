@@ -44,6 +44,7 @@ Version 8b
 --Changed BURST power so that it only bursts in open space, not if it hits 
   something (thanks Rico).
 
+--Fixed map generation so that diagonal gaps never occur.
 
 
 

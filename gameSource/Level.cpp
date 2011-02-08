@@ -305,16 +305,6 @@ void Level::fixFloorGap( int inNewFloorIndex,
                 // fill in one of the shared neighbors to make it connected
                 
                 // just pick one, doesn't matter which
-                
-                // Deciing to fill neighbor that's in same row as 
-                // the recently-placed square (inNewFloorIndex) because this
-                // prevents extra pixels from being added around filled 
-                // random walker pods (our gap detection is triggered as
-                // these pods get filled in row-by-row, as new squares in
-                // new rows create temporary gaps with previous row).
-                // With this choice of neighbor to fill, we end up filling
-                // in the next square in our row, which would be filled in
-                // in the next step anyway, causing no distortion to pod shape.
                 int fx = cx;
                 int fy = y;
                 
@@ -471,8 +461,6 @@ void Level::generateReproducibleData() {
             mSquareIndices[y][x] = mNumUsedSquares;
             mIndexToGridMap[mNumUsedSquares].x = x;
             mIndexToGridMap[mNumUsedSquares].y = y;
-            
-            int placementIndex = mNumUsedSquares;
 
             mNumUsedSquares++;
             
@@ -482,13 +470,6 @@ void Level::generateReproducibleData() {
             floorColorIndex = (floorColorIndex + 1) % 3;
         
             mWallFlags[y][x] = 1;
-
-            
-            int numPlacementsLeft = numFloorSquaresMax - mNumFloorSquares;
-
-            fixFloorGap( placementIndex, &gridColorsWorking, 
-                         &floorColorIndex,
-                         &numPlacementsLeft );
             }
         
         
@@ -550,9 +531,26 @@ void Level::generateReproducibleData() {
         */
         
         }
-
+    
     delete walker;
     
+
+
+    // use excess, unused squares to fix gaps now
+    // in 100 test levels, there was ALWAYS enough room by a long shot
+    // (most levels have 0 or only a few gaps)
+    int numInitialFloorSquares = mNumFloorSquares;
+    
+    for( int i=0; i<numInitialFloorSquares; i++ ) {
+            
+        int numPlacementsLeft = numFloorSquaresMax - mNumFloorSquares;
+
+        fixFloorGap( i, &gridColorsWorking, 
+                     &floorColorIndex,
+                     &numPlacementsLeft );
+        }
+    
+
 
 
     if( mSymmetrical ) {
