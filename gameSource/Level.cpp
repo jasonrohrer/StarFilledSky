@@ -6138,6 +6138,12 @@ void Level::rewindLevel() {
     // delete all bullets
     mBullets.deleteAll();
 
+    // delete all glow trails, blood, and smoke
+    mGlowTrails.deleteAll();
+    mBloodStains.deleteAll();
+    mSmokeClouds.deleteAll();
+
+
     // revive and rewind all enemies
     for( int i=0; i<mEnemies.size(); i++ ) {
         Enemy *e = mEnemies.getElement( i );
