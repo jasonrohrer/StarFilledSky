@@ -98,6 +98,11 @@ class PowerUpSet {
         void dropDownToSet( PowerUpSet *inNewSet );
         
 
+        // whittle away at powers, bringing them eventually down to 1
+        void decayPowers();
+        
+
+
         // should minority powers in set be dimmed?
         // makes majority calculation more clear
         void setDimMinority( char inDim );

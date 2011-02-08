@@ -32,6 +32,9 @@ Version 8b
 
 --Removed brief period of player immortality after rise-out. 
 
+--Added gradual decay of passed-up powers to prevent same favorite set from 
+  being used forever.
+
 
 
 Version 8   2011-February-4

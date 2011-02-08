@@ -535,6 +535,16 @@ void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
 
 
 
+void PowerUpSet::decayPowers() {
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].level > 1 ) {
+            mPowers[i].level -= 1;
+            }
+        }
+    }
+
+
+
 void PowerUpSet::setDimMinority( char inDim ) {
     mDimMinority = inDim;
     

@@ -1690,8 +1690,12 @@ void drawFrame( char inUpdate ) {
 
                 // like a full rewind of rising back into lastLevel
                 // (if we got there by rising there or by being knocked there)
-                nextHigherLevel->setPlayerPowers( 
-                    lastLevel->getPlayerPowers() );
+
+                PowerUpSet passedUpSet( lastLevel->getPlayerPowers() );
+                
+                passedUpSet.decayPowers();
+                
+                nextHigherLevel->setPlayerPowers( &passedUpSet );
                 }
             else if( ! lastLevel->isKnockDown() && 
                      nextHigherLevel->getStepCount() > 0 ) {
