@@ -327,6 +327,10 @@ int getStartingLevelNumber() {
 
 
 
+static const char *customDataFormatString = 
+    "level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f";
+
+
 char *getCustomRecordedGameData() {
     int completedCount = 
         SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
@@ -345,8 +349,14 @@ char *getCustomRecordedGameData() {
         "tutorialBookmark", 0 );
     
     
-    char * result = autoSprintf( "%d_%d_%d", levelNumber, tutorialOn,
-                                 tutorialBookmark );
+    float mouseSpeedSetting = 
+        SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
+
+
+    char * result = autoSprintf(
+        customDataFormatString,
+        levelNumber, tutorialOn,
+        tutorialBookmark, mouseSpeedSetting );
     
     return result;
     }
@@ -428,14 +438,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     
-    double mouseParam = 0.000976562;
-
-    float mouseSpeedSetting = 
-        SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
-
-    mouseParam *= mouseSpeedSetting;
-
-    mouseSpeed = mouseParam * inWidth / viewWidth;
+    
 
     
 
@@ -466,11 +469,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     // override default with data from recorded game
     int tutorialOn = 0;
     int tutorialBookmark = 0;
-    
-    int numRead = sscanf( inCustomRecordedGameData, "%d_%d_%d", &levelNumber,
-                          &tutorialOn, &tutorialBookmark );
-    
-    if( numRead != 3 ) {
+    float mouseSpeedSetting = 1.0f;
+
+    int numRead = sscanf( inCustomRecordedGameData, 
+                          customDataFormatString, &levelNumber,
+                          &tutorialOn, &tutorialBookmark, &mouseSpeedSetting );
+
+
+    if( numRead != 4 ) {
         // no recorded game?
 
         // don't force player back through boring level 0, even if
@@ -493,6 +499,14 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
             }        
         }
     
+    double mouseParam = 0.000976562;
+
+    mouseParam *= mouseSpeedSetting;
+
+    mouseSpeed = mouseParam * inWidth / viewWidth;
+
+
+
 
     checkTutorial();
     

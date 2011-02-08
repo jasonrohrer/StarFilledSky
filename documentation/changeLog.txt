@@ -46,6 +46,8 @@ Version 8b
 
 --Fixed map generation so that diagonal gaps never occur.
 
+--The mouse speed setting is now saved in recorded game files.
+
 
 
 Version 8   2011-February-4
