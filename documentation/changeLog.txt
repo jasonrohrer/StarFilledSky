@@ -30,6 +30,8 @@ Version 8b
 --Eyes closed on all selves above you in infinite rise trunk to make new 
   power-pass-up thematicaly consistent (pass-up only to sleepers).
 
+--Removed brief period of player immortality after rise-out. 
+
 
 
 Version 8   2011-February-4

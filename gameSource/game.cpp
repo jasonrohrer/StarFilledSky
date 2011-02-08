@@ -2101,7 +2101,15 @@ void drawFrameNoUpdate( char inUpdate ) {
     if( lastRiseFreezeFrameDrawn ) {
         lastRiseFreezeFrameDrawn = false;
         currentLevel->freezeLevel( false );
-        currentLevel->startPlayerImmortal();
+        // with new knock-down rise-out structure, player immortality
+        // no longer necessary (never rise back into the middle of a fight)
+        // For rises out of intentionally entering things, we can assume
+        //  that the player generally does not do this under heavy fire.
+        // Furthermore, we MUST eliminate temporary immortality to thwart
+        //  the "keep inching foward" skill-free way of passing a level.
+        // If we kept immortatilty after entering things, a player could
+        //  exploit this for skill-free grinding through a level.
+        //currentLevel->startPlayerImmortal();
         }
     else if( secondToLastRiseFreezeFrameDrawn ) {
         secondToLastRiseFreezeFrameDrawn = false;
