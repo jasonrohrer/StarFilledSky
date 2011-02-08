@@ -22,6 +22,8 @@ Version 8b
 --After rising back from a knock-down, level is completely reset (to thwart 
   skill-free grinding play).
 
+--Changed to soften knock-down by leaving players with SOME of their powers. 
+
 
 
 Version 8   2011-February-4

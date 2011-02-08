@@ -1483,25 +1483,61 @@ void drawFrame( char inUpdate ) {
             PowerUpSet *setPlayerPowers = NULL;
             if( ! knockDown ) {
                 // entering, copy powers
-                setPlayerPowers = currentLevel->getPlayerPowers();
+                setPlayerPowers = new PowerUpSet( 
+                    currentLevel->getPlayerPowers() );
                 }
-            
-            
-            if( knockDown ) {
-                // cause player that we're entering to drop down to default set
-                PowerUpSet knockDownSet( 0 );
-                
-                knockDownSet.mPowers[1].powerType = powerUpHeart;
-                knockDownSet.mPowers[1].level = 1;
-                knockDownSet.mPowers[2].powerType = powerUpHeart;
-                knockDownSet.mPowers[2].level = 1;
+            else {
+                // cause player that we're entering to drop down in power
 
+                // replace left-most non-empty
+
+                // replace all empties with heart(1)
+
+                PowerUpSet newSet( currentLevel->getPlayerPowers() );
+
+                char replacementDone = false;
+                for( int s=0; s<POWER_SET_SIZE; s++ ) {
+                    
+                    if( !replacementDone ) {
+                        
+                        if( newSet.mPowers[s].powerType != powerUpEmpty ) {
+                        
+                            newSet.mPowers[s].powerType = powerUpHeart;
+                            newSet.mPowers[s].level = 1;
+                            
+                            replacementDone = true;
+                            }
+                        }
+
+                    if( newSet.mPowers[s].powerType == powerUpEmpty ) {
+                        newSet.mPowers[s].powerType = powerUpHeart;
+                        newSet.mPowers[s].level = 1;
+                        }    
+                    }
+                
+                
+                if( getMaxHealth( &newSet ) > 2 ) {
+                    
+                    // too many hearts!
+                    // change to empty, heart(1), heart(1) as base
+                    
+                    newSet.mPowers[0].powerType = powerUpEmpty;
+                    newSet.mPowers[0].level = 0;
+                    
+                    newSet.mPowers[1].powerType = powerUpHeart;
+                    newSet.mPowers[1].level = 1;
+                    newSet.mPowers[2].powerType = powerUpHeart;
+                    newSet.mPowers[2].level = 1;
+                    }
+                
                 PowerUpSet *currentPowers = currentLevel->getPlayerPowers();
                 
                 // skip this animation if we're already at default set
-                if( !knockDownSet.equals( currentPowers ) ) {        
-                    currentPowers->dropDownToSet( &knockDownSet );
+                if( !newSet.equals( currentPowers ) ) {        
+                    currentPowers->dropDownToSet( &newSet );
                     }
+
+                setPlayerPowers = new PowerUpSet( &newSet );
                 }
             
             
@@ -1517,6 +1553,9 @@ void drawFrame( char inUpdate ) {
                                       parentTokenLevel,
                                       parentFloorTokenLevel,
                                       parentDifficultyLevel );
+
+            delete setPlayerPowers;
+            
 
             currentLevel->pushAllMusicIntoPlayer();
             

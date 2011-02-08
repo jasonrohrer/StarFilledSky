@@ -1668,13 +1668,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                 
                 if( p->containsFollow() ) {
                     followCount++;
-                    }
-                
-
-                // FIXME:
-                p->mPowers[0].powerType = powerUpHeart;
-                p->mPowers[0].level = 3;
-                
+                    }                
 
 
                 RandomWalkerSet walkerSet;
