@@ -35,6 +35,9 @@ Version 8b
 --Added gradual decay of passed-up powers to prevent same favorite set from 
   being used forever.
 
+--Changed [X] and [Y] in tutorial to [That] and [This] to avoid keyboard 
+  confusion.
+
 
 
 Version 8   2011-February-4

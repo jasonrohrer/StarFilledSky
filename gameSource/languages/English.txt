@@ -3,11 +3,11 @@ tutorial_move "W A S D	to move"
 
 tutorial_shoot "MOUSE to aim and hold BUTTON (or SPACE BAR) to shoot"
 
-tutorial_structure "[X] is what you are inside.  [Y] is you."
+tutorial_structure "[That] is what you are inside.  [This] is you."
 
-tutorial_insideMarker "[X]"
+tutorial_insideMarker "[That]"
 
-tutorial_youMarker "[Y]"
+tutorial_youMarker "[This]"
 
 tutorial_tokens       "Gathered tokens combine to affect what you are inside."
 
