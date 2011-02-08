@@ -170,6 +170,7 @@ class Level {
                PowerUpSet *inSetPlayerPowers=NULL,
                int inLevelNumber = 0,
                char inSymmetrical=true,
+               char inIsEnterSelf=false,  // not true for knock into self
                char inInsideEnemy=false,
                char inInsidePowerUp=false,
                char inIsKnockDown=false,

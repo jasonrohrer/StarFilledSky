@@ -1350,6 +1350,8 @@ void drawFrame( char inUpdate ) {
         
         char knockDown = false;
         
+        char enterSelf = false;
+
         char insidePowerUp = false;
         
         int tokenRecursionDepth = 0;
@@ -1384,6 +1386,9 @@ void drawFrame( char inUpdate ) {
 
             if( playerHealth == 0 ) {
                 knockDown = true;
+                }
+            else {
+                enterSelf = true;
                 }
             }
         else if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
@@ -1546,7 +1551,9 @@ void drawFrame( char inUpdate ) {
                                       &musicNotes,
                                       setPlayerPowers,
                                       subLevelNumber,
-                                      symmetrical, insideEnemy, insidePowerUp,
+                                      symmetrical, 
+                                      enterSelf,
+                                      insideEnemy, insidePowerUp,
                                       knockDown,
                                       tokenRecursionDepth,
                                       parentEnemyDifficultyLevel,

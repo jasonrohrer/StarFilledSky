@@ -1234,7 +1234,9 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               RandomWalkerSet *inWalkerSet,
               NoteSequence *inMusicNotes,
               PowerUpSet *inSetPlayerPowers,
-              int inLevelNumber, char inSymmetrical, char inInsideEnemy,
+              int inLevelNumber, char inSymmetrical, 
+              char inIsEnterSelf,
+              char inInsideEnemy,
               char inInsidePowerUp,
               char inIsKnockDown,
               int inTokenRecursionDepth,
@@ -1255,6 +1257,15 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         }
     */
 
+
+    if( !inIsEnterSelf && 
+        !inInsideEnemy && !inInsidePowerUp && !inIsKnockDown ) {
+        // this is a level that we will rise into
+        // start with player asleep (wakes up when we rise
+
+        mPlayerSprite.startSquint();
+        }
+    
 
     if( inSetPlayerPowers != NULL ) {
         // copy player powers (intentionally entering
