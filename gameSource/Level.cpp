@@ -2643,7 +2643,7 @@ GridPos Level::pathFind( GridPos inStart, doublePair inStartWorld,
 
     // found next step away from start
     
-    // next, walk forward through path as long as there is a straight-light,
+    // next, walk forward through path as long as there is a straight-line,
     // unobstructed path from start pos to the path spot
 
     char stopAtFirstObstruction = true;
@@ -3049,6 +3049,83 @@ void Level::deleteBullet( int inIndex ) {
 
 
     mBullets.deleteElement( inIndex );
+    }
+
+
+
+
+static doublePair computeAim( Enemy *inE, doublePair inPlayerPos,
+                              doublePair inPlayerVelocity,
+                              double inBulletSpeed ) {
+
+    
+
+    // perfect aim using quadratic equations
+    //
+    // similar to what is described here:
+    // http://playtechs.blogspot.com/2007/04/
+    //           aiming-at-moving-target.html
+
+    doublePair relativePlayerPos = sub( inPlayerPos, inE->position );
+
+    double xt = relativePlayerPos.x;
+    double yt = relativePlayerPos.y;
+            
+    double xv = inPlayerVelocity.x;
+    double yv = inPlayerVelocity.y;
+            
+    double bv = inBulletSpeed;
+            
+    // quadratic terms
+    double A = xv * xv + yv * yv - bv * bv;
+    double B = 2 * ( xt * xv + yt * yv );
+    double C = xt * xt + yt * yt;
+            
+    double D = B * B - 4 * A * C;
+            
+    double hitTime = 0;
+            
+    if( D >= 0 ) {
+                
+        double sqrtD = sqrt( D );
+
+        double t1 = ( -B + sqrtD ) / ( 2 * A );
+        double t2 = ( -B - sqrtD ) / ( 2 * A );
+                
+        // pick smallest positive hit time
+        if( t1 > 0 && t2 > 0 ) {
+            if( t1 < t2 ) {
+                hitTime = t1;
+                }
+            else {
+                hitTime = t2;
+                }
+            }
+        else if( t1 > 0 ) {
+            hitTime = t1;
+            }
+        else if( t2 > 0 ) {
+            hitTime = t2;
+            }
+        }
+            
+    double bulletDistance = getBulletDistance( inE->powers );
+
+    if( inBulletSpeed * hitTime > bulletDistance ) {
+        // bullet will die before it can reach target
+        hitTime = 0;
+        }
+            
+
+            
+    doublePair aimPos = inPlayerPos;
+
+    if( hitTime > 0 ) {
+        aimPos = add( inPlayerPos,
+                      mult( inPlayerVelocity, hitTime ) );
+        }  
+
+    return aimPos;
     }
 
 
@@ -3755,8 +3832,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         mNextEnemyPathFindIndex++;
         }
     
-
-    if( mNextEnemyPathFindIndex > mEnemies.size() - 1 ) {
+    // save last slot for player's path finding (one step where no enemy
+    // path finds) and reset back to 0 AFTER that
+    if( mNextEnemyPathFindIndex > mEnemies.size() ) {
         mNextEnemyPathFindIndex = 0;
         }
     
@@ -4075,6 +4153,37 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         
+        if( mNextEnemyPathFindIndex == i && 
+            ! enemyPathFindingDoneThisStep ) {
+            // this enemy's turn to path-find, and we did NOT expend our
+            // path finding following the player
+
+            // instead, use our path-finding for aiming
+            
+            // set speed
+            // enemy bullets are slower than equivalent player bullets
+            float bulletSpeed = getBulletSpeed( e->powers ) / 2;
+
+
+            doublePair aimPos = computeAim( e, mPlayerPos, mPlayerVelocity,
+                                            bulletSpeed );
+
+            // conduct pathfinding search
+            GridPos start = getGridPos( e->position );
+            
+            GridPos goal = getGridPos( aimPos );
+            
+            GridPos targetGridPos = pathFind( start, e->position,
+                                              goal,
+                                              bulletSpeed );
+            enemyPathFindingDoneThisStep = true;
+            
+            e->followNextWaypoint = 
+                sGridWorldSpots[ targetGridPos.y ]
+                [ targetGridPos.x ];
+            }
+        
+        
         
         if( e->stepsTilNextBullet == 0 ) {
             // fire bullet
@@ -4084,120 +4193,64 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             float bulletSpeed = getBulletSpeed( e->powers ) / 2;
 
 
-            // perfect aim using quadratic equations
-            //
-            // similar to what is described here:
-            // http://playtechs.blogspot.com/2007/04/
-            //           aiming-at-moving-target.html
+            doublePair aimPos = computeAim( e, mPlayerPos, mPlayerVelocity,
+                                            bulletSpeed );
 
-            doublePair relativePlayerPos = sub( mPlayerPos, e->position );
+            if( ! equal( getGridPos( aimPos ), 
+                         getGridPos( e->followNextWaypoint ) ) ) {
+            
+                // aim pos and waypoint are in different squares
 
-            double xt = relativePlayerPos.x;
-            double yt = relativePlayerPos.y;
-            
-            double xv = mPlayerVelocity.x;
-            double yv = mPlayerVelocity.y;
-            
-            double bv = bulletSpeed;
-            
-            // quadratic terms
-            double A = xv * xv + yv * yv - bv * bv;
-            double B = 2 * ( xt * xv + yt * yv );
-            double C = xt * xt + yt * yt;
-            
-            double D = B * B - 4 * A * C;
-            
-            double hitTime = 0;
-            
-            if( D >= 0 ) {
+                // but don't just assume waypoint is right, because
+                // it might be stale, and we might have a perfect, obstacle
+                // free bullet path to player anyay!
                 
-                double sqrtD = sqrt( D );
-
-                double t1 = ( -B + sqrtD ) / ( 2 * A );
-                double t2 = ( -B - sqrtD ) / ( 2 * A );
+                // walk toward aim pos and check for obstacles
+                double totalDistance = distance( e->position, aimPos );
                 
-                // pick smallest positive hit time
-                if( t1 > 0 && t2 > 0 ) {
-                    if( t1 < t2 ) {
-                        hitTime = t1;
+                doublePair stepPos = e->position;
+                char wallHit = false;
+
+                doublePair stepVector = 
+                    mult( normalize( sub( aimPos, e->position ) ),
+                          bulletSpeed );
+
+                while( distance( e->position, stepPos ) < totalDistance &&
+                       ! wallHit ) {
+                    
+                    GridPos stepGrid = getGridPos( stepPos );
+                    
+                    if( mWallFlags[stepGrid.y][stepGrid.x] == 2 ) {
+                        wallHit = true;
                         }
                     else {
-                        hitTime = t2;
+                        stepPos = add( stepPos, stepVector );
                         }
                     }
-                else if( t1 > 0 ) {
-                    hitTime = t1;
-                    }
-                else if( t2 > 0 ) {
-                    hitTime = t2;
-                    }
-                }
-            
-            double bulletDistance = getBulletDistance( e->powers );
-
-            if( bulletSpeed * hitTime > bulletDistance ) {
-                // bullet will die before it can reach target
-                hitTime = 0;
-                }
-            
-
-            
-            doublePair aimPos = mPlayerPos;
-
-            if( hitTime > 0 ) {
-                aimPos = add( mPlayerPos,
-                              mult( mPlayerVelocity, hitTime ) );
-                }            
-
-            char pathFindingForAimDone = false;
-            
-            if( mNextEnemyPathFindIndex == i && 
-                ! enemyPathFindingDoneThisStep ) {
                 
-                // conduct pathfinding search
-                GridPos start = getGridPos( e->position );
-                
-                GridPos goal = getGridPos( aimPos );
-
-                GridPos targetGridPos = pathFind( start, e->position,
-                                                  goal,
-                                                  bulletSpeed );
-                enemyPathFindingDoneThisStep = true;
-                    
-                e->followNextWaypoint = 
-                    sGridWorldSpots[ targetGridPos.y ]
-                    [ targetGridPos.x ];
-                pathFindingForAimDone = true;
-                
-                if( false )mGridColors[ mSquareIndices
-                             [ targetGridPos.y ]
-                             [ targetGridPos.x ] ].r = 1;
-
-                }
-            else if( mNextEnemyPathFindIndex == i &&
-                     enemyPathFindingDoneThisStep ) {
-                // already done (we're following player)
-                
-                // so use this waypoint, but ONLY if there's no
-                // straight-line path to aim pos
-
-                pathFindingForAimDone = true;
-                }
-            
-            if( pathFindingForAimDone ) {
-                if( ! equal( getGridPos( aimPos ), 
-                             getGridPos( e->followNextWaypoint ) ) ) {
+                if( wallHit ) {
+                    // path obstructed, use waypoint instead
                     aimPos = e->followNextWaypoint;
+            
+                    /*
+                      // for debugging, color aim positions if based
+                      // on waypoint
+                    GridPos aimGrid = getGridPos( aimPos );
+                    
+                    mGridColors[ mSquareIndices
+                                 [ aimGrid.y ]
+                                 [ aimGrid.x ] ] = 
+                        e->sprite->getColors().primary.elements[0];
+                    */
                     }
-                if(false)printf( "Player at %f,%f, enemy at %f,%f, aiming at %f,%f\n",
-                        mPlayerPos.x, mPlayerPos.y, 
-                        e->position.x, e->position.y,
-                        aimPos.x, aimPos.y );
-
+                // else there's a direct, obstacle-free path to
+                // precision aim point.  Ignore waypoint
                 }
+            // else aim pos and waypoint are in the same square
+            // don't override precision aim
+              
             
-            
-
+                        
 
             addBullet( e->position, aimPos, 
                        e->powers,

@@ -50,6 +50,8 @@ Version 8b
 
 --Alt-tab now minimizes game out of full-screen mode (thanks Andrew McClure).
 
+--Improved enemy aiming when there's no straight-line path to player.
+
 
 
 Version 8   2011-February-4
