@@ -563,6 +563,9 @@ class Level {
         doublePair mPlayerPos;
         doublePair mPlayerVelocity;
 
+        int mPlayerStillStepCount;
+        
+
 
         int mStartStepsToRiseMarker;
         int mLastComputedStepsToRiseMarker;

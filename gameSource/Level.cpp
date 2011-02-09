@@ -1523,6 +1523,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
     mPlayerStartPos = mPlayerPos;
     
+    mPlayerStillStepCount = 0;
+    
 
 
     mPlayerVelocity.x = 0;
@@ -2192,6 +2194,14 @@ void Level::decompactLevel() {
 
 
 void Level::setPlayerPos( doublePair inPos ) {
+    if( equal( inPos, mPlayerPos ) ) {
+        mPlayerStillStepCount ++;
+        }
+    else {
+        // player moving
+        mPlayerStillStepCount = 0;
+        }
+    
     mPlayerPos = inPos;
     }
 
@@ -2874,6 +2884,17 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
                 baseFade = 0;
                 }
             
+            // 2 seconds
+            int startShowingSteps = (int)( 120 / frameRateFactor );
+
+            if( mPlayerStillStepCount > startShowingSteps 
+                && numStepsToRise > 15 ) {
+                // player still for a while
+                baseFade = 1;
+                }
+            
+
+
             if( baseFade > 0 ) {
                 
                 // clear any existing path
