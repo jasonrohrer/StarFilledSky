@@ -25,7 +25,7 @@ Version 9    2011-February-9
 --Changed to soften knock-down by leaving players with SOME of their powers. 
 
 --Changed the conditions under which powers are passed upward (after knock down
-   recovery and fresh-rise only).
+  recovery and fresh-rise only).
 
 --Eyes closed on all selves above you in infinite rise trunk to make new 
   power-pass-up thematicaly consistent (pass-up only to sleepers).
