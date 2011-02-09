@@ -60,6 +60,8 @@ Version 8b
 
 --Power tokens are saved along with level number upon quit.
 
+--Hash checking of starting state parameters in recorded game files.
+
 
 
 

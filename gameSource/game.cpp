@@ -389,6 +389,11 @@ char *getCustomRecordedGameData() {
 
 
 
+char *getHashSalt() {
+    return stringDuplicate( SETTINGS_HASH_SALT );
+    }
+
+
 
 void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                       const char *inCustomRecordedGameData,
