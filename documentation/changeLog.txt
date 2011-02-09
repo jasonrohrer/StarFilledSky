@@ -54,6 +54,9 @@ Version 8b
 
 --Path to rise marker hint shown if player stands still for 2 seconds.
 
+--Path to rise marker flashes even if sound not running (fake beat).
+
+
 
 
 Version 8   2011-February-4

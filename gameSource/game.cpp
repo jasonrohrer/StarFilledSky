@@ -54,6 +54,7 @@
 #include "setTipDisplay.h"
 #include "musicPlayer.h"
 #include "numerals.h"
+#include "beatTracker.h"
 
 
 // should we output level maps as images?
@@ -128,6 +129,13 @@ char entering = false;
 
 
 char firstDrawFrameCalled = false;
+
+
+// if sound wasn't opened properly, our music player won't generate beatHit
+// calls.
+// we must fake them every second so our "path to rise marker" 
+// beacon flashes appropriately 
+int stepsSinceLastFakeBeat = 0;
 
 
 
@@ -1152,6 +1160,19 @@ static void playerAutoMove();
 
 
 void drawFrame( char inUpdate ) {
+
+    if( !isSoundRunning() ) {
+        // fake beat callbacks
+        stepsSinceLastFakeBeat++;
+        
+        // full second
+        if( stepsSinceLastFakeBeat > 60 / frameRateFactor ) {
+            beatHit();
+            stepsSinceLastFakeBeat = 0;
+            }
+        }
+    
+
 
     if( !inUpdate ) {
         char oldFrozen = currentLevel->isFrozen();
