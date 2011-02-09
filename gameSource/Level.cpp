@@ -3842,22 +3842,33 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         
 
-
+    char skipEnemyPathFinding = false;
     
-    
-    mNextEnemyPathFindIndex ++;
 
-    // don't give pathfinding slot to dead enemies
-    while( mNextEnemyPathFindIndex < mEnemies.size() 
-           && mEnemies.getElement( mNextEnemyPathFindIndex )->dead ) {
-        mNextEnemyPathFindIndex++;
+    if( wasBeatHit ) {
+        // need to sync with beat for rise-marker path
+        // can't skip player path-finding this step
+        skipEnemyPathFinding = true;
         }
     
-    // save last slot for player's path finding (one step where no enemy
-    // path finds) and reset back to 0 AFTER that
-    if( mNextEnemyPathFindIndex > mEnemies.size() ) {
-        mNextEnemyPathFindIndex = 0;
+    
+    if( !skipEnemyPathFinding ) {
+        
+        mNextEnemyPathFindIndex ++;
+    
+        // don't give pathfinding slot to dead enemies
+        while( mNextEnemyPathFindIndex < mEnemies.size() 
+               && mEnemies.getElement( mNextEnemyPathFindIndex )->dead ) {
+            mNextEnemyPathFindIndex++;
+            }
+    
+        // save last slot for player's path finding (one step where no enemy
+        // path finds) and reset back to 0 AFTER that
+        if( mNextEnemyPathFindIndex > mEnemies.size() ) {
+            mNextEnemyPathFindIndex = 0;
+            }
         }
+    
     
     char enemyPathFindingDoneThisStep = false;
 
@@ -3935,7 +3946,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         // temporarily disable follow during dodge
         if( follow && e->dodgeBulletIndex == -1 ) {
 
-            if( mNextEnemyPathFindIndex == i ) {
+            if( ! skipEnemyPathFinding && mNextEnemyPathFindIndex == i ) {
                 
 
                 // conduct pathfinding search
@@ -3982,7 +3993,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         if( dodge ) {
             
-            if( i == mNextEnemyPathFindIndex ) {
+            if( !skipEnemyPathFinding && i == mNextEnemyPathFindIndex ) {
                 
 
                 // find closest player bullet
@@ -4174,7 +4185,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         
-        if( mNextEnemyPathFindIndex == i && 
+        if( !skipEnemyPathFinding && 
+            mNextEnemyPathFindIndex == i && 
             ! enemyPathFindingDoneThisStep ) {
             // this enemy's turn to path-find, and we did NOT expend our
             // path finding following the player
