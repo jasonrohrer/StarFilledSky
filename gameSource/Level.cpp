@@ -1544,8 +1544,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
     
     mLastCloseStepsToRiseMarker = mStartStepsToRiseMarker;
-    mGettingFartherAwayFromRiseMarker = false;
-
+    mLastFarthestStepsToRiseMarker = mStartStepsToRiseMarker;
+    
 
     
     // negative levels get harder and harder the farther you go down
@@ -4312,36 +4312,28 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
     
     // only one path finding operation per timestep
-    if( ! enemyPathFindingDoneThisStep ) {
+    if( ! enemyPathFindingDoneThisStep ) {        
         
-        int oldSteps = mLastComputedStepsToRiseMarker;
-
         // path find to rise marker outside audio lock, too
         mLastComputedStepsToRiseMarker = getStepsToRiseMarker( mPlayerPos );
-        
-
-        if( mGettingFartherAwayFromRiseMarker &&
-            oldSteps > mLastComputedStepsToRiseMarker ) {
-            
-            // was getting farther away, but just turned around
-            
-            // reset our closest step cound
-            mLastCloseStepsToRiseMarker = mLastComputedStepsToRiseMarker;
-
-            mGettingFartherAwayFromRiseMarker = false;
+                
+        if( mLastComputedStepsToRiseMarker > mLastFarthestStepsToRiseMarker ) {
+            mLastFarthestStepsToRiseMarker = mLastComputedStepsToRiseMarker;
             }
-        
-        
+        else {
+            // closer now than our max farthest away
 
-        if( mLastComputedStepsToRiseMarker < mLastCloseStepsToRiseMarker ) {
-            mLastCloseStepsToRiseMarker = mLastComputedStepsToRiseMarker;
-            mGettingFartherAwayFromRiseMarker = false;
+            // but are we close enough to start a new
+            // close marker
+            if( mLastComputedStepsToRiseMarker < 
+                mLastFarthestStepsToRiseMarker - 10 ) {
+                
+                mLastCloseStepsToRiseMarker = mLastComputedStepsToRiseMarker;
+                mLastFarthestStepsToRiseMarker = 
+                    mLastComputedStepsToRiseMarker;
+                
+                }
             }
-        else if( mLastComputedStepsToRiseMarker > 
-                 mLastCloseStepsToRiseMarker ) {
-            mGettingFartherAwayFromRiseMarker = true;
-            }
-        
         }
     
 
@@ -6464,7 +6456,8 @@ void Level::rewindLevel() {
     mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
     
     mLastCloseStepsToRiseMarker = mStartStepsToRiseMarker;
-    mGettingFartherAwayFromRiseMarker = false;
+    mLastFarthestStepsToRiseMarker = mStartStepsToRiseMarker;
+    
 
     mStepCount = 0;
     }

@@ -56,6 +56,8 @@ Version 8b
 
 --Path to rise marker flashes even if sound not running (fake beat).
 
+--Made conditions under which path to rise marker is shown less touchy.
+
 
 
 
