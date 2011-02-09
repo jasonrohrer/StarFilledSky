@@ -567,10 +567,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     if( startingPowers != NULL ) {
         currentLevel->setPlayerPowers( startingPowers );
 
-        // pass up to next level, too
+        // pass up to next level, too, decayed version
+        startingPowers->decayPowers();
+        
         Level *nextHigherLevel = 
             *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
-        
+
         nextHigherLevel->setPlayerPowers( startingPowers );
         
 
