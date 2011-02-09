@@ -58,6 +58,8 @@ Version 8b
 
 --Made conditions under which path to rise marker is shown less touchy.
 
+--Power tokens are saved along with level number upon quit.
+
 
 
 

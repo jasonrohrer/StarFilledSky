@@ -84,6 +84,10 @@ extern const char *spriteIDNames[];
 extern const char *spriteIDTipTranslateKeys[];
 
 
+// reverse of spriteIDNames
+spriteID mapNameToID( const char *inName );
+
+
 
 extern int firstPowerUpID;
 extern int lastPowerUpID;

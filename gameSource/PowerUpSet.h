@@ -71,6 +71,20 @@ class PowerUpSet {
         PowerUpSet( PowerUpSet *inSetToCopy );
         
 
+        // NOTE:
+        // for now, string encodings only work for player powers, not
+        // enemy behaviors
+
+        // construct a set from an initializer string
+        PowerUpSet( const char *inStringEncoding );
+        
+
+        // encodes this set as a string
+        // result destroyed by caller
+        char *getStringEncoding();
+        
+
+
         void copySet( PowerUpSet *inSetToCopy );
 
 

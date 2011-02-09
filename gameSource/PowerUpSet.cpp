@@ -8,6 +8,9 @@
 
 
 #include "minorGems/util/random/CustomRandomSource.h"
+#include "minorGems/util/stringUtils.h"
+#include "minorGems/util/log/AppLog.h"
+
 
 extern CustomRandomSource randSource;
 
@@ -324,6 +327,79 @@ PowerUpSet::PowerUpSet( PowerUpSet *inSetToCopy ) {
 
     copySet( inSetToCopy );
     }
+
+
+
+PowerUpSet::PowerUpSet( const char *inStringEncoding ) {
+    fillDefaultSet();
+
+    int numParts;
+    char **results = split( inStringEncoding, "#", &numParts );
+
+    if( numParts != POWER_SET_SIZE ) {
+        AppLog::error( 
+            "Failed to parse expected number of powers from string encoding" );
+        }
+    else {
+        for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        
+            char name[100];
+            int level;
+            
+            int numRead = sscanf( results[i], "[%d]%99s", &level, name );
+            
+            if( numRead != 2 ) {
+                AppLog::error( 
+                    "Failed to parse power from string encoding" );
+                AppLog::error( results[i] );
+                }
+            else {
+                spriteID powerType = mapNameToID( name );
+                
+                if( powerType != endSpriteID ) {
+                    mPowers[i].level = level;
+                    mPowers[i].powerType = powerType;
+                    }
+                else {
+                    AppLog::error( 
+                        "Unknown power type in string encoding" );
+                    
+                    mPowers[i].level = 0;
+                    mPowers[i].powerType = powerUpEmpty;
+                    }                
+                }
+            }
+        
+        }
+    
+    for( int i=0; i<numParts; i++ ) {
+        delete [] results[i];
+        }
+    delete [] results;    
+    }
+
+        
+
+char *PowerUpSet::getStringEncoding() {
+    char *results[POWER_SET_SIZE];
+    
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        results[i] = autoSprintf( "[%d]%s",
+                                  mPowers[i].level,
+                                  spriteIDNames[ mPowers[i].powerType ] );
+        }
+
+    char *fullSetResult =
+        join( results, POWER_SET_SIZE, "#" );
+
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        delete [] results[i];
+        }
+
+    return fullSetResult;
+    }
+
+
 
 
 

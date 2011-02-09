@@ -223,3 +223,17 @@ SpriteHandle generateShadowSprite( const char *inSourceTGAFile ) {
 
 
 
+spriteID mapNameToID( const char *inName ) {
+    for( int i = riseMarker; i < endSpriteID; i++ ) {
+        
+        if( strcmp( inName, spriteIDNames[i] ) == 0 ) {
+            return (spriteID)i;
+            }    
+        }
+
+    return endSpriteID;
+    }
+
+
+
+

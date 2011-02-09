@@ -336,7 +336,7 @@ int getStartingLevelNumber() {
 
 
 static const char *customDataFormatString = 
-    "level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f";
+    "level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_%s";
 
 
 char *getCustomRecordedGameData() {
@@ -361,11 +361,29 @@ char *getCustomRecordedGameData() {
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
 
 
+
+    SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+    SettingsManager::setHashingOn( true );
+
+    char *startingPowers = 
+        SettingsManager::getStringSetting( "startingPowers" );
+    
+    if( startingPowers == NULL ) {
+        startingPowers = stringDuplicate( "default" );
+        }
+
+    SettingsManager::setHashingOn( false );
+
+
     char * result = autoSprintf(
         customDataFormatString,
         levelNumber, tutorialOn,
-        tutorialBookmark, mouseSpeedSetting );
+        tutorialBookmark, mouseSpeedSetting,
+        startingPowers );
     
+    delete [] startingPowers;
+
     return result;
     }
 
@@ -478,13 +496,18 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int tutorialBookmark = 0;
     float mouseSpeedSetting = 1.0f;
-
+    char *startingPowersString = 
+        new char[ strlen( inCustomRecordedGameData ) + 1 ];
+    
+    
     int numRead = sscanf( inCustomRecordedGameData, 
                           customDataFormatString, &levelNumber,
-                          &tutorialOn, &tutorialBookmark, &mouseSpeedSetting );
+                          &tutorialOn, &tutorialBookmark, &mouseSpeedSetting,
+                          startingPowersString );
+    
+    PowerUpSet *startingPowers = NULL;
 
-
-    if( numRead != 4 ) {
+    if( numRead != 5 ) {
         // no recorded game?
 
         // don't force player back through boring level 0, even if
@@ -505,7 +528,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         else {
             forceTutorialBookmark( tutorialBookmark );
             }        
+
+        if( strcmp( startingPowersString, "default" ) != 0 ) {
+            startingPowers = new PowerUpSet( startingPowersString );
+            }
         }
+    
+    delete [] startingPowersString;
+
+
     
     double mouseParam = 0.000976562;
 
@@ -528,6 +559,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     populateLevelRiseStack();
     
+    if( startingPowers != NULL ) {
+        currentLevel->setPlayerPowers( startingPowers );
+
+        // pass up to next level, too
+        Level *nextHigherLevel = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+        
+        nextHigherLevel->setPlayerPowers( startingPowers );
+        
+
+        delete startingPowers;
+        }
+    
+
 
     // for level construction optimization
     if( false ) {
@@ -814,6 +859,13 @@ static void saveLevelBookmark() {
         
         SettingsManager::setSetting( "startAtLevel", levelNumber );
         
+        char *powersAsString =
+            currentLevel->getPlayerPowers()->getStringEncoding();
+
+        SettingsManager::setSetting( "startingPowers", powersAsString );
+        delete [] powersAsString;
+                                     
+
         SettingsManager::setHashingOn( false );
         }
     }
