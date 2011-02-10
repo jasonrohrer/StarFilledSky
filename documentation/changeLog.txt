@@ -1,3 +1,11 @@
+Version 10 
+
+--Bouncing enemy bullets are now properly killed when enemy is killed (thanks 
+  Alexey Zubkov).
+
+
+
+
 Version 9    2011-February-9
 
 --Added a robot-player mode for testing.

@@ -3617,6 +3617,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                         // prevent future explosion
                                         bullet->explode = 0;
                                         
+                                        // prevent future bounces
+                                        bullet->bouncesLeft = 0;
+
                                         if( bullet->distanceLeft > 1 ) {
                                             // curtail it's tradjectory
                                             bullet->distanceLeft = 1;
