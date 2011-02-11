@@ -5,6 +5,8 @@ Version 10
 
 --Fixed bug in resetting containing enemy or token powers after knock-down.
 
+--Fixed yet another tutorial-related crash (thanks Rico).
+
 
 
 

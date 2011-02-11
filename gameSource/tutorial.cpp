@@ -386,6 +386,10 @@ void drawTutorial( doublePair inScreenCenter ) {
 
 
     if( currentTut != -1 && tutorialsReady[ currentTut ] ) {
+        if( tutorialKeys[ currentTut ] == NULL ) {
+            printf( "Null tutorial key!\n" );
+            tutorialKeys[ currentTut ] = "tutorial_bug_flag";
+            }
         
         // tutorial text
         const char *tutMessage = translate( tutorialKeys[ currentTut ] );
@@ -727,9 +731,14 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             }    
         }
 
-    if( tutorialsReady[7] ) {
+
+    if( tutorialsReady[7] && currentTut == 7 ) {
+        // already showing a Gather tutorial
+        // end it
         tutorialsDone[7] = true;
+        showOneMoreGatherTutorial = false;
         shouldSkipTutorial6 = false;
+        tutorialsReady[6] = false;
         }
     
 
@@ -783,12 +792,7 @@ void tutorialSomethingEntered( itemType inType ) {
                 
                 }
 
-            if( currentTut == 6 &&
-                !tutorialsReady[6] ) {
-                // tutorial 6 not showing
-                // don't get stuck waiting for it to be ready
-                currentTut = 7;
-                }
+            
             
 
             shouldSkipTutorial6 = false;
@@ -803,6 +807,15 @@ void tutorialSomethingEntered( itemType inType ) {
                 }
             if( !enteredTypes[ inType ] ) {
                 // entered something new
+
+                if( currentTut == 6 &&
+                    !tutorialsReady[6] ) {
+                    // tutorial 6 not showing
+                    // don't get stuck waiting for it to be ready
+                    currentTut = 7;
+                    }
+
+
                 tutorialsDone[6] = true;
                 tutorialsReady[7] = true;
                 
