@@ -187,6 +187,9 @@ typedef struct LevelPositionInfo {
         doublePair entryPosition;
         itemType entryType;
         doublePair mousePos;
+        // for rewinding on rise-out of knock-down
+        // used only for entering token or enemy
+        PowerUpSet enterPointPowerStartState;
     } LevelPositionInfo;
 
 SimpleVector<LevelPositionInfo> levelRisePositionInfoStack;
@@ -225,6 +228,9 @@ static int stepsBetweenDeleteRepeat;
 char *tutorialMoveKeys;
 
 
+static PowerUpSet defaultSet;
+
+
 
 static void populateLevelRiseStack() {
     if( levelRiseStack.size() == 0 ) {
@@ -251,7 +257,7 @@ static void populateLevelRiseStack() {
         
         // center player in symmetrical level
         LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0} };
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0}, defaultSet };
         levelRisePositionInfoStack.push_back( info );
         }
     if( levelRiseStack.size() == 1 ) {
@@ -292,7 +298,7 @@ static void populateLevelRiseStack() {
         
         // center player in symmetrical level
         LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0} };
+            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0}, defaultSet };
         levelRisePositionInfoStack.push_back( info );
         
         levelRisePositionInfoStack.push_back( nextAboveInfo );
@@ -1459,6 +1465,8 @@ void drawFrame( char inUpdate ) {
         int parentDifficultyLevel = currentLevel->getDifficultyLevel();
         
 
+        PowerUpSet enteredStartSet = defaultSet;
+
         if( playerHealth > 0 && 
             currentLevel->isEnemy( mousePos, &itemIndex ) ) {
             
@@ -1528,14 +1536,23 @@ void drawFrame( char inUpdate ) {
             else {
                 tutorialPlayerKnockedDown();
                 }
+
             
+            // this call sets the last entering point power set, too
+            ColorScheme c = 
+                currentLevel->getEnteringPointColors( mousePos, enteringType );
+
+            // make a copy
+            PowerUpSet enteredStartSet( 
+                currentLevel->getLastEnterPointPowers() );
+
             
             
             levelRiseStack.push_back( currentLevel );
             // enemy or player is entry position
             LevelPositionInfo info = 
                 { playerPos, lastScreenViewCenter, 
-                  enteringPos, enteringType, mousePos };
+                  enteringPos, enteringType, mousePos, enteredStartSet };
             levelRisePositionInfoStack.push_back( info );
 
             lastLevel = currentLevel;
@@ -1551,8 +1568,6 @@ void drawFrame( char inUpdate ) {
             int oldAllocedBytes = meminfo.uordblks;
 #endif
 
-            ColorScheme c = 
-                currentLevel->getEnteringPointColors( mousePos, enteringType );
 
             RandomWalkerSet walkerSet =
                 currentLevel->getEnteringPointWalkerSet( mousePos,
@@ -1762,6 +1777,11 @@ void drawFrame( char inUpdate ) {
         zoomDirection = -1;
         currentLevel->drawFloorEdges( false );
 
+        Level *nextHigherLevel = 
+            *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
+
+
+        char powersPasssedUp = false;
 
         if( currentLevel->isInsidePlayer() && lastLevel->isInsidePlayer() 
             &&
@@ -1774,8 +1794,6 @@ void drawFrame( char inUpdate ) {
             // DO NOT pass up if we're rising up from entering self or
             // enemy or token
 
-            Level *nextHigherLevel = 
-                *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
 
             if( nextHigherLevel->getStepCount() == 0 || 
                 lastLevel->isKnockDown() ) {
@@ -1790,25 +1808,59 @@ void drawFrame( char inUpdate ) {
                 passedUpSet.decayPowers();
                 
                 nextHigherLevel->setPlayerPowers( &passedUpSet );
-                }
-            else if( ! lastLevel->isKnockDown() && 
-                     nextHigherLevel->getStepCount() > 0 ) {
-                
-                // reached lastLevel by entering self from next-higher
-                
-                // restore the tokens that we intentionally entered
-                // lastLevel with from next higher level (full rewind
-                //   as if we're starting lastLevel fresh from exactly
-                //  how we got there)
 
+                powersPasssedUp = true;
+                }
+            }
+        
+        if( !powersPasssedUp 
+            &&
+            ! lastLevel->isKnockDown() && 
+            nextHigherLevel->getStepCount() > 0
+            &&
+            lastLevel->getStepCount() == 0 ) {
+            
+            // reached lastLevel by entering something from next-higher
+            // AND got knocked down from lastLevel (it has been rewound)
+
+            // restore the tokens that we intentionally entered
+            // lastLevel with from next higher level (full rewind
+            //   as if we're starting lastLevel fresh from exactly
+            //  how we got there)
+            
+            
+            if( lastLevel->isInsidePlayer() ) {
+                // ignore entered set in position info, because
+                // we are not setting it properly farther up the
+                // level stack where we didn't actually enter anything
+                // (just inside self by default)
                 nextHigherLevel->setPlayerPowers(
                     lastLevel->getStartingPlayerPowers() );
                 }
-            
+            else {
+                // inside power-up or enemy
+                // this only happens with player intention, which 
+                // means that a proper enter point start state
+                // has been saved in position info
+                
+                PowerUpSet *s = nextHigherLevel->getLastEnterPointPowers();
+                
+                LevelPositionInfo *nextHigherLevelPositionInfo = 
+                    levelRisePositionInfoStack.getElement( 
+                        levelRisePositionInfoStack.size() - 1 );
+
+                s->copySet( 
+                    &( nextHigherLevelPositionInfo->
+                           enterPointPowerStartState ) );
+                
+                }
             }
         
-
         }
+    
+        
+    
+
 
 
 
