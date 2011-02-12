@@ -253,11 +253,15 @@ void PlayerSprite::freeReproducibleData() {
 
 
 
-PlayerSprite::PlayerSprite( ColorScheme *inColors ) {
+PlayerSprite::PlayerSprite( ColorScheme *inColors, char inInvert ) {
 
     if( inColors != NULL ) {
         mColors = *inColors;
         }
+    if( inInvert ) {
+        mColors.invert();
+        }
+    
     
 
     mDataGenerated = false;

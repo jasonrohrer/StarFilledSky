@@ -1341,7 +1341,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               int inParentLevelDifficulty ) 
         : mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
-          mPlayerSprite( inPlayerColors ) {
+          // invert player colors on level 0 or lower
+          mPlayerSprite( inPlayerColors, ( inLevelNumber <= 0 ) ) {
 
     /*
     if( shouldPowerUpsBeRigged() && mLevelNumber < 9 ) {
@@ -1448,6 +1449,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         }
     // else use randomly-generated mColors from stack
     
+    
+
 
     if( inWalkerSet != NULL ) {
         mWalkerSet = *( inWalkerSet );
@@ -1666,8 +1669,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // fewer enemies in lower levels
     int maxNumEnemies = 10;
 
-    if( mDifficultyLevel * 2 < 10 ) {
-        maxNumEnemies = mDifficultyLevel * 2;
+    if( (mDifficultyLevel - 1) * 2 < 10 ) {
+        maxNumEnemies = (mDifficultyLevel-1) * 2;
         }
     
     if( mLevelNumber == 0 ) {
@@ -1775,7 +1778,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 // don't have any leveled-up enemies until all power-ups
                 // are available
-                int enemyDifficultyLevel = mDifficultyLevel - 5;
+                int enemyDifficultyLevel = mDifficultyLevel - 6;
                 
                 PowerUpSet *p = new PowerUpSet( enemyDifficultyLevel, 
                                                 true, allowFollow );
@@ -1791,7 +1794,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 Enemy e = { spot, v, a, baseMoveDirection, 20, 
                             randSource.getRandomBoundedInt( 0, 10 ),
-                            new EnemySprite(),
+                            // invert enemy colors on level 0 or lower 
+                            new EnemySprite( (mLevelNumber <= 0) ),
                             p,
                             maxHealth,
                             maxHealth,
@@ -1836,16 +1840,16 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     // no power ups in lowest levels during tutorial
     int maxNumPowerUps = 10;
     
-    if( mLevelNumber < 3 && shouldPowerUpsBeRigged() ) {
+    if( mLevelNumber < 4 && shouldPowerUpsBeRigged() ) {
         maxNumPowerUps = 0;
         }
 
     // keep 10 on floor during tutorial to give player enough to experiment
     // with
-    // but forget about it if level 10 already reached (2 above where
+    // but forget about it if level 11 already reached (2 above where
     // entering things is first explained)
-    if( ! isFullTutorialRunning() || levelAlreadyVisited( 10 ) || 
-        mLevelNumber >= 10 ) {
+    if( ! isFullTutorialRunning() || levelAlreadyVisited( 11 ) || 
+        mLevelNumber >= 11 ) {
 
         // random number of power ups, chosen from a probability distribution
         // 8 possible values, in [3..10]
@@ -1940,8 +1944,8 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
             maxFloorTokenLevel = minFloorTokenLevel;
             }
 
-        if( isFullTutorialRunning() && ! levelAlreadyVisited( 10 ) &&
-            mLevelNumber < 10 ) {
+        if( isFullTutorialRunning() && ! levelAlreadyVisited( 11 ) &&
+            mLevelNumber < 11 ) {
             // don't let player stumble into a dangerous power-up level
             // during tutorial
             // (but stop protecting them if they've already risen to level 10)
@@ -2059,13 +2063,13 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
                 if( shouldPowerUpsBeRigged() ) {
 
-                    if( mLevelNumber == 3 || mLevelNumber == 4 ) {
+                    if( mLevelNumber == 4 || mLevelNumber == 5 ) {
                         
-                        if( mLevelNumber == 3 ) {
+                        if( mLevelNumber == 4 ) {
                             // spread first, easiest to notice
                             mainPower.powerType = powerUpSpread;
                             }
-                        else if( mLevelNumber == 4 ) {
+                        else if( mLevelNumber == 5 ) {
                             mainPower.powerType = powerUpBulletSize;
                             }
                         
@@ -2077,7 +2081,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
                             mainPower.powerType = powerUpHeart;
                             }
                         }
-                    else if( mLevelNumber == 5 ) {
+                    else if( mLevelNumber == 6 ) {
                         
                         char heartPlaced = false;
                         // always give player option of hearts

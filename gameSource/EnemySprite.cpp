@@ -227,8 +227,12 @@ void EnemySprite::freeReproducibleData() {
     }
 
 
-EnemySprite::EnemySprite() {
+EnemySprite::EnemySprite( char inInvert ) {
     
+    if( inInvert ) {
+        mColors.invert();
+        }
+
     mDataGenerated = false;
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();

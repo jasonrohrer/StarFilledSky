@@ -7,8 +7,8 @@ class EnemySprite : public EyeBorderSprite {
 
     public:
 
-        // a random player sprite using a given scheme
-        EnemySprite();
+        // a random enemy sprite using a random color scheme
+        EnemySprite( char inInvert=false );
         
         // compacts sprite, discarding reproducible data
         // sprite cannot be drawn until decompact is called

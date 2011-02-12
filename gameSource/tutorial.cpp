@@ -604,18 +604,18 @@ void tutorialKeyPressed( int inKeyNum ) {
     }
 
 
-// start at level 0, so it is already visited
-static char levelVisited[14] = { true, false, false,
+// start at level 1, so 0 and 1 are already visited
+static char levelVisited[15] = { true, true, false,
                                  false, false, false,
                                  false, false, false,
                                  false, false, false,
-                                 false, false };
+                                 false, false, false };
                      
 
-static int baseLevelForEnterTutorials = 8;
+static int baseLevelForEnterTutorials = 9;
 
 
-static int lastLevelRisenTo = 0;
+static int lastLevelRisenTo = 1;
 
 
 
@@ -629,7 +629,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         }
     
 
-    if( inLevelRisenTo >=0 && inLevelRisenTo < 14 ) {
+    if( inLevelRisenTo >=0 && inLevelRisenTo < 15 ) {
         levelVisited[ inLevelRisenTo ] = true;
         }
 
@@ -638,14 +638,14 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
     // even if required actions (moving NSEW or shooting enemy) not performed
     // by player.
     // Avoid falling behind.
-    if( inLevelRisenTo > 0 && inLevelRisenTo < 6 ) {
-        tutorialsDone[ inLevelRisenTo - 1 ] = true;
-        if( inLevelRisenTo < 5 ) {
-            tutorialsReady[ inLevelRisenTo ] = true;
+    if( inLevelRisenTo > 1 && inLevelRisenTo < 7 ) {
+        tutorialsDone[ inLevelRisenTo - 2 ] = true;
+        if( inLevelRisenTo < 6 ) {
+            tutorialsReady[ inLevelRisenTo - 1 ] = true;
             }
         }
     
-    if( inLevelRisenTo > 4 && inLevelRisenTo < 8 &&
+    if( inLevelRisenTo > 5 && inLevelRisenTo < 9 &&
         shouldSetTipsBeShown() ) {
         
         triggerCurrentPlayerSetTip();
@@ -660,10 +660,10 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         }
 
 
-    if( inLevelRisenTo >= 6 ) {
+    if( inLevelRisenTo >= 7 ) {
         rigPowerUpsForTeaching = false;
         }
-    if( inLevelRisenTo >= 8 ) {
+    if( inLevelRisenTo >= 9 ) {
         tutorialsReady[5] = true;
         blockEnterForTeaching = false;
         }

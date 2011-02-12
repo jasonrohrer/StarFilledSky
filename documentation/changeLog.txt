@@ -16,6 +16,11 @@ Version 10
 
 --Added % key to toggle playback display (for taking screens or videos).
 
+--Added inverted colors for negative levels, and moved game/tutorial start up 
+  to level 1.
+
+
+
 
 Version 9    2011-February-9
 

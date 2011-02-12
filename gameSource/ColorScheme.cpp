@@ -146,3 +146,13 @@ ColorScheme::ColorScheme( float inPrimaryHue, float inSecondaryHue ) {
     }
 
 
+
+void ColorScheme::invert() {
+    for( int i=0; i<4; i++ ) {
+        primary.elements[i].invert();
+        secondary.elements[i].invert();
+        }
+    special.invert();
+    }
+
+

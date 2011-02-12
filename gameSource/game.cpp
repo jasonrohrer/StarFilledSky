@@ -165,7 +165,7 @@ const char *getDemoCodeServerURL() {
 
 
 
-int levelNumber = 0;
+int levelNumber = 1;
 
 int extraDifficultyNumber = 0;
 
@@ -321,7 +321,7 @@ int getStartingLevelNumber() {
         SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
 
     if( tutorialCompletedCount == 0 ) {
-        defaultLevel = 0;
+        defaultLevel = 1;
         }
 
 
@@ -864,8 +864,9 @@ static double drawHealthBar( doublePair inBarLeftEdge, float inHealthFraction,
 static void saveLevelBookmark() {
     // only save bookmark to this level if local player is actually playing
     // (not for playback games from others)
-    // also, never trap player down in negative levels after they quit
-    if( !gamePlayingBack && levelNumber >= 0) {
+    // also, never trap player down in (or near) negative levels 
+    // after they quit
+    if( !gamePlayingBack && levelNumber >= 1 ) {
         SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
     
         SettingsManager::setHashingOn( true );

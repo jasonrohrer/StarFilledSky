@@ -24,6 +24,10 @@ class ColorScheme {
         ColorScheme( float inPrimaryHue, float inSecondaryHue );
        
 
+        // inverts the colors in this scheme
+        void invert();
+        
+        
         colorSet primary;
         colorSet secondary;
         

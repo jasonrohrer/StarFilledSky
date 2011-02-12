@@ -7,7 +7,7 @@ class PlayerSprite : public EyeBorderSprite {
     public:
 
         // a random player sprite, possibly using a given scheme
-        PlayerSprite( ColorScheme *inColors=NULL );
+        PlayerSprite( ColorScheme *inColors=NULL, char inInvert=true );
         
         // compacts sprite, discarding reproducible data
         // sprite cannot be drawn until decompact is called
