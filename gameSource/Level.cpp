@@ -2838,116 +2838,97 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
     int numStepsToRise;
 
 
-    if( !wasBeatHit ) {
+    // mark full path
 
-        // not on beat, or player shooting
-
-        wasBeatHit = false;
-        
-
-        // just count steps, don't mark full path
-        pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
-                  0.01, &numStepsToRise  );
-        
-        
-        }
-    else {
-        // beat just hit
-        wasBeatHit = false;
-        
-        // mark full path
-
-        GridPos *fullPath;
+    // clear any existing path
+    mRiseMarkerPathStepsNew.deleteAll();
 
 
+    GridPos *fullPath;
 
-        pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
-                  0.01, &numStepsToRise, &fullPath );
 
-        if( fullPath != NULL ) {
+    pathFind( getGridPos( inPos ), inPos, closestRiseGrid, 
+              0.01, &numStepsToRise, &fullPath );
+    
+    if( fullPath != NULL ) {
 
-            float baseFade = 1;
+        float baseFade = 1;
             
-            if( numStepsToRise < 25 ) {
+        if( numStepsToRise < 25 ) {
                 
-                if( numStepsToRise < 20 ) {
-                    baseFade = 0;
-                    }
-                else {
-                    baseFade = (numStepsToRise - 20) / 5.0f;
-                    }
-                }
-            
-            // only mark path if we are getting farther from last closest
-            // point to rise marker, and only if substantially farther
-            if( numStepsToRise <= mLastCloseStepsToRiseMarker + 20 ) {
+            if( numStepsToRise < 20 ) {
                 baseFade = 0;
                 }
-            
-            // 2 seconds
-            int startShowingSteps = (int)( 120 / frameRateFactor );
-
-            if( mPlayerStillStepCount > startShowingSteps 
-                && numStepsToRise > 15 ) {
-                // player still for a while
-                baseFade = 1;
+            else {
+                baseFade = (numStepsToRise - 20) / 5.0f;
                 }
-            
-
-
-            if( baseFade > 0 ) {
-                
-                // clear any existing path
-                mRiseMarkerPathSteps.deleteAll();
-
-                
-                int fullPathLength = numStepsToRise + 1;
-            
-                int fadeSteps = 4;
-                
-                int fadeSkip = 0;
-            
-
-                int fadeStart = fullPathLength - fadeSkip - fadeSteps;
-
-                for( int i=0; i<fullPathLength; i++ ) {
-                    
-                    GridPos p = fullPath[i];
-                
-                    int squareIndex = mSquareIndices[ p.y ][ p.x ];
-                    
-                    float fade = 1;
-                
-                    if( i > fadeStart ) {
-                    
-                        if( i -  fadeStart < fadeSteps ) {
-                            
-                            fade = 1.0f - 
-                                ( i - fadeStart ) / (float)fadeSteps;    
-                            }
-                        else {
-                            fade = 0;
-                            }
-                        }
-                
-                
-                    fade *= baseFade;
-
-
-                    RiseMarkerPathStep step =
-                        { squareIndex, fade };
-                    
-                    mRiseMarkerPathSteps.push_back( step );
-                    }
-
-                mRiseMarkerPathStepFadeProgress = 1;
-                }
-            // else don't add a path, because it would be invisible anyway
-
-            delete [] fullPath;        
             }
-        }
-    
+            
+        // only mark path if we are getting farther from last closest
+        // point to rise marker, and only if substantially farther
+        if( numStepsToRise <= mLastCloseStepsToRiseMarker + 20 ) {
+            baseFade = 0;
+            }
+            
+        // 2 seconds
+        int startShowingSteps = (int)( 120 / frameRateFactor );
+
+        if( mPlayerStillStepCount > startShowingSteps 
+            && numStepsToRise > 15 ) {
+            // player still for a while
+            baseFade = 1;
+            }
+            
+
+
+        if( baseFade > 0 ) {
+                
+
+                
+            int fullPathLength = numStepsToRise + 1;
+            
+            int fadeSteps = 4;
+                
+            int fadeSkip = 0;
+            
+
+            int fadeStart = fullPathLength - fadeSkip - fadeSteps;
+
+            for( int i=0; i<fullPathLength; i++ ) {
+                    
+                GridPos p = fullPath[i];
+                
+                int squareIndex = mSquareIndices[ p.y ][ p.x ];
+                    
+                float fade = 1;
+                
+                if( i > fadeStart ) {
+                    
+                    if( i -  fadeStart < fadeSteps ) {
+                            
+                        fade = 1.0f - 
+                            ( i - fadeStart ) / (float)fadeSteps;    
+                        }
+                    else {
+                        fade = 0;
+                        }
+                    }
+                
+                
+                fade *= baseFade;
+
+
+                RiseMarkerPathStep step =
+                    { squareIndex, fade };
+                    
+                mRiseMarkerPathStepsNew.push_back( step );
+                }
+            }
+        // else don't add a path, because it would be invisible anyway
+
+        delete [] fullPath;        
+        }    
+
     
 
     return numStepsToRise;
@@ -3845,31 +3826,19 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         
 
-    char skipEnemyPathFinding = false;
+        
+    mNextEnemyPathFindIndex ++;
     
-
-    if( wasBeatHit ) {
-        // need to sync with beat for rise-marker path
-        // can't skip player path-finding this step
-        skipEnemyPathFinding = true;
+    // don't give pathfinding slot to dead enemies
+    while( mNextEnemyPathFindIndex < mEnemies.size() 
+           && mEnemies.getElement( mNextEnemyPathFindIndex )->dead ) {
+        mNextEnemyPathFindIndex++;
         }
     
-    
-    if( !skipEnemyPathFinding ) {
-        
-        mNextEnemyPathFindIndex ++;
-    
-        // don't give pathfinding slot to dead enemies
-        while( mNextEnemyPathFindIndex < mEnemies.size() 
-               && mEnemies.getElement( mNextEnemyPathFindIndex )->dead ) {
-            mNextEnemyPathFindIndex++;
-            }
-    
-        // save last slot for player's path finding (one step where no enemy
-        // path finds) and reset back to 0 AFTER that
-        if( mNextEnemyPathFindIndex > mEnemies.size() ) {
-            mNextEnemyPathFindIndex = 0;
-            }
+    // save last slot for player's path finding (one step where no enemy
+    // path finds) and reset back to 0 AFTER that
+    if( mNextEnemyPathFindIndex > mEnemies.size() ) {
+        mNextEnemyPathFindIndex = 0;
         }
     
     
@@ -3949,7 +3918,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         // temporarily disable follow during dodge
         if( follow && e->dodgeBulletIndex == -1 ) {
 
-            if( ! skipEnemyPathFinding && mNextEnemyPathFindIndex == i ) {
+            if( mNextEnemyPathFindIndex == i ) {
                 
 
                 // conduct pathfinding search
@@ -3996,7 +3965,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         if( dodge ) {
             
-            if( !skipEnemyPathFinding && i == mNextEnemyPathFindIndex ) {
+            if( i == mNextEnemyPathFindIndex ) {
                 
 
                 // find closest player bullet
@@ -4188,8 +4157,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         
-        if( !skipEnemyPathFinding && 
-            mNextEnemyPathFindIndex == i && 
+        if( mNextEnemyPathFindIndex == i && 
             ! enemyPathFindingDoneThisStep ) {
             // this enemy's turn to path-find, and we did NOT expend our
             // path finding following the player
@@ -4313,6 +4281,28 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         e->sprite->setLookVector( lookDir );
         }
 
+
+    if( wasBeatHit ) {
+        // light up rise marker path, even if it is a bit stale
+        // we DO NOT want to change path-finding priorities based on
+        // the occurrence of a music beat, because the music thread
+        // runs assynchronously and introduces non-determinism into enemy
+        // aim position path-finding (which means played-back recorded games
+        //  have inconsistencies)
+
+        // this is a good time to switch to the latest path
+        mRiseMarkerPathSteps.deleteAll();
+        
+        for( int s=0; s<mRiseMarkerPathStepsNew.size(); s++ ) {
+            mRiseMarkerPathSteps.push_back( 
+                *( mRiseMarkerPathStepsNew.getElement(s) ) );
+            }
+
+        mRiseMarkerPathStepFadeProgress = 1;
+
+        wasBeatHit = false;
+        }
+    
     
     // only one path finding operation per timestep
     if( ! enemyPathFindingDoneThisStep ) {        
@@ -4790,7 +4780,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mRiseMarkerPathStepFadeProgress < 0 ) {
             mRiseMarkerPathStepFadeProgress = 0;
             
-            mRiseMarkerPathSteps.deleteAll();
+            // KEEP stale path, because we may need to draw
+            // it again on next beat without doing pathfinding
+            // mRiseMarkerPathSteps.deleteAll();
             }
         }    
 

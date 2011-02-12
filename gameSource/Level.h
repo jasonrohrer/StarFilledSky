@@ -534,6 +534,9 @@ class Level {
 
         
         SimpleVector<RiseMarkerPathStep> mRiseMarkerPathSteps;
+        // holding bay for freshly-generated path steps
+        // switch to these when done with current steps
+        SimpleVector<RiseMarkerPathStep> mRiseMarkerPathStepsNew;
         float mRiseMarkerPathStepFadeProgress;
 
 
