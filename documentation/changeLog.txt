@@ -21,6 +21,10 @@ Version 10
 
 --Added a proper end message to tutorial.
 
+--Switched to '@' to quit, because F4 is not available on some macs.
+
+
+
 
 
 Version 9    2011-February-9
