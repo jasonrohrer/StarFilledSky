@@ -4618,7 +4618,7 @@ void Level::drawEnemies( double inFade, int inLayer,
                           pos.x + barBGHalfWidth, pos.y + 0.25 );
             
                 float healthFraction = e->health / 
-                    (float)getEnemyMaxHealth( e->powers );
+                    (float)maxHealth;
 
                 if( !drawSegments ) {
                     // round to nearest sub-pixel
