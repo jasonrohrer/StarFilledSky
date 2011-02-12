@@ -23,6 +23,8 @@ Version 10
 
 --Switched to '@' to quit, because F4 is not available on some macs.
 
+--Fixed bug in token pass-up when grabbing tokens right before rising.
+
 
 
 

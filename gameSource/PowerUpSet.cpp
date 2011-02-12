@@ -408,6 +408,32 @@ void PowerUpSet::copySet( PowerUpSet *inSetToCopy ) {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         mPowers[i] = inSetToCopy->mPowers[i];
         }
+
+
+    // now push any pending powers (including push stack) from the copied set
+
+    if( inSetToCopy->mPushing ) {
+        for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
+            mPowers[i] = mPowers[i+1];
+            }
+    
+        mPowers[ POWER_SET_SIZE - 1 ] = inSetToCopy->mPowerToPush;
+        
+    
+        powerPushRecord *nextStackRecord = inSetToCopy->mPushStack;
+
+        while( nextStackRecord != NULL ) {
+            for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
+                mPowers[i] = mPowers[i+1];
+                }
+    
+            mPowers[ POWER_SET_SIZE - 1 ] = nextStackRecord->powerToPush;
+
+        
+            nextStackRecord = nextStackRecord->next;
+            }
+        }
+    
     }
 
 
