@@ -30,6 +30,8 @@ tutorial_gather_enemy "Gathered tokens combine to change the entered enemy."
 
 tutorial_gather_token "Gathered tokens change the entered token by majority.##Enter sub-tokens for bigger upgrades, but difficulty increases."
 
+tutorial_done "This is the end of the instructions."
+
 
 tutorial_bug_flag  "You have encountered an obscure tutorial bug.##PLEASE report this to me (Jason)."
 

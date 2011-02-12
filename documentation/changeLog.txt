@@ -19,6 +19,7 @@ Version 10
 --Added inverted colors for negative levels, and moved game/tutorial start up 
   to level 1.
 
+--Added a proper end message to tutorial.
 
 
 

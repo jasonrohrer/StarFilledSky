@@ -24,12 +24,12 @@ extern char *tutorialMoveKeys;
 
 
 
-#define numTut 8
+#define numTut 9
 
 static const char *tutorialKeys[ numTut ] = 
 { "tutorial_move", "tutorial_shoot", "tutorial_structure", 
   "tutorial_tokens", "tutorial_useTokens", 
-  "tutorial_enter1", "tutorial_enter2", "tutorial_gather" };
+  "tutorial_enter1", "tutorial_enter2", "tutorial_gather", "tutorial_done" };
 
 #define numEnterTut 3
 
@@ -44,11 +44,13 @@ int currentEnter2TutorialType = -1;
 
 // init all to false
 static char tutorialsDone[ numTut ] = { false, false, false, false,
-                                        false, false, false, false };
+                                        false, false, false, false,
+                                        false };
 
 // init first to true, rest to false
 static char tutorialsReady[ numTut ] = { true, false, false, false,
-                                         false, false, false, false };
+                                         false, false, false, false,
+                                         false };
 
 static char shouldSkipTutorial6 = false;
 static char showOneMoreGatherTutorial = false;
@@ -288,7 +290,7 @@ void resetTutorial() {
     if( currentTut == -1 ) {
         // not running;
         
-        // skip all but control tutorials
+        // skip all but control tutorials and done message
         tutorialBriefMode = true;
         
         for( int i=0; i<numTut; i++ ) {
@@ -300,6 +302,7 @@ void resetTutorial() {
         tutorialsDone[0] = false;
         tutorialsDone[1] = false;
         tutorialsDone[5] = false;
+        tutorialsDone[8] = false;
         
         
         
@@ -503,12 +506,12 @@ void drawTutorial( doublePair inScreenCenter ) {
                     }
                 printf( "Moving on to tut %d\n", currentTut );
                 
-                if( currentTut < numTut ) {
+                if( currentTut < 8 ) {
                     
                     tutorialFade = 0;
                     tutorialOffset = 0;
                     }
-                else {
+                else if( currentTut == 8 ){
                     // just finished entering2
 
                     // check if we're really, really done with it
@@ -518,12 +521,9 @@ void drawTutorial( doublePair inScreenCenter ) {
                         ! showOneMoreGatherTutorial ) {
                         // really done
                         
-                        currentTut = -1;
-                        
-                        tutorialCompletedCount ++;
-                    
-                        SettingsManager::setSetting( "tutorialCompletedCount",
-                                                     tutorialCompletedCount );
+                        // show final message
+                        currentTut = 8;
+                        tutorialsReady[8] = true;
                         }
                     else {
                         // still some left to enter
@@ -542,11 +542,19 @@ void drawTutorial( doublePair inScreenCenter ) {
                             showOneMoreGatherTutorial = false;
                             currentTut = 7;
                             }
-
-
-                        tutorialFade = 0;
-                        tutorialOffset = 0;
                         }
+                    
+                    tutorialFade = 0;
+                    tutorialOffset = 0;
+                    }
+                else {
+                    // totally done, even with done message
+                    currentTut = -1;
+                    
+                    tutorialCompletedCount ++;
+                    
+                    SettingsManager::setSetting( "tutorialCompletedCount",
+                                                 tutorialCompletedCount );
                     }
                 }
             }
@@ -624,6 +632,10 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
     lastLevelRisenTo = inLevelRisenTo;
     
 
+    if( currentTut == 8 && tutorialsReady[8] ) {
+        tutorialsDone[8] = true;
+        }
+
     if( tutorialBriefMode ) {
         return;
         }
@@ -674,6 +686,17 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
         tutorialsReady[6] = false;
         }
     
+    if( tutorialsReady[7] && currentTut == 7 ) {
+        // already showing a Gather tutorial
+        // end it
+        tutorialsDone[7] = true;
+        showOneMoreGatherTutorial = false;
+        shouldSkipTutorial6 = false;
+        tutorialsReady[6] = false;
+        }
+
+
+
     if( tutorialsDone[5] && inLevelRisenTo >= baseLevelForEnterTutorials ) {
         // risen out of whatever was entered,
         // or at least in a good spot to other enter options 
@@ -710,17 +733,9 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
                 }
             }
         else {
-            // totally done
-            if( currentTut != -1 &&
-                !tutorialsReady[currentTut] ) {
-                currentTut = -1;
-
-                tutorialCompletedCount ++;
-                
-                SettingsManager::setSetting( "tutorialCompletedCount",
-                                             tutorialCompletedCount );
-                }
             
+            // totally done, allow done message to display
+
             tutorialsReady[6] = true;
             tutorialsDone[6] = true;
             shouldSkipTutorial6 = true;
@@ -730,18 +745,7 @@ void tutorialRiseHappened( int inLevelRisenTo ) {
             showOneMoreGatherTutorial = false;
             }    
         }
-
-
-    if( tutorialsReady[7] && currentTut == 7 ) {
-        // already showing a Gather tutorial
-        // end it
-        tutorialsDone[7] = true;
-        showOneMoreGatherTutorial = false;
-        shouldSkipTutorial6 = false;
-        tutorialsReady[6] = false;
-        }
     
-
     }
 
 
@@ -839,11 +843,19 @@ void tutorialSomethingEntered( itemType inType ) {
             enteredTypes[ (int)inType ] = true;
             }
         }
+
+    if( currentTut == 8 && tutorialsReady[8] ) {
+        tutorialsDone[8] = true;
+        }
     }
 
 
 
 void tutorialPlayerKnockedDown() {
+    if( currentTut == 8 && tutorialsReady[8] ) {
+        tutorialsDone[8] = true;
+        }
+
     if( tutorialBriefMode ) {
         return;
         }
