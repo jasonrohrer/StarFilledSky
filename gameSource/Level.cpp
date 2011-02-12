@@ -2871,7 +2871,7 @@ int Level::getStepsToRiseMarker( doublePair inPos ) {
             }
             
         // 2 seconds
-        int startShowingSteps = (int)( 120 / frameRateFactor );
+        int startShowingSteps = (int)( 60 / frameRateFactor );
 
         if( mPlayerStillStepCount > startShowingSteps 
             && numStepsToRise > 15 ) {

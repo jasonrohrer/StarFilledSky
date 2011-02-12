@@ -12,6 +12,8 @@ Version 10
 --Fixed nondeterminism in recorded game playback caused by syncronization with 
   music thread for flashing path to rise marker.
 
+--Shortened delay for display of rise marker path when player standing still.
+
 
 
 Version 9    2011-February-9
