@@ -48,6 +48,9 @@ pauseMessage4 "(saves a level number bookmark)"
 difficultyTag "DIFFICULTY"
 
 
+playbackTag  "Playback %:"
+playbackToggleMessage "(Press % to hide)"
+
 
 powerUpHeart_tip          "HEALTH"
 powerUpBulletSize_tip     "BULLET SIZE"

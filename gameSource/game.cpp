@@ -3109,7 +3109,7 @@ void triggerCurrentPlayerSetTip() {
 
 
 
-void drawString( int inX, int inY, const char *inString ) {
+void drawString( const char *inString ) {
     
     setDrawColor( 1, 1, 1, 0.75 );
 
@@ -3135,8 +3135,19 @@ void drawString( int inX, int inY, const char *inString ) {
     messagePos.y -= 0.5;
     
 
-    mainFont2->drawString( inString, 
-                           messagePos, alignLeft );
+    int numLines;
+    
+    char **lines = split( inString, "\n", &numLines );
+    
+    for( int i=0; i<numLines; i++ ) {
+        
+
+        mainFont2->drawString( lines[i], messagePos, alignLeft );
+        messagePos.y -= 0.75;
+        
+        delete [] lines[i];
+        }
+    delete [] lines;
     }
 
 

@@ -14,6 +14,7 @@ Version 10
 
 --Shortened delay for display of rise marker path when player standing still.
 
+--Added % key to toggle playback display (for taking screens or videos).
 
 
 Version 9    2011-February-9
