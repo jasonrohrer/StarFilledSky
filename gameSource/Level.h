@@ -219,6 +219,13 @@ class Level {
 
         void forgetItemWindow();
 
+        
+        // tell level to update its members that might have changed while
+        // it was frozen (power-up, player health, etc.)
+        // call this right before starting to draw level when rising
+        // back into it
+        void frozenUpdate();
+        
 
         void drawLevel( doublePair inViewCenter, double inViewSize );
         

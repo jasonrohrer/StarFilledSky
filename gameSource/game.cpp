@@ -1761,6 +1761,12 @@ void drawFrame( char inUpdate ) {
 
         lastLevel->freezeLevel( true );
         
+        // some stuff may have changed while level was frozen
+        // update it before drawing it again
+        lastLevel->frozenUpdate();
+        
+
+
         if( currentLevel->isKnockDown() ) {
             // reset level we're rising into after knock-down
             lastLevel->rewindLevel();

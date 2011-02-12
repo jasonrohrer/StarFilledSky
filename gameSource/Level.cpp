@@ -4729,28 +4729,29 @@ static void computeVisBoundaries( doublePair inViewCenter, double inViewSize,
 
 
 
+void Level::frozenUpdate() {
+    // but keep any token that was sub-level entry point updated
+    if( mLastEnterPointPowerTokenIndex != -1 ) {
+        PowerUpToken *t = mPowerUpTokens.getElement( 
+            mLastEnterPointPowerTokenIndex );
+        
+        
+            t->power.powerType = t->subPowers->getMajorityType();
+            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+        }
+    
+    // keep max player health updated
+    mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
+    mPlayerHealth = mPlayerHealthMax;
+    }
+
+
 
         
 void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     if( !mFrozen ) {
         step( inViewCenter, inViewSize );
-        }
-    else {
-        // frozen, but keep any token that was sub-level entry point updated
-        
-        if( mLastEnterPointPowerTokenIndex != -1 ) {
-            PowerUpToken *t = mPowerUpTokens.getElement( 
-                mLastEnterPointPowerTokenIndex );
-            
-
-            t->power.powerType = t->subPowers->getMajorityType();
-            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
-            }
-
-        // keep max player health updated while frozen
-        mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
-        mPlayerHealth = mPlayerHealthMax;
         }
     
 
