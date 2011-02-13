@@ -27,6 +27,8 @@ Version 10
 
 --Fixed so that health bar for self in higher level on knock-down doesn't instantally appear to refill itself.
 
+--Added secure level-stack saving on exit to thwart reload-grind strategy.
+
 
 
 

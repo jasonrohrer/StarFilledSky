@@ -1036,7 +1036,9 @@ static void saveLevelBookmark() {
         
 
         SettingsManager::setSetting( "bookmark", bookmarkData );
-                                     
+        
+        delete [] bookmarkData;
+
 
         SettingsManager::setHashingOn( false );
         }
