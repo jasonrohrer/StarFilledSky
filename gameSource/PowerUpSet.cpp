@@ -798,7 +798,9 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
         
         // don't draw slots for the set that's dropping off
         // don't draw empties (which mark slots that are not changing)
-        mPowersBeingDropped->drawSet( inPosition, 1 - mDropProgress, false,
+        mPowersBeingDropped->drawSet( inPosition, 
+                                      inFade * (1 - mDropProgress), 
+                                      false,
                                       mDropDrawToggles );
         }
     
