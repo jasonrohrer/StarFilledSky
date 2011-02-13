@@ -593,6 +593,13 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     PowerUpSet *startingPowers = NULL;
 
+    
+    // default to empty (default level generation)
+    // unless overridden by bookmark or recorded game
+    SimpleVector<unsigned int> levelStackSeeds;
+                    
+
+
     if( numRead != 5 ) {
         // no recorded game?
 
@@ -636,8 +643,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                 
                 if( numStackElements > 0 ) {
                     
-                    SimpleVector<unsigned int> seeds;
-                    
                     for( int s=0; s<numStackElements; s++ ) {
                         
                         char *splitPoint = strstr( levelStackString, "_" );
@@ -651,14 +656,11 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                                                   &scannedNumber );
                             if( numRead == 1 ) {
                                 
-                                seeds.push_back( scannedNumber );
+                                levelStackSeeds.push_back( scannedNumber );
                                 }
                             }
                         }
                     
-                    if( seeds.size() > 0 ) {
-                        initStartingLevels( &seeds );
-                        }
                     }
     
                 }
@@ -687,12 +689,16 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     initTipDisplay();
     
 
-    if( currentLevel == NULL ) {
-        // not set by bookmark or recorded game
-        
+    if( levelStackSeeds.size() > 2 ) {
+        // pre-defined seeds from bookmark or recorded game
+        // (must have at least 3, current level and 2 in stack, to be valid)
+        initStartingLevels( &levelStackSeeds );
+        }
+    else {
+        // default
         initStartingLevels();
         }
-    
+           
         
     if( startingPowers != NULL ) {
         currentLevel->setPlayerPowers( startingPowers );
