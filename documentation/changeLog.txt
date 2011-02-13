@@ -9,8 +9,8 @@ Version 10   2011-February-13
 
 --Fixed bug with enemy health bars (thanks Alexey Zubkov).
 
---Fixed nondeterminism in recorded game playback caused by syncronization with 
-  music thread for flashing path to rise marker.
+--Fixed non-determinism in recorded game playback caused by synchronization 
+  with music thread for flashing path to rise marker.
 
 --Shortened delay for display of rise marker path when player standing still.
 
@@ -26,7 +26,7 @@ Version 10   2011-February-13
 --Fixed bug in token pass-up when grabbing tokens right before rising.
 
 --Fixed so that health bar for self in higher level on knock-down doesn't 
-  instantally appear to refill itself.
+  instantly appear to refill itself.
 
 --Added secure level-stack saving on exit to thwart reload-grind strategy.
 
@@ -65,7 +65,7 @@ Version 9    2011-February-9
   recovery and fresh-rise only).
 
 --Eyes closed on all selves above you in infinite rise trunk to make new 
-  power-pass-up thematicaly consistent (pass-up only to sleepers).
+  power-pass-up thematically consistent (pass-up only to sleepers).
 
 --Removed brief period of player immortality after rise-out. 
 
@@ -129,7 +129,7 @@ Version 8   2011-February-4
 --Saved level bookmark never saves for negative levels, so player cannot be 
   trapped in the inverted negative difficulty progression after quitting.
 
---Switch to SPACE as shooting alternative for trackpad users, and SHIFT to 
+--Switch to SPACE as shooting alternative for track-pad users, and SHIFT to 
   enter things.
 
 --Disabled entering immediately after entering something, to avoid double-enter
@@ -138,7 +138,7 @@ Version 8   2011-February-4
 --Improved bounce as a stand-alone power-up by renewing bullet distance limit 
   after each bounce (thanks Rico).
 
---Corrected implementation of A* pathfinding, and improved its efficiency.
+--Corrected implementation of A* path-finding, and improved its efficiency.
 
 --Fixed a memory leak in the power set tip display.
 
@@ -176,7 +176,7 @@ Version 7    2011-February-2
 
 --Added player health bar jitter when player hit.
 
---Improved dashboard appearance by having player healthbars move with their 
+--Improved dashboard appearance by having player health bars move with their 
   corresponding power-up set during zoom.
 
 --Added tool-tip text explaining each power-up.
