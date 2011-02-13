@@ -1324,9 +1324,11 @@ void Level::freeReproducibleData() {
 
 
 
-Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
+Level::Level( unsigned int inSeed,
+              ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
               RandomWalkerSet *inWalkerSet,
+              RandomWalkerSet *inPlayerWalkerSet,
               NoteSequence *inMusicNotes,
               PowerUpSet *inSetPlayerPowers,
               int inLevelNumber, char inSymmetrical, 
@@ -1429,10 +1431,6 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
 
 
     
-    randSource.saveState();
-    mRandSeedState = randSource.getSavedState();
-
-    mDataGenerated = false;
     mSymmetrical = inSymmetrical;
     
     mInsideEnemy = inInsideEnemy;
@@ -1452,11 +1450,7 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
     
 
 
-    if( inWalkerSet != NULL ) {
-        mWalkerSet = *( inWalkerSet );
-        }
-    // else use randomly-generated walker set from stack
-
+    
     if( inMusicNotes != NULL ) {
         mHarmonyNotes = *( inMusicNotes );
         }
@@ -1537,6 +1531,40 @@ Level::Level( ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
         (int)( stepsBetweenGlowTrails / frameRateFactor );
     
     mEnteringMouse = false;
+    
+
+
+    // apply/save seed AFTER the random generation stuff above that is
+    // not gameplay-related
+    
+    // this ensures that same seed generates same level, gamplay-wise,
+    // regardless of what other parameters above (like known music note
+    // patterns, etc) are passed in
+    randSource.restoreFromSavedState( inSeed );
+    randSource.saveState();
+    mRandSeedState = randSource.getSavedState();
+
+    mDataGenerated = false;
+
+    if( inWalkerSet != NULL ) {
+        mWalkerSet = *( inWalkerSet );
+        }
+    else {
+        // generate a random one
+        RandomWalkerSet randomSet;
+        
+        mWalkerSet = randomSet;
+        }
+
+    if( inPlayerWalkerSet != NULL ) {
+        mPlayerWalkerSet = *( inPlayerWalkerSet );
+        }
+    else {
+        // generate a random one
+        RandomWalkerSet randomSet;
+        
+        mPlayerWalkerSet = randomSet;
+        }
     
 
     
@@ -2175,6 +2203,12 @@ Level::~Level() {
 
     delete mPlayerPowers;
     delete mStartingPlayerPowers;
+    }
+
+
+
+unsigned int Level::getSeed() {
+    return mRandSeedState;
     }
 
 
@@ -5825,6 +5859,11 @@ PowerUpSet *Level::getStartingPlayerPowers() {
 
 NoteSequence *Level::getPlayerNoteSequence() {
     return &mPlayerMusicNotes;
+    }
+
+
+RandomWalkerSet Level::getLevelWalkerSet() {
+    return mWalkerSet;
     }
 
 

@@ -162,10 +162,12 @@ class Level {
 
         // Pass NULL to generate a fresh scheme and walker set and notes
         // destroyed by caller
-        Level( ColorScheme *inPlayerColors=NULL,
+        Level( unsigned int inSeed,
+               ColorScheme *inPlayerColors=NULL,
                NoteSequence *inPlayerMusicNotes = NULL,
                ColorScheme *inColors=NULL,
                RandomWalkerSet *inWalkerSet=NULL,
+               RandomWalkerSet *inPlayerWalkerSet=NULL,
                NoteSequence *inMusicNotes=NULL,
                PowerUpSet *inSetPlayerPowers=NULL,
                int inLevelNumber = 0,
@@ -183,6 +185,9 @@ class Level {
 
         ~Level();
 
+        // gets the random seed state used to generate this level
+        unsigned int getSeed();
+        
         
         // compacts level, discarding reproducible data
         // level cannot be drawn or stepped until decompact is called
@@ -285,6 +290,9 @@ class Level {
         
         NoteSequence *getPlayerNoteSequence();
         
+        RandomWalkerSet getLevelWalkerSet();
+        
+
 
         // copied internally
         void setPlayerPowers( PowerUpSet *inPowers );

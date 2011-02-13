@@ -231,79 +231,98 @@ char *tutorialMoveKeys;
 static PowerUpSet defaultSet;
 
 
+static void addFreshLevelToStack( unsigned int inSeed ) {
+    Level *levelRightBelow = currentLevel;
+    
+    if( levelRiseStack.size() > 0 ) {
 
-static void populateLevelRiseStack() {
+        levelRightBelow = *( levelRiseStack.getElement( 0 ) );
+        }
+    
+    ColorScheme c = levelRightBelow->getLevelColors();
+    NoteSequence s = levelRightBelow->getLevelNoteSequence();
+
+    RandomWalkerSet ourPlayerWalkerSet = levelRightBelow->getLevelWalkerSet();
+
+    ColorScheme freshColors;
+    // copy player part's timbre/envelope
+    // alternate part length with player part for phase patterns
+    int partLength = 16;
+    if( s.partLength == partLength ) {
+        partLength -= 4;
+        }
+    NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
+                                                          partLength );
+        
+    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
+    
+
+    levelRiseStack.push_front( new Level( inSeed, 
+                                          &c, &s, &freshColors,
+                                          NULL,
+                                          &ourPlayerWalkerSet,
+                                          &freshNotes,
+                                          NULL,
+                                          freshLevelNumber ) );
+        
+        
+    // center player in symmetrical level
+    LevelPositionInfo info = 
+        { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0}, defaultSet };
+    levelRisePositionInfoStack.push_front( info );    
+    }
+
+
+
+// non-null seed vector to override default behavior
+static void populateLevelRiseStack( 
+    SimpleVector<unsigned int> *inSeeds = NULL ) {
+    
+    if( inSeeds != NULL ) {
+        
+        int numSeeds = inSeeds->size();
+        
+        for( int i=0; i<numSeeds; i++ ) {
+            addFreshLevelToStack( *( inSeeds->getElement( i ) ) );
+            }        
+
+        return;
+        }
+    
+
+
+    // else default behavior, make sure stack has at least two levels in it
+
     if( levelRiseStack.size() == 0 ) {
         // push one on to rise into
-        ColorScheme c = currentLevel->getLevelColors();
-        NoteSequence s = currentLevel->getLevelNoteSequence();
-        ColorScheme freshColors;
-        RandomWalkerSet freshSet;
-        // copy player part's timbre/envelope
-        // alternate part length with player part for phase patterns
-        int partLength = 16;
-        if( s.partLength == partLength ) {
-            partLength -= 4;
-            }
-        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
-                                                              partLength );
         
-        levelRiseStack.push_back( new Level( &c, &s, 
-                                             &freshColors,
-                                             &freshSet,
-                                             &freshNotes,
-                                             NULL,
-                                             levelNumber + 1 ) );
+        // base pre-seed on level below's seed
         
-        // center player in symmetrical level
-        LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0}, defaultSet };
-        levelRisePositionInfoStack.push_back( info );
+        unsigned int belowSeed = currentLevel->getSeed();
+
+        randSource.restoreFromSavedState( belowSeed );
+        
+        // draw seed
+        int newSeed = randSource.getRandomInt();
+
+        addFreshLevelToStack( newSeed );
         }
+
     if( levelRiseStack.size() == 1 ) {
         // always have two to rise into
-        Level *nextAbove = *( levelRiseStack.getElement( 0 ) );
+        Level *nextBelow = *( levelRiseStack.getElement( 0 ) );
         
-        // push them back in to maintain stack order
-        levelRiseStack.deleteAll();
+        // base pre-seed on level below's seed
+        
+        unsigned int belowSeed = nextBelow->getSeed();
+        
+        randSource.restoreFromSavedState( belowSeed );
+                
+        // draw seed
+        int newSeed = randSource.getRandomInt();
 
-        ColorScheme c = nextAbove->getLevelColors();
-        NoteSequence s = nextAbove->getLevelNoteSequence();
-
-        ColorScheme freshColors;
-        RandomWalkerSet freshSet;
-        // copy player part's timbre/envelope
-        // alternate part length with player part for phase patterns
-        int partLength = 16;
-        if( s.partLength == partLength ) {
-            partLength -= 4;
-            }
-        NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
-                                                              partLength );
-        
-        levelRiseStack.push_back( new Level( &c, &s, &freshColors,
-                                             &freshSet,
-                                             &freshNotes,
-                                             NULL,
-                                             levelNumber + 2 ) );
-        
-        levelRiseStack.push_back( nextAbove );
-        
-        
-        LevelPositionInfo nextAboveInfo = 
-            *( levelRisePositionInfoStack.getElement( 0 ) );
-        
-        // again, maintain stack order
-        levelRisePositionInfoStack.deleteAll();
-        
-        // center player in symmetrical level
-        LevelPositionInfo info = 
-            { {-0.5,0}, {-0.5,0}, {-0.5,0}, player, {-0.5, 0}, defaultSet };
-        levelRisePositionInfoStack.push_back( info );
-        
-        levelRisePositionInfoStack.push_back( nextAboveInfo );
-        }
-        
+        addFreshLevelToStack( newSeed );
+        }        
     }
 
 
@@ -329,9 +348,15 @@ int getStartingLevelNumber() {
     
     SettingsManager::setHashingOn( true );
 
-    int startingLevelNumber = 
-        SettingsManager::getIntSetting( "startAtLevel", defaultLevel );
+    char *bookmarkString = SettingsManager::getStringSetting( "bookmark" );
     
+    int startingLevelNumber = defaultLevel;
+
+    if( bookmarkString != NULL ) {
+        sscanf( bookmarkString, "level%d_", &startingLevelNumber );
+        delete [] bookmarkString;
+        }
+        
     SettingsManager::setHashingOn( false );    
         
     return startingLevelNumber;    
@@ -372,11 +397,27 @@ char *getCustomRecordedGameData() {
     
     SettingsManager::setHashingOn( true );
 
-    char *startingPowers = 
-        SettingsManager::getStringSetting( "startingPowers" );
+    char *fullBookmarkString = SettingsManager::getStringSetting( "bookmark" );
+    char *partialBookmarkString = NULL;
     
-    if( startingPowers == NULL ) {
-        startingPowers = stringDuplicate( "default" );
+    if( fullBookmarkString != NULL ) {
+        
+        // skip level number, since we already have that in our custom data
+        // below
+        char *skipPointer = strstr( fullBookmarkString, "_" );
+        
+        if( skipPointer != NULL ) {
+            
+            skipPointer = &( skipPointer[1] );
+            
+            partialBookmarkString = stringDuplicate( skipPointer );
+            }
+                
+        delete [] fullBookmarkString;
+        }
+    
+    if( partialBookmarkString == NULL ) {
+        partialBookmarkString = stringDuplicate( "default" );
         }
 
     SettingsManager::setHashingOn( false );
@@ -386,9 +427,9 @@ char *getCustomRecordedGameData() {
         customDataFormatString,
         levelNumber, tutorialOn,
         tutorialBookmark, mouseSpeedSetting,
-        startingPowers );
+        partialBookmarkString );
     
-    delete [] startingPowers;
+    delete [] partialBookmarkString;
 
     return result;
     }
@@ -398,6 +439,38 @@ char *getCustomRecordedGameData() {
 char *getHashSalt() {
     return stringDuplicate( SETTINGS_HASH_SALT );
     }
+
+
+
+// pass in NULL to init with default
+static void initStartingLevels( SimpleVector<unsigned int> *inSeeds = NULL ) {
+
+    if( inSeeds == NULL ) {
+        
+        // random seed
+        currentLevel = new Level( randSource.getRandomInt(),
+                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
+                                  levelNumber );
+    
+        populateLevelRiseStack();
+        }
+    else {
+        // first seed for current level
+        unsigned int firstSeed = *( inSeeds->getElement( 0 ) );
+
+        currentLevel = new Level( firstSeed, 
+                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                                  levelNumber );
+    
+        // rest of seeds into rise stack
+        inSeeds->deleteElement( 0 );
+        
+        populateLevelRiseStack( inSeeds );
+        }
+    
+    }
+
+
 
 
 
@@ -480,7 +553,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
     setCursorVisible( false );
-    grabInput( true );
+    grabInput( false );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -507,14 +580,16 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int tutorialBookmark = 0;
     float mouseSpeedSetting = 1.0f;
-    char *startingPowersString = 
+    char *partialBookmarkString = 
         new char[ strlen( inCustomRecordedGameData ) + 1 ];
     
+    currentLevel = NULL;
+
     
     int numRead = sscanf( inCustomRecordedGameData, 
                           customDataFormatString, &levelNumber,
                           &tutorialOn, &tutorialBookmark, &mouseSpeedSetting,
-                          startingPowersString );
+                          partialBookmarkString );
     
     PowerUpSet *startingPowers = NULL;
 
@@ -540,12 +615,60 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
             forceTutorialBookmark( tutorialBookmark );
             }        
 
-        if( strcmp( startingPowersString, "default" ) != 0 ) {
-            startingPowers = new PowerUpSet( startingPowersString );
+        if( strcmp( partialBookmarkString, "default" ) != 0 ) {
+            
+            // split at first _
+            char *splitPoint = strstr( partialBookmarkString, "_" );
+            
+            if( splitPoint != NULL ) {
+                
+                // first terminate at skip point for power string
+                splitPoint[0] = '\0';
+                startingPowers = new PowerUpSet( partialBookmarkString );
+
+                // then skip that point for stack string
+                
+                char *levelStackString = &( splitPoint[1] );
+            
+                int numStackElements = 0;
+                
+                sscanf( levelStackString, "levelStack%d_", &numStackElements );
+                
+                if( numStackElements > 0 ) {
+                    
+                    SimpleVector<unsigned int> seeds;
+                    
+                    for( int s=0; s<numStackElements; s++ ) {
+                        
+                        char *splitPoint = strstr( levelStackString, "_" );
+                        
+                        if( splitPoint != NULL ) {
+                            levelStackString = &( splitPoint[1] );
+                            
+                        
+                            unsigned int scannedNumber;
+                            int numRead = sscanf( levelStackString, "%u",
+                                                  &scannedNumber );
+                            if( numRead == 1 ) {
+                                
+                                seeds.push_back( scannedNumber );
+                                }
+                            }
+                        }
+                    
+                    if( seeds.size() > 0 ) {
+                        initStartingLevels( &seeds );
+                        }
+                    }
+    
+                }
+            
+            
+
             }
         }
     
-    delete [] startingPowersString;
+    delete [] partialBookmarkString;
 
 
     
@@ -564,12 +687,13 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     initTipDisplay();
     
 
-
-    currentLevel = new Level( NULL, NULL, NULL, NULL, NULL, NULL, 
-                              levelNumber );
+    if( currentLevel == NULL ) {
+        // not set by bookmark or recorded game
+        
+        initStartingLevels();
+        }
     
-    populateLevelRiseStack();
-    
+        
     if( startingPowers != NULL ) {
         currentLevel->setPlayerPowers( startingPowers );
 
@@ -593,7 +717,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         double msTime = Time::getCurrentTime();
         
         for( int i=0; i<100; i++ ) {
-            Level *l = new Level();
+            Level *l = new Level( randSource.getRandomInt() );
             delete l;
             }
         printf( "Contstructing levels took %f s\n",
@@ -871,13 +995,47 @@ static void saveLevelBookmark() {
     
         SettingsManager::setHashingOn( true );
         
-        SettingsManager::setSetting( "startAtLevel", levelNumber );
-        
+
+        // compose all starting information into a string
+        // thus, it can be hashed together
+
         char *powersAsString =
             currentLevel->getPlayerPowers()->getStringEncoding();
+        
+        SimpleVector<char*> levelSeedStrings;
+        
+        levelSeedStrings.push_back( 
+            autoSprintf( "%u", currentLevel->getSeed() ) );
+        
+        for( int i=levelRiseStack.size()-1; i>=0; i-- ) {
+            Level *stackLevel = *( levelRiseStack.getElement( i ) );
+                    
+            levelSeedStrings.push_back( 
+                autoSprintf( "%u", stackLevel->getSeed() ) );
+            }
 
-        SettingsManager::setSetting( "startingPowers", powersAsString );
+        char **stringArray = levelSeedStrings.getElementArray();
+        
+        char *levelStackString = join( stringArray, levelSeedStrings.size(),
+                                       "_" );
+        
+        for( int i=0; i<levelSeedStrings.size(); i++ ) {
+            delete [] stringArray[i];
+            }
+        delete [] stringArray;
+
+
+        char *bookmarkData = autoSprintf( "level%d_%s_levelStack%d_%s",
+                                          levelNumber,
+                                          powersAsString,
+                                          levelSeedStrings.size(),
+                                          levelStackString );
+        
         delete [] powersAsString;
+        delete [] levelStackString;
+        
+
+        SettingsManager::setSetting( "bookmark", bookmarkData );
                                      
 
         SettingsManager::setHashingOn( false );
@@ -1408,8 +1566,6 @@ void drawFrame( char inUpdate ) {
         updateLevelNumber();
         
         
-        saveLevelBookmark();
-            
 
         // populate stack here, in case we rise back out further
         // this prevents frame hiccups, because this happens
@@ -1423,6 +1579,8 @@ void drawFrame( char inUpdate ) {
             *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
         
         nextUp->decompactLevel();
+
+        saveLevelBookmark();
         }
     
 
@@ -1657,7 +1815,8 @@ void drawFrame( char inUpdate ) {
             
             
 
-            currentLevel = new Level( NULL, NULL, &c, &walkerSet,
+            currentLevel = new Level( randSource.getRandomInt(),
+                                      NULL, NULL, &c, &walkerSet, NULL,
                                       &musicNotes,
                                       setPlayerPowers,
                                       subLevelNumber,
