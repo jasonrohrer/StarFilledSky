@@ -1,3 +1,13 @@
+Version 11
+
+--Powers are not decayed at all when rising out of a chain of multiple 
+  sequential knock-downs.  Thus, at the bottom, you can pick your loadout that 
+  you will get to use when you eventually get back to where you were originally
+  knocked-down.
+
+
+
+
 Version 10   2011-February-13
 
 --Bouncing enemy bullets are now properly killed when enemy is killed (thanks 

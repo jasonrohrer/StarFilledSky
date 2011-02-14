@@ -1979,7 +1979,9 @@ void drawFrame( char inUpdate ) {
 
                 PowerUpSet passedUpSet( lastLevel->getPlayerPowers() );
                 
-                passedUpSet.decayPowers();
+                if( ! lastLevel->isKnockDown() ) {    
+                    passedUpSet.decayPowers();
+                    }
                 
                 nextHigherLevel->setPlayerPowers( &passedUpSet );
 
