@@ -637,6 +637,31 @@ void PowerUpSet::dropDownToSet( PowerUpSet *inNewSet ) {
 
 
 
+
+void PowerUpSet::sortPowersRight() {
+    char foundFlip = true;
+    
+    while( foundFlip ) {
+        foundFlip = false;
+        
+        for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
+            
+            if( mPowers[i].level > mPowers[i+1].level ) {
+                foundFlip = true;
+                
+                PowerUp p = mPowers[i];
+                
+                mPowers[i] = mPowers[i+1];
+                
+                mPowers[i+1] = p;                
+                }
+            }        
+        }
+    }
+
+
+
+
 void PowerUpSet::decayPowers() {
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( mPowers[i].level > 1 ) {

@@ -112,6 +112,10 @@ class PowerUpSet {
         void dropDownToSet( PowerUpSet *inNewSet );
         
 
+        // sort powers, putting highest-level ones on right
+        void sortPowersRight();
+        
+
         // whittle away at powers, bringing them eventually down to 1
         void decayPowers();
         

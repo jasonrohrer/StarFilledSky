@@ -704,6 +704,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         currentLevel->setPlayerPowers( startingPowers );
 
         // pass up to next level, too, decayed version
+        startingPowers->sortPowersRight();
         startingPowers->decayPowers();
         
         Level *nextHigherLevel = 
@@ -1979,6 +1980,13 @@ void drawFrame( char inUpdate ) {
 
                 PowerUpSet passedUpSet( lastLevel->getPlayerPowers() );
                 
+
+                // always sort on pass-up to encourage more pick-ups to 
+                // replace weaker powers
+                passedUpSet.sortPowersRight();
+                
+
+                // don't decay when passing up through knock-down chains
                 if( ! lastLevel->isKnockDown() ) {    
                     passedUpSet.decayPowers();
                     }
