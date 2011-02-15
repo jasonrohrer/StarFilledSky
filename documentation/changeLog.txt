@@ -17,7 +17,8 @@ Version 11
 --Knock-down hearts that are added depend on difficulty of level you are being 
   knocked down into (more help when knocked down into a harder level).
 
-
+--Fixed drawing glitch in power-set majority shading when a new token is pushed
+  in.
 
 
 Version 10   2011-February-13

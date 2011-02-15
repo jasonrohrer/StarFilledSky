@@ -820,7 +820,7 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
             mPowers[i].powerType != powerUpEmpty ) {
 
             // leave 71% of color in place, to match darkness of empty power
-            setDrawColor( 0, 0, 0, 0.29 );
+            setDrawColor( 0, 0, 0, 0.29 * fadeFactor);
         
             // don't cover power border or slot markers
             drawSquare( drawPos, 0.375 );
