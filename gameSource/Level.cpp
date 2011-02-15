@@ -1984,6 +1984,20 @@ Level::Level( unsigned int inSeed,
 
 
     int numValues = maxFloorTokenLevel - minFloorTokenLevel + 1;
+
+    
+    // cut off at 40 values, because on a geometric distribution with p=0.3, 
+    // the 41st value has a probability of 1 in 5million.
+    // at higher difficulty levels (like deep in floor tokens), we might
+    // have millions of values (mDifficultyLevel/2 * mFloorTokenLevel)
+    // and normalizing so many is really slow.  And we don't NEED them
+    // anyway, because the higher values will never be drawn.
+
+    if( numValues > 40 ) {
+        numValues = 40;
+        }
+    
+
     double *probabilities = new double[ numValues ];
     
     double pmfParam = 0.3;
