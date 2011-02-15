@@ -1982,6 +1982,13 @@ Level::Level( unsigned int inSeed,
         }
     
 
+    // prevent a level-zero (no enemies, ever) power-up-building exploit
+    if( mLevelNumber == 0 ) {
+        maxFloorTokenLevel = 1;
+        minFloorTokenLevel = 1;
+        }
+    
+
 
     int numValues = maxFloorTokenLevel - minFloorTokenLevel + 1;
 

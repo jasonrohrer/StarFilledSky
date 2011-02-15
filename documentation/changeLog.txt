@@ -20,6 +20,8 @@ Version 11
 --Fixed drawing glitch in power-set majority shading when a new token is pushed
   in.
 
+--Fixed potential level-0 difficulty-free power-up-building exploit.
+
 
 Version 10   2011-February-13
 
