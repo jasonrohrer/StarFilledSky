@@ -1,10 +1,5 @@
 Version 11
 
---Powers are not decayed at all when rising out of a chain of multiple 
-  sequential knock-downs.  Thus, at the bottom, you can pick your loadout that 
-  you will get to use when you eventually get back to where you were originally
-  knocked-down.
-
 --Powers are sorted with strongest to the right whenever they are passed 
   upwards to encourage additional pick-ups (which will replace weakest powers 
   on left).
@@ -18,6 +13,9 @@ Version 11
 --Changed to only replace weakest power (or any empty slots) with hearts on 
   knock-down, to make knock-down even less brutal and frustrating.  Also sort 
   powers strongest-right on knock-down to encourage pickups before rising.
+
+--Knock-down hearts that are added depend on difficulty of level you are being 
+  knocked down into (more help when knocked down into a harder level).
 
 
 

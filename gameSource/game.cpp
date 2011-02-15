@@ -1762,51 +1762,9 @@ void drawFrame( char inUpdate ) {
             
 
             
+            // wait to compute player powers until we know level difficulty
+            // (we give more hearts when knock-down to harder level happens)
             PowerUpSet *setPlayerPowers = NULL;
-            if( ! knockDown ) {
-                // entering, copy powers
-                setPlayerPowers = new PowerUpSet( 
-                    currentLevel->getPlayerPowers() );
-                }
-            else {
-                // cause player that we're entering to drop down in power
-
-                // replace left-most non-empty
-
-                // replace all empties with heart(1)
-
-                PowerUpSet newSet( currentLevel->getPlayerPowers() );
-
-                newSet.sortPowersRight();
-                
-
-                // if left-most is not empty, make it empty
-
-                if( newSet.mPowers[0].powerType != powerUpEmpty ) {
-                    newSet.mPowers[0].powerType = powerUpEmpty;
-                    newSet.mPowers[0].level = 0;     
-                    }
-
-
-                // now replace empty slots with 2 hearts each
-                for( int s=0; s<POWER_SET_SIZE; s++ ) {
-
-                    if( newSet.mPowers[s].powerType == powerUpEmpty ) {    
-                        newSet.mPowers[s].powerType = powerUpHeart;
-                        newSet.mPowers[s].level = 2;
-                        }
-                    
-                    }
-                
-                PowerUpSet *currentPowers = currentLevel->getPlayerPowers();
-                
-                // skip this animation if we're already at default set
-                if( !newSet.equals( currentPowers ) ) {        
-                    currentPowers->dropDownToSet( &newSet );
-                    }
-
-                setPlayerPowers = new PowerUpSet( &newSet );
-                }
             
             
 
@@ -1825,7 +1783,69 @@ void drawFrame( char inUpdate ) {
                                       parentFloorTokenLevel,
                                       parentDifficultyLevel );
 
+
+            if( ! knockDown ) {
+                // entering, copy powers
+                setPlayerPowers = new PowerUpSet( 
+                    lastLevel->getPlayerPowers() );
+                }
+            else {
+                // cause player that we're entering to drop down in power
+
+                // replace left-most non-empty
+
+                // replace all empties with heart(1)
+
+                PowerUpSet newSet( lastLevel->getPlayerPowers() );
+
+                newSet.sortPowersRight();
+                
+
+                // if left-most is not empty, make it empty
+
+                if( newSet.mPowers[0].powerType != powerUpEmpty ) {
+                    newSet.mPowers[0].powerType = powerUpEmpty;
+                    newSet.mPowers[0].level = 0;     
+                    }
+
+
+                // now replace empty slots with X hearts each, depending
+                // on difficulty
+
+                int newLevelDifficulty = currentLevel->getDifficultyLevel();
+                
+                int heartLevel = 2;
+                
+
+                if( newLevelDifficulty > 20 ) {
+                    heartLevel += newLevelDifficulty / 20;
+                    }
+
+
+                for( int s=0; s<POWER_SET_SIZE; s++ ) {
+
+                    if( newSet.mPowers[s].powerType == powerUpEmpty ) {    
+                        newSet.mPowers[s].powerType = powerUpHeart;
+                        newSet.mPowers[s].level = heartLevel;
+                        }
+                    
+                    }
+                
+                PowerUpSet *currentPowers = lastLevel->getPlayerPowers();
+                
+                // skip this animation if we're already at default set
+                if( !newSet.equals( currentPowers ) ) {        
+                    currentPowers->dropDownToSet( &newSet );
+                    }
+
+                setPlayerPowers = new PowerUpSet( &newSet );
+                }
+
+
+            currentLevel->setPlayerPowers( setPlayerPowers );
+
             delete setPlayerPowers;
+
             
 
             currentLevel->pushAllMusicIntoPlayer();
@@ -1972,10 +1992,7 @@ void drawFrame( char inUpdate ) {
                 passedUpSet.sortPowersRight();
                 
 
-                // don't decay when passing up through knock-down chains
-                if( ! lastLevel->isKnockDown() ) {    
-                    passedUpSet.decayPowers();
-                    }
+                passedUpSet.decayPowers();
                 
                 nextHigherLevel->setPlayerPowers( &passedUpSet );
 
