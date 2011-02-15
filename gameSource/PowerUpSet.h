@@ -116,7 +116,8 @@ class PowerUpSet {
         void sortPowersRight();
         
 
-        // whittle away at powers, bringing them eventually down to 1
+        // whittle away at left-most non-empty power, 
+        // bringing it eventually down to empty
         void decayPowers();
         
 

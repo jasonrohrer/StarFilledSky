@@ -663,11 +663,26 @@ void PowerUpSet::sortPowersRight() {
 
 
 void PowerUpSet::decayPowers() {
-    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+    
+    int i=0;
+    for( i=0; i<POWER_SET_SIZE; i++ ) {
+        if( mPowers[i].powerType != powerUpEmpty ) {
+            break;
+            }
+        }
+    
+    if( i < POWER_SET_SIZE ) {
         if( mPowers[i].level > 1 ) {
             mPowers[i].level -= 1;
             }
+        else {
+            mPowers[i].level = 0;
+            mPowers[i].powerType = powerUpEmpty;
+            }
         }
+    
+    // else entire set is empty
+
     }
 
 
