@@ -15,6 +15,11 @@ Version 11
 --Changed to only decay the weakest power in the set (encourages picking up new
   powers to protect a big power that you have built up).
 
+--Changed to only replace weakest power (or any empty slots) with hearts on 
+  knock-down, to make knock-down even less brutal and frustrating.  Also sort 
+  powers strongest-right on knock-down to encourage pickups before rising.
+
+
 
 
 Version 10   2011-February-13
