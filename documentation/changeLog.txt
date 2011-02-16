@@ -33,6 +33,8 @@ Version 11
 --Changed behavior of Burst power so that it does not act effectively as a 
   range boost, and increased its basic explosion pattern on L1 to compensate.
 
+--Eliminated bounce distance boost for bullets that already have extended 
+  range to deal with the overpowered beekeeper combo (thanks Jimmy Andrews).
 
 
 

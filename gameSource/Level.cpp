@@ -3506,10 +3506,14 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 else {
                     b->bouncesLeft --;
                     
-                    // give bullet a small distance boost (20% of original)
-                    // so that it can live out more of its bounces
-                    b->distanceLeft += b->startDistance * 0.20;
 
+                    if( b->startDistance < 8 ) {
+                        // give bullet a small distance boost (1 unit)
+                        // so that it can live out more of its bounces
+                        // when it is underranged
+                        b->distanceLeft += 1;
+                        }
+                    
                     doublePair oldPos = 
                         sub( b->position, b->velocity );        
 
