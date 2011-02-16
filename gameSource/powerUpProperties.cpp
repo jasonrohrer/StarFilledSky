@@ -286,6 +286,14 @@ int getBounce( PowerUpSet *inSet ) {
 
 
 
+int getCornering( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpCornering );
+    
+    return totalLevel;
+    }
+
+
+
 float explodeParam = 15;
 
 float explodeCurveOffset = ( - 1 / (1 + explodeParam) ) + 0.02;

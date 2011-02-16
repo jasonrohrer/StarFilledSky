@@ -46,6 +46,7 @@ Version 11
 
 --Added a tip about ESC to end playback.
 
+--Added Cornering bullet power-up.
 
 
 

@@ -1825,6 +1825,8 @@ Level::Level( unsigned int inSeed,
                             // invert enemy colors on level 0 or lower 
                             new EnemySprite( (mLevelNumber <= 0) ),
                             p,
+                            // cornering start direction for bullets
+                            false,
                             maxHealth,
                             maxHealth,
                             // no hearts knocked off yet
@@ -3406,14 +3408,62 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         
-        b->justBounced = false;
 
         doublePair oldBulletPos = b->position;
         
         b->position = add( b->position, b->velocity );        
         
+
+        // avoid cornering on step immediately after a bounce, so we
+        // can bounce out of the wall before turning back toward it
+        if( b->cornering > 0 && ! b->justBounced ) {
+            double oldDistanceTraveled = b->startDistance - b->distanceLeft;
+
+            double newDistanceTraveled = oldDistanceTraveled + b->speed;
+
+            double distancePerCorner = b->startDistance / (b->cornering + 1);
+
+            int newNumCornersPassed = 
+                (int)( newDistanceTraveled / distancePerCorner );
+
+
+            if( newDistanceTraveled < b->startDistance &&
+                newNumCornersPassed > b->numCornersTaken ) {
+                
+                // still some distance to go, and we just passed a corner point
+                b->numCornersTaken ++;
+                
+
+                if( b->numCornersTaken % 2 == 0 ) {
+                    // switch direction on even corners
+                    b->cornerDir = ! b->cornerDir;
+                    }
+
+                // just passed another corner point
+
+                // stay on that point one more step
+                b->position = oldBulletPos;
+                
+                // change direction
+                double oldVx = b->velocity.x;
+
+                if( b->cornerDir ) {
+                    b->velocity.x = - b->velocity.y;
+                    b->velocity.y = oldVx;
+                    }
+                else {
+                    b->velocity.x = b->velocity.y;
+                    b->velocity.y = - oldVx;
+                    }
+                }
+            }
+        
+        
         b->distanceLeft -= b->speed;
         
+        b->justBounced = false;
+
+
         
         GridPos p = getGridPos( b->position );
 
@@ -3510,10 +3560,16 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     b->bouncesLeft --;
                     b->justBounced = true;
 
-                    if( b->startDistance < 8 ) {
+                    if( b->startDistance < 8 
+                        && b->cornering == 0 ) {
                         // give bullet a small distance boost (1 unit)
                         // so that it can live out more of its bounces
                         // when it is underranged
+
+                        // but don't do it for cornering bullets, since
+                        // this will screw up their "next corner point"
+                        // calculations, which are based on distanceLeft
+
                         b->distanceLeft += 1;
                         }
                     
@@ -4329,8 +4385,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             addBullet( e->position, aimPos, 
                        e->powers,
                        mPlayerPos,
+                       e->corneringDir,
                        bulletSpeed, false, e->bulletMarker );
             
+            e->corneringDir = ! e->corneringDir;
 
             //e->stepsTilNextBullet = e->stepsBetweenBullets;
             e->stepsTilNextBullet = getStepsBetweenBullets( e->powers );
@@ -6156,6 +6214,7 @@ void Level::addBullet( doublePair inPosition,
                        doublePair inAimPosition,
                        PowerUpSet *inPowers,
                        doublePair inHeatSeekWaypoint,
+                       char inCorneringDir,
                        double inSpeed, char inPlayerBullet,
                        char inEnemyBulletMarker ) {
 
@@ -6170,11 +6229,55 @@ void Level::addBullet( doublePair inPosition,
     double distance = getBulletDistance( inPowers );    
     
     int bounce = getBounce( inPowers );
+
+    int cornering = getCornering( inPowers );
     
     double explode = getExplode( inPowers );
 
     float size = getBulletSize( inPowers );
 
+    
+    // only use inCorneringDir for center bullet (whether or not spread)
+    // so center bullet goes back and forth between cornering with 
+    // left and right pack
+    // but left and right pack always move exactly the same
+    // reagardless of inCorneringDir
+    char cornerDir = false;
+
+    
+    if( cornering > 0 ) {
+        // compensate for net distance lost by cornering
+        
+        double distanceFraction;
+        
+
+        // parameter based on cornering pattern
+        int B = (int)( ( cornering + 2 ) / 2 );
+    
+        int cornerSegment = ( cornering - 3 ) % 4;
+        
+        if( cornerSegment == 0 || cornerSegment == 1 ) {
+            
+            // bullet's final position ends up along firing line
+            // but takes jogs to get there
+            
+            distanceFraction = B;
+            }
+        else {
+            distanceFraction = sqrt( B * B + 1 );
+            }
+        
+        distanceFraction /= ( cornering + 1 );
+        
+        
+        // extend to compensate
+        distance /= distanceFraction;
+
+
+        // compensate for distance lost at each corner 
+        // (bullet pauses at corner)
+        distance += cornering * inSpeed;
+        }
     
 
     // half distance so that explosion *completes* tradjectory instead
@@ -6256,6 +6359,9 @@ void Level::addBullet( doublePair inPosition,
                      bounce,
                      bounce,
                      false,
+                     cornering,
+                     0,
+                     !cornerDir,
                      explode,
                      inPlayerBullet, size, inEnemyBulletMarker, false, false };
         mBullets.push_back( b );
@@ -6279,6 +6385,9 @@ void Level::addBullet( doublePair inPosition,
                       bounce,
                       bounce,
                       false,
+                      cornering,
+                      0,
+                      cornerDir,
                       explode,
                       inPlayerBullet, size, inEnemyBulletMarker };
         mBullets.push_back( br );
@@ -6314,6 +6423,9 @@ void Level::addBullet( doublePair inPosition,
                              bounce,
                              bounce,
                              false,
+                             cornering,
+                             0,
+                             !cornerDir,
                              explode,
                              inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( b );
@@ -6337,6 +6449,9 @@ void Level::addBullet( doublePair inPosition,
                               bounce,
                               bounce,
                               false,
+                              cornering,
+                              0,
+                              cornerDir,
                               explode,
                               inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( br );
@@ -6355,6 +6470,10 @@ void Level::addBullet( doublePair inPosition,
                  bounce,
                  bounce,
                  false,
+                 cornering,
+                 0,
+                 // use passed-in dir only for this bullet
+                 inCorneringDir,
                  explode,
                  inPlayerBullet, size, inEnemyBulletMarker };
     mBullets.push_back( b );

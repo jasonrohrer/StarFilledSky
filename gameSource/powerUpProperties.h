@@ -46,5 +46,7 @@ float getBulletDistance( PowerUpSet *inSet );
 
 int getBounce( PowerUpSet *inSet );
 
+int getCornering( PowerUpSet *inSet );
+
 
 float getExplode( PowerUpSet *inSet );

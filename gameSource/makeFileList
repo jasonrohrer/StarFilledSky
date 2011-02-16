@@ -72,6 +72,7 @@ graphics/powerUpSpread.tga \
 graphics/powerUpHeatSeek.tga \
 graphics/powerUpBulletDistance.tga \
 graphics/powerUpBounce.tga \
+graphics/powerUpCornering.tga \
 graphics/powerUpExplode.tga \
 graphics/bullet1.tga \
 graphics/bullet2.tga \

@@ -51,6 +51,8 @@ void freeSpriteBank();
     F(powerUpHeatSeek), \
     F(powerUpBulletDistance), \
     F(powerUpBounce), \
+    F(powerUpCornering), \
+    /*  explode is used to mark the end of the power-ups */ \
     F(powerUpExplode), \
     F(enemyBehaviorBorder), \
     F(enemyBehaviorFollow), \

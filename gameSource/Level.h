@@ -45,6 +45,9 @@ typedef struct Bullet {
         int startBounces;
         int bouncesLeft;
         char justBounced;
+        int cornering;
+        int numCornersTaken;
+        char cornerDir;
         double explode;
         char playerFlag;
         float size;
@@ -105,6 +108,7 @@ typedef struct Enemy {
         int stepsTilNextBullet;
         EnemySprite *sprite;
         PowerUpSet *powers;
+        int corneringDir;
         int health;
         int lastMaxHealth;
         // count how many hearts have been knocked off this enemy
@@ -351,6 +355,7 @@ class Level {
                         doublePair inAimPosition,
                         PowerUpSet *inPowers,
                         doublePair inHeatSeekWaypoint,
+                        char inCorneringDir,
                         double inSpeed, char inPlayerBullet,
                         char inEnemyBulletMarker = -1 );
 

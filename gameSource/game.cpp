@@ -128,6 +128,8 @@ char shooting = false;
 int stepsTilNextBullet = 0;
 int stepsBetweenBullets = 5;
 
+char playerCorneringDir = false;
+
 char entering = false;
 
 
@@ -2352,8 +2354,10 @@ void drawFrame( char inUpdate ) {
             currentLevel->addBullet( playerPos, mousePos, 
                                      playerPowers,
                                      mousePos,
+                                     playerCorneringDir,
                                      bulletSpeed, true );
             
+            playerCorneringDir = ! playerCorneringDir;
 
             //stepsTilNextBullet = stepsBetweenBullets;
             stepsTilNextBullet = getStepsBetweenBullets( playerPowers );
