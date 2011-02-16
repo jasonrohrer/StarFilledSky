@@ -304,7 +304,8 @@ class Level {
 
 
         // copied internally
-        void setPlayerPowers( PowerUpSet *inPowers );
+        void setPlayerPowers( PowerUpSet *inPowers, 
+                              char inResetStaringSet=false );
         
 
         

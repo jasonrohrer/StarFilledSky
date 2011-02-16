@@ -5893,12 +5893,16 @@ RandomWalkerSet Level::getLevelWalkerSet() {
 
 
 
-void Level::setPlayerPowers( PowerUpSet *inPowers ) {
+void Level::setPlayerPowers( PowerUpSet *inPowers, char inResetStaringSet ) {
     mPlayerPowers->copySet( inPowers );
 
     // keep max player health updated to what is specified by new set
     mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
     mPlayerHealth = mPlayerHealthMax;
+
+    if( inResetStaringSet ) {
+        mStartingPlayerPowers->copySet( inPowers );
+        }
     }
 
 

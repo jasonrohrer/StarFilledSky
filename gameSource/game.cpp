@@ -1842,7 +1842,7 @@ void drawFrame( char inUpdate ) {
                 }
 
 
-            currentLevel->setPlayerPowers( setPlayerPowers );
+            currentLevel->setPlayerPowers( setPlayerPowers, true );
 
             delete setPlayerPowers;
 
