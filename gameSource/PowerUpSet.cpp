@@ -503,7 +503,14 @@ void PowerUpSet::pushPower( PowerUp inPower, doublePair inPowerPos ) {
 int PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
     
     // what we should be reduced to as a result of this knock
-    PowerUpSet newSet( this );
+    PowerUpSet newSet;
+
+    // DON'T take pending pushes into account when copying set to make newSet
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        newSet.mPowers[i] = mPowers[i];
+        }
+
+
     
     int numLeftToKnock = inNumToKnock;
     
@@ -529,10 +536,7 @@ int PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
             }
         }
     
-    if( inInstant ) {
-        copySet( &newSet );
-        }
-    else if( ! equals( &newSet ) ) {
+    if( ! equals( &newSet ) ) {
         // show difference between two sets dropping off
 
         
@@ -581,9 +585,18 @@ int PowerUpSet::knockOffHearts( int inNumToKnock, char inInstant ) {
                 }
             }
 
-        // switch to new set underneath dropping-off tokens
-        copySet( &newSet );
         }
+
+    // switch to new set underneath dropping-off tokens, or if drop-off is
+    // instant
+    // don't use copySet, though, because it screws up a pending push
+    // copySet( &newSet );
+
+    for( int i=0; i<POWER_SET_SIZE; i++ ) {
+        mPowers[i] = newSet.mPowers[i];
+        }
+
+
     
     return inNumToKnock - numLeftToKnock;
     }

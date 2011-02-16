@@ -3862,6 +3862,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         else {
             mPlayerPowers->knockOffHearts( totalPlayerHealthKnock, false );
+            
+            // report it to outside
+            playerHeartsKnockedCallback( totalPlayerHealthKnock );
+            
             mPlayerHealth = getMaxHealth( mPlayerPowers ) + 1;
             }
         }

@@ -3338,6 +3338,28 @@ void drawString( const char *inString ) {
     }
 
 
+
+
+// receive callback from level when hearts knocked
+void playerHeartsKnockedCallback( int inNumKnockedOff ) {
+    Level *nextAbove = getNextAbove();
+
+    
+    if( currentLevel->isInsidePlayer() ) {
+        nextAbove->getPlayerPowers()->knockOffHearts( inNumKnockedOff, false );
+        }
+    else {
+        // do it instantly, since it's not visible
+        nextAbove->getPlayerPowers()->knockOffHearts( inNumKnockedOff, true );
+        }
+
+    // keep player health updated
+    nextAbove->frozenUpdate();
+    }
+
+
+
+
 /*
 // gets the next buffer-full of sound samples from the game engine
 // inBuffer should be filled with stereo Sint16 samples, little endian,

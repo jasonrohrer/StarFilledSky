@@ -24,6 +24,15 @@
 // as end cap (worst case)
 #define MAX_LEVEL_SQUARES 7030
 
+
+
+// callback implemented outside level for reporting when player hearts
+// are knocked off
+void playerHeartsKnockedCallback( int inNumKnockedOff );
+
+
+
+
 typedef struct Bullet {
         unsigned int uniqueID;
         doublePair position;
