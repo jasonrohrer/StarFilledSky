@@ -7,8 +7,8 @@ Version 11
 --Fixed delay and excess cpu/memory usage when entering high-level power-up 
   tokens (thanks Jimmy Andrews).
 
---Changed to only decay the weakest power in the set (encourages picking up new
-  powers to protect a big power that you have built up).
+--Changed to only decay the weakest two powers in the set (encourages picking 
+  up new powers to protect a big power that you have built up).
 
 --Changed to only replace weakest power (or any empty slots) with hearts on 
   knock-down, to make knock-down even less brutal and frustrating.  Also sort 

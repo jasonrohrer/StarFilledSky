@@ -674,28 +674,61 @@ void PowerUpSet::sortPowersRight() {
 
 
 
+void decayOnePower( PowerUp *inPower ) {
+    // never decay hearts
+    if( inPower->powerType == powerUpHeart ) {
+        return;
+        }
+    
+
+    if( inPower->level > 1 ) {
+
+        // variable decay rate, higher for higher powers
+            
+        int decayRate = 1;
+        
+        if( inPower->level > 5 ) {
+            decayRate +=
+                ( inPower->level - 5 ) / 5;
+            }
+        
+
+        inPower->level -= decayRate;
+        }
+    else {
+        inPower->level = 0;
+        inPower->powerType = powerUpEmpty;
+        }
+    }
+
+
+
 
 void PowerUpSet::decayPowers() {
     
-    int i=0;
+    // skip any empty slots
+    int i;
     for( i=0; i<POWER_SET_SIZE; i++ ) {
-        if( mPowers[i].powerType != powerUpEmpty && 
-            mPowers[i].powerType != powerUpHeart ) {
+        if( mPowers[i].powerType != powerUpEmpty ) {
             break;
             }
         }
     
     if( i < POWER_SET_SIZE ) {
-        if( mPowers[i].level > 1 ) {
-            mPowers[i].level -= 1;
+        decayOnePower( &( mPowers[i] ) );
+        
+        
+        // decay a second-weakest power too
+        i++;
+
+        if( i < POWER_SET_SIZE ) {
+            decayOnePower( &( mPowers[i] ) );
             }
-        else {
-            mPowers[i].level = 0;
-            mPowers[i].powerType = powerUpEmpty;
-            }
+        // else rest of set is empty or hearts
+        
         }
     
-    // else entire set is empty
+    // else entire set is empty or hearts
 
     }
 
