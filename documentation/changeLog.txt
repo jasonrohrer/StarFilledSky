@@ -36,6 +36,8 @@ Version 11
 --Eliminated bounce distance boost for bullets that already have extended 
   range to deal with the overpowered beekeeper combo (thanks Jimmy Andrews).
 
+--Changed to decay high-level powers more dramatically than weaker powers.
+
 
 
 Version 10   2011-February-13
