@@ -659,7 +659,13 @@ void PowerUpSet::sortPowersRight() {
         
         for( int i=0; i<POWER_SET_SIZE - 1; i++ ) {
             
-            if( mPowers[i].level > mPowers[i+1].level ) {
+            if( mPowers[i].level > mPowers[i+1].level 
+                ||
+                // move hearts to the left of any powers that have equal
+                // level to the hearts
+                ( mPowers[i].level == mPowers[i+1].level &&
+                  mPowers[i].powerType != powerUpHeart &&
+                  mPowers[i+1].powerType == powerUpHeart ) ) {
                 foundFlip = true;
                 
                 PowerUp p = mPowers[i];

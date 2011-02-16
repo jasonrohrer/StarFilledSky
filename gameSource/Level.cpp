@@ -1377,16 +1377,16 @@ Level::Level( unsigned int inSeed,
         // pea shooter, is much more serious this way
         // give two heart token (to give player default of 3 health)
         mPlayerPowers = new PowerUpSet( 0 );
+        mPlayerPowers->mPowers[0].powerType = powerUpHeart;
+        mPlayerPowers->mPowers[0].level = 1;
         mPlayerPowers->mPowers[1].powerType = powerUpHeart;
         mPlayerPowers->mPowers[1].level = 1;
-        mPlayerPowers->mPowers[2].powerType = powerUpHeart;
-        mPlayerPowers->mPowers[2].level = 1;
         
         if( ! inIsKnockDown ) {
             // make basic bullets faster, so shooting feels better at
             // start of game
-            mPlayerPowers->mPowers[0].powerType = powerUpBulletSpeed;
-            mPlayerPowers->mPowers[0].level = 1;
+            mPlayerPowers->mPowers[2].powerType = powerUpBulletSpeed;
+            mPlayerPowers->mPowers[2].level = 1;
             }
         }
     
