@@ -48,6 +48,7 @@ Version 11
 
 --Added Cornering bullet power-up.
 
+--Added Sticky bullet power-up.
 
 
 

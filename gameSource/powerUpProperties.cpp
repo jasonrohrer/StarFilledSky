@@ -294,6 +294,30 @@ int getCornering( PowerUpSet *inSet ) {
 
 
 
+
+float bulletStickyParam = 10;
+
+
+
+int getStickySteps( PowerUpSet *inSet ) {
+    int totalLevel = getTotalLevel( inSet, powerUpRapidFire );
+
+    if( totalLevel == 0 ) {
+        return 0;
+        }
+    
+    
+    // map to 0:1
+    // 0 at level 1
+    totalLevel --;
+    float boundedSticky = totalLevel / ( totalLevel + bulletStickyParam );
+
+    // max = map to 60:180, 3 seconds max at 60 fps
+    return (int)( ( 120 * boundedSticky + 60  ) / frameRateFactor );
+    }
+
+
+
 float explodeParam = 15;
 
 float explodeCurveOffset = ( - 1 / (1 + explodeParam) ) + 0.02;

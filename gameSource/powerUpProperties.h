@@ -48,5 +48,7 @@ int getBounce( PowerUpSet *inSet );
 
 int getCornering( PowerUpSet *inSet );
 
+int getStickySteps( PowerUpSet *inSet );
+
 
 float getExplode( PowerUpSet *inSet );

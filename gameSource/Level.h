@@ -48,6 +48,7 @@ typedef struct Bullet {
         int cornering;
         int numCornersTaken;
         char cornerDir;
+        int stickySteps;
         double explode;
         char playerFlag;
         float size;

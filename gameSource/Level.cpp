@@ -3410,16 +3410,28 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
 
         doublePair oldBulletPos = b->position;
+
+        if( b->distanceLeft > 0 ) {
+            b->position = add( b->position, b->velocity );        
+
+            b->distanceLeft -= b->speed;
+            }
+        else {
+            // at end
+            // sticky?
+
+            if( b->stickySteps > 0 ) {
+                b->stickySteps --;
+                }
+            }
         
-        b->position = add( b->position, b->velocity );        
         
+
 
         // avoid cornering on step immediately after a bounce, so we
         // can bounce out of the wall before turning back toward it
         if( b->cornering > 0 && ! b->justBounced ) {
-            double oldDistanceTraveled = b->startDistance - b->distanceLeft;
-
-            double newDistanceTraveled = oldDistanceTraveled + b->speed;
+            double newDistanceTraveled = b->startDistance - b->distanceLeft;
 
             double distancePerCorner = b->startDistance / (b->cornering + 1);
 
@@ -3459,7 +3471,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             }
         
         
-        b->distanceLeft -= b->speed;
         
         b->justBounced = false;
 
@@ -3492,8 +3503,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             hit = true;
             }
         // for in-bound bullets, only consider those that are not past
-        // the end of their life (or are exploding this step)
-        else if( b->distanceLeft > 0 || b->explode > 0 ){
+        // the end of their life (or are exploding this step) (or are sticky)
+        else if( b->distanceLeft > 0 || b->explode > 0 || b->stickySteps > 0 ){
             // in bounds of tiles, safe to look up square index
             int squareIndex = mSquareIndices[p.y][p.x];
 
@@ -3709,6 +3720,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                         }
                                     }
                                 
+                                
+                                int stickyEndSteps = 
+                                    (int)( 6 / frameRateFactor );
+
                                 // force-finish bullets that enemy fired
                                 for( int b=0; b<mBullets.size(); b++ ) {
                                     Bullet *bullet =
@@ -3726,6 +3741,25 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                         if( bullet->distanceLeft > 1 ) {
                                             // curtail it's tradjectory
                                             bullet->distanceLeft = 1;
+                                            
+                                            // no sticky at all
+                                            bullet->stickySteps = 0;
+                                            }
+                                        else if( bullet->distanceLeft > 0 ) {
+                                            // not sticky yet
+                                            
+                                            // no sticky at all
+                                            bullet->stickySteps = 0;
+                                            }
+                                        else if( bullet->distanceLeft <= 0 
+                                                 &&
+                                                 bullet->stickySteps > 
+                                                 stickyEndSteps ) {
+                                            // currently sticky 
+
+                                            // curtail it's sticky steps
+                                            bullet->stickySteps =
+                                                stickyEndSteps;
                                             }
                                         }
                                     }
@@ -3765,7 +3799,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
 
 
-        if( hit || b->distanceLeft <= 0 ) {
+        if( hit || ( b->distanceLeft <= 0 && b->stickySteps == 0 ) ) {
             // bullet done
             
             if( bulletOnScreen &&
@@ -4871,6 +4905,29 @@ void Level::frozenUpdate() {
 
 
 
+static float getBulletFade( Bullet *inB ) {
+    
+    float fade = 1;
+    
+    if( inB->explode == 0 ) {  
+
+        int stickyEndSteps = (int)( 6 / frameRateFactor );
+                  
+        if(  inB->distanceLeft < 1 && inB->stickySteps == 0 ) {
+            fade = inB->distanceLeft;
+            }
+        else if( inB->distanceLeft <= 0 && 
+                 inB->stickySteps > 0 && inB->stickySteps < stickyEndSteps ) {
+
+
+            fade = inB->stickySteps / (float)stickyEndSteps;
+            }
+        }
+    return fade;
+    }
+
+
+
         
 void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
@@ -5173,12 +5230,8 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         shadowHitCounts[ gridPos.y ][ gridPos.x ]++;
                         
 
-                        float fade = 1;
-                    
-                        if( b->explode == 0 && b->distanceLeft < 1 ) {
-                            fade = b->distanceLeft;
-                            }
-                    
+                        float fade = getBulletFade( b );
+                                        
                         setDrawColor( 1, 1, 1, fade * shadowLevel );
                         
                         drawBulletShadow( b->size, b->position );
@@ -5296,14 +5349,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
         
-            float fade = 1;
-        
-            if( b->explode == 0 && b->distanceLeft < 1 ) {
-                fade = b->distanceLeft;
-
-                if( fade <= 0.5 ) {
-                    b->halfFadedOut = true;
-                    }
+            float fade = getBulletFade( b );
+                    
+            if( fade <= 0.5 ) {
+                b->halfFadedOut = true;
                 }
 
             
@@ -6232,6 +6281,8 @@ void Level::addBullet( doublePair inPosition,
 
     int cornering = getCornering( inPowers );
     
+    int stickySteps = getStickySteps( inPowers );
+
     double explode = getExplode( inPowers );
 
     float size = getBulletSize( inPowers );
@@ -6362,6 +6413,7 @@ void Level::addBullet( doublePair inPosition,
                      cornering,
                      0,
                      !cornerDir,
+                     stickySteps,
                      explode,
                      inPlayerBullet, size, inEnemyBulletMarker, false, false };
         mBullets.push_back( b );
@@ -6388,6 +6440,7 @@ void Level::addBullet( doublePair inPosition,
                       cornering,
                       0,
                       cornerDir,
+                      stickySteps,
                       explode,
                       inPlayerBullet, size, inEnemyBulletMarker };
         mBullets.push_back( br );
@@ -6426,6 +6479,7 @@ void Level::addBullet( doublePair inPosition,
                              cornering,
                              0,
                              !cornerDir,
+                             stickySteps,
                              explode,
                              inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( b );
@@ -6452,6 +6506,7 @@ void Level::addBullet( doublePair inPosition,
                               cornering,
                               0,
                               cornerDir,
+                              stickySteps,
                               explode,
                               inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( br );
@@ -6474,6 +6529,7 @@ void Level::addBullet( doublePair inPosition,
                  0,
                  // use passed-in dir only for this bullet
                  inCorneringDir,
+                 stickySteps,
                  explode,
                  inPlayerBullet, size, inEnemyBulletMarker };
     mBullets.push_back( b );

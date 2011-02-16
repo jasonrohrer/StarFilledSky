@@ -67,6 +67,7 @@ powerUpHeatSeek_tip       "HEAT SEEK"
 powerUpBulletDistance_tip "BULLET RANGE"
 powerUpBounce_tip         "BOUNCE"
 powerUpCornering_tip      "BULLET CORNERING"
+powerUpSticky_tip         "STICKY"
 powerUpExplode_tip        "BURST"
 
 powerUpHeartSetCombo_tipPart1  "SURVIVE"
