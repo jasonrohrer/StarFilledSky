@@ -1,3 +1,6 @@
+writeFailed "Error:  game folder is read-only"
+
+
 
 tutorial_move "W A S D	to move"
 

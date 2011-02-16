@@ -42,6 +42,10 @@ Version 11
 
 --Version number is now included in recorded game files.
 
+--Checks against read-only game folder at startup.
+
+
+
 
 
 Version 10   2011-February-13
