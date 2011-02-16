@@ -727,6 +727,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         startingPowers->sortPowersRight();
         startingPowers->decayPowers();
         
+        // sort right again, incase gap left by left-most hearts
+        startingPowers->sortPowersRight();
+
         Level *nextHigherLevel = 
             *( levelRiseStack.getElement( levelRiseStack.size() - 1 ) );
 
@@ -2014,6 +2017,10 @@ void drawFrame( char inUpdate ) {
 
                 passedUpSet.decayPowers();
                 
+                // sort right again, incase gap left by left-most hearts
+                passedUpSet.sortPowersRight();
+
+
                 nextHigherLevel->setPlayerPowers( &passedUpSet );
 
                 powersPasssedUp = true;
