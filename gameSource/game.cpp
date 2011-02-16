@@ -3342,9 +3342,16 @@ void drawString( const char *inString ) {
 
 // receive callback from level when hearts knocked
 void playerHeartsKnockedCallback( int inNumKnockedOff ) {
+    
+    // don't perpetuate knock-off during zoom-out
+
+    if( zoomDirection == -1 && zoomProgress > 0 ) {
+        return;
+        }
+
     Level *nextAbove = getNextAbove();
 
-    
+
     if( currentLevel->isInsidePlayer() ) {
         nextAbove->getPlayerPowers()->knockOffHearts( inNumKnockedOff, false );
         }
