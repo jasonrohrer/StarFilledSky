@@ -44,6 +44,7 @@ typedef struct Bullet {
         double distanceLeft;
         int startBounces;
         int bouncesLeft;
+        char justBounced;
         double explode;
         char playerFlag;
         float size;

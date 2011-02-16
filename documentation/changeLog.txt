@@ -38,6 +38,10 @@ Version 11
 
 --Changed to decay high-level powers more dramatically than weaker powers.
 
+--Fixed heatSeek + bounce combo that was tunneling through walls.
+
+
+
 
 
 Version 10   2011-February-13

@@ -3336,7 +3336,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         Bullet *b = mBullets.getElement( i );
         
-        if( b->heatSeek > 0 ) {
+        // avoid heat seek on step immediately after a bounce, so we
+        // can bounce out of the wall before turning back toward it
+        if( b->heatSeek > 0 && ! b->justBounced ) {
 
             // vector toward closest target
             doublePair closestTarget = mPlayerPos;
@@ -3404,6 +3406,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
             }
         
+        b->justBounced = false;
 
         doublePair oldBulletPos = b->position;
         
@@ -3505,7 +3508,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     }
                 else {
                     b->bouncesLeft --;
-                    
+                    b->justBounced = true;
 
                     if( b->startDistance < 8 ) {
                         // give bullet a small distance boost (1 unit)
@@ -6252,6 +6255,7 @@ void Level::addBullet( doublePair inPosition,
                      distance,
                      bounce,
                      bounce,
+                     false,
                      explode,
                      inPlayerBullet, size, inEnemyBulletMarker, false, false };
         mBullets.push_back( b );
@@ -6274,6 +6278,7 @@ void Level::addBullet( doublePair inPosition,
                       distance,
                       bounce,
                       bounce,
+                      false,
                       explode,
                       inPlayerBullet, size, inEnemyBulletMarker };
         mBullets.push_back( br );
@@ -6308,6 +6313,7 @@ void Level::addBullet( doublePair inPosition,
                              distance,
                              bounce,
                              bounce,
+                             false,
                              explode,
                              inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( b );
@@ -6330,6 +6336,7 @@ void Level::addBullet( doublePair inPosition,
                               distance,
                               bounce,
                               bounce,
+                              false,
                               explode,
                               inPlayerBullet, size, inEnemyBulletMarker };
                 mBullets.push_back( br );
@@ -6347,6 +6354,7 @@ void Level::addBullet( doublePair inPosition,
                  distance,
                  bounce,
                  bounce,
+                 false,
                  explode,
                  inPlayerBullet, size, inEnemyBulletMarker };
     mBullets.push_back( b );
