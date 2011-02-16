@@ -2043,9 +2043,42 @@ void drawFrame( char inUpdate ) {
                 }
             }
         
+        if( !powersPasssedUp ) {
+            // no set passed up or decayed
+            
+            // make sure that next-higher self does not have more hearts
+            // than we have (to prevent hearts from lasting forever through
+            // rising
+    
+            PowerUpSet *nextHigherPowers = nextHigherLevel->getPlayerPowers();
+        
+            PowerUpSet *lastLevelPowers = lastLevel->getPlayerPowers();
+        
+
+            int nextHigherHearts = 
+                nextHigherPowers->getLevelSum( powerUpHeart );
+            
+            int lastLevelHearts = lastLevelPowers->getLevelSum( powerUpHeart );
+        
+
+            if( nextHigherHearts > lastLevelHearts ) {
+            
+                // do it instantly, because it's not visible
+                nextHigherPowers->knockOffHearts( 
+                    nextHigherHearts - lastLevelHearts, true );
+
+                // sort them, so that player isn't stuck with a low
+                // token on the right
+                nextHigherPowers->sortPowersRight();
+                }    
+            }
+        
         }
     
+    
         
+
+    
     
 
 

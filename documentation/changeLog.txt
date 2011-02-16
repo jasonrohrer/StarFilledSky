@@ -27,6 +27,9 @@ Version 11
 
 --Changed to never decay hearts.
 
+--Next-higher-self's hearts are always trimmed to match lower self's hearts to
+  thwart heart-bootstrapping exploit.
+
 
 
 
