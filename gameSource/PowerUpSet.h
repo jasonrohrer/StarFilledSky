@@ -116,7 +116,7 @@ class PowerUpSet {
         void sortPowersRight();
         
 
-        // whittle away at left-most non-empty power, 
+        // whittle away at left-most non-empty, non-heart power, 
         // bringing it eventually down to empty
         void decayPowers();
         

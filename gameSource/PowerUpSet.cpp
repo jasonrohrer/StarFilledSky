@@ -679,7 +679,8 @@ void PowerUpSet::decayPowers() {
     
     int i=0;
     for( i=0; i<POWER_SET_SIZE; i++ ) {
-        if( mPowers[i].powerType != powerUpEmpty ) {
+        if( mPowers[i].powerType != powerUpEmpty && 
+            mPowers[i].powerType != powerUpHeart ) {
             break;
             }
         }

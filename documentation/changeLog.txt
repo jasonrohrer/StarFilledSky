@@ -25,6 +25,8 @@ Version 11
 --Changed so that hearts are knocked off higher self when hit to thwart the 
   heart rush exploit.
 
+--Changed to never decay hearts.
+
 
 
 
