@@ -44,6 +44,8 @@ Version 11
 
 --Checks against read-only game folder at startup.
 
+--Added a tip about ESC to end playback.
+
 
 
 

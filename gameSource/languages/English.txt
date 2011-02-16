@@ -53,8 +53,9 @@ pauseMessage4 "(saves a level number bookmark)"
 difficultyTag "DIFFICULTY"
 
 
-playbackTag  "Playback %:"
+playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"
+playbackEndMessage    "(Press ESC to end)"
 
 
 powerUpHeart_tip          "HEALTH"
