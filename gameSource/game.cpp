@@ -6,6 +6,10 @@
  */
 
 
+int versionNumber = 10;
+
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -367,7 +371,7 @@ int getStartingLevelNumber() {
 
 
 static const char *customDataFormatString = 
-    "level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_%s";
+    "version%d_level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_%s";
 
 
 char *getCustomRecordedGameData() {
@@ -425,6 +429,7 @@ char *getCustomRecordedGameData() {
 
     char * result = autoSprintf(
         customDataFormatString,
+        versionNumber, 
         levelNumber, tutorialOn,
         tutorialBookmark, mouseSpeedSetting,
         partialBookmarkString );
@@ -585,9 +590,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     currentLevel = NULL;
 
+    int readVersionNumber;
     
     int numRead = sscanf( inCustomRecordedGameData, 
-                          customDataFormatString, &levelNumber,
+                          customDataFormatString, 
+                          &readVersionNumber,
+                          &levelNumber,
                           &tutorialOn, &tutorialBookmark, &mouseSpeedSetting,
                           partialBookmarkString );
     
@@ -600,7 +608,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                     
 
 
-    if( numRead != 5 ) {
+    if( numRead != 6 ) {
         // no recorded game?
 
         // don't force player back through boring level 0, even if
@@ -610,6 +618,16 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     else {
         // override with passed-in values
         
+        if( readVersionNumber != versionNumber ) {
+            AppLog::printOutNextMessage();
+            AppLog::getLog()->logPrintf( 
+                Log::WARNING_LEVEL,
+                "WARNING:  version number in playback file is %d "
+                "but game version is %d...",
+                readVersionNumber, versionNumber );
+            }
+
+
         // (keep levelNumber that was read from data)
 
         if( !tutorialOn ) {

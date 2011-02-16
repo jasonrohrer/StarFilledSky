@@ -40,7 +40,7 @@ Version 11
 
 --Fixed heatSeek + bounce combo that was tunneling through walls.
 
-
+--Version number is now included in recorded game files.
 
 
 
