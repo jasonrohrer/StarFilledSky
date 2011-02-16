@@ -3790,7 +3790,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
 
                 // angle between bullets shrinks as explode parameter grows
-                double angleBetweenBullets = 2 * M_PI / ( b->explode + 1 );
+                double angleBetweenBullets = M_PI / ( b->explode + 1 );
                 
                 // minimum 2 sub-bullets
                 // keep adding bullets until full angle spread is at least
@@ -6168,7 +6168,15 @@ void Level::addBullet( doublePair inPosition,
 
     float size = getBulletSize( inPowers );
 
+    
 
+    // half distance so that explosion *completes* tradjectory instead
+    // of adding to it (so explosion doesn't cause a range boost)
+    if( explode > 0 ) {
+        distance /= 2;
+        }
+    
+        
     /*
       // for testing
     if( inPlayerBullet ) {

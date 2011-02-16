@@ -30,6 +30,9 @@ Version 11
 --Next-higher-self's hearts are always trimmed to match lower self's hearts to
   thwart heart-bootstrapping exploit.
 
+--Changed behavior of Burst power so that it does not act effectively as a 
+  range boost, and increased its basic explosion pattern on L1 to compensate.
+
 
 
 
