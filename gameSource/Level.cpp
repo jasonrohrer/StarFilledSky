@@ -1499,6 +1499,8 @@ Level::Level( unsigned int inSeed,
     mFrozen = false;
     mPlayerImmortalSteps = 0;
     
+    mShootingOn = true;
+    
     mDrawFloorEdges = true;
     mEdgeFadeIn = 0.0f;
     mLastComputedEdgeFade = 0.0f;
@@ -4349,7 +4351,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
         
         
         
-        if( e->stepsTilNextBullet == 0 ) {
+        if( e->stepsTilNextBullet == 0 && mShootingOn ) {
             // fire bullet
 
             // set speed
@@ -4427,7 +4429,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             //e->stepsTilNextBullet = e->stepsBetweenBullets;
             e->stepsTilNextBullet = getStepsBetweenBullets( e->powers );
             }
-        else {
+        else if( mShootingOn ) {
             e->stepsTilNextBullet --;
             }
         
@@ -6077,6 +6079,13 @@ char Level::isFrozen() {
 void Level::startPlayerImmortal() {
     mPlayerImmortalSteps = (int)( 60 / frameRateFactor );
     }
+
+
+
+void Level::toggleShooting( char inShootingOn ) {
+    mShootingOn = inShootingOn;
+    }
+
 
 
 

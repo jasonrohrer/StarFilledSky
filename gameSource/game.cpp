@@ -1805,7 +1805,10 @@ void drawFrame( char inUpdate ) {
                                       parentTokenLevel,
                                       parentFloorTokenLevel,
                                       parentDifficultyLevel );
-
+            
+            // don't let player get hit during zoom-in
+            currentLevel->toggleShooting( false );
+            
 
             if( ! knockDown ) {
                 // entering, copy powers
@@ -2586,6 +2589,9 @@ void drawFrameNoUpdate( char inUpdate ) {
             
             currentLevel->drawFloorEdges( true );
             
+            currentLevel->toggleShooting( true );
+            
+
             updateLevelNumber();
             
             saveLevelBookmark();

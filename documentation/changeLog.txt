@@ -50,6 +50,10 @@ Version 11
 
 --Added Sticky bullet power-up.
 
+--Added a safe time during zoom-in when enemies do not shoot (thanks Alexey 
+  Zubkov).
+
+
 
 
 Version 10   2011-February-13

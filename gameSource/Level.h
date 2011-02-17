@@ -344,7 +344,8 @@ class Level {
         void startPlayerImmortal();
         
 
-
+        void toggleShooting( char inShootingOn );
+        
         void drawFloorEdges( char inDraw );
         
         
@@ -580,6 +581,7 @@ class Level {
         
         int mPlayerImmortalSteps;
         
+        char mShootingOn;
 
         char mDrawFloorEdges;
         float mEdgeFadeIn;
