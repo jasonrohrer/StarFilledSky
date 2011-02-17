@@ -7,6 +7,8 @@ Version 12
 --Fixed to eliminate easy 1-descent token doubling by reducing base level of 
   tokens that are on the floor inside a token.
 
+--Increased difficulty modifier inside sub-token recursions.
+
 
 
 

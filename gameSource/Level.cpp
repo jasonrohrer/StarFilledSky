@@ -1685,7 +1685,11 @@ Level::Level( unsigned int inSeed,
         mDifficultyLevel = mDifficultyLevel + tokenFactor;
         
         if( tokenFactor > 1 ) {
-            mDifficultyLevel += mDifficultyLevel / 2;
+            // old:  not difficulty doubling
+            //mDifficultyLevel += mDifficultyLevel / 2;
+
+            // new:  doubling, but not tripling
+            mDifficultyLevel += mDifficultyLevel;
             }
         
         }
