@@ -1986,10 +1986,15 @@ Level::Level( unsigned int inSeed,
             }
 
         if( isFullTutorialRunning() && ! levelAlreadyVisited( 11 ) &&
-            mLevelNumber < 11 ) {
+            mLevelNumber < 11 && mDifficultyLevel < 11 ) {
             // don't let player stumble into a dangerous power-up level
             // during tutorial
             // (but stop protecting them if they've already risen to level 10)
+            // also, show them higher tokens after they go 2-layers deep
+            // into tokens (so tutorial message makes sense), or generally
+            // if they are exploring harder levels however
+            // (so if they get knocked down, they have big pickups to carry
+            //  them back up)
             maxFloorTokenLevel = mFloorTokenLevel;
             }
         }
