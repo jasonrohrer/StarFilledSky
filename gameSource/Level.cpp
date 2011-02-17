@@ -24,7 +24,7 @@
 #include "minorGems/math/probability/ProbabilityMassFunction.h"
 
 #include <math.h>
-
+#include <limits.h>
 
 extern char outputMapImages;
 
@@ -1588,6 +1588,12 @@ Level::Level( unsigned int inSeed,
         }
 
 
+    // don't let mDifficultyLevel, which might be one more than parent,
+    // overflow
+    if( inParentLevelDifficulty == INT_MAX ) {
+        inParentLevelDifficulty--;
+        }
+
 
     // make sure level is appropriately difficult based on parent level
     
@@ -1682,14 +1688,21 @@ Level::Level( unsigned int inSeed,
     if( tokenFactor > 0 ) {
         // raise difficulty level based on recursion into power-ups
 
-        mDifficultyLevel = mDifficultyLevel + tokenFactor;
+        // but don't let it overflow
+        if( mDifficultyLevel <= INT_MAX - tokenFactor ) {
+            mDifficultyLevel = mDifficultyLevel + tokenFactor;
+            }
         
         if( tokenFactor > 1 ) {
             // old:  not difficulty doubling
             //mDifficultyLevel += mDifficultyLevel / 2;
 
             // new:  doubling, but not tripling
-            mDifficultyLevel += mDifficultyLevel;
+        
+            // don't let it overflow
+            if( mDifficultyLevel <= INT_MAX - mDifficultyLevel ) {    
+                mDifficultyLevel += mDifficultyLevel;
+                }
             }
         
         }
@@ -1703,9 +1716,13 @@ Level::Level( unsigned int inSeed,
     // fewer enemies in lower levels
     int maxNumEnemies = 10;
 
-    if( (mDifficultyLevel - 1) * 2 < 10 ) {
-        maxNumEnemies = (mDifficultyLevel-1) * 2;
+    // watch for overflow in the following test
+    if( mDifficultyLevel < 10 ) {
+        if( (mDifficultyLevel - 1) * 2 < 10 ) {
+            maxNumEnemies = (mDifficultyLevel-1) * 2;
+            }
         }
+    
     
     if( mLevelNumber == 0 ) {
         // always have 0 enemies at level zero, as a safe buffer zone
