@@ -20,7 +20,7 @@ if( isset( $_REQUEST[ "nocounter" ] ) ) {
     $nocounter = $_REQUEST[ "nocounter" ];
     }
 
-if( ! $nocounter ) {
+if( ! $nocounter && ( !isSet( $blockCounter ) || ! $blockCounter ) ) {
 ?>
 
 <!-- Site Meter -->

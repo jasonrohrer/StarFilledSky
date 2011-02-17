@@ -2,6 +2,17 @@
 
 <head>
 <title>Inside a Star-filled Sky</title>
+
+<?php
+if( isset( $blockRobots ) && $blockRobots == 1 ) {
+?>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+<?php
+    }
+?>
+
+
 </head>
 
 <body bgcolor="#000000" text="#FFFFFF"
