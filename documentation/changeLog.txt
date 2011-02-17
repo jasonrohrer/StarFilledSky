@@ -1,4 +1,4 @@
-Version 11
+Version 11   2011-February-16
 
 --Powers are sorted with strongest to the right whenever they are passed 
   upwards to encourage additional pick-ups (which will replace weakest powers 
