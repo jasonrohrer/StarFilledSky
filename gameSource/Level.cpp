@@ -6306,6 +6306,19 @@ void Level::addBullet( doublePair inPosition,
 
     
     if( cornering > 0 ) {
+
+        // make sure each segment is at least two steps long
+        // thus, high-powered cornering bullets without extended range
+        // do not get to execute all their corners
+
+        double cornerSegmentLength = distance / ( cornering + 1 );
+        
+        if( cornerSegmentLength < inSpeed * 2 ) {
+            cornering = (int)( distance / (inSpeed * 2) );
+            }
+        
+        
+
         // compensate for net distance lost by cornering
         
         double distanceFraction;
