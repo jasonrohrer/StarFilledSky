@@ -4,6 +4,9 @@ Version 12
   up to being equal to player's bullet speed (before, enemy bullet speed was 
   always half player bullet speed).
 
+--Fixed to eliminate easy 1-descent token doubling by reducing base level of 
+  tokens that are on the floor inside a token.
+
 
 
 

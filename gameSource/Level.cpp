@@ -1953,7 +1953,12 @@ Level::Level( unsigned int inSeed,
             else {
                 // deeper recursion, or an already-raised parent token
                 // that has been re-entered
-                mFloorTokenLevel += inParentTokenLevel;
+
+                mFloorTokenLevel = inParentTokenLevel / POWER_SET_SIZE;
+                
+                if( mFloorTokenLevel < 1 ) {
+                    mFloorTokenLevel = 1;
+                    }
                 }
             }
         }
