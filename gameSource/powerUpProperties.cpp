@@ -300,7 +300,7 @@ float bulletStickyParam = 10;
 
 
 int getStickySteps( PowerUpSet *inSet ) {
-    int totalLevel = getTotalLevel( inSet, powerUpRapidFire );
+    int totalLevel = getTotalLevel( inSet, powerUpSticky );
 
     if( totalLevel == 0 ) {
         return 0;
