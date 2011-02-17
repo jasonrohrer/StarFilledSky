@@ -1846,6 +1846,12 @@ void drawFrame( char inUpdate ) {
                 if( newLevelDifficulty > 20 ) {
                     heartLevel += newLevelDifficulty / 20;
                     }
+                
+                // cap at 8 hearts per slot (don't want to make player 
+                // invicible at really deep, hard levels)
+                if( heartLevel > 8 ) {
+                    heartLevel = 8;
+                    }
 
 
                 for( int s=0; s<POWER_SET_SIZE; s++ ) {

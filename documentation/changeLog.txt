@@ -9,6 +9,9 @@ Version 12
 
 --Increased difficulty modifier inside sub-token recursions.
 
+--Capped heart bonus on knock-down to 8, to prevent gigantic heart bonuses
+  that make you effectively invincible on higher levels.
+
 
 
 
