@@ -4355,8 +4355,24 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             // fire bullet
 
             // set speed
-            // enemy bullets are slower than equivalent player bullets
-            float bulletSpeed = getBulletSpeed( e->powers ) / 2;
+            // enemy bullets are slower than equivalent player bullets at lower
+            // difficulty levels, but are eventually as fast as player's
+
+            // this scaling happens between difficulty levels 20 and 80
+            
+            float bulletSpeed = getBulletSpeed( e->powers );
+            
+            if( mDifficultyLevel <= 20 ) {
+                bulletSpeed /= 2;
+                }
+            else if( mDifficultyLevel <= 80 ) {
+
+                // slide between 2 and 1 as we approach 80
+                float scaleFactor = ((80 - mDifficultyLevel) / 60.0f ) + 1;
+
+                //printf( "Scale factor = %f\n", scaleFactor );
+                bulletSpeed /= scaleFactor;
+                }
 
 
             doublePair aimPos = computeAim( e, mPlayerPos, mPlayerVelocity,

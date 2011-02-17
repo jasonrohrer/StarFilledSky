@@ -1,3 +1,12 @@
+Version 12
+
+--Enemy base bullet speed now gradually increases, between levels 20 and 80, 
+  up to being equal to player's bullet speed (before, enemy bullet speed was 
+  always half player bullet speed).
+
+
+
+
 Version 11   2011-February-16
 
 --Powers are sorted with strongest to the right whenever they are passed 
