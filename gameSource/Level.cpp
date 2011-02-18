@@ -2050,7 +2050,7 @@ Level::Level( unsigned int inSeed,
     
 
     // prevent a level-zero (no enemies, ever) power-up-building exploit
-    if( mLevelNumber == 0 ) {
+    if( mLevelNumber == 0 && ! mInsideEnemy ) {
         maxFloorTokenLevel = 1;
         minFloorTokenLevel = 1;
         }
