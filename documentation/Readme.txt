@@ -4,10 +4,11 @@ An infinite, recursive, tactical shooter by Jason Rohrer
 http://insideastarfilledsky.net
 
 
+Mouse aiming is important in this game.  Please plug in a mouse if 
+you have one.
+
 This game has interactive music.  Please use speakers or headphones.
 
-Mouse aiming is important in this game.  Please plug in a mouse if 
-you have one
 
 
 
