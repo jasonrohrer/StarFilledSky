@@ -121,7 +121,7 @@ an infinite, recursive, tactical shooter for one player by
 <center>
 <font size=5>
 "Extremely clever"</font>
---Graham Smith , <a href="http://www.pcgamer.com/2011/02/13/inside-a-star-filled-sky-preview/">PC Gamer Preview</a><br><br>
+--Graham Smith, <a href="http://www.pcgamer.com/2011/02/13/inside-a-star-filled-sky-preview/">PC Gamer Preview</a><br><br>
 
 </center>
 <br>
