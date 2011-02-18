@@ -47,6 +47,13 @@ GAME_GRAPHICS = \
 graphics/font_8_16.tga \
 graphics/font_4_8.tga \
 graphics/numerals.tga \
+graphics/bar1.tga \
+graphics/bar2.tga \
+graphics/bar3.tga \
+graphics/bar4.tga \
+graphics/bar5.tga \
+graphics/bar6.tga \
+graphics/bar7.tga \
 graphics/riseMarker.tga \
 graphics/riseIcon.tga \
 graphics/eye.tga \

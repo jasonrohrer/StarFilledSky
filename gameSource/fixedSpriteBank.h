@@ -55,6 +55,13 @@ void freeSpriteBank();
     F(powerUpSticky), \
     /*  explode is used to mark the end of the power-ups */ \
     F(powerUpExplode), \
+    F(bar1), \
+    F(bar2), \
+    F(bar3), \
+    F(bar4), \
+    F(bar5), \
+    F(bar6), \
+    F(bar7), \
     F(enemyBehaviorBorder), \
     F(enemyBehaviorFollow), \
     F(enemyBehaviorDodge), \

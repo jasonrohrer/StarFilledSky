@@ -42,11 +42,45 @@ void drawPowerUpCenter( PowerUp inPower,
     drawSprite( inPower.powerType, inPosition );
     if( ! inPower.behavior && inPower.powerType != powerUpEmpty ) {
 
-        setDrawColor( 0.5, 0.5, 0.5, inFade );
         
+        int levelToDraw = inPower.level;
+        
+        if( levelToDraw > 999 ) {
+            // overflows our 3 digit display!
+            
+            // display all but most significant three digits as bars on side
+
+            int numDigits = 0;
+            
+            int leftOver = levelToDraw;
+            
+            while( leftOver > 0 ) {
+                numDigits++;
+                leftOver /= 10;
+                }
+
+            int numBars = numDigits - 3;
+            
+            spriteID barSprite = (spriteID)( bar1 + (numBars-1) );
+            
+            
+            drawSprite( barSprite, inPosition );
+
+            int barRepresents = 1;
+            for( int i=0; i<numBars; i++ ) {
+                barRepresents *= 10;
+                }
+            // just draw most significant as true digits
+            levelToDraw /= barRepresents;
+            }
+        
+        
+        setDrawColor( 0.5, 0.5, 0.5, inFade );
+
+
         inPosition.x += 0.5 - 0.3125;
         inPosition.y -= 0.5 - 0.25;
-        drawNumber( inPower.level, inPosition );
+        drawNumber( levelToDraw, inPosition );
         }
     
     }
