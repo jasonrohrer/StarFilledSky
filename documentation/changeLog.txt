@@ -1,3 +1,14 @@
+Version 13   2011-February-18     (First public release)
+
+--Fixed a bunch of code warnings and a few bugs using cppcheck.
+
+--Speed control keys are now off by default (can be turned on in settings).
+
+--Fixed inside-enemy power-ups at level 0 so they are not capped at 1.
+
+
+
+
 Version 12   2011-February-17
 
 --Enemy base bullet speed now gradually increases, between levels 20 and 80, 
