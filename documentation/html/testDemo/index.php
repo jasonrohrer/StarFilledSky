@@ -26,8 +26,8 @@ You need a demo code from me to run these (so they don't escape into the wild):
 <font size=5>Lastest version:</font>
 <center>
 <table border=0 cellpadding=4 cellspacing=1>
-<tr><td><a href="StarFilledSky_v11_Windows.exe">StarFilledSky_v11_Windows.exe</a></td></tr>
-<tr><td><a href="StarFilledSky_v11_IntelMacOSX.dmg">StarFilledSky_v11_IntelMacOSX.dmg</a></td></tr>
+<tr><td><a href="StarFilledSky_v12_Windows.exe">StarFilledSky_v12_Windows.exe</a></td></tr>
+<tr><td><a href="StarFilledSky_v12_IntelMacOSX.dmg">StarFilledSky_v12_IntelMacOSX.dmg</a></td></tr>
 <!--
 <tr><td><a href="SleepIsDeath_v14a_UnixSource.tar.gz">SleepIsDeath_v14a_UnixSource.tar.gz</a></td></tr>
 -->
@@ -39,6 +39,8 @@ You need a demo code from me to run these (so they don't escape into the wild):
 <font size=5>Older versions:</font>
 <center>
 <table border=0 cellpadding=4 cellspacing=1>
+<tr><td><a href="StarFilledSky_v11_Windows.exe">StarFilledSky_v11_Windows.exe</a></td></tr>
+<tr><td><a href="StarFilledSky_v11_IntelMacOSX.dmg">StarFilledSky_v11_IntelMacOSX.dmg</a></td></tr>
 <tr><td><a href="StarFilledSky_v10_Windows.exe">StarFilledSky_v10_Windows.exe</a></td></tr>
 <tr><td><a href="StarFilledSky_v10_IntelMacOSX.dmg">StarFilledSky_v10_IntelMacOSX.dmg</a></td></tr>
 <tr><td><a href="StarFilledSky_v9_Windows.exe">StarFilledSky_v9_Windows.exe</a></td></tr>
