@@ -6,6 +6,9 @@ http://insideastarfilledsky.net
 
 This game has interactive music.  Please use speakers or headphones.
 
+Mouse aiming is important in this game.  Please plug in a mouse if 
+you have one
+
 
 
 == Controls ==
