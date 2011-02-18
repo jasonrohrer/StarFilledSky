@@ -3965,9 +3965,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 
                 Bullet explosionTemplate = *b;
                 
-                // reset bounces and distance
+                // reset bounces and distance and cornering
                 explosionTemplate.distanceLeft = b->startDistance;
                 explosionTemplate.bouncesLeft = b->startBounces;
+                explosionTemplate.numCornersTaken = 0;                
                 
                 // no sub-explosions
                 explosionTemplate.explode = 0;

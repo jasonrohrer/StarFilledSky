@@ -35,6 +35,8 @@ Version 12   2011-February-17
 
 --Fixed a potential crash when game directory is read-only.
 
+--Fixed glitch in the way explode and cornering were being combined.
+
 
 
 
