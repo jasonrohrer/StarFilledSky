@@ -5,7 +5,7 @@ if( isset( $_REQUEST[ "donation" ] ) ) {
     $donation = $_REQUEST[ "donation" ];
     }
 
-$donationInCents = floor( 100 * $donation );
+$donationInCents = round( 100 * $donation );
 
 
 
