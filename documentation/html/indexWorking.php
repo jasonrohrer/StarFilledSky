@@ -45,7 +45,7 @@ function showPayLinks( $inSimple ) {
     ?>
  <center>
       <a href="https://sites.fastspring.com/jasonrohrer/instant/sleepisdeathticket">
-      <font size=5>Buy downloads</font><br>
+      <font size=5>Buy downloads and Donate</font><br>
       <img src="fs_cards.png" width=280 height=45 border=0><?php
       if( !$inSimple ) {
 
@@ -271,11 +271,12 @@ Dave Evans,
 Destral Minare,
 Eric McQuiggan,
 Farbs,
+Guilherme S. Töws,
 Ian Snyder,
 Jason Tam,
 Jimmy Andrews,
 John Nesky,
-Lauren Serafin
+Lauren Serafin,
 Liam,
 Madeleine Burleson,
 Manuel Jose,
@@ -293,8 +294,7 @@ Rod Humble,
 Salade,
 Stephen Lavelle,
 Will,
-William Broom,
-Zarawesome
+William Broom
 
 </td></tr></table>
 <br>
