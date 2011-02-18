@@ -25,6 +25,8 @@ Version 12   2011-February-17
 
 --Fixed enemies getting stuck in corners after dodging.
 
+--Fixed bug in health bar length when heart picked up right before rising.
+
 
 
 Version 11   2011-February-16

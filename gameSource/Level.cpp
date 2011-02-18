@@ -5075,7 +5075,11 @@ void Level::frozenUpdate() {
         }
     
     // keep max player health updated
-    mPlayerHealthMax = 1 + getMaxHealth( mPlayerPowers );
+    // copy powers temporarily to take any in-progress pushed powers
+    // int account
+    PowerUpSet copiedPlayerPowers( mPlayerPowers );
+    
+    mPlayerHealthMax = 1 + getMaxHealth( &copiedPlayerPowers );
     mPlayerHealth = mPlayerHealthMax;
     }
 
