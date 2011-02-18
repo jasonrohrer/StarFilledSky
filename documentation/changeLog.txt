@@ -33,6 +33,8 @@ Version 12   2011-February-17
 --Token sub-level colors now stay updated to match token as it changes (upon 
   reentering token).
 
+--Fixed a potential crash when game directory is read-only.
+
 
 
 
