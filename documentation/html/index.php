@@ -176,6 +176,12 @@ else {
 </font>
 </center>
 
+<!--
+<center>
+<font color=red size=5>Having some trouble with the payment system.  Hold on a minute....</font>
+</center>
+-->
+
 <?php
    //showPayLinks( false );
    showPayForm( false );                                  
