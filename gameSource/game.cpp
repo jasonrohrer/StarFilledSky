@@ -2144,6 +2144,10 @@ void drawFrame( char inUpdate ) {
 
         s->pushPower( p, powerPos );
 
+        // potentially need to keep player's health updated
+        nextAbove->frozenUpdate();
+        
+
         if( !shouldSetTipsBeShown() ) {
             // if we're done showing set combo tips, revert to showing
             // pick-up tips until we meet our quota for each type

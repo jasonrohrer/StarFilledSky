@@ -5064,17 +5064,12 @@ static void computeVisBoundaries( doublePair inViewCenter, double inViewSize,
 
 
 void Level::frozenUpdate() {
-    // but keep any token that was sub-level entry point updated
-    if( mLastEnterPointPowerTokenIndex != -1 ) {
-        PowerUpToken *t = mPowerUpTokens.getElement( 
-            mLastEnterPointPowerTokenIndex );
-        
-        
-            t->power.powerType = t->subPowers->getMajorityType();
-            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
-        }
-    
+
     // keep max player health updated
+
+    // we don't do this constantly as we're drawn while frozen BECAUSE
+    // it causes health bar to instant-refill on knock-down, which looks weird
+    
     // copy powers temporarily to take any in-progress pushed powers
     // int account
     PowerUpSet copiedPlayerPowers( mPlayerPowers );
@@ -5113,6 +5108,23 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     
     if( !mFrozen ) {
         step( inViewCenter, inViewSize );
+        }
+    else {
+        // frozen, but keep any token that was sub-level entry point updated
+        
+        // do this constantly, not just on frozen update, so that power
+        // token waits to update until push is done, even in the middle of 
+        // rising
+
+        if( mLastEnterPointPowerTokenIndex != -1 ) {
+            PowerUpToken *t = mPowerUpTokens.getElement( 
+                mLastEnterPointPowerTokenIndex );
+            
+            
+            t->power.powerType = t->subPowers->getMajorityType();
+            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+            }
+        
         }
     
 

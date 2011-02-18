@@ -27,6 +27,10 @@ Version 12   2011-February-17
 
 --Fixed bug in health bar length when heart picked up right before rising.
 
+--Fixed bug in token update when a sub-token picked up right before rising 
+  (thanks Alexey Zubkov).
+
+
 
 
 Version 11   2011-February-16
