@@ -119,6 +119,7 @@ typedef struct Enemy {
         doublePair followNextWaypoint;
         int dodgeBulletIndex;
         unsigned int dodgeBulletID;
+        char justStoppedDodging;
         char circleDirection;
         double circleRadiusFactor;
         RandomWalkerSet walkerSet;

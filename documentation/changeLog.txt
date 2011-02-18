@@ -23,6 +23,8 @@ Version 12   2011-February-17
 --Fixed power-up level numbers so that they don't overflow.  Added a bar-graph 
   style powers-of-ten display, along with three most significant digits.
 
+--Fixed enemies getting stuck in corners after dodging.
+
 
 
 Version 11   2011-February-16

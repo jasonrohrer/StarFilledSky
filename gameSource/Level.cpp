@@ -1407,7 +1407,7 @@ Level::Level( unsigned int inSeed,
     mNextEnemyPathFindIndex = 0;
     
 
-    mNextBulletID = 0;
+    mNextBulletID = 1;
     
     
     //Thread::staticSleep( 1000 );
@@ -1888,6 +1888,7 @@ Level::Level( unsigned int inSeed,
                             // not dodging any bullet
                             -1,
                             0,
+                            false,
                             // circle direction
                             false,
                             randSource.getRandomBoundedDouble( 0.1, 0.8 ),
@@ -3188,6 +3189,7 @@ void Level::deleteBullet( int inIndex ) {
             // stop
             e->dodgeBulletIndex = -1;
             e->dodgeBulletID = 0;
+            e->justStoppedDodging = true;
             }
         else if( e->dodgeBulletIndex > inIndex ) {
             // this index pointer comes after the removed bullet
@@ -4214,6 +4216,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             
             if( i == mNextEnemyPathFindIndex ) {
                 
+                char dodgingBefore = ( e->dodgeBulletIndex != -1 );
 
                 // find closest player bullet
                 int closestIndex = -1;
@@ -4242,10 +4245,15 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     
                     e->dodgeBulletIndex = closestIndex;
                     e->dodgeBulletID = b->uniqueID;
+                    e->justStoppedDodging = false;
                     }
                 else {
                     e->dodgeBulletIndex = -1;
                     e->dodgeBulletID = 0;
+                    
+                    if( dodgingBefore ) {
+                        e->justStoppedDodging = true;
+                        }
                     }
                 }
             
@@ -4268,7 +4276,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         e->dodgeBulletIndex = -1;
                         e->dodgeBulletID = 0;
                         bullet = NULL;
-
+                        
+                        e->justStoppedDodging = true;
+                        
                         printf( "ERROR: could not find the bullet that enemy "
                                 "should be dodging (stale index?)\n" );
                         }
@@ -4315,7 +4325,70 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     // below
                     }
                 }
+        
+            if( e->justStoppedDodging ) {
+                printf( "Enemy %d stopped dodging\n", i );
+
+                e->justStoppedDodging = false;
+                
+                if( !random && !follow ) {
+                    
+
+                    // start moving in a random direction to avoid getting
+                    // stuck in a corner
+                
+                    // first, test if we need to do this at all
+
+                    doublePair testStep = normalize( e->velocity );
+                    
+                    // check for wall one unit away
+                    if( isWall( add( e->position, testStep ) ) ) {
+                        
+                        // too close to wall after dodging
+                        // move off in a different direction
+                    
+
+                        doublePair chosenVelocity;
+                
+                        char goodMoveFound = false;
+                    
+                        while( !goodMoveFound ) {
+                    
+
+                            doublePair moveChoice = 
+                                { randSource.getRandomBoundedDouble( -1, 1 ),
+                                  randSource.getRandomBoundedDouble( -1, 1 ) };
+                
+                            if( moveChoice.x == 0 && moveChoice.y == 0 ) {
+                                // degenerate case that can't be normalized
+                                moveChoice.x = 1;
+                                }
+                            
+                            doublePair normalizedMove = 
+                                normalize( moveChoice );
+                    
+                            // make sure there is not a wall in this direction
+                            doublePair testPos = 
+                                add( e->position, normalizedMove );
+                    
+                            if( !isWall( testPos ) ) {
+                                goodMoveFound = true;
+                                chosenVelocity = mult( normalizedMove,
+                                                       moveSpeed );
+                                }
+                            // else keep picking
+                            }
+                
+                        e->velocity = chosenVelocity;
+                        
+                        }
+                    }
+                }
+            
+            
+    
             }
+        
 
         // normal movement for all enemies
         
