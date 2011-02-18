@@ -2,7 +2,7 @@ writeFailed "Error:  game folder is read-only"
 
 
 
-tutorial_move "W A S D	to move"
+tutorial_move "W A S D	(or I J K L) to move"
 
 tutorial_shoot "MOUSE to aim and hold BUTTON (or SPACE BAR) to shoot"
 

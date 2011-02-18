@@ -37,6 +37,7 @@ Version 12   2011-February-17
 
 --Fixed glitch in the way explode and cornering were being combined.
 
+--Tutorial now mentions IJKL movement alternative for lefties.
 
 
 
