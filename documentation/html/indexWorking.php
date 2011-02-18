@@ -280,7 +280,7 @@ John Nesky,
 Lauren Serafin,
 Liam,
 Madeleine Burleson,
-Manuel Jose,
+Manuel Magalhães
 Mark Johns,
 Michael Brough,
 Michael Molinari,
