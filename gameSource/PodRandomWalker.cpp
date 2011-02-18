@@ -12,6 +12,9 @@ PodRandomWalker::PodRandomWalker( int inLowX, int inLowY,
                                   int inHighX, int inHighY )
         : RandomWalker( inLowX, inLowY, inHighX, inHighY ) {
     
+    mNextBranchPoint.x = 0;
+    mNextBranchPoint.y = 0;
+    
     mNextPointIndex = 0;
     
     mNextBranchDirection.x = randSource.getRandomBoundedDouble( -1, 1 );

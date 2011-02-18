@@ -236,16 +236,12 @@ float getBulletDistance( PowerUpSet *inSet ) {
     boundedDistance += 5;
     
 
-    // if enemy following, or chasing and fast, compensate by making
+    // if enemy following, compensate by making
     // longer bullets (so enemy doesn't leave it's own bullets behind)
     char follow = false;
-    char fast = false;
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( inSet->mPowers[i].powerType == enemyBehaviorFollow ) {
             follow = true;
-            }
-        else if( inSet->mPowers[i].powerType == enemyBehaviorFast ) {
-            fast = true;
             }
         }
     

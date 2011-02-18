@@ -5122,8 +5122,9 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 mLastEnterPointPowerTokenIndex );
             
             
-            t->power.powerType = t->subPowers->getMajorityType();
-            t->power.level = t->subPowers->getLevelSum( t->power.powerType );
+            t->powerUp.powerType = t->subPowers->getMajorityType();
+            t->powerUp.level = 
+                t->subPowers->getLevelSum( t->powerUp.powerType );
             }
         
         }
@@ -5503,7 +5504,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( pos.x >= visStart.x && pos.y >= visStart.y &&
             pos.x <= visEnd.x && pos.y <= visEnd.y ) {
             
-            drawPowerUp( p->power, p->position, 1.0 );
+            drawPowerUp( p->powerUp, p->position, 1.0 );
             }
         }
     
@@ -5591,7 +5592,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         startAddingToStencil( false, true );
         PowerUpToken *t = mPowerUpTokens.getElement( mWindowPosition.index );
         
-        drawPowerUp( t->power, t->position, 1 );
+        drawPowerUp( t->powerUp, t->position, 1 );
         }
     
 
@@ -5655,7 +5656,7 @@ void Level::drawWindowShade( double inFade, double inFrameFade,
                     mPowerUpTokens.getElement( mWindowPosition.index );
                 
                 drawPowerUpBorder( t->position, inFrameFade );
-                drawPowerUpCenter( t->power, t->position, inFade );
+                drawPowerUpCenter( t->powerUp, t->position, inFade );
                 }
             
 
@@ -5858,7 +5859,7 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
 
         if( distance( t->position, inPos ) < widePickUpRadius ) {
             
-            PowerUp p = t->power;
+            PowerUp p = t->powerUp;
 
             // clean up glow trails that use
             // token sprite too
@@ -5903,7 +5904,7 @@ PowerUp Level::peekPowerUp( doublePair inPos ) {
 
         if( distance( t->position, inPos ) < 0.5 ) {
             
-            PowerUp p = t->power;
+            PowerUp p = t->powerUp;
 
             return p;
             }
@@ -5964,7 +5965,7 @@ ColorScheme Level::getEnteringPointColors( doublePair inPosition,
 
                 /*
                 if( t->startedEmpty &&
-                    t->power.powerType != powerUpEmpty ) {
+                    t->powerUp.powerType != powerUpEmpty ) {
                     
                     // type has been changed by some sub-level activity
                 
@@ -6017,7 +6018,7 @@ RandomWalkerSet Level::getEnteringPointWalkerSet( doublePair inPosition,
             if( isPowerUp( inPosition, &i ) ) {
                 PowerUpToken *t = mPowerUpTokens.getElement( i );
                 
-                RandomWalkerSet set( t->power.powerType );
+                RandomWalkerSet set( t->powerUp.powerType );
                 
                 return set;
                 }
@@ -6338,11 +6339,9 @@ doublePair Level::stopMoveWithWall( doublePair inStart,
     
 
 
-    int xMoveOkay = false;
 
     if( !isWall( testXMove ) ) {    
         newPos.x = movePos.x;
-        xMoveOkay = true;
         }
     else {
         

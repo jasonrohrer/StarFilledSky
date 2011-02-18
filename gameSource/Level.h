@@ -157,7 +157,7 @@ typedef struct WindowPosition {
 
 
 typedef struct PowerUpToken {
-        PowerUp power;
+        PowerUp powerUp;
         GridPos gridPosition;
         doublePair position;
         PowerUpSprite *sprite;

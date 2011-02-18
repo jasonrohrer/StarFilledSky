@@ -140,10 +140,20 @@ PowerUp getRandomPowerUp( int inMaxLevel ) {
 
 void PowerUpSet::fillDefaultSet() {
     mPushing = false;
+    mPushProgress = 0;
+    
+    mPowerToPush.powerType = powerUpEmpty;
+    mPowerToPush.level = 0;
+    mPowerToPush.behavior = false;
+    
+    mPushStartPos.x = 0;
+    mPushStartPos.y = 0;
+
     mPushStack = NULL;
     mPushStackSize = 0;
     
     mDropping = false;
+    mDropProgress = 0;
     mPowersBeingDropped = NULL;
     
     mDropDrawToggles[0] = true;

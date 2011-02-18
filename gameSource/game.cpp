@@ -742,6 +742,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
 
     // for level construction optimization
+    /*
     if( false ) {
         
         double msTime = Time::getCurrentTime();
@@ -755,7 +756,9 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
         //exit(0);
         }
-    
+    */
+
+
     initMusicPlayer();
     setMusicLoudness( 0 );
 

@@ -27,7 +27,7 @@ static ColorScheme getScheme( spriteID inPowerType ) {
 
 
 PowerUpSprite::PowerUpSprite( PowerUp inPower, PowerUpSet *inSubPowers )
-        : mPower( inPower ), mSubPowers( inSubPowers ) {
+        : mKeepUpdated( false ), mPower( inPower ), mSubPowers( inSubPowers ) {
     
 
     }
