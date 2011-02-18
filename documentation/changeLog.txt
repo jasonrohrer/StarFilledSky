@@ -18,6 +18,8 @@ Version 12   2011-February-17
 --Fixed level difficulty modifier number overflower issues (thanks Jimmy 
   Andrews).
 
+--Fixed power-set sum overflow issues (thanks Jimmy Andrews).
+
 
 
 

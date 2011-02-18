@@ -12,6 +12,10 @@
 #include "minorGems/util/log/AppLog.h"
 
 
+#include <limits.h>
+
+
+
 extern CustomRandomSource randSource;
 
 extern double frameRateFactor;
@@ -958,12 +962,27 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
 int PowerUpSet::getLevelSum( spriteID inPowerUpType ) {
     int sum = 0;
 
+    // watch for overflow
+    char overflow = false;
+
     for( int i=0; i<POWER_SET_SIZE; i++ ) {
         if( mPowers[i].powerType == inPowerUpType ) {
             
-            sum += mPowers[i].level;
+            int tokenLevel = mPowers[i].level;
+
+            if( sum <= INT_MAX - tokenLevel ) {
+                sum += tokenLevel;
+                }
+            else {
+                overflow = true;
+                }
             }
         }
+    
+    if( overflow ) {
+        sum = INT_MAX;
+        }
+
     return sum;
     }
 
