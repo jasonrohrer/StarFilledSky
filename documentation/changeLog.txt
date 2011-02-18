@@ -1,4 +1,4 @@
-Version 12
+Version 12   2011-February-17
 
 --Enemy base bullet speed now gradually increases, between levels 20 and 80, 
   up to being equal to player's bullet speed (before, enemy bullet speed was 
@@ -6,6 +6,9 @@ Version 12
 
 --Fixed to eliminate easy 1-descent token doubling by reducing base level of 
   tokens that are on the floor inside a token.
+
+--Changed base level of sub-tokens inside enemy tokens to mirror the new 
+  player token distribution system (it really didn't make sense before).
 
 --Increased difficulty modifier inside sub-token recursions.
 

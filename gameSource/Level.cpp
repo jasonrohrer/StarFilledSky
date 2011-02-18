@@ -1607,8 +1607,17 @@ Level::Level( unsigned int inSeed,
             // give player a break on knock-down
             // halfway between level's base difficulty and difficulty
             // suggested by parent
-            mDifficultyLevel = 
-                ( mDifficultyLevel + inParentLevelDifficulty - 1 ) / 2;
+
+            // be careful of overflow!
+            if( inParentLevelDifficulty <= INT_MAX - mDifficultyLevel ) {
+                mDifficultyLevel = 
+                    ( mDifficultyLevel + inParentLevelDifficulty - 1 ) / 2;
+                }
+            else {
+                mDifficultyLevel = 
+                    mDifficultyLevel / 2 + 
+                    ( inParentLevelDifficulty - 1 ) / 2;
+                }
             }
         }
     else if( mLevelNumber < 0 && 
@@ -1624,8 +1633,22 @@ Level::Level( unsigned int inSeed,
             // give player a break on knock-down
             // halfway between level's base difficulty and difficulty
             // suggested by parent
-            mDifficultyLevel = 
-                ( mDifficultyLevel + inParentLevelDifficulty + 1 ) / 2;
+
+            // be careful of overflow
+            if( inParentLevelDifficulty <= INT_MAX - mDifficultyLevel - 1) {
+                mDifficultyLevel = 
+                    ( mDifficultyLevel + inParentLevelDifficulty + 1 ) / 2;
+                }
+            else if( inParentLevelDifficulty < INT_MAX ) {
+                mDifficultyLevel =
+                    mDifficultyLevel / 2 + 
+                    ( inParentLevelDifficulty + 1 ) / 2;
+                }
+            else {
+                mDifficultyLevel =
+                    mDifficultyLevel / 2 + 
+                    inParentLevelDifficulty / 2;
+                }
             }
         }
         
@@ -1692,6 +1715,9 @@ Level::Level( unsigned int inSeed,
         if( mDifficultyLevel <= INT_MAX - tokenFactor ) {
             mDifficultyLevel = mDifficultyLevel + tokenFactor;
             }
+        else {
+            mDifficultyLevel = INT_MAX;
+            }
         
         if( tokenFactor > 1 ) {
             // old:  not difficulty doubling
@@ -1702,6 +1728,9 @@ Level::Level( unsigned int inSeed,
             // don't let it overflow
             if( mDifficultyLevel <= INT_MAX - mDifficultyLevel ) {    
                 mDifficultyLevel += mDifficultyLevel;
+                }
+            else {
+                mDifficultyLevel = INT_MAX;
                 }
             }
         
@@ -1941,11 +1970,13 @@ Level::Level( unsigned int inSeed,
         // set to max, encourage sub-recursion into enemy        
         
         if( inInsidePowerUp ) {
-            // floor power-ups grow weaker by one step the deeper we
-            // recurse into sub-tokens
+            // mirror new behavior for player sub-tokens
+            // base them on parentToken /3
+            
+            // the old system of decrementing didn't make any sense!
 
             // this is based purely in parent token level
-            mFloorTokenLevel = inParentTokenLevel - 1;
+            mFloorTokenLevel = inParentTokenLevel / POWER_SET_SIZE;
             }
         else {
             // just inside an enemy, set based on difficulty of parent only
@@ -2048,20 +2079,30 @@ Level::Level( unsigned int inSeed,
         // weights increase toward higher token levels (harder to find
         // low-value tokens inside enemy)
 
+        // BUT... we don't need to create a special inverted distribution
+        // because it only contains max 40 values anyway, so it doesn't
+        // touch the most-likely values at the end (the big values
+
+        // SO, we invert it later, when drawing from it, below
+
+        // Effectively picking from a maximum of 40 values 
+        // BELOW maxFloorTokenLevel
+
+        /*
         // inverted geometric
         for( int i=0; i<numValues; i++ ) {
             probabilities[i] = pmfParam * pow( 1 - pmfParam, 
                                                ( numValues - i - 1 ) );
             }
+        */
         }
-    else {
-        // weights increase toward lower token levels (harder to find
-        // high-value tokens inside player)
+    
+    // weights increase toward lower token levels (harder to find
+    // high-value tokens inside player)
 
-        // straight geometric
-        for( int i=0; i<numValues; i++ ) {
-            probabilities[i] = pmfParam * pow( 1 - pmfParam, i );
-            }
+    // straight geometric
+    for( int i=0; i<numValues; i++ ) {
+        probabilities[i] = pmfParam * pow( 1 - pmfParam, i );
         }
     
     ProbabilityMassFunction powerLevelPMF( &randSource, numValues,
@@ -2139,9 +2180,22 @@ Level::Level( unsigned int inSeed,
                     mainPower = getRandomPowerUp( mFloorTokenLevel );
                     }
                 
+
                 // all tokens on floor have levels sampled from PMF
-                mainPower.level = 
-                    powerLevelPMF.sampleElement() + minFloorTokenLevel;
+
+                if( mInsideEnemy ) {
+                    // inverted geometric
+
+                    // lower powers less likely
+                    mainPower.level =
+                        maxFloorTokenLevel - powerLevelPMF.sampleElement();
+                    }
+                else {
+                    // straight geometric, starting with minFloorTokenLevel
+                
+                    mainPower.level = 
+                        powerLevelPMF.sampleElement() + minFloorTokenLevel;
+                    }
                 
 
 
