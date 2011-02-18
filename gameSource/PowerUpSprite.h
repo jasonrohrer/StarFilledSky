@@ -28,6 +28,4 @@ class PowerUpSprite : public BorderSprite {
         PowerUpSet *mSubPowers;
         
         
-        ColorScheme mColors;
-        
     };

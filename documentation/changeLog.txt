@@ -30,6 +30,10 @@ Version 12   2011-February-17
 --Fixed bug in token update when a sub-token picked up right before rising 
   (thanks Alexey Zubkov).
 
+--Token sub-level colors now stay updated to match token as it changes (upon 
+  reentering token).
+
+
 
 
 
