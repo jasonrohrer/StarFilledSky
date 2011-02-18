@@ -6,7 +6,7 @@
  */
 
 
-int versionNumber = 12;
+int versionNumber = 13;
 
 
 
@@ -156,7 +156,7 @@ const char *getFontTGAFileName() {
 
 
 char isDemoMode() {
-    return true;
+    return false;
     }
 
 
