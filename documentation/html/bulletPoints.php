@@ -37,7 +37,7 @@ include( "header.php" );
 <br>
 
 
-<li>This game would not exist without the inspiration that I drew from  games like Spelunky, Shoot First, Disgaea, Borderlands, Everyday Shooter, Psychonauts, Soul Reaver, and Prey.</li>
+<li>This game would not exist without the inspiration that I drew from  games like Spelunky, Shoot First, Disgaea, Borderlands, Everyday Shooter, Flow, Psychonauts, Soul Reaver, and Prey.</li>
 <br>
 
 
