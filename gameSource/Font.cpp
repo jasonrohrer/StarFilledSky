@@ -238,8 +238,8 @@ double Font::drawString( const char *inString, doublePair inPosition,
     // character sprites are drawn on their centers, so the alignment
     // adjustments above aren't quite right.
     if( !mFixedWidth ) {        
-        x += scale * mCharWidth[ (int)( inString[0] ) ] / 2 +
-            scale * mCharLeftEdgeOffset[ (int)( inString[0] ) ];
+        x += scale * mCharWidth[ (unsigned char)( inString[0] ) ] / 2 +
+            scale * mCharLeftEdgeOffset[ (unsigned char)( inString[0] ) ];
         }
     else {
         x += scale * mSpriteWidth / 2;
@@ -249,7 +249,8 @@ double Font::drawString( const char *inString, doublePair inPosition,
     for( unsigned int i=0; i<numChars; i++ ) {
         doublePair charPos = { x, y };
         
-        double charWidth = drawCharacter( inString[i], charPos );
+        double charWidth = drawCharacter( (unsigned char)( inString[i] ), 
+                                          charPos );
         x += charWidth + mCharSpacing * scale;
         }
     // no spacing after last character
@@ -262,7 +263,7 @@ double Font::drawString( const char *inString, doublePair inPosition,
 
 
 
-double Font::drawCharacter( char inC, doublePair inPosition ) {
+double Font::drawCharacter( unsigned char inC, doublePair inPosition ) {
     double scale = scaleFactor * mScaleFactor;
 
     if( inC == ' ' ) {
@@ -270,20 +271,20 @@ double Font::drawCharacter( char inC, doublePair inPosition ) {
         }
 
     if( !mFixedWidth ) {
-        inPosition.x -= mCharLeftEdgeOffset[ (int)inC ] * scale;
+        inPosition.x -= mCharLeftEdgeOffset[ inC ] * scale;
         }
     
-    SpriteHandle spriteID = mSpriteMap[ (int)inC ];
+    SpriteHandle spriteID = mSpriteMap[ inC ];
     
     if( spriteID != NULL ) {
-        drawSprite( mSpriteMap[ (int)inC ], inPosition, scale );
+        drawSprite( mSpriteMap[ inC ], inPosition, scale );
         }
     
     if( mFixedWidth ) {
         return mSpriteWidth * scale;
         }
     else {
-        return mCharWidth[ (int)inC ] * scale;
+        return mCharWidth[ inC ] * scale;
         }
     }
 
@@ -297,7 +298,7 @@ double Font::measureString( const char *inString ) {
     double width = 0;
     
     for( unsigned int i=0; i<numChars; i++ ) {
-        char c = inString[i];
+        unsigned char c = inString[i];
         
         if( c == ' ' ) {
             width += mSpaceWidth * scale;
@@ -306,7 +307,7 @@ double Font::measureString( const char *inString ) {
             width += mSpriteWidth * scale;
             }
         else {
-            width += mCharWidth[ (int)c ] * scale;
+            width += mCharWidth[ c ] * scale;
             }
     
         width += mCharSpacing * scale;

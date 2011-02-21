@@ -35,7 +35,7 @@ class Font {
     private:
         
         // returns x coordinate to right of drawn character
-        double drawCharacter( char inC, doublePair inPosition );
+        double drawCharacter( unsigned char inC, doublePair inPosition );
         
         
         double mScaleFactor;

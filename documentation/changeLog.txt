@@ -1,3 +1,12 @@
+Version 14
+
+--Fixed crash caused by language files that use extended ASCII characters 
+  (thanks Malte Perenz).
+
+
+
+
+
 Version 13   2011-February-18     (First public release)
 
 --Fixed a bunch of code warnings and a few bugs using cppcheck.
