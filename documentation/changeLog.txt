@@ -3,6 +3,8 @@ Version 14
 --Fixed crash caused by language files that use extended ASCII characters 
   (thanks Malte Perenz).
 
+--Changed to % instead of @ to quit from pause screen, because @ is 
+  inaccessible on some non-US keyboards.
 
 
 
