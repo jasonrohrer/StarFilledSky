@@ -110,7 +110,8 @@ an infinite, recursive, tactical shooter for one player by
 
 [<a href="intro.php">intro</a>] --
 [<a href="screens.php">screenshots</a>] --
-[<a href="bulletPoints.php">bullet points</a>] 
+[<a href="bulletPoints.php">bullet points</a>] -- 
+[<a href="reviews.php">reviews</a>] 
 </center>
 
 
