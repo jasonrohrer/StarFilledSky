@@ -6,6 +6,8 @@ Version 14
 --Changed to % instead of @ to quit from pause screen, because @ is 
   inaccessible on some non-US keyboards.
 
+--Fixed so that % key to toggle playback display works even if speed control keys are disabled.
+
 
 
 
