@@ -1324,6 +1324,182 @@ void Level::freeReproducibleData() {
 
 
 
+
+
+int Level::computeDifficultyLevel( int inLevelNumber,
+                                   char inInsideEnemy,
+                                   char inInsidePowerUp,
+                                   char inIsKnockDown,
+                                   int inTokenRecursionDepth,
+                                   int inParentEnemyDifficultyLevel,
+                                   int inParentTokenLevel,
+                                   int inParentFloorTokenLevel,
+                                   int inParentLevelDifficulty ) {
+    
+    
+
+
+    // negative levels get harder and harder the farther you go down
+    int difficultyLevel = inLevelNumber;
+    if( difficultyLevel < 0 ) {
+        difficultyLevel *= -1;
+        }
+
+
+    // don't let difficultyLevel, which might be one more than parent,
+    // overflow
+    if( inParentLevelDifficulty == INT_MAX ) {
+        inParentLevelDifficulty--;
+        }
+
+
+    // make sure level is appropriately difficult based on parent level
+    
+    if( inLevelNumber >= 0 && difficultyLevel < inParentLevelDifficulty - 1 ) {
+        
+        if( !inIsKnockDown ) {
+            // no more that one step less difficult
+            difficultyLevel = inParentLevelDifficulty - 1;
+            }
+        else {
+            // give player a break on knock-down
+            // halfway between level's base difficulty and difficulty
+            // suggested by parent
+
+            // be careful of overflow!
+            if( inParentLevelDifficulty <= INT_MAX - difficultyLevel ) {
+                difficultyLevel = 
+                    ( difficultyLevel + inParentLevelDifficulty - 1 ) / 2;
+                }
+            else {
+                difficultyLevel = 
+                    difficultyLevel / 2 + 
+                    ( inParentLevelDifficulty - 1 ) / 2;
+                }
+            }
+        }
+    else if( inLevelNumber < 0 && 
+             difficultyLevel < inParentLevelDifficulty + 1 ) {
+        
+        // difficulty inverted for negative levels
+
+        if( !inIsKnockDown ) {
+            // no less than one step more difficult
+            difficultyLevel = inParentLevelDifficulty + 1;
+            }
+        else {   
+            // give player a break on knock-down
+            // halfway between level's base difficulty and difficulty
+            // suggested by parent
+
+            // be careful of overflow
+            if( inParentLevelDifficulty <= INT_MAX - difficultyLevel - 1) {
+                difficultyLevel = 
+                    ( difficultyLevel + inParentLevelDifficulty + 1 ) / 2;
+                }
+            else if( inParentLevelDifficulty < INT_MAX ) {
+                difficultyLevel =
+                    difficultyLevel / 2 + 
+                    ( inParentLevelDifficulty + 1 ) / 2;
+                }
+            else {
+                difficultyLevel =
+                    difficultyLevel / 2 + 
+                    inParentLevelDifficulty / 2;
+                }
+            }
+        }
+        
+
+
+    // levels get harder the deeper we go inside power-ups
+    int tokenFactor;
+
+    // or if we enter an already-high (or low!) token 
+    // (through previous leveling) that is inside player
+
+    if( !inInsideEnemy ) {
+        if( inInsidePowerUp ) {
+            // recursion depth equal to parent token level
+            tokenFactor = inParentTokenLevel;
+            
+            if( inParentTokenLevel > 1 || inTokenRecursionDepth > 1 ) {
+                tokenFactor++;
+                }
+            }
+        else {
+            // no token factor
+            tokenFactor = 0;
+            }        
+        }
+    else {
+        // inside enemy
+        
+        
+        if( inInsidePowerUp ) {
+            
+            // can't get useful information from parent token, because it rises
+            // at higher levels and offers no indication of recursion depth
+            
+            // instead, use tracked recursion depth directly
+            tokenFactor = inTokenRecursionDepth;
+
+
+            if( inParentTokenLevel != inParentFloorTokenLevel ) {
+                // we're inside a token that is already lower or higher than
+                // it should be
+
+                // force an effectively deeper/shallower recursion when we
+                // re-enter a power-up that we've already entered before.
+                tokenFactor += 
+                    ( inParentFloorTokenLevel - inParentTokenLevel );
+
+                if( tokenFactor < 0 ) {
+                    tokenFactor = 0;
+                    }
+                }            
+            }
+        else {
+            // no token factor
+            tokenFactor = 0;
+            }    
+        }
+    
+    
+    if( tokenFactor > 0 ) {
+        // raise difficulty level based on recursion into power-ups
+
+        // but don't let it overflow
+        if( difficultyLevel <= INT_MAX - tokenFactor ) {
+            difficultyLevel = difficultyLevel + tokenFactor;
+            }
+        else {
+            difficultyLevel = INT_MAX;
+            }
+        
+        if( tokenFactor > 1 ) {
+            // old:  not difficulty doubling
+            //difficultyLevel += difficultyLevel / 2;
+
+            // new:  doubling, but not tripling
+        
+            // don't let it overflow
+            if( difficultyLevel <= INT_MAX - difficultyLevel ) {    
+                difficultyLevel += difficultyLevel;
+                }
+            else {
+                difficultyLevel = INT_MAX;
+                }
+            }
+        
+        }
+
+
+    return difficultyLevel;
+    }
+
+
+
 Level::Level( unsigned int inSeed,
               ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
@@ -1581,161 +1757,16 @@ Level::Level( unsigned int inSeed,
     
 
     
-    // negative levels get harder and harder the farther you go down
-    mDifficultyLevel = mLevelNumber;
-    if( mDifficultyLevel < 0 ) {
-        mDifficultyLevel *= -1;
-        }
-
-
-    // don't let mDifficultyLevel, which might be one more than parent,
-    // overflow
-    if( inParentLevelDifficulty == INT_MAX ) {
-        inParentLevelDifficulty--;
-        }
-
-
-    // make sure level is appropriately difficult based on parent level
+    mDifficultyLevel = computeDifficultyLevel( inLevelNumber,
+                                               inInsideEnemy,
+                                               inInsidePowerUp,
+                                               inIsKnockDown,
+                                               inTokenRecursionDepth,
+                                               inParentEnemyDifficultyLevel,
+                                               inParentTokenLevel,
+                                               inParentFloorTokenLevel,
+                                               inParentLevelDifficulty );
     
-    if( mLevelNumber >= 0 && mDifficultyLevel < inParentLevelDifficulty - 1 ) {
-        
-        if( !mKnockDown ) {
-            // no more that one step less difficult
-            mDifficultyLevel = inParentLevelDifficulty - 1;
-            }
-        else {
-            // give player a break on knock-down
-            // halfway between level's base difficulty and difficulty
-            // suggested by parent
-
-            // be careful of overflow!
-            if( inParentLevelDifficulty <= INT_MAX - mDifficultyLevel ) {
-                mDifficultyLevel = 
-                    ( mDifficultyLevel + inParentLevelDifficulty - 1 ) / 2;
-                }
-            else {
-                mDifficultyLevel = 
-                    mDifficultyLevel / 2 + 
-                    ( inParentLevelDifficulty - 1 ) / 2;
-                }
-            }
-        }
-    else if( mLevelNumber < 0 && 
-             mDifficultyLevel < inParentLevelDifficulty + 1 ) {
-        
-        // difficulty inverted for negative levels
-
-        if( !mKnockDown ) {
-            // no less than one step more difficult
-            mDifficultyLevel = inParentLevelDifficulty + 1;
-            }
-        else {   
-            // give player a break on knock-down
-            // halfway between level's base difficulty and difficulty
-            // suggested by parent
-
-            // be careful of overflow
-            if( inParentLevelDifficulty <= INT_MAX - mDifficultyLevel - 1) {
-                mDifficultyLevel = 
-                    ( mDifficultyLevel + inParentLevelDifficulty + 1 ) / 2;
-                }
-            else if( inParentLevelDifficulty < INT_MAX ) {
-                mDifficultyLevel =
-                    mDifficultyLevel / 2 + 
-                    ( inParentLevelDifficulty + 1 ) / 2;
-                }
-            else {
-                mDifficultyLevel =
-                    mDifficultyLevel / 2 + 
-                    inParentLevelDifficulty / 2;
-                }
-            }
-        }
-        
-
-
-    // levels get harder the deeper we go inside power-ups
-    int tokenFactor;
-
-    // or if we enter an already-high (or low!) token 
-    // (through previous leveling) that is inside player
-
-    if( !mInsideEnemy ) {
-        if( inInsidePowerUp ) {
-            // recursion depth equal to parent token level
-            tokenFactor = inParentTokenLevel;
-            
-            if( inParentTokenLevel > 1 || mTokenRecursionDepth > 1 ) {
-                tokenFactor++;
-                }
-            }
-        else {
-            // no token factor
-            tokenFactor = 0;
-            }        
-        }
-    else {
-        // inside enemy
-        
-        
-        if( inInsidePowerUp ) {
-            
-            // can't get useful information from parent token, because it rises
-            // at higher levels and offers no indication of recursion depth
-            
-            // instead, use tracked recursion depth directly
-            tokenFactor = mTokenRecursionDepth;
-
-
-            if( inParentTokenLevel != inParentFloorTokenLevel ) {
-                // we're inside a token that is already lower or higher than
-                // it should be
-
-                // force an effectively deeper/shallower recursion when we
-                // re-enter a power-up that we've already entered before.
-                tokenFactor += 
-                    ( inParentFloorTokenLevel - inParentTokenLevel );
-
-                if( tokenFactor < 0 ) {
-                    tokenFactor = 0;
-                    }
-                }            
-            }
-        else {
-            // no token factor
-            tokenFactor = 0;
-            }    
-        }
-    
-    
-    if( tokenFactor > 0 ) {
-        // raise difficulty level based on recursion into power-ups
-
-        // but don't let it overflow
-        if( mDifficultyLevel <= INT_MAX - tokenFactor ) {
-            mDifficultyLevel = mDifficultyLevel + tokenFactor;
-            }
-        else {
-            mDifficultyLevel = INT_MAX;
-            }
-        
-        if( tokenFactor > 1 ) {
-            // old:  not difficulty doubling
-            //mDifficultyLevel += mDifficultyLevel / 2;
-
-            // new:  doubling, but not tripling
-        
-            // don't let it overflow
-            if( mDifficultyLevel <= INT_MAX - mDifficultyLevel ) {    
-                mDifficultyLevel += mDifficultyLevel;
-                }
-            else {
-                mDifficultyLevel = INT_MAX;
-                }
-            }
-        
-        }
-
 
 
 

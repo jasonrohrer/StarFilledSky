@@ -393,7 +393,18 @@ class Level {
 
         // returns level to starting state
         void rewindLevel();
-        
+
+
+
+        static int computeDifficultyLevel( int inLevelNumber,
+                                           char inInsideEnemy,
+                                           char inInsidePowerUp,
+                                           char inIsKnockDown,
+                                           int inTokenRecursionDepth,
+                                           int inParentEnemyDifficultyLevel,
+                                           int inParentTokenLevel,
+                                           int inParentFloorTokenLevel,
+                                           int inParentLevelDifficulty );
 
 
     protected:
