@@ -151,6 +151,19 @@ void drawTipDisplay( doublePair inScreenCenter ) {
                              currentTipDifficultyModifier,
                              translate( "difficultyTag" ) );
         
+
+            // scoot over if it is going off the edge of the screen
+            double messageWidth = 
+                tinyFont->measureString( difficultyModTipString );
+
+            double overhang = 
+                ( tipPos.x + messageWidth / 2 + 0.125 ) -
+                ( inScreenCenter.x + viewWidth / 2 );
+            
+            if( overhang > 0 ) {
+                tipPos.x -= overhang;
+                }
+            
             drawTip( difficultyModTipString, tipPos, fade, true );
             
             delete [] difficultyModTipString;
