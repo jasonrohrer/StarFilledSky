@@ -1500,15 +1500,11 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
         if( !inInsideEnemy ) {
             
-            if( inParentTokenLevel >= 2 * POWER_SET_SIZE ) {
-                // take base floor token level into account too
-                // higher base floor tokens give player an advantage, even 
-                // if low recursion depth could achieve the same token
-
-                floorFactor = inParentTokenLevel / POWER_SET_SIZE;
-                
-                
-                }
+            // take base floor token level into account too
+            // higher base floor tokens give player an advantage, even 
+            // if low recursion depth could achieve the same token
+            
+            floorFactor = (double)inParentTokenLevel / POWER_SET_SIZE;
             }
         else {
 
@@ -1516,7 +1512,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
             if( inInsidePowerUp && 
                 inParentFloorTokenLevel >= inParentTokenLevel ) {
             
-                int factor = inParentFloorTokenLevel - inParentTokenLevel;
+                double factor = inParentFloorTokenLevel - inParentTokenLevel;
                 
                 factor += 1;
                 
@@ -1526,15 +1522,18 @@ int Level::computeDifficultyLevel( int inLevelNumber,
             }
         
 
-        if( floorFactor > 1 ) {
-            
-            // watch for overflow
-            if( difficultyLevel < (int)( INT_MAX / floorFactor ) ) {
-                difficultyLevel = (int)( difficultyLevel * floorFactor );
-                }
-            else {
-                difficultyLevel = INT_MAX;
-                }
+
+
+        
+        int floorFactorAddIn = 
+            (int)( floorFactor * pow( inParentLevelDifficulty, 0.25 ) );
+
+        // watch for overflow
+        if( difficultyLevel <= INT_MAX - floorFactorAddIn ) {
+            difficultyLevel += floorFactorAddIn;
+            }
+        else {
+            difficultyLevel = INT_MAX;
             }
         
         
