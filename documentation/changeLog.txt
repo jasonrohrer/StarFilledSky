@@ -28,6 +28,8 @@ Version 14
 
 --New, less severe formula for computing difficulty of levels inside tokens.
 
+--Playback automatically reverts to windowed mode if the specified resolution 
+  is not available.
 
 
 
