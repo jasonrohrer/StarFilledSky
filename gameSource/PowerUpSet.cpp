@@ -79,7 +79,7 @@ void drawPowerUpCenter( PowerUp inPower,
 
 
         inPosition.x += 0.5 - 0.3125;
-        inPosition.y -= 0.5 - 0.25;
+        inPosition.y -= 0.5 - 0.3125;
         drawNumber( levelToDraw, inPosition );
         }
     

@@ -16,6 +16,10 @@ Version 14
   preserving whole-multiple game pixels, regardless of aspect ratio.  Before, 
   it wasn't working properly in 16:9.
 
+--Moved token level numbers up one pixel to make them easier to read, and 
+  redesigned some of the token icons to make this shift possible (thanks 
+  Daniel Benmergui).
+
 
 
 
