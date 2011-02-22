@@ -1323,6 +1323,9 @@ void Level::freeReproducibleData() {
 //#include "minorGems/system/Thread.h"
 
 
+static int intLog3( int inX ) {
+    return (int)( log( inX ) / log( 3 ) );
+    }
 
 
 
@@ -1411,21 +1414,21 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         }
         
 
+    
+
 
     // levels get harder the deeper we go inside power-ups
-    int tokenFactor;
+    int tokenFactor = 0;
 
     // or if we enter an already-high (or low!) token 
     // (through previous leveling) that is inside player
 
     if( !inInsideEnemy ) {
         if( inInsidePowerUp ) {
-            // recursion depth equal to parent token level
-            tokenFactor = inParentTokenLevel;
-            
-            if( inParentTokenLevel > 1 || inTokenRecursionDepth > 1 ) {
-                tokenFactor++;
-                }
+            // extra recursion depth based on parent token level
+            // how much recursion would be needed to build this token from
+            // scratch?
+            tokenFactor = intLog3( inParentTokenLevel ) - 1;
             }
         else {
             // no token factor
@@ -1466,18 +1469,11 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         }
     
     
-    if( tokenFactor > 0 ) {
+    if( ( tokenFactor + inTokenRecursionDepth ) > 0 ) {
         // raise difficulty level based on recursion into power-ups
 
-        // but don't let it overflow
-        if( difficultyLevel <= INT_MAX - tokenFactor ) {
-            difficultyLevel = difficultyLevel + tokenFactor;
-            }
-        else {
-            difficultyLevel = INT_MAX;
-            }
         
-        if( tokenFactor > 1 ) {
+        if( inTokenRecursionDepth > 1 ) {
             // old:  not difficulty doubling
             //difficultyLevel += difficultyLevel / 2;
 
@@ -1492,7 +1488,60 @@ int Level::computeDifficultyLevel( int inLevelNumber,
                 }
             }
         
+
+        // also take token itself into account
+        if( tokenFactor > 0 ) {
+            
+            char overflow = true;
+
+            // watch for overflows
+            if( difficultyLevel < pow( INT_MAX, 1.0 / tokenFactor ) ) {
+                
+                int multiple = (int)( pow( difficultyLevel, tokenFactor ) );
+                
+                if( difficultyLevel < INT_MAX / multiple ) {
+                    
+                    difficultyLevel *= multiple;
+                    overflow = false;
+                    }
+                }
+
+            if( overflow ) {
+                difficultyLevel = INT_MAX;
+                }
+            }
+
+        if( inParentTokenLevel >= 2 * POWER_SET_SIZE ) {
+            // take base floor token level into account too
+            // higher base floor tokens give player an advantage, even 
+            // if low recursion depth could achieve them
+
+            double floorFactor = inParentTokenLevel / POWER_SET_SIZE;
+            
+
+            // watch for overflow
+            if( difficultyLevel < (int)( INT_MAX / floorFactor ) ) {
+                difficultyLevel = (int)( difficultyLevel * floorFactor );
+                }
+            else {
+                difficultyLevel = INT_MAX;
+                }
+            }
+        
+
         }
+    
+    // FINALLY, add parent token level  in to cause further difficulty 
+    // differentiation even if LOG is 0 and floor factor is 1
+
+    // have this factor grow gradually at higher difficulty levels
+    difficultyLevel += 
+        (int)(
+            inParentTokenLevel * 
+            pow( inParentLevelDifficulty, 0.25 ) );
+
+        
+        
 
 
     return difficultyLevel;

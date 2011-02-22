@@ -26,6 +26,7 @@ Version 14
 --Token tool tips are now always shown instantly on mouse over (not just 3 
   times each).
 
+--New, less severe formula for computing difficulty of levels inside tokens.
 
 
 
