@@ -12,6 +12,10 @@ Version 14
 --Fixed so that enter key is enabled on game quit/restart that happens in the 
   middle of the tutorial after enter has been explained (thanks Ian Bogost).
 
+--Fixed so that game always fills screen vertically as much as it can, 
+  preserving whole-multiple game pixels, regardless of aspect ratio.  Before, 
+  it wasn't working properly in 16:9.
+
 
 
 
