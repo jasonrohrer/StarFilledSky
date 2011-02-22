@@ -1936,7 +1936,7 @@ void drawFrame( char inUpdate ) {
         
         // show difficulty change relative to baseline "level below" 
         // difficulty 
-        if( levelNumber >= 0 ) {
+        if( levelNumber > 0 ) {
             difficultyModifier = 
                 subLevelDifficulty - 
                 ( currentLevel->getDifficultyLevel() - 1 );
