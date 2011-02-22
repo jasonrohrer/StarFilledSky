@@ -141,9 +141,9 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         
         
         drawTip( currentTipString, tipPos, fade );
-        
-        // don't display +1 modifiers, because they're not important
-        if( currentTipDifficultyModifier > 1 ) {
+
+
+        if( currentTipDifficultyModifier > 0 ) {
             tipPos.y -= 0.5;
             
             char *difficultyModTipString = 
