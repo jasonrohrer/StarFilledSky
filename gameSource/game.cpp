@@ -1927,12 +1927,16 @@ void drawFrame( char inUpdate ) {
     int itemIndex;
     if( currentLevel->isPowerUp( mousePos, &itemIndex ) ) {
         
+        int subLevelDifficulty;
+
         PowerUp hitPowerUp = 
-            currentLevel->peekPowerUp( mousePos );
+            currentLevel->peekPowerUp( mousePos, &subLevelDifficulty );
+
+        int difficultyModifier = subLevelDifficulty - abs( levelNumber - 1 );
 
         // keepy showing, with a delay, after quota of showings filled
         // start at 0.5 to only hold solid for 1 second after mouse leaves 
-        triggerTip( hitPowerUp.powerType, true, 0.5 );
+        triggerTip( hitPowerUp.powerType, true, 0.5, difficultyModifier );
         }
     
 

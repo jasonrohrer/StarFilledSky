@@ -20,6 +20,9 @@ Version 14
   redesigned some of the token icons to make this shift possible (thanks 
   Daniel Benmergui).
 
+--Added tool-tips marking the sub-level difficulty inside a token (thanks 
+  Jonathan Blow).
+
 
 
 

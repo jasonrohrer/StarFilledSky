@@ -5925,7 +5925,8 @@ PowerUp Level::getPowerUp( doublePair inPos ) {
 
 
 
-PowerUp Level::peekPowerUp( doublePair inPos ) {
+PowerUp Level::peekPowerUp( doublePair inPos,
+                            int *outSubLevelDifficulty ) {
     for( int j=0; j<mPowerUpTokens.size(); j++ ) {
         PowerUpToken *t = mPowerUpTokens.getElement( j );
 
@@ -5936,6 +5937,21 @@ PowerUp Level::peekPowerUp( doublePair inPos ) {
         if( distance( t->position, inPos ) < 0.5 ) {
             
             PowerUp p = t->powerUp;
+
+            if( outSubLevelDifficulty != NULL ) {
+                
+                *outSubLevelDifficulty = 
+                    computeDifficultyLevel( mLevelNumber - 1,
+                                            mInsideEnemy,
+                                            true, // inside powerUp
+                                            false,  // not knock-down
+                                            mTokenRecursionDepth + 1,
+                                            0, // not directly inside an enemy
+                                            p.level,
+                                            mFloorTokenLevel,
+                                            mDifficultyLevel );
+                }
+
 
             return p;
             }

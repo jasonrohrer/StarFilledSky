@@ -1,6 +1,7 @@
 #include "tipDisplay.h"
 
 #include "minorGems/game/game.h"
+#include "minorGems/util/stringUtils.h"
 #include "Font.h"
 #include "drawUtils.h"
 
@@ -21,6 +22,9 @@ static float tipProgress = 0;
 const char *currentTipString = NULL;
 
 spriteID currentTipSpriteID = endSpriteID;
+
+int currentTipDifficultyModifier = 0;
+
 
 
 static int timesToShowEachTip = 3;
@@ -78,7 +82,8 @@ void freeTipDisplay() {
 
 
 
-void drawTip( const char *inMessage, doublePair inPos, float inFade ) {
+void drawTip( const char *inMessage, doublePair inPos, float inFade,
+              char inRedText ) {
     double messageWidth = tinyFont->measureString( inMessage );
             
         
@@ -87,8 +92,14 @@ void drawTip( const char *inMessage, doublePair inPos, float inFade ) {
               inPos.y - 0.25, 
               inPos.x + messageWidth / 2 + 0.125, 
               inPos.y + 0.25 );
-    setDrawColor( 1, 1, 1, inFade );
 
+    if( inRedText ) {
+        setDrawColor( 1, 0, 0, inFade );
+        }
+    else {
+        setDrawColor( 1, 1, 1, inFade );
+        }
+    
     // shift by one sub-pixel, font drawing code is currently a bit off
     inPos.x += 0.03125;
     tinyFont->drawString( inMessage, 
@@ -125,6 +136,20 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         
         drawTip( currentTipString, tipPos, fade );
         
+        if( currentTipDifficultyModifier > 0 ) {
+            tipPos.y -= 0.5;
+            
+            char *difficultyModTipString = 
+                autoSprintf( "+%d %s",
+                             currentTipDifficultyModifier,
+                             translate( "difficultyTag" ) );
+        
+            drawTip( difficultyModTipString, tipPos, fade, true );
+            
+            delete [] difficultyModTipString;
+            }
+        
+
         
         tipProgress += 0.00417 * frameRateFactor;
         
@@ -151,7 +176,7 @@ void forceTipEnd() {
 
 
 void triggerTip( spriteID inPowerType, char inShowAfterQuota, 
-                 float inStartingProgress ) {
+                 float inStartingProgress, int inDifficultyModifier ) {
 
     char freshShow = false;
     
@@ -194,5 +219,7 @@ void triggerTip( spriteID inPowerType, char inShowAfterQuota,
     
     currentTipSpriteID = inPowerType;
     currentTipString = translate( spriteIDTipTranslateKeys[ inPowerType ] );
+
+    currentTipDifficultyModifier = inDifficultyModifier;
     }
 

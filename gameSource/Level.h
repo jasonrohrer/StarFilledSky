@@ -260,7 +260,8 @@ class Level {
                         char inWidePickup = false );
 
 
-        PowerUp peekPowerUp( doublePair inPos );
+        PowerUp peekPowerUp( doublePair inPos, 
+                             int *outSubLevelDifficulty = NULL );
 
         // removes it from world
         PowerUp getPowerUp( doublePair inPos );

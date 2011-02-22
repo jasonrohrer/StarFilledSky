@@ -21,7 +21,8 @@ void drawTipDisplay( doublePair inScreenCenter );
 // Setting it to 0.0 (default) shows tip for 3 seconds before fade starts. 
 void triggerTip( spriteID inPowerType, 
                  char inShowAfterQuota = false,
-                 float inStartingProgress = 0 );
+                 float inStartingProgress = 0,
+                 int inDifficultyModifier = 0 );
 
 
 void forceTipEnd();
@@ -29,4 +30,5 @@ void forceTipEnd();
 
 // utility function shared by setTipDisplay
 
-void drawTip( const char *inMessage, doublePair inPos, float inFade );
+void drawTip( const char *inMessage, doublePair inPos, float inFade,
+              char inRedText=false );
