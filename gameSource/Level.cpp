@@ -1483,21 +1483,13 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         // also take token itself into account
         if( tokenFactor > 0 ) {
             
-            char overflow = true;
+            int multiple = (int)( pow( 2, tokenFactor ) );    
 
             // watch for overflows
-            if( difficultyLevel < pow( INT_MAX, 1.0 / tokenFactor ) ) {
-                
-                int multiple = (int)( pow( difficultyLevel, tokenFactor ) );
-                
-                if( difficultyLevel < INT_MAX / multiple ) {
-                    
-                    difficultyLevel *= multiple;
-                    overflow = false;
-                    }
+            if( difficultyLevel <= INT_MAX / multiple ) {
+                difficultyLevel *= multiple;
                 }
-
-            if( overflow ) {
+            else {
                 difficultyLevel = INT_MAX;
                 }
             }
@@ -1553,10 +1545,12 @@ int Level::computeDifficultyLevel( int inLevelNumber,
     // differentiation even if LOG is 0 and floor factor is 1
     
     // have this factor grow gradually at higher difficulty levels
+    int parentTokenFactor = 0;
+
     if( !inInsideEnemy ) {
         
    
-        difficultyLevel += 
+        parentTokenFactor = 
             (int)(
                 inParentTokenLevel * 
                 pow( inParentLevelDifficulty, 0.25 ) );
@@ -1571,14 +1565,27 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         
             factor += 1;
 
-            difficultyLevel += 
+            parentTokenFactor = 
                 (int)(
                     factor * 
                     pow( inParentLevelDifficulty, 0.25 ) );
     
             }
         }
+
+    if( parentTokenFactor > 0 ) {
+        
+        // watch overflow
+        if( difficultyLevel <= INT_MAX - parentTokenFactor ) {
+            
+            difficultyLevel += parentTokenFactor;
+            }
+        else {
+            difficultyLevel = INT_MAX;
+            }
+        }
     
+
         
         
 
