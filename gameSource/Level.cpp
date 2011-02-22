@@ -1323,8 +1323,8 @@ void Level::freeReproducibleData() {
 //#include "minorGems/system/Thread.h"
 
 
-static int intLog3( int inX ) {
-    return (int)( log( inX ) / log( 3 ) );
+static double log3( int inX ) {
+    return log( inX ) / log( 3 );
     }
 
 
@@ -1414,11 +1414,16 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         }
         
 
+
+    // scale up the impact of our difficulty increases as the parent
+    // level's difficulty increases
+    double scaleFactor = pow( inParentLevelDifficulty, 0.25 );
+    
     
 
 
     // levels get harder the deeper we go inside power-ups
-    int tokenFactor = 0;
+    double tokenFactor = 0;
 
     // or if we enter an already-high (or low!) token 
     // (through previous leveling) that is inside player
@@ -1428,7 +1433,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
             // extra recursion depth based on parent token level
             // how much recursion would be needed to build this token from
             // scratch?
-            tokenFactor = intLog3( inParentTokenLevel ) - 1;
+            tokenFactor = log3( inParentTokenLevel );
             }
         else {
             // no token factor
@@ -1449,7 +1454,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
                 // force an effectively deeper recursion when we
                 // re-enter a power-up that we've already entered before.
-                tokenFactor = intLog3( 
+                tokenFactor = log3( 
                     ( inParentFloorTokenLevel - inParentTokenLevel ) );
                 }            
             }
@@ -1483,11 +1488,13 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         // also take token itself into account
         if( tokenFactor > 0 ) {
             
-            int multiple = (int)( pow( 2, tokenFactor ) );    
+            double multiple = pow( 2, tokenFactor );    
+
+            int tokenFactorAddIn = (int)( multiple * scaleFactor );
 
             // watch for overflows
-            if( difficultyLevel <= INT_MAX / multiple ) {
-                difficultyLevel *= multiple;
+            if( difficultyLevel <= INT_MAX - tokenFactorAddIn ) {
+                difficultyLevel += tokenFactorAddIn;
                 }
             else {
                 difficultyLevel = INT_MAX;
@@ -1526,7 +1533,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
         
         int floorFactorAddIn = 
-            (int)( floorFactor * pow( inParentLevelDifficulty, 0.25 ) );
+            (int)( floorFactor * scaleFactor );
 
         // watch for overflow
         if( difficultyLevel <= INT_MAX - floorFactorAddIn ) {
@@ -1551,8 +1558,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
    
         parentTokenFactor = 
             (int)(
-                inParentTokenLevel * 
-                pow( inParentLevelDifficulty, 0.25 ) );
+                inParentTokenLevel * scaleFactor );
         }
     else {
         // inside enemy
@@ -1566,8 +1572,7 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
             parentTokenFactor = 
                 (int)(
-                    factor * 
-                    pow( inParentLevelDifficulty, 0.25 ) );
+                    factor * scaleFactor );
     
             }
         }
