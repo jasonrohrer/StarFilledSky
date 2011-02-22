@@ -1441,25 +1441,16 @@ int Level::computeDifficultyLevel( int inLevelNumber,
         
         if( inInsidePowerUp ) {
             
-            // can't get useful information from parent token, because it rises
-            // at higher levels and offers no indication of recursion depth
-            
-            // instead, use tracked recursion depth directly
-            tokenFactor = inTokenRecursionDepth;
+            tokenFactor = 0;
 
-
-            if( inParentTokenLevel != inParentFloorTokenLevel ) {
-                // we're inside a token that is already lower or higher than
+            if( inParentTokenLevel < inParentFloorTokenLevel ) {
+                // we're inside a token that is already lower than
                 // it should be
 
-                // force an effectively deeper/shallower recursion when we
+                // force an effectively deeper recursion when we
                 // re-enter a power-up that we've already entered before.
-                tokenFactor += 
-                    ( inParentFloorTokenLevel - inParentTokenLevel );
-
-                if( tokenFactor < 0 ) {
-                    tokenFactor = 0;
-                    }
+                tokenFactor = intLog3( 
+                    ( inParentFloorTokenLevel - inParentTokenLevel ) );
                 }            
             }
         else {
@@ -1511,14 +1502,40 @@ int Level::computeDifficultyLevel( int inLevelNumber,
                 }
             }
 
-        if( inParentTokenLevel >= 2 * POWER_SET_SIZE ) {
-            // take base floor token level into account too
-            // higher base floor tokens give player an advantage, even 
-            // if low recursion depth could achieve them
 
-            double floorFactor = inParentTokenLevel / POWER_SET_SIZE;
+        double floorFactor = 1;
+        
+
+        if( !inInsideEnemy ) {
             
+            if( inParentTokenLevel >= 2 * POWER_SET_SIZE ) {
+                // take base floor token level into account too
+                // higher base floor tokens give player an advantage, even 
+                // if low recursion depth could achieve the same token
 
+                floorFactor = inParentTokenLevel / POWER_SET_SIZE;
+                
+                
+                }
+            }
+        else {
+
+            // opposite is true inside enemies
+            if( inInsidePowerUp && 
+                inParentFloorTokenLevel >= inParentTokenLevel ) {
+            
+                int factor = inParentFloorTokenLevel - inParentTokenLevel;
+                
+                factor += 1;
+                
+                floorFactor = factor / POWER_SET_SIZE;
+                }
+            
+            }
+        
+
+        if( floorFactor > 1 ) {
+            
             // watch for overflow
             if( difficultyLevel < (int)( INT_MAX / floorFactor ) ) {
                 difficultyLevel = (int)( difficultyLevel * floorFactor );
@@ -1528,18 +1545,40 @@ int Level::computeDifficultyLevel( int inLevelNumber,
                 }
             }
         
-
+        
         }
-    
+
+
     // FINALLY, add parent token level  in to cause further difficulty 
     // differentiation even if LOG is 0 and floor factor is 1
-
+    
     // have this factor grow gradually at higher difficulty levels
-    difficultyLevel += 
-        (int)(
-            inParentTokenLevel * 
-            pow( inParentLevelDifficulty, 0.25 ) );
+    if( !inInsideEnemy ) {
+        
+   
+        difficultyLevel += 
+            (int)(
+                inParentTokenLevel * 
+                pow( inParentLevelDifficulty, 0.25 ) );
+        }
+    else {
+        // inside enemy
 
+        if( inInsidePowerUp && 
+            inParentFloorTokenLevel >= inParentTokenLevel ) {
+            
+            int factor = inParentFloorTokenLevel - inParentTokenLevel;
+        
+            factor += 1;
+
+            difficultyLevel += 
+                (int)(
+                    factor * 
+                    pow( inParentLevelDifficulty, 0.25 ) );
+    
+            }
+        }
+    
         
         
 
