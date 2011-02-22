@@ -23,6 +23,10 @@ Version 14
 --Added tool-tips marking the sub-level difficulty inside a token (thanks 
   Jonathan Blow).
 
+--Token tool tips are now always shown instantly on mouse over (not just 3 
+  times each).
+
+
 
 
 

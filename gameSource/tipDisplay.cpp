@@ -6,6 +6,10 @@
 #include "drawUtils.h"
 
 
+#include <limits.h>
+
+
+
 extern Font *tinyFont;
 
 extern double viewWidth;
@@ -27,7 +31,9 @@ int currentTipDifficultyModifier = 0;
 
 
 
-static int timesToShowEachTip = 3;
+//static int timesToShowEachTip = 3;
+// effectively disable quotas.  Always show tips
+static int timesToShowEachTip = INT_MAX;
 
 
 // delay counter before showing a tip after it has been shown the base
@@ -136,7 +142,8 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         
         drawTip( currentTipString, tipPos, fade );
         
-        if( currentTipDifficultyModifier > 0 ) {
+        // don't display +1 modifiers, because they're not important
+        if( currentTipDifficultyModifier > 1 ) {
             tipPos.y -= 0.5;
             
             char *difficultyModTipString = 
