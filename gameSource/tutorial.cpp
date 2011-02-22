@@ -159,7 +159,8 @@ void loadTutorialBookmark() {
             }
         
         // wait until player rises again before showing it
-        blockEnterForTeaching = true;
+        // BUT allow them to enter stuff again right away
+        blockEnterForTeaching = false;
         tutorialsReady[ currentTut ] = false;
         }
     }
@@ -771,6 +772,22 @@ void tutorialEnemyHit() {
 
 // report enter function used
 void tutorialSomethingEntered( itemType inType ) {
+
+    if( currentTut == 5 && 
+        ! tutorialsReady[5] && ! tutorialsDone[5] ) {
+        
+        // entered before first explanation of entering given?
+        // maybe this is a resumed tutorial where player can enter stuff
+        // early
+        
+        // just skip tutorial 5, because they already know how to enter
+        // things
+        tutorialsReady[5] = true;
+        tutorialsDone[5] = true;
+        currentTut = 6;
+        }
+    
+
     if( tutorialsReady[5] && ! tutorialsDone[5] ) {
         baseLevelForEnterTutorials = lastLevelRisenTo;
         }
