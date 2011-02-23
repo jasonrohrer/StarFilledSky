@@ -33,6 +33,8 @@ RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
         case powerUpBulletSize:
         case powerUpRapidFire:
         case powerUpBulletDistance:
+        case powerUpCornering:
+        case powerUpSticky:
             mWalkers[0] = straight;
             mWalkers[1] = rectPod;
             mWalkers[2] = straight;
