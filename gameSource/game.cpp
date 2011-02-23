@@ -1947,6 +1947,11 @@ void drawFrame( char inUpdate ) {
                 ( currentLevel->getDifficultyLevel() + 1 );
             }
         
+        if( shouldEnterBeBlocked() ) {
+            // don't display difficulty modifier
+            difficultyModifier = 0;
+            }
+
         // keepy showing, with a delay, after quota of showings filled
         // start at 0.5 to only hold solid for 1 second after mouse leaves 
         triggerTip( hitPowerUp.powerType, true, 0.5, difficultyModifier );
