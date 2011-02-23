@@ -31,7 +31,15 @@ RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
     switch( inPowerType ) {
         case powerUpEmpty:
         case powerUpBulletSize:
+            mWalkers[0] = rectPod;
+            mWalkers[1] = rectPod;
+            mWalkers[2] = rectPod;
+            break;
         case powerUpRapidFire:
+            mWalkers[0] = straight;
+            mWalkers[1] = straight;
+            mWalkers[2] = straight;
+            break;
         case powerUpBulletDistance:
         case powerUpCornering:
         case powerUpSticky:
@@ -41,8 +49,8 @@ RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
             break;
         case powerUpHeart:
             mWalkers[0] = curved;
-            mWalkers[1] = rectPod;
-            mWalkers[2] = roundPod;
+            mWalkers[1] = roundPod;
+            mWalkers[2] = curved;
             break;
         // case powerUpAccuracy:
         case powerUpBulletSpeed:
@@ -52,15 +60,19 @@ RandomWalkerSet::RandomWalkerSet( spriteID inPowerType ) {
             mWalkers[2] = diagonal;
             break;
         case powerUpSpread:
-        case powerUpExplode:
             mWalkers[0] = diagonal;
-            mWalkers[1] = rectPod;
+            mWalkers[1] = diagonal;
+            mWalkers[2] = diagonal;
+            break;
+        case powerUpExplode:
+            mWalkers[0] = straight;
+            mWalkers[1] = diagonal;
             mWalkers[2] = straight;
             break;
         case powerUpHeatSeek:
             mWalkers[0] = curved;
             mWalkers[1] = rectPod;
-            mWalkers[2] = diagonal;
+            mWalkers[2] = curved;
             break;
         default:
             mWalkers[0] = straight;
