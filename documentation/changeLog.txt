@@ -31,6 +31,10 @@ Version 14
 --Playback automatically reverts to windowed mode if the specified resolution 
   is not available.
 
+--Alt-Tab now minimizes out of windowed mode as well as fullscreen mode.
+
+
+
 
 
 Version 13   2011-February-18     (First public release)
