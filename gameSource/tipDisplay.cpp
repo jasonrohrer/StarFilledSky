@@ -100,7 +100,7 @@ void drawTip( const char *inMessage, doublePair inPos, float inFade,
               inPos.y + 0.25 );
 
     if( inRedText ) {
-        setDrawColor( 1, 0, 0, inFade );
+        setDrawColor( 0.75, 0, 0, inFade );
         }
     else {
         setDrawColor( 1, 1, 1, inFade );
