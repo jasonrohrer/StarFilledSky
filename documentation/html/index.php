@@ -128,15 +128,21 @@ an infinite, recursive, tactical shooter for one player by
 <br>
 
 <font size=5>
+"Remarkably tactical"</font> --Alex Meer, <a href="http://www.rockpapershotgun.com/2011/02/23/impressions-inside-a-star-filled-sky/">RPS First Impressions</a>
+<br>
+<br>
+
+<font size=5>
 "Extremely clever"</font>
 --Graham Smith, <a href="http://www.pcgamer.com/2011/02/13/inside-a-star-filled-sky-preview/">PC Gamer Preview</a><br><br>
 
+<!--
 <font size=5>
 "Cripplingly deep"</font>
 --Andrew Webster <a href="http://arstechnica.com/gaming/reviews/2011/02/universe-too-large-ars-reviews-indie-pc-inside-a-star-filled-sky.ars?comments=1">Ars Technica Review</a>
 <br>
 <br>
-
+-->
 
 </center>
 <br>
