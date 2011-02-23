@@ -122,7 +122,8 @@ an infinite, recursive, tactical shooter for one player by
 <center>
 
 <font size=5>
-"It really opens up at the higher levels into something amazing."</font> --Frank Lantz [<a href="lantzQuote.php">read full quote</a>]
+"It really opens up at the higher levels into something amazing."</font><br>
+--Frank Lantz [<a href="lantzQuote.php">read full quote</a>]
 <br>
 <br>
 
@@ -130,6 +131,11 @@ an infinite, recursive, tactical shooter for one player by
 "Extremely clever"</font>
 --Graham Smith, <a href="http://www.pcgamer.com/2011/02/13/inside-a-star-filled-sky-preview/">PC Gamer Preview</a><br><br>
 
+<font size=5>
+"Cripplingly deep"</font>
+--Andrew Webster <a href="http://arstechnica.com/gaming/reviews/2011/02/universe-too-large-ars-reviews-indie-pc-inside-a-star-filled-sky.ars?comments=1">Ars Technica Review</a>
+<br>
+<br>
 
 
 </center>
