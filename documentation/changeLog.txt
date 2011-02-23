@@ -33,7 +33,8 @@ Version 14
 
 --Alt-Tab now minimizes out of windowed mode as well as fullscreen mode.
 
---Made connection between token icons and sub-level layouts more extreme.
+--Made connection between token icons and sub-level layouts more extreme 
+  (thanks Ian Bogost).
 
 
 
