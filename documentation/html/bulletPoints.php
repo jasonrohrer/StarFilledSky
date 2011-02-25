@@ -49,7 +49,7 @@ include( "header.php" );
 <br>
 
 
-<li>"Infinite" is kind of a misnomer, because 32-bit integers run out eventually.  You will reach the upper kill screen (one step up from level 2,147,483,647) after about 2043 years of continuous play.  Though with diligence, you can reach the lower kill screen in just 68 years.</li>
+<li>"Infinite" is kind of a misnomer, because 32-bit integers run out eventually.  You will reach the upper mystery (one step up from level 2,147,483,647) after about 2043 years of continuous play.  Though with diligence, you can reach the lower mystery in just 68 years.</li>
 <br>
 
 
