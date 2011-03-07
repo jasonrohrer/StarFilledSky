@@ -3,6 +3,8 @@ Version 15
 --Default player powers in tutorial stages now include extended range (thanks 
   Frank Lantz).
 
+--Powers are now never decayed below level 1 on pass-up to higher self.
+
 
 
 
