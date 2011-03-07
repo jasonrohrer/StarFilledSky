@@ -1641,28 +1641,24 @@ Level::Level( unsigned int inSeed,
     
 
     if( inSetPlayerPowers != NULL ) {
-        // copy player powers (intentionally entering
+        // copy player powers
         mPlayerPowers = new PowerUpSet( inSetPlayerPowers );        
         }
     else {
-        // this is the next level up, or an unintentional knock-down
+        // no powers specified?
 
-        // Try power-ups for player ALWAYS starting off empty
-        // getting knocked down a level, and having to fight through with a
-        // pea shooter, is much more serious this way
-        // give two heart token (to give player default of 3 health)
+        // this must be level 1 in the first tutorial
+
+        // 2 hearts, 1 bullet speed, 3 range?
+
         mPlayerPowers = new PowerUpSet( 0 );
-        mPlayerPowers->mPowers[0].powerType = powerUpHeart;
+        mPlayerPowers->mPowers[0].powerType = powerUpBulletSpeed;
         mPlayerPowers->mPowers[0].level = 1;
         mPlayerPowers->mPowers[1].powerType = powerUpHeart;
-        mPlayerPowers->mPowers[1].level = 1;
+        mPlayerPowers->mPowers[1].level = 2;
         
-        if( ! inIsKnockDown ) {
-            // make basic bullets faster, so shooting feels better at
-            // start of game
-            mPlayerPowers->mPowers[2].powerType = powerUpBulletSpeed;
-            mPlayerPowers->mPowers[2].level = 1;
-            }
+        mPlayerPowers->mPowers[2].powerType = powerUpBulletDistance;
+        mPlayerPowers->mPowers[2].level = 2;
         }
     
     // keep a copy of it for restoring later, if needed

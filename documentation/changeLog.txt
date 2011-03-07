@@ -1,3 +1,12 @@
+Version 15
+
+--Default player powers in tutorial stages now include extended range (thanks 
+  Frank Lantz).
+
+
+
+
+
 Version 14    2011-February-22
 
 --Fixed crash caused by language files that use extended ASCII characters 
