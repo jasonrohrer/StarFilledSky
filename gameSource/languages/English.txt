@@ -52,6 +52,9 @@ pauseMessage4 "(saves a level number bookmark)"
 
 difficultyTag "DIFFICULTY"
 
+innerTag "INNER"
+
+
 
 playbackTag           "Playback %:"
 playbackToggleMessage "(Press % to hide)"

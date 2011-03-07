@@ -147,8 +147,9 @@ void drawTipDisplay( doublePair inScreenCenter ) {
             tipPos.y -= 0.5;
             
             char *difficultyModTipString = 
-                autoSprintf( "+%d %s",
+                autoSprintf( "+%d %s %s",
                              currentTipDifficultyModifier,
+                             translate( "innerTag" ),
                              translate( "difficultyTag" ) );
         
 

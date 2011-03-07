@@ -5,6 +5,7 @@ Version 15
 
 --Powers are now never decayed below level 1 on pass-up to higher self.
 
+--Difficulty warning when entering a power-up is more clear (thanks Darius).
 
 
 
