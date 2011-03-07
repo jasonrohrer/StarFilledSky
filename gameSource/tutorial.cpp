@@ -474,6 +474,16 @@ void drawTutorial( doublePair inScreenCenter ) {
 
                 drawBracket( bracketPos, tutorialFade, secondBracketMarker );
                 }
+
+
+            // third bracket only in 2
+            if( currentTut == 2 ) {
+                
+                bracketPos.x = inScreenCenter.x + viewWidth / 2 - 2.3125;
+
+                drawBracket( bracketPos, tutorialFade, 
+                             "tutorial_scoreMarker" );
+                }
             
             }
 

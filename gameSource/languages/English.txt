@@ -6,11 +6,14 @@ tutorial_move "W A S D	(or I J K L) to move"
 
 tutorial_shoot "MOUSE to aim and hold BUTTON (or SPACE BAR) to shoot"
 
-tutorial_structure "[That] is what you are inside.  [This] is you."
+tutorial_structure "[That] is what you are inside.  [This] is you.##Rise out higher and higher to increase your [Score]."
 
 tutorial_insideMarker "[That]"
 
 tutorial_youMarker "[This]"
+
+tutorial_scoreMarker "[Score]"
+
 
 tutorial_tokens       "Gathered tokens combine to affect what you are inside."
 
