@@ -18,6 +18,10 @@ cd $bundleDir
 
 cp ../runToBuild .
 
-cd ..
+# fix date stamping so that tga files aren't rebuilt by accident
+cd game10/gameSource/graphics
+touch *.tga
+
+cd ../../../..
 
 tar czf $bundleDir.tar.gz $bundleDir
