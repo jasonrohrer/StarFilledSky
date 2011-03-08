@@ -10,7 +10,6 @@ Version 15   2011-March-8
 
 --Added a tutorial message about score and how to increase it.
 
-
 --Fixed date stamping of graphics files in Source bundle (so that 'convert' is 
   not require to build) (thanks Malte Wessel).
 
