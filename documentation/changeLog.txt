@@ -1,11 +1,12 @@
-Version 15
+Version 15   2011-March-8
 
 --Default player powers in tutorial stages now include extended range (thanks 
   Frank Lantz).
 
 --Powers are now never decayed below level 1 on pass-up to higher self.
 
---Difficulty warning when entering a power-up is more clear (thanks Darius).
+--Difficulty warning when entering a power-up is more clear (thanks 
+  Darius Kazemi).
 
 --Added a tutorial message about score and how to increase it.
 
