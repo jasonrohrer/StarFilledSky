@@ -735,7 +735,7 @@ void decayOnePower( PowerUp *inPower ) {
         }
     
 
-    if( inPower->level > 2 ) {
+    if( inPower->level >= 2 ) {
 
         // variable decay rate, higher for higher powers
             
