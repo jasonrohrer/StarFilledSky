@@ -1,0 +1,41 @@
+Version 15 of the game has just been posted.  It includes some minor improvements to the tutorial and one minor gameplay tweak.  A full change log has been posted below.
+
+All updates can be downloaded, as always, by following your original download link.
+
+This email update system has been changed from "opt-in" to "opt-out", and everyone has been opted in by default.  A lot of people didn't realize that they needed to opt in, so they weren't finding out about new versions of the game.  v14, in particular, offered many substantial fixes and improvements, but many people missed it.
+
+You can read the v14 change log that you might have missed here:
+
+  http://insideastarfilledsky.net/changeLog.php
+
+If you want to opt out from future updates, simply follow the link in the footer of this email.
+
+
+Enjoy!
+
+Jason
+
+
+
+>>>>>>>>>>>>>>>
+
+Version 15   2011-March-8
+
+--Default player powers in tutorial stages now include extended range (thanks 
+  Frank Lantz).
+
+--Powers are now never decayed below level 1 on pass-up to higher self.
+
+--Difficulty warning when entering a power-up is more clear (thanks 
+  Darius Kazemi).
+
+--Added a tutorial message about score and how to increase it.
+
+--Fixed date stamping of graphics files in Source bundle (so that 'convert' is 
+  not require to build) (thanks Malte Wessel).
+
+>>>>>>>>>>>>>>>
+
+
+
+
