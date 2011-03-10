@@ -13,8 +13,8 @@ do
        # from 0.75 to 1.00 over 90 steps
        scale=`echo "scale=4; 0.75 + 0.25 * ( $f / 89 )" | bc`
        
-       echo "Making file title_"$i"_"$f".jpg"
-       ./scaleOverlayImage title_background.jpg title_"$i".jpg  "$scale" title_"$i"_"$f".jpg
+       echo "Making file title_"$i"_"$f".png"
+       ./scaleOverlayImage title_background.jpg title_"$i".jpg  "$scale" title_"$i"_"$f".png
 
    done
 done

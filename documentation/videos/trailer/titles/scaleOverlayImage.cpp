@@ -2,6 +2,7 @@
 #include "minorGems/graphics/Image.h"
 #include "minorGems/graphics/Color.h"
 #include "minorGems/graphics/converters/JPEGImageConverter.h"
+#include "minorGems/graphics/converters/PNGImageConverter.h"
 
 #include "minorGems/io/file/File.h"
 #include "minorGems/io/file/FileOutputStream.h"
@@ -162,7 +163,7 @@ int main( int inNumArgs, char **inArgs ) {
 
     if( inNumArgs != 5 ) {
         printf( "Usage:  scaleOverlayImage "
-                "background.jpg overlay.jpg scale out.jpg\n" );
+                "background.jpg overlay.jpg scale out.png\n" );
 
         return 1;
         }
@@ -266,7 +267,9 @@ int main( int inNumArgs, char **inArgs ) {
     File outFile( NULL, inArgs[4] );
     FileOutputStream out( &outFile );
     
-    jpeg.formatImage( background, &out );
+    PNGImageConverter png;
+
+    png.formatImage( background, &out );
     
     return 0;
     }
