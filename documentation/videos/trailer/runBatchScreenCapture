@@ -2,7 +2,7 @@ batchNumber=0
 
 mkdir captureBatches
 
-for f in gamesToScreenCapture/recorded*
+for f in gamesToScreenCapture/batch*.txt
 do
     rm playbackGame/*
     cp $f playbackGame
