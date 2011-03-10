@@ -1,0 +1,13 @@
+batchNumber=0
+
+mkdir captureBatches
+
+for f in gamesToScreenCapture/recorded*
+do
+    rm playbackGame/*
+    cp $f playbackGame
+    ./StarFilledSky.app/Contents/MacOS/StarFilledSky
+    
+    mv screenShots captureBatches/batch_$batchNumber
+    let "batchNumber += 1"
+done
