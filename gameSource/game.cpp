@@ -377,6 +377,23 @@ static const char *customDataFormatString =
 
 
 char *getCustomRecordedGameData() {
+
+
+    /*
+    // for faking bookmarks
+
+    SettingsManager::setHashSalt( SETTINGS_HASH_SALT );
+    
+    SettingsManager::setHashingOn( true );
+
+    SettingsManager::setSetting( "bookmark", 
+                                 "level75_[12]powerUpSpread#[12]powerUpBulletDistance#[9]powerUpBounce_levelStack3_3025385482_3451724343_720135969" );
+
+    SettingsManager::setHashingOn( false );
+    */
+
+
+
     int completedCount = 
         SettingsManager::getIntSetting( "tutorialCompletedCount", 0 );
 
