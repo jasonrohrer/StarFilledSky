@@ -2,13 +2,13 @@
 
 frame=0
 
-for i in `seq 0 8`;
+for i in {0..9};
 do
    echo "Making frame link $frame"
 
    # for each of 90 title frames (3 seconds of video at 30 frames per second)
 
-   for f in `seq 0 89`
+   for f in {0..89}
    do 
        
 
@@ -22,7 +22,7 @@ do
 
    # for each of 150 scene frames (5 seconds of video at 30 frames per second)
 
-   for f in `seq 0 149`
+   for f in {0..149}
    do 
        ln scenes/scene_"$i"_"$f".png frames/frame_"$frame".png
        
@@ -35,13 +35,13 @@ done
 
 # finally, credit frames
 
-for i in `seq 9 11`;
+for i in {10..12};
 do
    echo "Making frame link $frame"
 
    # for each of 90 title frames (3 seconds of video at 30 frames per second)
 
-   for f in `seq 0 89`
+   for f in {0..89}
    do 
        
        ln titles/title_"$i"_"$f".png frames/frame_"$frame".png
