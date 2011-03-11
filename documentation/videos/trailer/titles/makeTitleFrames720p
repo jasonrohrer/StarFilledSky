@@ -2,7 +2,7 @@
 
 # for each title
 
-for i in `seq 0 1`;
+for i in {0..12};
 do
 
    # for each of 90 frames (3 seconds of video at 30 frames per second)
