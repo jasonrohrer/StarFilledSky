@@ -1,0 +1,1 @@
+ffmpeg -r 30 -i frames/frame_%d.png -f mpeg -vcodec mpeg1video -r 30 -b 8000k trailer_1280_720_no_audio.mpg
