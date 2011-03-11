@@ -1,0 +1,36 @@
+scene 0:
+batch_0  350 .. 499
+
+
+scene 1:
+composed of batches 1 through 5
+
+jason-rohrers-mac-mini-6:batch_1 jasonrohrer$ sh ../reNumber.sh 70 129 1 renumed 
+mkdir: renumed: File exists
+jason-rohrers-mac-mini-6:batch_1 jasonrohrer$ cd ../batch_2
+jason-rohrers-mac-mini-6:batch_2 jasonrohrer$ sh ../reNumber.sh 30 89 61 renumed 
+jason-rohrers-mac-mini-6:batch_2 jasonrohrer$ cd ../batch_3
+jason-rohrers-mac-mini-6:batch_3 jasonrohrer$ sh ../reNumber.sh 45 104 121 renumed 
+jason-rohrers-mac-mini-6:batch_3 jasonrohrer$ cd ../batch_4/
+jason-rohrers-mac-mini-6:batch_4 jasonrohrer$ sh ../reNumber.sh 40 160 181 renumed 
+jason-rohrers-mac-mini-6:batch_4 jasonrohrer$ cd ../batch_5/
+jason-rohrers-mac-mini-6:batch_5 jasonrohrer$ sh ../reNumber.sh 75 234 302 renumed 
+^C
+jason-rohrers-mac-mini-6:batch_5 jasonrohrer$ sh ../reNumber.sh 175 234 302 renumed 
+jason-rohrers-mac-mini-6:batch_5 jasonrohrer$ cd ../batch_6/
+
+
+
+Remaining scenes come from batch 6
+
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 180 329 1 scene2 
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 425 574 1 scene3 
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 1150 2299 1 scene4 
+^C
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ rm -r scene4/
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 1150 1299 1 scene4 
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 1590 1740 1 scene5 
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 2495 2644 1 scene6 
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 2950 3039 1 scene7
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 3225 3975 1 scene8
+jason-rohrers-mac-mini-6:batch_6 jasonrohrer$ sh ../reNumber.sh 4170 4319 1 scene9
