@@ -1,1 +1,1 @@
-sox rhFaust.mp3 ./music.aiff fade p 0 00:00:6.00 00:00:3.000
+sox music.wav ./music.aiff fade p 0 00:01:54.033 00:00:7.000
