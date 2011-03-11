@@ -20,11 +20,12 @@ do
    echo "Making frame link $frame"
 
 
-   # for each of 150 scene frames (5 seconds of video at 30 frames per second)
+   # scenes have variable lengths, with frames named in order
+   # but starting frame number is not known
 
-   for f in {0..149}
+   for f in scene"$i"/frame*.png
    do 
-       ln scenes/scene_"$i"_"$f".png frames/frame_"$frame".png
+       ln f frames/frame_"$frame".png
        
        let "frame += 1"
    done
