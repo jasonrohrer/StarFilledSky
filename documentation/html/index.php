@@ -13,8 +13,79 @@ $pathToRoot = "";
 include( "header.php" );
 
 
-$deadline = "2010-04-08 23:59:59";
-//$deadline = "2010-02-19 10:06:59";
+$deadline = "2011-03-13 20:59:59";
+//$deadline = "2011-03-10 23:59:59";
+
+
+
+
+
+function getTimeLeft() {
+    global $deadline;
+    
+    
+    date_default_timezone_set( "America/New_York" );
+
+    $deadlineTimestamp = strtotime( $deadline );
+
+    $currentTimestamp = time();
+
+    
+    if( $currentTimestamp < $deadlineTimestamp ) {
+        return $deadlineTimestamp - $currentTimestamp;
+        }
+    else {
+        return 0;
+        }
+    }
+
+
+
+function showTimeLeft( $inTimeLeft ) {
+            
+    $d = $inTimeLeft;
+
+    $hours = (int)( $d / 3600 );
+
+    $seconds = (int)( $d % 3600 );
+    $minutes = (int)( $seconds / 60 );
+    $seconds = (int)( $seconds % 60 );
+            
+    $days = (int)( $hours / 24 );
+    $hours = (int)( $hours % 24 );
+            
+        
+    echo "Only <b>";
+
+    if( $days > 1 ) {
+        echo "$days days";
+        }
+    else {
+        $hours += 24 * $days;
+            
+        if( $hours > 1 ) {
+            echo "$hours hours";
+            }
+        else {
+            $minutes += 60 * $hours;
+
+            if( $minutes > 1 ) {
+                echo "$minutes minutes";
+                }
+            else {
+                $seconds += 60 * $minutes;
+
+                echo "$seconds seconds";
+                }
+            }
+        }
+    echo "</b> left to name your donation";
+    }
+
+
+
+
+
 
 
 ?>
@@ -144,6 +215,15 @@ an infinite, recursive, tactical shooter for one player by
 <br>
 -->
 
+
+
+<iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/pQaIAhHJvAw?rel=0" frameborder="0" allowfullscreen></iframe>
+
+<!--
+old youtube code:
+<object width="640" height="390"><param name="movie" value="http://www.youtube.com/v/pQaIAhHJvAw?fs=1&amp;hl=en_US&amp;rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/pQaIAhHJvAw?fs=1&amp;hl=en_US&amp;rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="390"></embed></object>
+-->
+
 </center>
 <br>
 
@@ -152,10 +232,28 @@ an infinite, recursive, tactical shooter for one player by
 
 
 <a name="order"></a>
-<font size=5>Name Your Donation</font><br>
+<font size=5>Name Your Donation (for one last weekend)</font><br>
 <table border=0 width="100%" cellpadding=5><tr><td bgcolor="#222222">
-<font color="#ffff00"><i>For a limited time only</i></font>
-<br>
+
+<center>
+<font size=5 color=red>
+<?php
+
+$timeLeft = getTimeLeft();
+if( $timeLeft > 0 ) {
+    
+    showTimeLeft( $timeLeft );
+    }
+else {
+    echo "Name Your Donation is about to end...";
+    }
+
+?>
+</font>
+</center>
+
+
+<!--<font color="#ffff00"><i>For a limited time only</i></font>-->
 <br>
 
 You can download the game right now for $1.75 plus <b>whatever donation you can afford to give</b>.<br>
