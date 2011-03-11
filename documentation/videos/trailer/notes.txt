@@ -1,0 +1,31 @@
+
+
+Steps to recreate trailer
+
+1.  
+cd titles
+sh ./makeScaleOverlayImage
+sh ./makeTitleFrames720p
+
+
+
+2.
+cd to game folder
+
+mkdir gamesToScreenCapture
+
+copy recordedGames/batch*.txt into gamesToScreenCapture
+
+runBatchScreenCapture from game folder
+
+
+3.
+copy resulting batch_N folders here
+
+execute steps in batchTrimming note file
+
+copy out sceneN folders into main trailer folder
+
+run makeFrameLinks
+
+run makeMPEG_720p_from_frames
