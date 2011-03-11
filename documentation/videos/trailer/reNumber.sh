@@ -1,3 +1,10 @@
+if [ $# -lt 4 ]
+then
+    echo "Usage:  reNumber.sh  start end newStart destDir"
+    exit 0
+fi
+
+
 mkdir $4
 
 frame=$3
