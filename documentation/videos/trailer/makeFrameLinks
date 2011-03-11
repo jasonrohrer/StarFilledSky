@@ -25,7 +25,7 @@ do
 
    for f in scene"$i"/frame*.png
    do 
-       ln f frames/frame_"$frame".png
+       ln $f frames/frame_"$frame".png
        
        let "frame += 1"
    done
