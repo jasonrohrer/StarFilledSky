@@ -1,8 +1,8 @@
+# for each title
+
 frame=0
 
-# Testing, just some title frames
-
-for i in `seq 0 1`;
+for i in `seq 0 8`;
 do
    echo "Making frame link $frame"
 
@@ -11,7 +11,40 @@ do
    for f in `seq 0 89`
    do 
        
-       ln titles/title_"$i"_"$f".jpg frames/frame_"$frame".jpg
+
+       ln titles/title_"$i"_"$f".png frames/frame_"$frame".png
+       
+       let "frame += 1"
+   done
+
+   echo "Making frame link $frame"
+
+
+   # for each of 150 scene frames (5 seconds of video at 30 frames per second)
+
+   for f in `seq 0 149`
+   do 
+       ln scenes/scene_"$i"_"$f".png frames/frame_"$frame".png
+       
+       let "frame += 1"
+   done
+
+
+done
+
+
+# finally, credit frames
+
+for i in `seq 9 11`;
+do
+   echo "Making frame link $frame"
+
+   # for each of 90 title frames (3 seconds of video at 30 frames per second)
+
+   for f in `seq 0 89`
+   do 
+       
+       ln titles/title_"$i"_"$f".png frames/frame_"$frame".png
        
        let "frame += 1"
    done
