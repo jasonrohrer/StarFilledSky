@@ -115,8 +115,18 @@ function showDownloadForm() {
 function showPayLinks( $inSimple ) {
     ?>
  <center>
-      <a href="https://sites.fastspring.com/jasonrohrer/instant/sleepisdeathticket">
-      <font size=5>Buy downloads and Donate</font><br>
+      <center><table border=0><tr><td> 
+<ul> 
+      <li>Unlimited downloads
+      <li>Access to all future updates
+      <li>Tech support included
+      <li>Support me and my family directly<br>(so I can make more games)
+      </ul>
+</td></tr></table>
+
+      <font size=5>Available now for $12</font><br><br>
+      
+      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
       if( !$inSimple ) {
 
@@ -152,8 +162,8 @@ function showPayForm( $inSimple ) {
       </table>
       <br>
 
-      <input type="image" src="fs_cards.png" width=280 height=45 title="Buy Downloads"><br>
-      <input type="image" src="fs_button05.png" width=210 height=60 title="Buy Downloads">
+      <input type="image" src="fs_cards.png" width=280 height=45 title="Buy Downloads and Donate"><br>
+      <input type="image" src="fs_button05.png" width=210 height=60 title="Buy Downloads and Donate">
       </form>
       </center>
 <?php
@@ -239,6 +249,8 @@ old youtube code:
 <br>
 
 
+    <?php /*
+
 <a name="order"></a>
 <font size=5>Name Your Donation (for one last weekend)</font><br>
 <table border=0 width="100%" cellpadding=5><tr><td bgcolor="#222222">
@@ -271,6 +283,10 @@ The minimum price of $1.75 covers payment processing fees and download bandwidth
 
 </td></tr></table>
 
+          */
+?>
+
+    
 <br>
 
 <center>
@@ -310,8 +326,8 @@ else {
 -->
 
 <?php
-   //showPayLinks( false );
-   showPayForm( false );                                  
+   showPayLinks( false );
+   // showPayForm( false );                                  
 
 /*
 if( $timeLeft > 0 ) {
