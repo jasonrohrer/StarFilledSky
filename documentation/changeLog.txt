@@ -1,3 +1,14 @@
+Version 16
+
+--Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks FIXME).
+
+
+
+
+
+
+
+
 Version 15   2011-March-8
 
 --Default player powers in tutorial stages now include extended range (thanks 
