@@ -119,7 +119,7 @@ double accelY = 0;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = false;
+char forceRepeatRandSeed = true;
 unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
