@@ -44,7 +44,7 @@ Worldwide
 
 Choose from the genres below that best fit your game:
 
-Indie Action
+Indie, Action, Strategy
 
 
 
@@ -88,7 +88,7 @@ Key features:
 
 --Dozens of ways to approach each challenge---reflex your way through, blast your way through, or think your way through
 
---Dynamic, procedurally generate soundtrack based on moment-to-moment gameplay
+--Dynamic soundtrack is procedurally generated based on moment-to-moment gameplay
 
 
 
