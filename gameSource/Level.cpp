@@ -5364,6 +5364,11 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
     mLastComputedEdgeFade = edgeFade;
     
 
+    // return here to draw nothing
+    // useful for outputting audio-only from a recorded game with no
+    // framerate lag
+    // return;
+
 
     // draw walls
     if( edgeFade > 0 )
