@@ -1,6 +1,6 @@
 Version 16
 
---Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks FIXME).
+--Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
 
 
 
