@@ -1791,6 +1791,10 @@ void drawFrame( char inUpdate ) {
             printf( "Entering sub-level that should have music part %d\n",
                     musicNotes.partIndex );
             
+            unsigned int newLevelSeed =
+                currentLevel->getEnteringPointSubLevelSeed( mousePos,
+                                                            enteringType );
+            
             int subLevelNumber =
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
@@ -1811,7 +1815,7 @@ void drawFrame( char inUpdate ) {
             
             
 
-            currentLevel = new Level( randSource.getRandomInt(),
+            currentLevel = new Level( newLevelSeed,
                                       NULL, NULL, &c, &walkerSet, NULL,
                                       &musicNotes,
                                       setPlayerPowers,

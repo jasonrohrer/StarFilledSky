@@ -132,7 +132,12 @@ typedef struct Enemy {
 
         // flag enemies as dead instead of deleting them
         // this allows full level rewind when player knocked down
-        char dead;        
+        char dead;
+
+        // sub-levels inside are generated deterministically
+        // even after multiple enterings of same enemy
+        unsigned int subLevelSeed;
+        unsigned int enteredCount;
     } Enemy;
 
 
@@ -166,6 +171,11 @@ typedef struct PowerUpToken {
         int stepsUntilNextGlowTrail;
 
         char pickedUp;
+
+        // sub-levels inside are generated deterministically
+        // even after multiple enterings of same enemy
+        unsigned int subLevelSeed;
+        unsigned int enteredCount;
     };
 
 
@@ -282,6 +292,9 @@ class Level {
                                                    itemType inType );
         
         NoteSequence getEnteringPointNoteSequence( doublePair inPosition,
+                                                   itemType inType );
+
+        unsigned int getEnteringPointSubLevelSeed( doublePair inPosition,
                                                    itemType inType );
 
         // level number of subLevel if entered here
@@ -636,6 +649,10 @@ class Level {
         RandomWalkerSet mPlayerWalkerSet;
         NoteSequence mPlayerMusicNotes;
         
+        unsigned int mPlayerSubLevelSeed;
+        unsigned int mPlayerEnteredCount;
+
+
         int mPlayerHealthMax;
         int mPlayerHealth;
         

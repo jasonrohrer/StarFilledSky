@@ -1804,7 +1804,9 @@ Level::Level( unsigned int inSeed,
         (int)( stepsBetweenGlowTrails / frameRateFactor );
     
     mEnteringMouse = false;
-    
+
+
+    mPlayerEnteredCount = 0;
 
 
     // apply/save seed AFTER the random generation stuff above that is
@@ -1816,6 +1818,9 @@ Level::Level( unsigned int inSeed,
     randSource.restoreFromSavedState( inSeed );
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
+
+    
+    mPlayerSubLevelSeed = randSource.getRandomInt();
 
     mDataGenerated = false;
 
@@ -2026,7 +2031,11 @@ Level::Level( unsigned int inSeed,
                             // use enemy's initial index as its bullet marker
                             i,
                             // not dead
-                            false };
+                            false,
+                            // sub-level seed
+                            randSource.getRandomInt(),
+                            // not entered yet
+                            0 };
                 
                 musicPartIndex ++;
                 
@@ -2399,7 +2408,11 @@ Level::Level( unsigned int inSeed,
                                        thisPartIndex ),
                                    (int)( stepsBetweenGlowTrails / 
                                           frameRateFactor ),
-                                   false };
+                                   false,
+                                   // sub-level seed
+                                   randSource.getRandomInt(),
+                                   // not entered yet
+                                   0 };
 
                 mPowerUpTokens.push_back( t );
                 }
@@ -6214,6 +6227,45 @@ NoteSequence Level::getEnteringPointNoteSequence( doublePair inPosition,
     // default
     return generateRandomNoteSequence( 0 );
     }
+
+
+
+unsigned int Level::getEnteringPointSubLevelSeed( doublePair inPosition,
+                                                  itemType inType ) {
+    unsigned int returnValue = 0;
+    switch( inType ) {
+        case player: {
+            returnValue = mPlayerSubLevelSeed + mPlayerEnteredCount;
+            mPlayerEnteredCount++;
+            }
+            break;
+        case enemy: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                returnValue = e->subLevelSeed + e->enteredCount;
+                e->enteredCount ++;
+                }
+            }
+            break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                PowerUpToken *t = mPowerUpTokens.getElement( i );
+
+                returnValue = t->subLevelSeed + t->enteredCount;
+                t->enteredCount ++;
+                }
+            }
+            break;            
+        }
+    
+    return returnValue;
+    }
+
 
 
 
