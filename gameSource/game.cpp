@@ -266,6 +266,18 @@ static void addFreshLevelToStack() {
 
         levelRightBelow = *( levelRiseStack.getElement( 0 ) );
         }
+
+
+    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
+
+
+    unsigned int newSeed = getTrunkLevelSeed( freshLevelNumber );
+
+
+    // ensure that colors and music generation is deterministic as well
+    randSource.reseed( newSeed );
+
+
     
     ColorScheme c = levelRightBelow->getLevelColors();
     NoteSequence s = levelRightBelow->getLevelNoteSequence();
@@ -281,15 +293,6 @@ static void addFreshLevelToStack() {
         }
 
 
-    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
-
-
-    unsigned int newSeed = getTrunkLevelSeed( freshLevelNumber );
-    
-
-
-    // ensure that music generation is deterministic as well
-    randSource.reseed( newSeed );
     
     NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
                                                           partLength );
