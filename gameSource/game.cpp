@@ -234,10 +234,32 @@ static int stepsBetweenDeleteRepeat;
 char *tutorialMoveKeys;
 
 
+
+
+static CustomRandomSource trunkRandSource;
+
+static unsigned int getTrunkLevelSeed( int inLevelNumber ) {
+    // level number can be negative
+
+    // map each level number to a random value
+
+    // mix with value received from Random.org
+    
+
+    trunkRandSource.reseed( (unsigned int)inLevelNumber * 0x14DA4E29U );
+    
+    return trunkRandSource.getRandomInt();
+    }
+
+
+
+
+
+
 static PowerUpSet defaultSet;
 
 
-static void addFreshLevelToStack( unsigned int inSeed ) {
+static void addFreshLevelToStack() {
     Level *levelRightBelow = currentLevel;
     
     if( levelRiseStack.size() > 0 ) {
@@ -257,13 +279,24 @@ static void addFreshLevelToStack( unsigned int inSeed ) {
     if( s.partLength == partLength ) {
         partLength -= 4;
         }
+
+
+    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
+
+
+    unsigned int newSeed = getTrunkLevelSeed( freshLevelNumber );
+    
+
+
+    // ensure that music generation is deterministic as well
+    randSource.reseed( newSeed );
+    
     NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
                                                           partLength );
         
-    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
     
 
-    levelRiseStack.push_front( new Level( inSeed, 
+    levelRiseStack.push_front( new Level( newSeed, 
                                           &c, &s, &freshColors,
                                           NULL,
                                           &ourPlayerWalkerSet,
@@ -280,54 +313,21 @@ static void addFreshLevelToStack( unsigned int inSeed ) {
 
 
 
-// non-null seed vector to override default behavior
-static void populateLevelRiseStack( 
-    SimpleVector<unsigned int> *inSeeds = NULL ) {
-    
-    if( inSeeds != NULL ) {
-        
-        int numSeeds = inSeeds->size();
-        
-        for( int i=0; i<numSeeds; i++ ) {
-            addFreshLevelToStack( *( inSeeds->getElement( i ) ) );
-            }        
 
-        return;
-        }
-    
-
+static void populateLevelRiseStack() {
 
     // else default behavior, make sure stack has at least two levels in it
 
     if( levelRiseStack.size() == 0 ) {
         // push one on to rise into
-        
-        // base pre-seed on level below's seed
-        
-        unsigned int belowSeed = currentLevel->getSeed();
 
-        randSource.restoreFromSavedState( belowSeed );
-        
-        // draw seed
-        int newSeed = randSource.getRandomInt();
-
-        addFreshLevelToStack( newSeed );
+        addFreshLevelToStack();
         }
 
     if( levelRiseStack.size() == 1 ) {
         // always have two to rise into
-        Level *nextBelow = *( levelRiseStack.getElement( 0 ) );
-        
-        // base pre-seed on level below's seed
-        
-        unsigned int belowSeed = nextBelow->getSeed();
-        
-        randSource.restoreFromSavedState( belowSeed );
-                
-        // draw seed
-        int newSeed = randSource.getRandomInt();
 
-        addFreshLevelToStack( newSeed );
+        addFreshLevelToStack();
         }        
     }
 
@@ -466,32 +466,15 @@ char *getHashSalt() {
 
 
 
-// pass in NULL to init with default
-static void initStartingLevels( SimpleVector<unsigned int> *inSeeds = NULL ) {
+static void initStartingLevels() {
 
-    if( inSeeds == NULL ) {
-        
-        // random seed
-        currentLevel = new Level( randSource.getRandomInt(),
-                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
-                                  levelNumber );
-    
-        populateLevelRiseStack();
-        }
-    else {
-        // first seed for current level
-        unsigned int firstSeed = *( inSeeds->getElement( 0 ) );
+    // deterministic trunk of level tree    
 
-        currentLevel = new Level( firstSeed, 
-                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-                                  levelNumber );
+    currentLevel = new Level( getTrunkLevelSeed( levelNumber ),
+                              NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
+                              levelNumber );
     
-        // rest of seeds into rise stack
-        inSeeds->deleteElement( 0 );
-        
-        populateLevelRiseStack( inSeeds );
-        }
-    
+    populateLevelRiseStack();
     }
 
 
@@ -620,6 +603,10 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
     PowerUpSet *startingPowers = NULL;
 
+
+    // NOTE:
+    // still reading this from bookmark file as legacy
+    // not actually using them anymore (always use deterministic level trunk)
     
     // default to empty (default level generation)
     // unless overridden by bookmark or recorded game
@@ -726,16 +713,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     initTipDisplay();
     
 
-    if( levelStackSeeds.size() > 2 ) {
-        // pre-defined seeds from bookmark or recorded game
-        // (must have at least 3, current level and 2 in stack, to be valid)
-        initStartingLevels( &levelStackSeeds );
-        }
-    else {
-        // default
-        initStartingLevels();
-        }
-           
+    // ignore stack of levels read from bookmark
+    // always init using deterministic trunk of level tree
+
+
+    initStartingLevels();
+               
         
     if( startingPowers != NULL ) {
         currentLevel->setPlayerPowers( startingPowers );
