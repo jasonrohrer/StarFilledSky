@@ -253,6 +253,47 @@ static unsigned int getTrunkLevelSeed( int inLevelNumber ) {
 
 
 
+static ColorScheme getTrunkLevelColors( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+    
+    // generate random using seed
+    ColorScheme levelColors;
+
+    return levelColors;
+    }
+
+
+
+static RandomWalkerSet getTrunkLevelWalkerSet( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+
+    // generate random using seed
+    RandomWalkerSet levelWalkerSet;
+
+    return levelWalkerSet;
+    }
+
+
+
+static NoteSequence getTrunkLevelMusicNotes( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+
+    // part length alternates so that player part always makes phase
+    // pattern with level part
+    int partLength = 12;
+    if( inLevelNumber % 2 == 0 ) {
+        partLength = 16;
+        }
+
+    // generate random using seed
+    NoteSequence levelNotes = generateRandomNoteSequence( PARTS - 2,
+                                                          partLength );
+    
+    return levelNotes;
+    }
+
+    
+
 
 
 
@@ -284,24 +325,20 @@ static void addFreshLevelToStack() {
 
     RandomWalkerSet ourPlayerWalkerSet = levelRightBelow->getLevelWalkerSet();
 
-    ColorScheme freshColors;
-    // copy player part's timbre/envelope
-    // alternate part length with player part for phase patterns
-    int partLength = 16;
-    if( s.partLength == partLength ) {
-        partLength -= 4;
-        }
 
+    ColorScheme freshColors = getTrunkLevelColors( freshLevelNumber );
 
+    RandomWalkerSet freshWalkerSet = 
+        getTrunkLevelWalkerSet( freshLevelNumber );
     
-    NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
-                                                          partLength );
-        
+    NoteSequence freshNotes = getTrunkLevelMusicNotes( freshLevelNumber );
+    
+    
     
 
     levelRiseStack.push_front( new Level( newSeed, 
                                           &c, &s, &freshColors,
-                                          NULL,
+                                          &freshWalkerSet,
                                           &ourPlayerWalkerSet,
                                           &freshNotes,
                                           NULL,
@@ -473,8 +510,31 @@ static void initStartingLevels() {
 
     // deterministic trunk of level tree    
 
+
+    // CANNOT leave randomly-generated defaults in place here,
+    // because then a load from this level won't match a rise-up into
+    // this level
+    ColorScheme freshColors = getTrunkLevelColors( levelNumber );
+
+    RandomWalkerSet freshWalkerSet = 
+        getTrunkLevelWalkerSet( levelNumber );
+    
+    NoteSequence freshNotes = getTrunkLevelMusicNotes( levelNumber );
+
+
+    // levels are LINKED based on attributes of player
+    ColorScheme playerColors = getTrunkLevelColors( levelNumber - 1 );
+
+    RandomWalkerSet playerWalkerSet = 
+        getTrunkLevelWalkerSet( levelNumber - 1);
+    
+    NoteSequence playerNotes = getTrunkLevelMusicNotes( levelNumber - 1 );
+    
+
     currentLevel = new Level( getTrunkLevelSeed( levelNumber ),
-                              NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
+                              &playerColors, &playerNotes, &freshColors, 
+                              &freshWalkerSet, &playerWalkerSet, 
+                              &freshNotes, NULL, 
                               levelNumber );
     
     populateLevelRiseStack();
@@ -1800,7 +1860,14 @@ void drawFrame( char inUpdate ) {
             PowerUpSet *setPlayerPowers = NULL;
             
             
-
+            // going DOWN, out of trunk into a branch
+            // so player sub-level attributes (colors, walker set, etc)
+            // can be left up to the whim of the random number generator
+            // using newLevelSeed
+            // (We'll never LOAD from this branch level later, so
+            //  level attributes don't need to be reproducible, unless
+            //  another player discovers level using exactly this same
+            //  path.)
             currentLevel = new Level( newLevelSeed,
                                       NULL, NULL, &c, &walkerSet, NULL,
                                       &musicNotes,
