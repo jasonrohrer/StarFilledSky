@@ -2,6 +2,9 @@ Version 16
 
 --Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
 
+--Changed so that all players in the world are climbing through exactly the 
+  same deterministic (yet still procedurally generated and infinite) level 
+  structure, making progress comparable.  Your level 53 is my level 53.
 
 
 

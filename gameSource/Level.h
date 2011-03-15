@@ -482,6 +482,14 @@ class Level {
         
         // free up memory consumed by reproducible data
         void freeReproducibleData();
+
+
+        // TRICK:
+        // init this variable before all other member variables
+        // using a dummy function call that ensures the random generator
+        // gets its seed set before anything else is initialized
+        char mFirstSeedSet;
+        
         
         char mDataGenerated;
         

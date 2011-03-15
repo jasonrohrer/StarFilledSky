@@ -1599,6 +1599,15 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
 
 
+// dummy function used to init rand seed before member init of Level
+static char setFirstSeed( unsigned int inSeed ) {
+    randSource.restoreFromSavedState( inSeed );
+    return true;
+    }
+
+
+
+
 Level::Level( unsigned int inSeed,
               ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
@@ -1616,7 +1625,10 @@ Level::Level( unsigned int inSeed,
               int inParentTokenLevel,
               int inParentFloorTokenLevel,
               int inParentLevelDifficulty ) 
-        : mLevelNumber( inLevelNumber ),
+        : // trick:  init this dummy variable before anything else
+          // to ensure that seed is set before anything is inited 
+          mFirstSeedSet( setFirstSeed( inSeed ) ),
+          mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
           // invert player colors on level 0 or lower
           mPlayerSprite( inPlayerColors, ( inLevelNumber <= 0 ) ) {
@@ -1809,12 +1821,15 @@ Level::Level( unsigned int inSeed,
     mPlayerEnteredCount = 0;
 
 
-    // apply/save seed AFTER the random generation stuff above that is
+    // apply/save seed *again* AFTER the random generation stuff above that is
     // not gameplay-related
     
     // this ensures that same seed generates same level, gamplay-wise,
     // regardless of what other parameters above (like known music note
     // patterns, etc) are passed in
+    // (we don't know how many times randSource will be called based on 
+    //   inSeed above---may vary depending on how this level is related to
+    //   others around it, even for same level generated with same seed later).
     randSource.restoreFromSavedState( inSeed );
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
