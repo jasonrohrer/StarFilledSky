@@ -827,6 +827,81 @@ void Level::generateReproducibleData() {
 
 
 
+    // compute distances from start square
+
+    mManhattanDistanceFromStart = new int[ mNumFloorSquares ];
+
+    char *frontier = new char[ mNumFloorSquares ];
+    char *nextFrontier = new char[ mNumFloorSquares ];
+    
+    memset( frontier, false, mNumFloorSquares );
+    
+
+    mManhattanDistanceFromStart[0] = 0;
+    frontier[0] = true;
+
+    for( int i=1; i<mNumFloorSquares; i++ ) {
+        mManhattanDistanceFromStart[i] = -1;
+        }
+
+    char frontierRemaining = true;
+    
+
+    int currentDistance = 1;
+
+    while( frontierRemaining ) {
+        frontierRemaining = false;
+
+        memset( nextFrontier, false, mNumFloorSquares );
+
+        // look at all new neighbors of frontier squares, mark their
+        // distance, and add them as new frontier
+
+        for( int i=0; i<mNumFloorSquares; i++ ) {
+            if( frontier[i] ) {
+                
+                GridPos currentPos = mIndexToGridMap[ i ];
+
+                GridPos neighbors[4] = { currentPos, currentPos, 
+                                         currentPos, currentPos };
+    
+                neighbors[0].x -= 1;
+                neighbors[1].x += 1;
+                neighbors[2].y -= 1;
+                neighbors[3].y += 1;
+                
+                for( int n=0; n<4; n++ ) {
+                
+                    GridPos np = neighbors[n];
+
+                    if( mWallFlags[ np.y ][ np.x ] == 1 ) {
+                        int ni = mSquareIndices[ np.y ][ np.x ];
+                        
+                        if( mManhattanDistanceFromStart[ ni ] == -1 ) {
+                        
+                            mManhattanDistanceFromStart[ ni ] = 
+                                currentDistance;
+                            
+                            nextFrontier[ ni ] = true;
+                            frontierRemaining = true;
+                            }
+                        }
+                    }
+                }
+            }
+        
+        // next frontier becomes current
+        memcpy( frontier, nextFrontier, mNumFloorSquares );
+        }
+    
+    delete [] frontier;
+    delete [] nextFrontier;
+
+
+
+    
+
+
 
     // place rise marker in random floor spot
     // also away from player
@@ -1352,6 +1427,7 @@ void Level::freeReproducibleData() {
         delete [] mGridWorldSpots;
 
         delete [] mCutVertexFloorFlags;
+        delete [] mManhattanDistanceFromStart;
         
 
         for( int i=0; i<mEnemies.size(); i++ ) {

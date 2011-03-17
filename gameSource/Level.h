@@ -564,6 +564,9 @@ class Level {
         // spot is a cut vertex that disconnects two parts of the graph
         char *mCutVertexFloorFlags;
         
+
+        // maps floor indices to manhattan distances from player start point
+        int *mManhattanDistanceFromStart;
         
         
         // to speed-up drawing of zoom-in,
