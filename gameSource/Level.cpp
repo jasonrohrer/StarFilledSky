@@ -928,7 +928,7 @@ void Level::generateReproducibleData() {
         else {
             // simply find the closest satisfying non-cut-point
 
-            double closestDistance = DBL_MAX;
+            int closestDistance = INT_MAX;
             
             int closestFloorIndex = -1;
 
@@ -938,10 +938,8 @@ void Level::generateReproducibleData() {
                     // respects symm placement requirement
                     mIndexToGridMap[ f ].x >= xLimit ) {
                     
-                    doublePair *fw = mGridWorldSpots[ f ];
                     
-                    
-                    double thisDistance = distance( *fw, playerSpot );
+                    int thisDistance = mManhattanDistanceFromStart[ f ];
                     
 
                     if( thisDistance > 5 && thisDistance < closestDistance ) {
@@ -975,8 +973,9 @@ void Level::generateReproducibleData() {
             
             if( ! mKnockDown && distance( spot, playerSpot ) > 10
                 || 
-                // allow closer rise markers in case of knock-downs
-                mKnockDown && distance( spot, playerSpot ) > 5 ) {
+                // in case of knock-down, best position already chosen
+                // above
+                mKnockDown ) {
 
                 placed = true;
                 mRisePosition.x = x;
