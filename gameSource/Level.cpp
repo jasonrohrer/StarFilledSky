@@ -833,10 +833,61 @@ void Level::generateReproducibleData() {
     char placed = false;
 
     while( !placed ) {
+        doublePair playerSpot = {0,0};
+
+        
         // place first rise marker on right side, if symmetrical, since
         // we only compute cut points on right side
-        int x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
-        int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+        
+        
+        int x;
+        int y;
+
+        if( ! mKnockDown ) {    
+            // rise markers can be anywhere
+            x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+            y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+            }
+        else {
+            // simply find the closest satisfying non-cut-point
+
+            double closestDistance = DBL_MAX;
+            
+            int closestFloorIndex = -1;
+
+            for( int f=0; f<mNumFloorSquares; f++ ) {
+                if( ! mCutVertexFloorFlags[ f ] 
+                    && 
+                    // respects symm placement requirement
+                    mIndexToGridMap[ f ].x >= xLimit ) {
+                    
+                    doublePair *fw = mGridWorldSpots[ f ];
+                    
+                    
+                    double thisDistance = distance( *fw, playerSpot );
+                    
+
+                    if( thisDistance > 5 && thisDistance < closestDistance ) {
+                        closestDistance = thisDistance;
+                        closestFloorIndex = f;
+                        }
+                    }
+                }
+            
+            if( closestFloorIndex >= 0 ) {
+                x = mIndexToGridMap[ closestFloorIndex ].x;
+                y = mIndexToGridMap[ closestFloorIndex ].y;
+                }
+            else {
+                printf( "WARNING: good rise spot on knock-down not found!\n" );
+                
+                // stick anywhere
+                // rise markers can be anywhere
+                x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+                y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+                }
+            }
+        
 
         if( mWallFlags[y][x] == 1 &&
             // never place rise markers on cut points.
@@ -844,9 +895,11 @@ void Level::generateReproducibleData() {
         
             doublePair spot = sGridWorldSpots[y][x];
             
-            doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 10 ) {
+            if( ! mKnockDown && distance( spot, playerSpot ) > 10
+                || 
+                // allow closer rise markers in case of knock-downs
+                mKnockDown && distance( spot, playerSpot ) > 5 ) {
 
                 placed = true;
                 mRisePosition.x = x;
