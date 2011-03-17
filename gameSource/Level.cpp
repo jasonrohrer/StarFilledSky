@@ -1950,7 +1950,11 @@ Level::Level( unsigned int inSeed,
             char fixedSpot = false;
             
 
-            if( i == 0 || ( mSymmetrical && i == 1 ) ) {
+            // place first 2 enemies guarding rise markers, but NOT
+            // in case of knock-down (because rise markers are close to 
+            // player in that case)
+            if( ! mKnockDown &&
+                ( i == 0 || ( mSymmetrical && i == 1 ) ) ) {
                 
                 fixedSpot = true;
                 
