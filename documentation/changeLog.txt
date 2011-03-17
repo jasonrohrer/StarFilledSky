@@ -6,6 +6,10 @@ Version 16
   same deterministic (yet still procedurally generated and infinite) level 
   structure, making progress comparable.  Your level 53 is my level 53.
 
+--Changed to eliminate the risk of recursive-knock-downs by placing rise marker
+  near player starting position after knock-down.  Exploring knock-down level 
+  to find power-ups is optional, but tempting (thanks Gregory Weir and Frank 
+  Lantz).
 
 
 
