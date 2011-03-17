@@ -245,8 +245,16 @@ static unsigned int getTrunkLevelSeed( int inLevelNumber ) {
 
     // mix with value received from Random.org
     
-
-    trunkRandSource.reseed( (unsigned int)inLevelNumber * 0x14DA4E29U );
+    // original:  0x14DA4E29U  (level 1 too maze-like)
+    // better:    0x14DA4E27U  (too many open areas)
+    // 0x14DA4E23U  (first token level has tokens that could be missed)
+    // 0x14DA4E73U  Level 1 is BORING
+    // 0x14DA4E53U  Level 1 is BORING
+    // 0x14DA4E57U  Level 1 is BORING
+    // 0x14DA3E57U  Level 1 too maze-like
+    // 0x14DA3E55U  Level 5 too hard
+    // 0x14DA3E73U  Level 5 not passable with spread only
+    trunkRandSource.reseed( (unsigned int)inLevelNumber * 0x14DA3E73U );
     
     return trunkRandSource.getRandomInt();
     }
