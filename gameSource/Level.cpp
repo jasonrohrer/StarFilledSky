@@ -4616,8 +4616,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
         
             if( e->justStoppedDodging ) {
-                printf( "Enemy %d stopped dodging\n", i );
-
+                
                 e->justStoppedDodging = false;
                 
                 if( !random && !follow ) {
