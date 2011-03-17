@@ -892,6 +892,8 @@ void Level::generateReproducibleData() {
         
         // next frontier becomes current
         memcpy( frontier, nextFrontier, mNumFloorSquares );
+
+        currentDistance ++; 
         }
     
     delete [] frontier;
