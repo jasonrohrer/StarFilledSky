@@ -627,6 +627,7 @@ class Level {
         SpriteHandle mFlagSprites[2];
 
         char mFlagsLoading;
+        char mFlagsSending;
         
 
         WebRequest *mFlagWebRequest;

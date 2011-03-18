@@ -24,6 +24,8 @@
 
 #include "minorGems/util/log/AppLog.h"
 
+#include "minorGems/crypto/hashes/sha1.h"
+
 
 #include "minorGems/math/probability/ProbabilityMassFunction.h"
 
@@ -57,6 +59,10 @@ static double trailJitter = 0.25;
 
 
 static int shadowBlowUpFactor = 4;
+
+
+
+static const char *sharedFlagServerSecret = "secret 2";
 
 
 
@@ -2035,6 +2041,8 @@ Level::Level( unsigned int inSeed,
     mFlagSprites[1] = NULL;
     
     mFlagsLoading = false;
+    mFlagsSending = false;
+    
     mFlagWebRequest = NULL;
     
     char *serverURL = SettingsManager::getStringSetting( "flagServerURL" );
@@ -2048,6 +2056,8 @@ Level::Level( unsigned int inSeed,
 
         mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
         
+        printf( "Starting web request with URL %s\n", fullRequestURL );
+
         delete [] fullRequestURL;
 
         delete [] serverURL;
@@ -3736,6 +3746,10 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 delete mFlagWebRequest;
                 mFlagWebRequest = NULL;
                 mFlagsLoading = false;
+
+                // if sending, don't need to read result
+                mFlagsSending = false;
+                
                 break;
             case -1:
                 // error
@@ -3743,6 +3757,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 delete mFlagWebRequest;
                 mFlagWebRequest = NULL;
                 mFlagsLoading = false;
+                mFlagsSending = false;
                 break;
             }
         }
@@ -7496,7 +7511,7 @@ void Level::rewindLevel() {
 
 void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
     
-    if( mFlagsLoading ) {
+    if( mFlagsLoading || mFlagsSending ) {
         return;
         }
     
@@ -7535,6 +7550,49 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
 
     mFlagSprites[ holderNumber ] = generateFlagSprite( inFlagString );    
     
+    
+    // post to server
+
+    char *serverURL = SettingsManager::getStringSetting( "flagServerURL" );
+    
+    if( serverURL != NULL ) {
+        mFlagsLoading = true;
+
+        const char *spots[2] = { "A", "B" };
+        
+        char *stringToHash = autoSprintf( 
+            "%d%u%s%s%s",
+            mLevelNumber, mRandSeedState,
+            spots[ holderNumber ], inFlagString,
+            sharedFlagServerSecret );
+        
+        
+        char *sig = computeSHA1Digest( stringToHash );
+
+        delete [] stringToHash;
+
+        char *fullRequestURL = autoSprintf( 
+            "%s?action=place_flag&level_number=%d&level_seed=%u"
+            "&spot=%s&flag=%s&sig=%s",
+            serverURL, mLevelNumber, mRandSeedState,
+            spots[ holderNumber ], inFlagString, sig );
+
+        delete [] sig;
+        
+
+        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        
+        printf( "Starting web request with URL %s\n", fullRequestURL );
+        
+        delete [] fullRequestURL;
+
+        delete [] serverURL;
+
+        
+        mFlagsSending = true;
+        }
+
+
     }
 
 

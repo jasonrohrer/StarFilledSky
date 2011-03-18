@@ -356,7 +356,7 @@ function fs_placeFlag() {
     global $sharedSecret;
             
     $trueSig =
-        sha1( $level_num . $level_seed . $spot . $flag . $sharedSecret );
+        sha1( $level_number . $level_seed . $spot . $flag . $sharedSecret );
     
     $trueSig = strtoupper( $trueSig );
 
@@ -537,7 +537,7 @@ function fs_getFlags() {
         
         $query = "UPDATE $tableNamePrefix"."flags SET " .
             "view_date = CURRENT_TIMESTAMP, " .
-            "view_count = '$view_count', " .
+            "view_count = '$view_count' " .
             "WHERE level_number = '$level_number' AND ".
             "level_seed = '$level_seed';";
         
