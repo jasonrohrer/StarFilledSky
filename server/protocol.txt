@@ -31,4 +31,4 @@ Where:
 aFlag = ASCII encoding of flag pixels
 bFlag = ASCII encoding of flag pixels
 
-Either value can be 'BLANK' as well.
+Either value can be 'BLANKFLAG' as well.

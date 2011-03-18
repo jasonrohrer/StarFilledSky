@@ -241,8 +241,8 @@ function fs_setupDatabase() {
             "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
             "view_count INT UNSIGNED NOT NULL," .
-            "flag_a CHAR(5) NOT NULL," .
-            "flag_b CHAR(5) NOT NULL," .
+            "flag_a CHAR(9) NOT NULL," .
+            "flag_b CHAR(9) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
 
         $result = fs_queryDatabase( $query );
@@ -345,6 +345,11 @@ function fs_placeFlag() {
     $sig = strtoupper( $sig );
 
 
+    if( strlen( $flag ) != 9 ) {
+        echo "REJECTED";
+        return;
+        }
+
 
     // verify sig
             
@@ -380,8 +385,8 @@ function fs_placeFlag() {
             "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
             "view_count INT UNSIGNED NOT NULL," .
-            "flag_a CHAR(5) NOT NULL," .
-            "flag_b CHAR(5) NOT NULL," .
+            "flag_a CHAR(9) NOT NULL," .
+            "flag_b CHAR(9) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
     */
 
@@ -398,7 +403,7 @@ function fs_placeFlag() {
         
         $old_flag_a = $row[ "flag_a" ];
 
-        if( $spot == "A" && $old_flag_a != "BLANK" ) {
+        if( $spot == "A" && $old_flag_a != "BLANKFLAG" ) {
             // already a permanent flag here
 
             // unlock rows that were locked by FOR UPDATE above
@@ -445,10 +450,10 @@ function fs_placeFlag() {
         $flagClause;
 
         if( $spot == "A" ) {
-            $flagClause = "'$flag', 'BLANK'"; 
+            $flagClause = "'$flag', 'BLANKFLAG'"; 
            }
         else {
-            $flagClause = "'BLANK', '$flag'";
+            $flagClause = "'BLANKFLAG', '$flag'";
             }
         
         $query = "INSERT INTO $tableNamePrefix". "flags VALUES ( " .
@@ -505,8 +510,8 @@ function fs_getFlags() {
             "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
             "view_count INT UNSIGNED NOT NULL," .
-            "flag_a CHAR(5) NOT NULL," .
-            "flag_b CHAR(5) NOT NULL," .
+            "flag_a CHAR(9) NOT NULL," .
+            "flag_b CHAR(9) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
     */
 
@@ -544,7 +549,7 @@ function fs_getFlags() {
     else {
         // doesn't exist yet
 
-        echo "BLANK BLANK";
+        echo "BLANKFLAG BLANKFLAG";
         }
 
     /*
