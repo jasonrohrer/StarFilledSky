@@ -188,7 +188,7 @@ function fs_setupDatabase() {
     
 
     $tableName = $tableNamePrefix . "server_globals";
-    if( ! gs_doesTableExist( $tableName ) ) {
+    if( ! fs_doesTableExist( $tableName ) ) {
 
         // this table contains general info about the server
         // use INNODB engine so table can be locked
@@ -196,7 +196,7 @@ function fs_setupDatabase() {
             "CREATE TABLE $tableName( " .
             "last_flush_time DATETIME NOT NULL ) ENGINE = INNODB;";
 
-        $result = gs_queryDatabase( $query );
+        $result = fs_queryDatabase( $query );
 
         echo "<B>$tableName</B> table created<BR>";
         }
@@ -234,13 +234,13 @@ function fs_setupDatabase() {
         $query =
             "CREATE TABLE $tableName(" .
             "level_number INT NOT NULL," .
-            "level_seed UNSIGNED INT NOT NULL," .
+            "level_seed INT UNSIGNED NOT NULL," .
             "creation_date DATETIME NOT NULL," .
             "change_date DATETIME NOT NULL," .
             "change_ip_address CHAR(15) NOT NULL," .
-            "change_count UNSIGNED INT NOT NULL," .
+            "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
-            "view_count UNSIGNED INT NOT NULL," .
+            "view_count INT UNSIGNED NOT NULL," .
             "flag_a CHAR(5) NOT NULL," .
             "flag_b CHAR(5) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
@@ -373,13 +373,13 @@ function fs_placeFlag() {
     /*
             "CREATE TABLE $tableName(" .
             "level_number INT NOT NULL," .
-            "level_seed UNSIGNED INT NOT NULL," .
+            "level_seed INT UNSIGNED NOT NULL," .
             "creation_date DATETIME NOT NULL," .
             "change_date DATETIME NOT NULL," .
             "change_ip_address CHAR(15) NOT NULL," .
-            "change_count UNSIGNED INT NOT NULL," .
+            "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
-            "view_count UNSIGNED INT NOT NULL," .
+            "view_count INT UNSIGNED NOT NULL," .
             "flag_a CHAR(5) NOT NULL," .
             "flag_b CHAR(5) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
@@ -498,13 +498,13 @@ function fs_getFlags() {
     /*
             "CREATE TABLE $tableName(" .
             "level_number INT NOT NULL," .
-            "level_seed UNSIGNED INT NOT NULL," .
+            "level_seed INT UNSIGNED NOT NULL," .
             "creation_date DATETIME NOT NULL," .
             "change_date DATETIME NOT NULL," .
             "change_ip_address CHAR(15) NOT NULL," .
-            "change_count UNSIGNED INT NOT NULL," .
+            "change_count INT UNSIGNED NOT NULL," .
             "view_date DATETIME NOT NULL," .
-            "view_count UNSIGNED INT NOT NULL," .
+            "view_count INT UNSIGNED NOT NULL," .
             "flag_a CHAR(5) NOT NULL," .
             "flag_b CHAR(5) NOT NULL," .
             "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
