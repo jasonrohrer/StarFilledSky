@@ -43,6 +43,11 @@ extern CustomRandomSource randSource;
 extern double frameRateFactor;
 
 
+extern char *flagServerURL;
+extern char useFlagServer;
+
+
+
 // track as both a full array, for fast lookup, and as
 // a vector of entries, for fast clearing
 static char blurHitMap[MAX_LEVEL_H][MAX_LEVEL_W];
@@ -2045,22 +2050,18 @@ Level::Level( unsigned int inSeed,
     
     mFlagWebRequest = NULL;
     
-    char *serverURL = SettingsManager::getStringSetting( "flagServerURL" );
-    
-    if( serverURL != NULL ) {
+    if( useFlagServer ) {
         mFlagsLoading = true;
 
         char *fullRequestURL = autoSprintf( 
             "%s?action=get_flags&level_number=%d&level_seed=%u",
-            serverURL, mLevelNumber, mRandSeedState );
+            flagServerURL, mLevelNumber, mRandSeedState );
 
         mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
         
         printf( "Starting web request with URL %s\n", fullRequestURL );
 
         delete [] fullRequestURL;
-
-        delete [] serverURL;
         }
 
 
@@ -7560,9 +7561,7 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
     
     // post to server
 
-    char *serverURL = SettingsManager::getStringSetting( "flagServerURL" );
-    
-    if( serverURL != NULL ) {
+    if( useFlagServer ) {
         mFlagsLoading = true;
 
         const char *spots[2] = { "A", "B" };
@@ -7581,7 +7580,7 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
         char *fullRequestURL = autoSprintf( 
             "%s?action=place_flag&level_number=%d&level_seed=%u"
             "&spot=%s&flag=%s&sig=%s",
-            serverURL, mLevelNumber, mRandSeedState,
+            flagServerURL, mLevelNumber, mRandSeedState,
             spots[ holderNumber ], inFlagString, sig );
 
         delete [] sig;
@@ -7592,8 +7591,6 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
         printf( "Starting web request with URL %s\n", fullRequestURL );
         
         delete [] fullRequestURL;
-
-        delete [] serverURL;
 
         
         mFlagsSending = true;

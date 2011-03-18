@@ -233,7 +233,13 @@ static int stepsBetweenDeleteRepeat;
 
 char *tutorialMoveKeys;
 
+
+
 char *playerFlag;
+
+char *flagServerURL;
+
+char useFlagServer;
 
 
 
@@ -616,6 +622,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
         playerFlag = stringDuplicate( "000333222" );
         }
 
+    flagServerURL = SettingsManager::getStringSetting( "flagServerURL" );
+
+    if( flagServerURL == NULL ) {
+        flagServerURL = 
+            stringDuplicate( "http://localhost/jcr13/game10_flag/server.php" );
+        }
+    
+    int useFlagServerSetting = 
+        SettingsManager::getIntSetting( "useFlagServer", 0 );
+    
+    if( useFlagServerSetting == 1 ) {
+        useFlagServer = true;
+        }
+
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
 
@@ -882,7 +902,7 @@ void freeFrameDrawer() {
     delete [] tutorialMoveKeys;
 
     delete [] playerFlag;
-    
+    delete [] flagServerURL;
     
 
     freeSpriteBank();
