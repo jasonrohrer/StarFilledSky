@@ -43,6 +43,7 @@ musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
 NoteSequence.cpp \
+flagSprite.cpp \
 
 
 

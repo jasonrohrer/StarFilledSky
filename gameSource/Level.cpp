@@ -11,15 +11,19 @@
 #include "DiagRandomWalker.h"
 #include "tutorial.h"
 #include "musicPlayer.h"
-
+#include "flagSprite.h"
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/game.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 #include "minorGems/system/Time.h"
 #include "minorGems/io/file/File.h"
 #include "minorGems/graphics/filters/FastBlurFilter.h"
+
+#include "minorGems/util/log/AppLog.h"
+
 
 #include "minorGems/math/probability/ProbabilityMassFunction.h"
 
@@ -2002,6 +2006,11 @@ Level::Level( unsigned int inSeed,
     mPlayerEnteredCount = 0;
 
 
+    
+    
+    
+
+
     // apply/save seed *again* AFTER the random generation stuff above that is
     // not gameplay-related
     
@@ -2014,6 +2023,38 @@ Level::Level( unsigned int inSeed,
     randSource.restoreFromSavedState( inSeed );
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
+
+
+
+
+
+    mFlagStrings[0] = stringDuplicate( "BLANKFLAG" );
+    mFlagStrings[1] = stringDuplicate( "BLANKFLAG" );
+    
+    mFlagSprites[0] = NULL;
+    mFlagSprites[1] = NULL;
+    
+    mFlagsLoading = false;
+    mFlagWebRequest = NULL;
+    
+    char *serverURL = SettingsManager::getStringSetting( "flagServerURL" );
+    
+    if( serverURL != NULL ) {
+        mFlagsLoading = true;
+
+        char *fullRequestURL = autoSprintf( 
+            "%s?action=get_flags&level_number=%d&level_seed=%u",
+            serverURL, mLevelNumber, mRandSeedState );
+
+        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        
+        delete [] fullRequestURL;
+
+        delete [] serverURL;
+        }
+
+
+
 
     
     mPlayerSubLevelSeed = randSource.getRandomInt();
@@ -2653,6 +2694,19 @@ Level::~Level() {
 
     delete mPlayerPowers;
     delete mStartingPlayerPowers;
+
+    for( int i=0; i<2; i++ ) {    
+        if( mFlagSprites[i] != NULL ) {
+            freeSprite( mFlagSprites[i] );
+            mFlagSprites[i] = NULL;
+            }
+        delete [] mFlagStrings[i];
+        }
+
+    if( mFlagWebRequest != NULL ) {    
+        delete mFlagWebRequest;
+        }
+    mFlagWebRequest = NULL;
     }
 
 
@@ -3623,7 +3677,80 @@ static doublePair computeAim( Enemy *inE, doublePair inPlayerPos,
 
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
+
+
+
+    if( mFlagWebRequest != NULL ) {
+        switch( mFlagWebRequest->step() ) {
+            case 0:
+                // still processing
+                break;
+            case 1:
+                // done, result ready
+                if( mFlagsLoading ) {
+                    char *result = mFlagWebRequest->getResult();
+                    
+                    SimpleVector<char *> *tokens =
+                        tokenizeString( result );
+                    
+                    delete [] result;
+                    
+                    char correct = false;
+                    
+                    if( tokens->size() == 2 ) {
+                        
+                        char *tokenA = *( tokens->getElement( 0 ) );
+                        char *tokenB = *( tokens->getElement( 1 ) );
+                        
+                        if( strlen( tokenA ) == 9 && strlen( tokenB ) == 9 ) {
+                            correct = true;
+                            
+                            delete [] mFlagStrings[0];
+                            delete [] mFlagStrings[1];
+
+                            mFlagStrings[0] = stringDuplicate( tokenA );
+                            mFlagStrings[1] = stringDuplicate( tokenB );
+
+                            for( int i=0; i<2; i++ ) {
+
+                                if( mFlagSprites[i] != NULL ) {
+                                    freeSprite( mFlagSprites[i] );
+                                    }
+                                mFlagSprites[i] = NULL;
+                                
+                                if( strcmp( mFlagStrings[i], "BLANKFLAG" )
+                                    != 0 ) {
+                                    // not blank
+                                    mFlagSprites[i] = 
+                                        generateFlagSprite( mFlagStrings[i] );
+                                    }
+                                }
+                            }
+                        }
+                    
+                    for( int i=0; i< tokens->size(); i++ ) {
+                        delete [] *( tokens->getElement(i) );
+                        }
+                    delete tokens;
+                    }
+                delete mFlagWebRequest;
+                mFlagWebRequest = NULL;
+                mFlagsLoading = false;
+                break;
+            case -1:
+                // error
+                AppLog::error( "Flag server web request failed" );
+                delete mFlagWebRequest;
+                mFlagWebRequest = NULL;
+                mFlagsLoading = false;
+                break;
+            }
+        }
     
+
+
+
+
     // call rand at least once per step to ensure some mixing between
     // saves and restores when rising and falling (compacting and decompacting
     //  levels in stack)
@@ -5686,7 +5813,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
 
-        // draw flags *under* shadows
+        // draw flag holders *under* shadows
         c = &( mColors.special );
         setDrawColor( c->r,
                       c->g,
@@ -5695,6 +5822,22 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         
         if( mDoubleRisePositions ) {
             drawSprite( flagSpotB, mFlagWorldPos2 );
+            }
+
+
+        // draw flags *under* shadows
+        setDrawColor( 1,
+                      1,
+                      1, 1 );
+
+        if( mFlagSprites[0] != NULL ) {
+            drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
+            }
+        
+        if( mDoubleRisePositions ) {
+            if( mFlagSprites[1] != NULL ) {
+                drawSprite( mFlagSprites[1], mFlagWorldPos2, 1.0/16 );
+                }
             }
 
 
@@ -6087,26 +6230,21 @@ char Level::isRiseSpot( doublePair inPos ) {
             }
         }
     return false;
+    }
 
 
-    int x = (int)( rint( inPos.x ) );
-    int y = (int)( rint( inPos.y ) );
-    
-    int x2 = (int)( rint( -inPos.x - 1 ) );
 
-    x += MAX_LEVEL_W/2;
-    y += MAX_LEVEL_H/2;
-    x2 += MAX_LEVEL_W/2;
-    
-    // no need to check if in-bounds, since we're not indexing with x and y
-        
-    if( !mDoubleRisePositions ) {
-        return ( mRisePosition.x == x && mRisePosition.y == y );
+char Level::isFlagSpot( doublePair inPos ) {
+
+    if( distance( mFlagWorldPos, inPos ) < 1 ) {
+        return true;
         }
-    else {
-        return ( ( mRisePosition.x == x || mRisePosition.x == x2 )
-                 && mRisePosition.y == y );
+    else if( mDoubleRisePositions ) {
+        if( distance( mFlagWorldPos2, inPos ) < 1 ) {
+            return true;
+            }
         }
+    return false;
     }
 
 
@@ -7354,5 +7492,49 @@ void Level::rewindLevel() {
     }
 
 
+
+
+void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
     
+    if( mFlagsLoading ) {
+        return;
+        }
+    
+    int holderNumber = -1;
+
+    if( distance( mFlagWorldPos, inPos ) < 1 ) {
+        holderNumber = 0;
+        }
+    else if( mDoubleRisePositions ) {
+        if( distance( mFlagWorldPos2, inPos ) < 1 ) {
+            holderNumber = 1;
+            }
+        }
+
+    if( holderNumber == -1 ) {
+        return;
+        }
+    
+
+    if( holderNumber == 0 &&
+        strcmp( mFlagStrings[0], "BLANKFLAG" ) != 0 ) {
+        
+        // already full, do nothing
+        return;
+        }
+    
+    // else replace
+
+    delete [] mFlagStrings[ holderNumber ];
+    mFlagStrings[ holderNumber ] = stringDuplicate( inFlagString );
+    
+
+    if( mFlagSprites[ holderNumber ] != NULL ) {
+        freeSprite( mFlagSprites[ holderNumber ] );
+        }
+
+    mFlagSprites[ holderNumber ] = generateFlagSprite( inFlagString );    
+    
+    }
+
 

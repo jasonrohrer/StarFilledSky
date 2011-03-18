@@ -4,6 +4,7 @@
 
 #include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
+#include "minorGems/network/web/WebRequest.h"
 
 
 #include "PlayerSprite.h"
@@ -340,7 +341,12 @@ class Level {
 
 
         char isRiseSpot( doublePair inPos );
+
+        char isFlagSpot( doublePair inPos );
         
+        void placeFlag( doublePair inPos, const char *inFlagString );
+        
+
 
         doublePair getEnemyCenter( int inEnemyIndex );
         doublePair getPowerUpCenter( int inPowerUpIndex );
@@ -616,6 +622,16 @@ class Level {
 
         GridPos mFlagPosition, mFlagPosition2;
         doublePair mFlagWorldPos, mFlagWorldPos2;
+
+        const char *mFlagStrings[2];
+        SpriteHandle mFlagSprites[2];
+
+        char mFlagsLoading;
+        
+
+        WebRequest *mFlagWebRequest;
+        
+
 
         
         char mFrozen;

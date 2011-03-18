@@ -233,6 +233,7 @@ static int stepsBetweenDeleteRepeat;
 
 char *tutorialMoveKeys;
 
+char *playerFlag;
 
 
 
@@ -608,7 +609,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
 
+    playerFlag = 
+        SettingsManager::getStringSetting( "flag" );
     
+    if( playerFlag == NULL ) {
+        playerFlag = stringDuplicate( "000333222" );
+        }
 
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
@@ -874,6 +880,9 @@ void freeFrameDrawer() {
     
 
     delete [] tutorialMoveKeys;
+
+    delete [] playerFlag;
+    
     
 
     freeSpriteBank();
@@ -2039,6 +2048,12 @@ void drawFrame( char inUpdate ) {
         triggerTip( hitPowerUp.powerType, true, 0.5, difficultyModifier );
         }
     
+
+    if( currentLevel->isFlagSpot( playerPos ) ) {
+        currentLevel->placeFlag( playerPos, playerFlag );
+        }
+    
+
 
 
 
