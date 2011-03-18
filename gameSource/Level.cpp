@@ -998,6 +998,57 @@ void Level::generateReproducibleData() {
 
 
 
+
+
+
+    // place flag holder in random floor spot
+    // also away from player
+    placed = false;
+
+    while( !placed ) {
+        doublePair playerSpot = {0,0};
+
+        
+        // place first rise marker on right side, if symmetrical, since
+        // we only compute cut points on right side
+        
+        
+        int x;
+        int y;
+
+        // flags can be anywhere
+        x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+        y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+        
+        if( mWallFlags[y][x] == 1 &&
+            // never place flags on cut points.
+            ! mCutVertexFloorFlags[ mSquareIndices[y][x] ] &&
+            // avoid rise marker
+            mRisePosition.x != x && mRisePosition.y != y ) {
+        
+            doublePair spot = sGridWorldSpots[y][x];
+            
+            
+            if( distance( spot, playerSpot ) > 10 ) {
+
+                placed = true;
+                mFlagPosition.x = x;
+                mFlagPosition.y = y;
+
+                mFlagWorldPos.x = mFlagPosition.x - MAX_LEVEL_W/2;
+                mFlagWorldPos.y = mFlagPosition.y - MAX_LEVEL_H/2;
+
+                mFlagWorldPos2 = mFlagWorldPos;
+                mFlagWorldPos2.x = - mFlagWorldPos2.x - 1;
+
+                mFlagPosition2 = getGridPos( mFlagWorldPos2 );
+                }
+            }
+        }
+
+
+
+
         
     
 
@@ -5633,6 +5684,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mDoubleRisePositions ) {
             drawSprite( riseMarker, mRiseWorldPos2 );
             }
+
+
+        // draw flags *under* shadows
+        c = &( mColors.special );
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, 1 );
+        drawSprite( flagSpotA, mFlagWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            drawSprite( flagSpotB, mFlagWorldPos2 );
+            }
+
+
         
         // draw blood stains under shadows too
         

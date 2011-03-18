@@ -613,6 +613,10 @@ class Level {
         GridPos mRisePosition, mRisePosition2;
         doublePair mRiseWorldPos, mRiseWorldPos2;
         char mDoubleRisePositions;
+
+        GridPos mFlagPosition, mFlagPosition2;
+        doublePair mFlagWorldPos, mFlagWorldPos2;
+
         
         char mFrozen;
         
