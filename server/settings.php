@@ -9,7 +9,7 @@ $databasePassword = "testPassword";
 $databaseName = "test";
 
 // The URL of to the server.php script.
-$fullServerURL = "http://localhost:8080/jcr13/game10_flag/server.php";
+$fullServerURL = "http://localhost/jcr13/game10_flag/server.php";
 
 // End Basic settings
 
