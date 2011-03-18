@@ -7537,7 +7537,14 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
         // already full, do nothing
         return;
         }
+    else if( strcmp( mFlagStrings[holderNumber], inFlagString ) == 0 ) {
+        // already contains our flag, do nothing
+
+        return;
+        }
     
+
+
     // else replace
 
     delete [] mFlagStrings[ holderNumber ];
