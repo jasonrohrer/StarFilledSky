@@ -99,6 +99,9 @@ graphics/enemyBehaviorFast.tga \
 graphics/enemyBehaviorRandom.tga \
 graphics/enemyBehaviorCircle.tga \
 graphics/bracket.tga \
+graphics/flagSpotA.tga \
+graphics/flagSpotB.tga \
+graphics/flagWaiting.tga \
 
 
 

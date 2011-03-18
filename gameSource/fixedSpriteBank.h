@@ -68,7 +68,10 @@ void freeSpriteBank();
     F(enemyBehaviorFast), \
     F(enemyBehaviorRandom), \
     F(enemyBehaviorCircle), \
-    F(bracket) \
+    F(bracket), \
+    F(flagSpotA), \
+    F(flagSpotB), \
+    F(flagWaiting) \
 
                 
 
