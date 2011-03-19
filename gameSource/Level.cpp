@@ -5849,11 +5849,19 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mFlagSprites[0] != NULL ) {
             drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
             }
+        else if( mFlagsLoading ) {
+            drawSprite( flagWaiting, mFlagWorldPos );
+            }
+
         
         if( mDoubleRisePositions ) {
             if( mFlagSprites[1] != NULL ) {
                 drawSprite( mFlagSprites[1], mFlagWorldPos2, 1.0/16 );
                 }
+            else if( mFlagsLoading ) {
+                drawSprite( flagWaiting, mFlagWorldPos2 );
+                }
+
             }
 
 
