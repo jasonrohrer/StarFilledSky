@@ -2048,6 +2048,10 @@ Level::Level( unsigned int inSeed,
     mFlagsLoading = false;
     mFlagsSending = false;
     
+    mFlagBlinkLevel = 0;
+
+    mFlagBlinkDelta = 0.05 * frameRateFactor;
+
     mFlagWebRequest = NULL;
     
     if( useFlagServer ) {
@@ -2139,6 +2143,9 @@ Level::Level( unsigned int inSeed,
         // Don't want player to get knocked negative by accident.
         maxNumEnemies = 0;
         }
+    
+
+    maxNumEnemies = 0;
     
 
     // count number of enemies that have follow behavior
@@ -3746,6 +3753,18 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     }
                 delete mFlagWebRequest;
                 mFlagWebRequest = NULL;
+
+
+                if( mFlagsLoading ) {
+                    // fade loaded flag in
+                    
+                    mFlagBlinkLevel = 0;
+                    
+                    if( mFlagBlinkDelta < 0 ) {
+                        mFlagBlinkDelta *= -1;
+                        }
+                    }
+                
                 mFlagsLoading = false;
 
                 // if sending, don't need to read result
@@ -3761,8 +3780,43 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 mFlagsSending = false;
                 break;
             }
+
+        if( mFlagsLoading ) {
+            
+            mFlagBlinkLevel += mFlagBlinkDelta;
+            
+            if( mFlagBlinkLevel > 1 || mFlagBlinkLevel < 0 ) {
+                mFlagBlinkDelta *= -1;
+                mFlagBlinkLevel += mFlagBlinkDelta;
+                }
+            }
+        else if( mFlagBlinkDelta < 1 ) {
+
+            // bring gradually up to 1, then stop
+            
+            if( mFlagBlinkDelta < 0 ) {
+                mFlagBlinkDelta *= -1;
+                }
+            mFlagBlinkLevel += mFlagBlinkDelta;
+
+            if( mFlagBlinkLevel > 1 ) {
+                mFlagBlinkLevel = 1;
+                }
+            }
         }
-    
+    else if( mFlagBlinkDelta < 1 ) {
+
+        // bring gradually up to 1, then stop
+        
+        if( mFlagBlinkDelta < 0 ) {
+            mFlagBlinkDelta *= -1;
+            }
+        mFlagBlinkLevel += mFlagBlinkDelta;
+        
+        if( mFlagBlinkLevel > 1 ) {
+            mFlagBlinkLevel = 1;
+            }
+        }
 
 
 
@@ -5844,7 +5898,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         // draw flags *under* shadows
         setDrawColor( 1,
                       1,
-                      1, 1 );
+                      1, mFlagBlinkLevel );
 
         if( mFlagSprites[0] != NULL ) {
             drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
@@ -7570,7 +7624,6 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
     // post to server
 
     if( useFlagServer ) {
-        mFlagsLoading = true;
 
         const char *spots[2] = { "A", "B" };
         
@@ -7602,6 +7655,16 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
 
         
         mFlagsSending = true;
+
+        // DON'T blink when sending flags.
+        // if player leaves level before send is done, so be it!
+
+        // but fade flag in nicely after player places it
+        mFlagBlinkLevel = 0;
+        
+        if( mFlagBlinkDelta < 0 ) {
+            mFlagBlinkDelta *= -1;
+            }
         }
 
 
