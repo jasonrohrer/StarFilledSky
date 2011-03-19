@@ -5978,6 +5978,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         1.0 / shadowBlowUpFactor );
         
 
+            // non-wall shadows look too dark
+            float nonWallShadowLevel = shadowLevel * 0.65;
+
+
             // bullet shadows under walls too
 
             // skip shadows if too many are already drawn over a given
@@ -6004,7 +6008,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
                         float fade = getBulletFade( b );
                                         
-                        setDrawColor( 1, 1, 1, fade * shadowLevel );
+                        setDrawColor( 1, 1, 1, fade * nonWallShadowLevel );
                         
                         drawBulletShadow( b->size, b->position );
                         }
@@ -6014,12 +6018,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
         
             // player shadow cut off by walls, too
-            mPlayerSprite.drawShadow( mPlayerPos, shadowLevel );
+            mPlayerSprite.drawShadow( mPlayerPos, nonWallShadowLevel );
 
 
             // same with crosshair shadow, but only if we're not
             // entering a power-up, so we don't draw it twice
-            setDrawColor( 1, 1, 1, shadowLevel );
+            setDrawColor( 1, 1, 1, nonWallShadowLevel );
             drawCrosshairShadow( mEnteringMouse, mMousePos );
                 
 
@@ -6036,12 +6040,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
-                    e->sprite->drawShadow( pos, shadowLevel );
+                    e->sprite->drawShadow( pos, nonWallShadowLevel );
                     }
                 }
             
             // same with power-up shadows
-            setDrawColor( 1, 1, 1, shadowLevel );
+            setDrawColor( 1, 1, 1, nonWallShadowLevel );
             for( int i=0; i<mPowerUpTokens.size(); i++ ) {
                 PowerUpToken *p = mPowerUpTokens.getElement( i );
                 
