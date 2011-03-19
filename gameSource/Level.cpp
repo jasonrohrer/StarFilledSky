@@ -2144,8 +2144,8 @@ Level::Level( unsigned int inSeed,
         maxNumEnemies = 0;
         }
     
-
-    maxNumEnemies = 0;
+    // for testing
+    //maxNumEnemies = 0;
     
 
     // count number of enemies that have follow behavior
