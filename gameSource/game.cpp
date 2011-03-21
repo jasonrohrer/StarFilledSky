@@ -223,6 +223,8 @@ Font *tinyFont;
 
 static float pauseScreenFade = 0;
 
+static char editingFlag = false;
+
 static char *currentUserTypedMessage = NULL;
 
 // for delete key repeat during message typing
@@ -1496,6 +1498,44 @@ static void drawPauseScreen() {
 
 
 
+
+
+static void drawFlagEditor() {
+
+    double viewHeight = viewHeightFraction * viewWidth;
+
+    setDrawColor( 1, 1, 1, 0.5 * pauseScreenFade );
+        
+    drawSquare( lastScreenViewCenter, 1.05 * ( viewHeight / 3 ) );
+        
+
+    setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
+        
+    drawSquare( lastScreenViewCenter, viewHeight / 3 );
+        
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    doublePair messagePos = lastScreenViewCenter;
+
+    messagePos.y += 4.5;
+
+    mainFont2->drawString( translate( "flagEditMessage1" ), 
+                           messagePos, alignCenter );        
+        
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    messagePos = lastScreenViewCenter;
+
+    messagePos.y -= 3.75 * ( viewHeight / 15 );
+    mainFont2->drawString( translate( "flagEditMessage2" ), 
+                           messagePos, alignCenter );
+
+    }
+
+
+
 void deleteCharFromUserTypedMessage() {
     if( currentUserTypedMessage != NULL ) {
                     
@@ -1551,8 +1591,13 @@ void drawFrame( char inUpdate ) {
         
         
         
-        drawPauseScreen();
-        
+        if( !editingFlag ) {
+            
+            drawPauseScreen();
+            }
+        else {
+            drawFlagEditor();
+            }
         
 
         // handle delete key repeat
@@ -1579,11 +1624,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         
-        // fade out music during pause
+        // fade out music during pause, but NOT during flag editing
         
         double oldLoudness = getMusicLoudness();
         
-        if( oldLoudness > 0 ) {
+        if( oldLoudness > 0 && !editingFlag ) {
             
             oldLoudness -= ( 1.0 / 60 ) * frameRateFactor;
 
@@ -1635,6 +1680,9 @@ void drawFrame( char inUpdate ) {
         
         if( pauseScreenFade < 0 ) {
             pauseScreenFade = 0;
+
+            editingFlag = false;
+            
             if( currentUserTypedMessage != NULL ) {
 
                 // make sure it doesn't already end with a file separator
@@ -2558,7 +2606,12 @@ void drawFrame( char inUpdate ) {
 
     // draw tail end of pause screen, if it is still visible
     if( pauseScreenFade > 0 ) {
-        drawPauseScreen();
+        if( !editingFlag ) {
+            drawPauseScreen();
+            }
+        else {
+            drawFlagEditor();
+            }
         }
     }
 
@@ -3372,6 +3425,12 @@ void keyDown( unsigned char inASCII ) {
             break;   
         case 'p':
         case 'P':
+            editingFlag = false;
+            pauseGame();
+            break;
+        case 'f':
+        case 'F':
+            editingFlag = true;
             pauseGame();
             break;
         case '=':

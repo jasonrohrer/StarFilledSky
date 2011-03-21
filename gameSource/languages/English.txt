@@ -53,6 +53,13 @@ pauseMessage3 "Press '%' to quit"
 pauseMessage4 "(saves a level number bookmark)"
 
 
+
+flagEditMessage1 "Edit your flag:"
+
+flagEditMessage2 "Press ENTER when done"
+
+
+
 difficultyTag "DIFFICULTY"
 
 innerTag "INNER"
