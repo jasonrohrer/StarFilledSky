@@ -630,6 +630,9 @@ class Level {
         const char *mFlagStrings[2];
         SpriteHandle mFlagSprites[2];
 
+        SpriteHandle mFlagDirtOverlays[2];
+        
+
         char mFlagsLoading;
         char mFlagsSending;
         

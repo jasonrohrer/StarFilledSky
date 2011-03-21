@@ -147,9 +147,7 @@ class FastBoxBlurFilter {
 		void applySubRegion( unsigned char *inChannel,
                              int *inTouchPixelIndices,
                              int inNumTouchPixels,
-                             int inWidth, int inHeight,
-                             int inXStart, int inYStart, 
-                             int inXEnd, int inYEnd );
+                             int inWidth, int inHeight );
 
 	};
 	
@@ -166,9 +164,7 @@ FastBoxBlurFilter::FastBoxBlurFilter() {
 void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
                                         int *inTouchPixelIndices,
                                         int inNumTouchPixels,
-                                        int inWidth, int inHeight,
-                                        int inXStart, int inYStart, 
-                                        int inXEnd, int inYEnd ) {
+                                        int inWidth, int inHeight ) {
 
     
 
@@ -1313,11 +1309,6 @@ void Level::generateReproducibleData() {
 
     // only process used sub-region of blown up image
     // don't waste time on blank areas outside walls
-    int blowUpStartX = imageXOffset * blowUpFactor;
-    int blowUpStartY = imageYOffset * blowUpFactor;
-    int blowUpEndX = ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor;
-    int blowUpEndY = ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor;
-
 
 
     int nunBlowUpPixelsPerSquare = blowUpFactor * blowUpFactor;
@@ -1376,9 +1367,7 @@ void Level::generateReproducibleData() {
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels,
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
     
     
     // add a bit of noise
@@ -1415,16 +1404,12 @@ void Level::generateReproducibleData() {
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
     
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
 
     mFullMapWallShadowSprite = 
         fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha, 
@@ -1463,6 +1448,67 @@ void Level::generateReproducibleData() {
             }
         }
     
+
+    // flag dirt overlays
+    for( int i=0; i<2; i++ ) {
+        
+        int w=16;
+        int h=16;
+
+        int numPixels = w*h;
+        
+        unsigned char *flagDirt = new unsigned char[ numPixels ];
+
+        for( int p=0; p<numPixels; p++ ) {
+            flagDirt[p] = randSource.getRandomBoundedInt( 96, 160 );
+            }
+        
+        // must pass this in to use fast filter (specifies sub-region,
+        // since filter cannot handle edge cases)
+        int numPixelsToBlur = (w-4) * (h-4);
+        int *pixelIndices = new int[ numPixelsToBlur ];
+        int index = 0;
+        for( int y=2; y<h-2; y++ ){ 
+            for( int x=2; x<w-2; x++ ) {
+            
+                // prepare to pass into blur call below
+                pixelIndices[index] = y * w + x;
+                index++;
+                }
+            }
+        
+
+        filter2.applySubRegion( flagDirt, 
+                                pixelIndices,
+                                numPixelsToBlur, 
+                                w, h );
+        
+        // fully trans edges
+        // extend past edge of flag a bit (to prevent trans from bleeding
+        // into flag through linear blending)
+        for( int y=0; y<h; y++ ) {
+            for( int x=0; x<w; x++ ) {
+                
+                if( y < 1 || y >= w - 1 
+                    ||
+                    x < 1 || x >= h - 1 ) {
+                    
+                    flagDirt[ y * w + x ] = 0;
+                    }
+                }
+            }
+        
+
+        
+        mFlagDirtOverlays[i] = 
+            fillSpriteAlphaOnly( flagDirt, w, h );
+        
+
+        delete [] flagDirt;        
+        }
+    
+
+
 
     
     mDataGenerated = true;
@@ -1510,6 +1556,9 @@ void Level::freeReproducibleData() {
 
         freeSprite( mFullMapSprite );
         freeSprite( mFullMapWallShadowSprite );
+
+        freeSprite( mFlagDirtOverlays[0] );
+        freeSprite( mFlagDirtOverlays[1] );
         }
     
     }
@@ -2045,6 +2094,10 @@ Level::Level( unsigned int inSeed,
     mFlagSprites[0] = NULL;
     mFlagSprites[1] = NULL;
     
+    mFlagDirtOverlays[0] = NULL;
+    mFlagDirtOverlays[1] = NULL;
+    
+
     mFlagsLoading = false;
     mFlagsSending = false;
     
@@ -5886,16 +5939,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
 
-        // draw flag holders *under* shadows
-        c = &( mColors.special );
-        setDrawColor( c->r,
-                      c->g,
-                      c->b, 1 );
-        drawSprite( flagSpotA, mFlagWorldPos );
-        
-        if( mDoubleRisePositions ) {
-            drawSprite( flagSpotB, mFlagWorldPos2 );
-            }
 
 
         // draw flags *under* shadows
@@ -5905,6 +5948,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
         if( mFlagSprites[0] != NULL ) {
             drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
+            
+            toggleLinearMagFilter( true );
+            drawSprite( mFlagDirtOverlays[0], mFlagWorldPos, 1.0/16 );
+            toggleLinearMagFilter( false );
             }
         else if( mFlagsLoading ) {
             drawSprite( flagWaiting, mFlagWorldPos );
@@ -5914,11 +5961,27 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mDoubleRisePositions ) {
             if( mFlagSprites[1] != NULL ) {
                 drawSprite( mFlagSprites[1], mFlagWorldPos2, 1.0/16 );
+                
+                toggleLinearMagFilter( true );
+                drawSprite( mFlagDirtOverlays[1], mFlagWorldPos2, 1.0/16 );
+                toggleLinearMagFilter( false );
                 }
             else if( mFlagsLoading ) {
                 drawSprite( flagWaiting, mFlagWorldPos2 );
                 }
 
+            }
+
+        
+        // draw flag holders *under* shadows
+        c = &( mColors.special );
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, 1 );
+        drawSprite( flagSpotA, mFlagWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            drawSprite( flagSpotB, mFlagWorldPos2 );
             }
 
 
