@@ -1608,8 +1608,11 @@ static void drawFlagEditor() {
     messagePos = lastScreenViewCenter;
 
     messagePos.y -= 3.75 * ( viewHeight / 15 );
-    messagePos.y -= 0.625 * (viewHeight / 15);
     mainFont2->drawString( translate( "flagEditMessage2" ), 
+                           messagePos, alignCenter );
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage3" ), 
                            messagePos, alignCenter );
     
 
