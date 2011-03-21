@@ -1553,6 +1553,17 @@ static void drawFlagEditor() {
                 
                 SettingsManager::setSetting( "flag", playerFlag );
 
+                NoteSequence playerFlagAnthemA = 
+                    generateFlagNoteSequence( PARTS-6, playerFlag );
+            
+                NoteSequence playerFlagAnthemB =
+                    generateFlagNoteSequence( PARTS-5, playerFlag );
+            
+                lockAudio();
+                setNoteSequence( playerFlagAnthemA );
+                setNoteSequence( playerFlagAnthemB );
+                unlockAudio();
+                
                 flagEditorPressed = false;
                 }
 
@@ -3445,10 +3456,13 @@ void keyDown( unsigned char inASCII ) {
     if( isPaused() ) {
         // block general keyboard control during pause
 
+        char unpausing = false;
+
         switch( inASCII ) {
             case 13:  // enter
                 // unpause
                 pauseGame();
+                unpausing = true;
                 break;
             }
         
@@ -3460,8 +3474,12 @@ void keyDown( unsigned char inASCII ) {
                 case 'F':
                     // unpause
                     pauseGame();
+                    unpausing = true;
                     break;
                 }
+
+            // back to level's music
+            currentLevel->pushAllMusicIntoPlayer();
 
             // ignore other key input
             return;
@@ -3554,9 +3572,33 @@ void keyDown( unsigned char inASCII ) {
             pauseGame();
             break;
         case 'f':
-        case 'F':
+        case 'F': {
+            
             editingFlag = true;
+
+            lockAudio();
+            
+            // raise both flag parts to full volume
+            
+            partLoudness[ PARTS-6] = 1;
+            partLoudness[ PARTS-5] = 1;
+            partStereo[ PARTS-6] = 0.6;
+            partStereo[ PARTS-5] = 0.4;
+            
+            // stick player's anthem in place
+            NoteSequence playerFlagAnthemA = 
+                generateFlagNoteSequence( PARTS-6, playerFlag );
+            
+            NoteSequence playerFlagAnthemB =
+                generateFlagNoteSequence( PARTS-5, playerFlag );
+
+            setNoteSequence( playerFlagAnthemA );
+            setNoteSequence( playerFlagAnthemB );
+
+            unlockAudio();
+
             pauseGame();
+            }
             break;
         case '=':
             saveScreenShot( "screen" );
