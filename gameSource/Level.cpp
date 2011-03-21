@@ -6077,6 +6077,10 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // non-wall shadows look too dark
             float nonWallShadowLevel = shadowLevel * 0.65;
 
+            // bullets need even more of an adjustment
+            float bulletShadowLevel = shadowLevel * 0.45;
+
+
 
 
 
@@ -6087,10 +6091,7 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             // grid square (so too much darkness doesn't accumulate)
             // init all to zero
             char shadowHitCounts[ MAX_LEVEL_H ][ MAX_LEVEL_W ] = { {0} };
-
-            // gather on-screen bullets first
-            SimpleVector<Bullet*> onScreenBullets;
-
+                        
             
             for( i=0; i<mBullets.size(); i++ ) {
                     
@@ -6101,57 +6102,62 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
-                    onScreenBullets.push_back( b );
-
                     GridPos gridPos = getGridPos( pos );
+                    
+                    float thisBulletShadowLevel = 0;
+                    
+                    if( shadowHitCounts[ gridPos.y ][ gridPos.x ] < 2 ) {
 
-                    shadowHitCounts[ gridPos.y ][ gridPos.x ] ++;
+                        shadowHitCounts[ gridPos.y ][ gridPos.x ]++;
+                        thisBulletShadowLevel = 1;
+                        }
+                    
+                    float lastShadowFade = b->lastShadowFade;
+                
+                    if( lastShadowFade != thisBulletShadowLevel ) {
+                    
+                        // step toward it
+                        
+                        float step = frameRateFactor * 0.2;
+                        //float step = frameRateFactor * 0.1;
+                        
+                        if( thisBulletShadowLevel < lastShadowFade ) {
+                            step *= -1;
+                            }
+                        
+                        float target = thisBulletShadowLevel;
+                    
+
+                        thisBulletShadowLevel = lastShadowFade + step;
+                        
+                        if( step > 0 && thisBulletShadowLevel > target ) {
+                            thisBulletShadowLevel = target;
+                            }
+                        else if( step < 0 && thisBulletShadowLevel < target ) {
+                            thisBulletShadowLevel = target;
+                            }
+                        }
+                    
+                    // save for next time
+                    b->lastShadowFade = thisBulletShadowLevel;
+
+                    if( thisBulletShadowLevel > 0 ) {
+
+                        float fade = getBulletFade( b );
+                                        
+                        setDrawColor( 1, 1, 1, 
+                                      fade * bulletShadowLevel *
+                                      thisBulletShadowLevel );
+                        
+                        drawBulletShadow( b->size, b->position );
+                        }
+                    
                     }
-                }
+                }                             
 
 
-            int numBulletsOnScreen = onScreenBullets.size();
-            
-            Bullet **onScreenBulletArray = onScreenBullets.getElementArray();
-            
-            for( i=0; i<numBulletsOnScreen; i++ ) {
-                    
-                Bullet *b = onScreenBulletArray[i];
-                doublePair pos = b->position;
-                     
-                GridPos gridPos = getGridPos( pos );
-                    
-                char hitCount = 
-                    shadowHitCounts[ gridPos.y ][ gridPos.x ];
-                
-                
-                float thisBulletShadownLevel = 
-                    1.0f / 
-                    // reduce slope of fall-off line
-                    ( hitCount / 2.0f + 0.5 );
 
-                float lastShadowFade = b->lastShadowFade;
-                
-                // weighted average
-                thisBulletShadownLevel += 2 * lastShadowFade;
-                thisBulletShadownLevel /= 3;
-                
-                // save for next time
-                b->lastShadowFade = thisBulletShadownLevel;
-                
-                                
-                float fade = getBulletFade( b );
-                
-                setDrawColor( 1, 1, 1, 
-                              fade * nonWallShadowLevel * 
-                              thisBulletShadownLevel );
-                
-                drawBulletShadow( b->size, b->position );
-                
-                }
 
-            
-            delete [] onScreenBulletArray;
             
             
             
