@@ -1470,7 +1470,7 @@ void Level::generateReproducibleData() {
                 int p = y*w + x;
 
                 double distanceFromCenter = 
-                    sqrt( (y-8)*(y-8) + (x-8)*(x-8) );
+                    sqrt( (y-7.5)*(y-7.5) + (x-7.5)*(x-7.5) );
                 
                 double distanceFactor = ( distanceFromCenter / 9 );
 
