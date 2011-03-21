@@ -4509,6 +4509,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 // no sub-explosions
                 explosionTemplate.explode = 0;
                 
+                // reset shadow averaging
+                explosionTemplate.lastShadowFade = 0;
+
                 // keep bullet velocity unchanged
 
 
