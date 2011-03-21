@@ -38,6 +38,7 @@ void freeSpriteBank();
     F(eyesTogetherSquint), \
     F(crosshair), \
     F(enterCrosshair), \
+    F(flagMouse), \
     F(powerUpSlot), \
     F(powerUpSlotLeft), \
     F(powerUpSlotRight), \

@@ -1532,7 +1532,9 @@ static void drawFlagEditor() {
     messagePos.y -= 0.625 * (viewHeight / 15);
     mainFont2->drawString( translate( "flagEditMessage2" ), 
                            messagePos, alignCenter );
+    
 
+    drawSprite( flagMouse, mousePos );
     }
 
 
@@ -3179,6 +3181,14 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
 static void mouseMove( float inX, float inY ) {
+
+    if( editingFlag ) {
+        // wake up pause CPU usage on mouse motion
+        // (keyboard not used for flag editor)
+        wakeUpPauseFrameRate();
+        }
+    
+
     if( ! haveFirstScreenMouse ) {
         lastScreenMouseX = inX;
         lastScreenMouseY = inY;
@@ -3342,6 +3352,20 @@ void keyDown( unsigned char inASCII ) {
                 break;
             }
         
+        if( editingFlag ) {
+            // unpause on F again
+            
+            switch( inASCII ) {
+                case 'f':
+                case 'F':
+                    // unpause
+                    pauseGame();
+                    break;
+                }
+
+            // ignore other key input
+            return;
+            }
         
         
         if( inASCII == 127 || inASCII == 8 ) {

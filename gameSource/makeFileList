@@ -68,6 +68,7 @@ graphics/eyesTogether.tga \
 graphics/eyesTogetherSquint.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
+graphics/flagMouse.tga \
 graphics/powerUpSlot.tga \
 graphics/powerUpSlotLeft.tga \
 graphics/powerUpSlotRight.tga \
