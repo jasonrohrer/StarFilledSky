@@ -5982,13 +5982,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             float nonWallShadowLevel = shadowLevel * 0.65;
 
 
+
+
+
+            if( true ) {
+                
             // bullet shadows under walls too
 
             // skip shadows if too many are already drawn over a given
             // grid square (so too much darkness doesn't accumulate)
             // init all to zero
             char shadowHitCounts[ MAX_LEVEL_H ][ MAX_LEVEL_W ] = { {0} };
-                        
+
+            // gather on-screen bullets first
+            SimpleVector<Bullet*> onScreenBullets;
+
             
             for( i=0; i<mBullets.size(); i++ ) {
                     
@@ -5999,23 +6007,49 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
+                    onScreenBullets.push_back( b );
+
                     GridPos gridPos = getGridPos( pos );
-                    
-                    if( shadowHitCounts[ gridPos.y ][ gridPos.x ] < 2 ) {
-                        
-                        shadowHitCounts[ gridPos.y ][ gridPos.x ]++;
-                        
 
-                        float fade = getBulletFade( b );
-                                        
-                        setDrawColor( 1, 1, 1, fade * nonWallShadowLevel );
-                        
-                        drawBulletShadow( b->size, b->position );
-                        }
-                    
+                    shadowHitCounts[ gridPos.y ][ gridPos.x ] ++;
                     }
-                }                             
+                }
 
+
+            int numBulletsOnScreen = onScreenBullets.size();
+            
+            Bullet **onScreenBulletArray = onScreenBullets.getElementArray();
+            
+            for( i=0; i<numBulletsOnScreen; i++ ) {
+                    
+                Bullet *b = onScreenBulletArray[i];
+                doublePair pos = b->position;
+                     
+                GridPos gridPos = getGridPos( pos );
+                    
+                char hitCount = 
+                    shadowHitCounts[ gridPos.y ][ gridPos.x ];
+                
+                
+                float thisBulletShadownLevel = 1.0f / hitCount;
+                                
+                float fade = getBulletFade( b );
+                
+                setDrawColor( 1, 1, 1, 
+                              fade * nonWallShadowLevel * 
+                              thisBulletShadownLevel );
+                
+                drawBulletShadow( b->size, b->position );
+                
+                }
+
+            
+            delete [] onScreenBulletArray;
+            
+                }
+            
+            
+                     
         
             // player shadow cut off by walls, too
             mPlayerSprite.drawShadow( mPlayerPos, nonWallShadowLevel );
