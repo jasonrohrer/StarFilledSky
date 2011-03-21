@@ -637,8 +637,8 @@ class Level {
         char mFlagsSending;
         
 
-        float mFlagBlinkLevel;
-        float mFlagBlinkDelta;
+        float mFlagBlinkLevel[2];
+        float mFlagBlinkDelta[2];
 
         WebRequest *mFlagWebRequest;
         

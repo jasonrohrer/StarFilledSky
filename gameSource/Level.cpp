@@ -2124,9 +2124,11 @@ Level::Level( unsigned int inSeed,
     mFlagsLoading = false;
     mFlagsSending = false;
     
-    mFlagBlinkLevel = 0;
+    mFlagBlinkLevel[0] = 0;
+    mFlagBlinkLevel[1] = 0;
 
-    mFlagBlinkDelta = 0.05 * frameRateFactor;
+    mFlagBlinkDelta[0] = 0.05 * frameRateFactor;
+    mFlagBlinkDelta[1] = 0.05 * frameRateFactor;
 
     mFlagWebRequest = NULL;
     
@@ -3839,13 +3841,17 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
 
                 if( mFlagsLoading ) {
-                    // fade loaded flag in
+                    // fade loaded flags in
+                    for( int f=0; f<2; f++ ) {
+                        
+                        mFlagBlinkLevel[f] = 0;
+                        mFlagBlinkLevel[f] = 0;
                     
-                    mFlagBlinkLevel = 0;
-                    
-                    if( mFlagBlinkDelta < 0 ) {
-                        mFlagBlinkDelta *= -1;
+                        if( mFlagBlinkDelta[f] < 0 ) {
+                            mFlagBlinkDelta[f] *= -1;
+                            }
                         }
+                    
                     }
                 
                 mFlagsLoading = false;
@@ -3864,42 +3870,51 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 break;
             }
 
-        if( mFlagsLoading ) {
-            
-            mFlagBlinkLevel += mFlagBlinkDelta;
-            
-            if( mFlagBlinkLevel > 1 || mFlagBlinkLevel < 0 ) {
-                mFlagBlinkDelta *= -1;
-                mFlagBlinkLevel += mFlagBlinkDelta;
-                }
-            }
-        else if( mFlagBlinkDelta < 1 ) {
+        
+        for( int f=0; f<2; f++ ) {
 
-            // bring gradually up to 1, then stop
+            if( mFlagsLoading ) {
+                
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
             
-            if( mFlagBlinkDelta < 0 ) {
-                mFlagBlinkDelta *= -1;
+                if( mFlagBlinkLevel[f] > 1 || mFlagBlinkLevel[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+                    }
                 }
-            mFlagBlinkLevel += mFlagBlinkDelta;
+            else if( mFlagBlinkDelta[f] < 1 ) {
 
-            if( mFlagBlinkLevel > 1 ) {
-                mFlagBlinkLevel = 1;
+                // bring gradually up to 1, then stop
+                
+                if( mFlagBlinkDelta[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    }
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+
+                if( mFlagBlinkLevel[f] > 1 ) {
+                    mFlagBlinkLevel[f] = 1;
+                    }
                 }
             }
         }
-    else if( mFlagBlinkDelta < 1 ) {
+    else {
+        for( int f=0; f<2; f++ ) {
+            if( mFlagBlinkDelta[f] < 1 ) {
 
-        // bring gradually up to 1, then stop
+                // bring gradually up to 1, then stop
+                
+                if( mFlagBlinkDelta[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    }
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
         
-        if( mFlagBlinkDelta < 0 ) {
-            mFlagBlinkDelta *= -1;
-            }
-        mFlagBlinkLevel += mFlagBlinkDelta;
-        
-        if( mFlagBlinkLevel > 1 ) {
-            mFlagBlinkLevel = 1;
+                if( mFlagBlinkLevel[f] > 1 ) {
+                    mFlagBlinkLevel[f] = 1;
+                    }
+                }
             }
         }
+    
 
 
 
@@ -5972,11 +5987,13 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
         // draw flags *under* shadows
+
         setDrawColor( 1,
                       1,
-                      1, mFlagBlinkLevel );
-
+                      1, mFlagBlinkLevel[0] );
+        
         if( mFlagSprites[0] != NULL ) {
+            
             drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
             
             toggleLinearMagFilter( true );
@@ -5988,8 +6005,14 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             }
 
         
+
         if( mDoubleRisePositions ) {
+            setDrawColor( 1,
+                          1,
+                          1, mFlagBlinkLevel[1] );
+            
             if( mFlagSprites[1] != NULL ) {
+                
                 drawSprite( mFlagSprites[1], mFlagWorldPos2, 1.0/16 );
                 
                 toggleLinearMagFilter( true );
@@ -7815,10 +7838,10 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
         // if player leaves level before send is done, so be it!
 
         // but fade flag in nicely after player places it
-        mFlagBlinkLevel = 0;
+        mFlagBlinkLevel[holderNumber] = 0;
         
-        if( mFlagBlinkDelta < 0 ) {
-            mFlagBlinkDelta *= -1;
+        if( mFlagBlinkDelta[holderNumber] < 0 ) {
+            mFlagBlinkDelta[holderNumber] *= -1;
             }
         }
 
