@@ -1460,9 +1460,32 @@ void Level::generateReproducibleData() {
         unsigned char *flagDirt = new unsigned char[ numPixels ];
 
         for( int p=0; p<numPixels; p++ ) {
-            flagDirt[p] = randSource.getRandomBoundedInt( 96, 160 );
+            flagDirt[p] = randSource.getRandomBoundedInt( 96, 255 );
             }
         
+        // modulate based on distance from center
+        for( int y=0; y<h; y++ ) {
+            for( int x=0; x<w; x++ ) {
+        
+                int p = y*w + x;
+
+                double distanceFromCenter = 
+                    sqrt( (y-8)*(y-8) + (x-8)*(x-8) );
+                
+                double distanceFactor = ( distanceFromCenter / 9 );
+
+                if( distanceFactor > 1 ) {
+                    distanceFactor = 1;
+                    }
+
+                flagDirt[p] = 
+                    (unsigned char)( flagDirt[p] * distanceFactor );
+                
+                }
+            }
+        
+
+
         // must pass this in to use fast filter (specifies sub-region,
         // since filter cannot handle edge cases)
         int numPixelsToBlur = (w-4) * (h-4);
