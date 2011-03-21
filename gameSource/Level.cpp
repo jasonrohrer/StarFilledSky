@@ -2620,6 +2620,13 @@ Level::Level( unsigned int inSeed,
                 &&
                 mRisePosition.y != pickPos.y 
                 &&
+                mFlagPosition.x != pickPos.x
+                &&
+                // in case of double flag spot
+                mFlagPosition.x != - pickPos.x
+                &&
+                mFlagPosition.y != pickPos.y 
+                &&
                 // not too close to player staring spot
                 distance( worldPos, playerSpot ) > 5 ) {
                 
