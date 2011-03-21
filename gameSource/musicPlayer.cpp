@@ -1131,21 +1131,21 @@ void setDefaultMusicSounds() {
 
 
     // flag parts
-    musicTimbres[20] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
-                                   keyFrequency,
-                                   heightPerTimbre, sawWave );
-    
-    musicEnvelopes[20] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+    musicTimbres[20] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                   keyFrequency/2,
+                                   heightPerTimbre, harmonicSaw );
+    // AHR model
+    musicEnvelopes[20] = new Envelope( 0.05, 0.1, 0.3,
                                        maxNoteLength,
                                        maxNoteLength,
                                        partStepDurationsInSamples[20] );
 
 
     musicTimbres[21] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
-                                  0.5 * keyFrequency,
-                                  heightPerTimbre, smoothedSquareWave );
-    
-    musicEnvelopes[21] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                   keyFrequency,
+                                   heightPerTimbre, smoothedSquareWave );
+    // AHR model
+    musicEnvelopes[21] = new Envelope( 0.05, 0.1, 0.3,
                                       maxNoteLength,
                                       maxNoteLength,
                                       partStepDurationsInSamples[21] );
