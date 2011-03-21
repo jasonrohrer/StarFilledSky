@@ -19,7 +19,7 @@
 
 
 
-static int beatPart = 20;
+static int beatPart = 22;
 
 
 // whether note is currently on and playing or not
@@ -1127,13 +1127,37 @@ void setDefaultMusicSounds() {
         musicTimbres[i+10] = tempTimbre;
         musicEnvelopes[i+10] = tempEnv;
         }
+
+
+
+    // flag parts
+    musicTimbres[20] = new Timbre( sampleRate, 0.3 * loudnessPerTimbre,
+                                   keyFrequency,
+                                   heightPerTimbre, sawWave );
+    
+    musicEnvelopes[20] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                       maxNoteLength,
+                                       maxNoteLength,
+                                       partStepDurationsInSamples[20] );
+
+
+    musicTimbres[21] = new Timbre( sampleRate, 0.6 * loudnessPerTimbre,
+                                  0.5 * keyFrequency,
+                                  heightPerTimbre, smoothedSquareWave );
+    
+    musicEnvelopes[21] = new Envelope( 0.5, 0.5, 0.0, 0.0,
+                                      maxNoteLength,
+                                      maxNoteLength,
+                                      partStepDurationsInSamples[21] );
+
+
     
 
     
     // rise marker parts
     
     // snare type sound
-    musicTimbres[20] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
+    musicTimbres[22] = new Timbre( sampleRate, 0.7 * loudnessPerTimbre,
                                    keyFrequency/2,
                                    heightPerTimbre, smoothedWhiteNoise,
                                    // extra periods per table so that
@@ -1141,27 +1165,27 @@ void setDefaultMusicSounds() {
                                    // short looping
                                    10 ); 
 
-    musicEnvelopes[20] = new Envelope(
+    musicEnvelopes[22] = new Envelope(
         0.0, 0.125, 0.0, 0.0,
         maxNoteLength,
         maxNoteLength,
-        partStepDurationsInSamples[20] );
+        partStepDurationsInSamples[22] );
 
 
     // kick drum type sound
-    musicTimbres[21] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
+    musicTimbres[23] = new Timbre( sampleRate, 1.0 * loudnessPerTimbre,
                                    keyFrequency,
                                    heightPerTimbre, kickWave,
                                    // extra periods in table to make room
                                    // for entire kick sweep
                                    200 ); 
 
-    musicEnvelopes[21] = new Envelope(
+    musicEnvelopes[23] = new Envelope(
         // AHR model
         0.0, 0.25, 0.05,
         maxNoteLength,
         maxNoteLength,
-        partStepDurationsInSamples[21] );
+        partStepDurationsInSamples[23] );
     
     
     
@@ -1380,10 +1404,10 @@ void initMusicPlayer() {
     // fixed rhythm part for rise marker
     for( int n=0; n<N; n++ ) {
         if( n%4 == 0 ) {
-            noteToggles[20][N/2][n] = true;
+            noteToggles[22][N/2][n] = true;
             }
         if( n%2 == 0 ) {
-            noteToggles[21][N/2][n] = true;
+            noteToggles[23][N/2][n] = true;
             }
         }
     

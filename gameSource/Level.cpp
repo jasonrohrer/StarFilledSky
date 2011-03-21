@@ -1506,6 +1506,8 @@ void Level::generateReproducibleData() {
                                 numPixelsToBlur, 
                                 w, h );
         
+        delete [] pixelIndices;
+
         // fully trans edges
         // extend past edge of flag a bit (to prevent trans from bleeding
         // into flag through linear blending)
@@ -2146,7 +2148,10 @@ Level::Level( unsigned int inSeed,
         delete [] fullRequestURL;
         }
 
-
+    
+    mFlagMusicNotes[0] = generateFlagNoteSequence( PARTS-6, mFlagStrings[0] );
+    mFlagMusicNotes[1] = generateFlagNoteSequence( PARTS-5, mFlagStrings[1] );
+    
 
 
     
@@ -3625,6 +3630,26 @@ void Level::setLoudnessForAllParts() {
         }
 
 
+
+    // normal stereo computation for flag part
+    setPartLoudnessAndStereo( mFlagWorldPos,
+                              mPlayerPos,
+                              PARTS-6,
+                              loudnessFalloffFactor,
+                              stereoSpread );
+    if( mDoubleRisePositions ) {
+        setPartLoudnessAndStereo( mFlagWorldPos2,
+                                  mPlayerPos,
+                                  PARTS-5,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
+        }
+    else {
+        partLoudness[PARTS-5] = 0;
+        }
+    
+        
+
     
 
     // keep normal stereo computation
@@ -3826,6 +3851,15 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                                     // not blank
                                     mFlagSprites[i] = 
                                         generateFlagSprite( mFlagStrings[i] );
+                                    
+                                    mFlagMusicNotes[i] = 
+                                        generateFlagNoteSequence( 
+                                            PARTS-6 + i, 
+                                            mFlagStrings[i] );
+
+                                    lockAudio();
+                                    setNoteSequence( mFlagMusicNotes[i] );
+                                    unlockAudio();
                                     }
                                 }
                             }
@@ -7574,6 +7608,9 @@ void Level::pushAllMusicIntoPlayer() {
         setNoteSequence( t->musicNotes );
         }
 
+    setNoteSequence( mFlagMusicNotes[0] );
+    setNoteSequence( mFlagMusicNotes[1] );
+
 
     setNoteSequence( mPlayerMusicNotes );
     
@@ -7798,6 +7835,13 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
 
     mFlagSprites[ holderNumber ] = generateFlagSprite( inFlagString );    
     
+    mFlagMusicNotes[holderNumber] = 
+        generateFlagNoteSequence( PARTS-6 + holderNumber, 
+                                  inFlagString );
+
+    lockAudio();
+    setNoteSequence( mFlagMusicNotes[holderNumber] );
+    unlockAudio();
     
     // post to server
 

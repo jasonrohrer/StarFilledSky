@@ -26,7 +26,7 @@ static unsigned char flagColorMap[16][3] =
 
 
 
-static int hexTo16( char inHexChar ) {
+int hexTo16( char inHexChar ) {
     
     // numerals
     if( inHexChar >= 48 && inHexChar <= 57 ) {

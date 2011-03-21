@@ -643,6 +643,9 @@ class Level {
         WebRequest *mFlagWebRequest;
         
 
+        NoteSequence mFlagMusicNotes[2];
+
+
 
         
         char mFrozen;

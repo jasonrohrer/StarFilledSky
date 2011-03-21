@@ -621,6 +621,13 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     if( playerFlag == NULL ) {
         playerFlag = stringDuplicate( "000333222" );
         }
+    else {
+        char *oldFlag = playerFlag;
+        playerFlag = stringToUpperCase( playerFlag );
+        
+        delete [] oldFlag;
+        }
+    
 
     flagServerURL = SettingsManager::getStringSetting( "flagServerURL" );
 

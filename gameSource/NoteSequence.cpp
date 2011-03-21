@@ -1,5 +1,6 @@
 #include "NoteSequence.h"
 #include "musicPlayer.h"
+#include "flagSprite.h"
 
 #include <string.h>
 
@@ -36,6 +37,37 @@ NoteSequence generateRandomNoteSequence( int inPartIndex,
 
     return s;
     }
+
+
+
+
+NoteSequence generateFlagNoteSequence( int inPartIndex,
+                                       const char *inFlagString ) {
+    NoteSequence s;
+    s.partIndex = inPartIndex;
+    
+    s.partLength = N;
+    
+    // clear
+    memset( s.noteYIndex, -1, N );
+    
+
+    if( strcmp( inFlagString, "BLANKFLAG" ) == 0 ) {
+        // leave blank pattern in place
+        return s;
+        }
+    
+    // else generate a pattern from the string
+
+    // for now, just fill first 9 notes
+    for( int x=0; x<9; x++ ) {
+        s.noteYIndex[x] = hexTo16( inFlagString[x] );
+        }
+    
+    return s;
+    }
+
+
 
 
 DrumSequence generateRandomDrumSequence( int inPartLength ) {
