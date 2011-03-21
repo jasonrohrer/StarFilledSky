@@ -10,3 +10,6 @@ SpriteHandle generateFlagSprite( const char *inFlagString );
 // generates a 0..15 index from a hex character
 // assumes upper case
 int hexTo16( char inHexChar );
+
+
+extern unsigned char flagColorMap[16][3];

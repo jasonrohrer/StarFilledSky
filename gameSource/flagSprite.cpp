@@ -1,7 +1,7 @@
 #include "flagSprite.h"
 
 
-static unsigned char flagColorMap[16][3] = 
+unsigned char flagColorMap[16][3] = 
 { 
     { 255, 0, 0 },
     { 0, 255, 0 },

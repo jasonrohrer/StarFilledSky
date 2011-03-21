@@ -60,6 +60,7 @@ void initSpriteBank() {
         }
     // special case, no transparency
     transparentLowerLeftCorner[ riseMarker ] = false;
+    transparentLowerLeftCorner[ flagEditCell ] = false;
 
 
     for( int i = riseMarker; i < endSpriteID; i++ ) {

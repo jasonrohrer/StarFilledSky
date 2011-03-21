@@ -59,6 +59,7 @@ int versionNumber = 16;
 #include "musicPlayer.h"
 #include "numerals.h"
 #include "beatTracker.h"
+#include "flagSprite.h"
 
 
 // should we output level maps as images?
@@ -1523,6 +1524,35 @@ static void drawFlagEditor() {
     mainFont2->drawString( translate( "flagEditMessage1" ), 
                            messagePos, alignCenter );        
         
+
+    doublePair cellPos = lastScreenViewCenter;
+    cellPos.x -= 1;
+    cellPos.y += 1;
+    
+    int cellIndex = 0;
+
+    for( int y=0; y<3; y++ ) {
+        cellPos.x = lastScreenViewCenter.x - 1;
+        for( int x=0; x<3; x++ ) {
+
+            int cellColorIndex = hexTo16( playerFlag[cellIndex] );
+
+            setDrawColor( 
+                flagColorMap[cellColorIndex][0] / 255.0f,
+                flagColorMap[cellColorIndex][1] / 255.0f,
+                flagColorMap[cellColorIndex][2] / 255.0f,
+                pauseScreenFade );
+                
+            drawSprite( flagEditCell, cellPos );
+
+            cellPos.x += 1;
+            cellIndex++;
+            }
+        cellPos.y -= 1;
+        }
+    
+
+
 
     setDrawColor( 1, 1, 1, pauseScreenFade );
 
