@@ -42,6 +42,22 @@ int hexTo16( char inHexChar ) {
     return 0;
     }
 
+
+char sixteenToHex( int inNumber ) {
+    if( inNumber < 10 ) {
+        return (char)( 48 + inNumber );
+        }
+    else if( inNumber < 16 ) {
+        return (char)( 65 + (inNumber - 10 ) );
+        }
+    else {
+        // default, out of range
+        return 0;
+        }        
+    }
+
+
+
         
 
 

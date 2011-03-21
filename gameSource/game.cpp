@@ -225,6 +225,9 @@ Font *tinyFont;
 static float pauseScreenFade = 0;
 
 static char editingFlag = false;
+static char flagEditorPressed = false;
+
+static int flagEditorCurrentColorIndex = 0;
 
 static char *currentUserTypedMessage = NULL;
 
@@ -1537,6 +1540,19 @@ static void drawFlagEditor() {
 
             int cellColorIndex = hexTo16( playerFlag[cellIndex] );
 
+            if( flagEditorPressed && distance( mousePos, cellPos ) < 0.5 ) {
+                cellColorIndex = flagEditorCurrentColorIndex;
+                
+                // update string
+                playerFlag[ cellIndex ] = sixteenToHex( cellColorIndex );
+                
+                SettingsManager::setSetting( "flag", playerFlag );
+
+                flagEditorPressed = false;
+                }
+
+            
+
             setDrawColor( 
                 flagColorMap[cellColorIndex][0] / 255.0f,
                 flagColorMap[cellColorIndex][1] / 255.0f,
@@ -1568,6 +1584,12 @@ static void drawFlagEditor() {
         
         drawSprite( flagEditColorPot, potPos );
         
+        if( flagEditorPressed && distance( mousePos, potPos ) < 0.25 ) {
+            flagEditorCurrentColorIndex = c;
+            flagEditorPressed = false;
+            }
+        
+
         potPos.x += 0.5625;
         }
     
@@ -1586,7 +1608,16 @@ static void drawFlagEditor() {
                            messagePos, alignCenter );
     
 
+    int c = flagEditorCurrentColorIndex;
+    setDrawColor( 
+        flagColorMap[c][0] / 255.0f,
+        flagColorMap[c][1] / 255.0f,
+        flagColorMap[c][2] / 255.0f,
+        pauseScreenFade );
+
     drawSprite( flagMouse, mousePos );
+
+    flagEditorPressed = false;
     }
 
 
@@ -3284,6 +3315,10 @@ void pointerMove( float inX, float inY ) {
 void pointerDown( float inX, float inY ) {
     mouseMove( inX, inY );
     shooting = true;
+
+    if( editingFlag ) {
+        flagEditorPressed = true;
+        }
     }
 
 

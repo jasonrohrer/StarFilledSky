@@ -11,5 +11,8 @@ SpriteHandle generateFlagSprite( const char *inFlagString );
 // assumes upper case
 int hexTo16( char inHexChar );
 
+// generates 0..F chars from 0..16 ints
+char sixteenToHex( int inNumber );
+
 
 extern unsigned char flagColorMap[16][3];
