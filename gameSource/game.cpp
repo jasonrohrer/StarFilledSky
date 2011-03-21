@@ -1540,7 +1540,12 @@ static void drawFlagEditor() {
 
             int cellColorIndex = hexTo16( playerFlag[cellIndex] );
 
-            if( flagEditorPressed && distance( mousePos, cellPos ) < 0.5 ) {
+            if( flagEditorPressed && distance( mousePos, cellPos ) < 0.5 
+                && 
+                // only if color in cell is changing
+                cellColorIndex != flagEditorCurrentColorIndex ) {
+
+                
                 cellColorIndex = flagEditorCurrentColorIndex;
                 
                 // update string
@@ -3324,6 +3329,11 @@ void pointerDown( float inX, float inY ) {
 
 void pointerDrag( float inX, float inY ) {
     mouseMove( inX, inY );
+
+    // report on drag, too
+    if( editingFlag ) {
+        flagEditorPressed = true;
+        }
     }
 
 void pointerUp( float inX, float inY ) {
