@@ -5985,8 +5985,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
 
 
 
-            if( true ) {
-                
             // bullet shadows under walls too
 
             // skip shadows if too many are already drawn over a given
@@ -6031,7 +6029,20 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     shadowHitCounts[ gridPos.y ][ gridPos.x ];
                 
                 
-                float thisBulletShadownLevel = 1.0f / hitCount;
+                float thisBulletShadownLevel = 
+                    1.0f / 
+                    // reduce slope of fall-off line
+                    ( hitCount / 2.0f + 0.5 );
+
+                float lastShadowFade = b->lastShadowFade;
+                
+                // weighted average
+                thisBulletShadownLevel += 2 * lastShadowFade;
+                thisBulletShadownLevel /= 3;
+                
+                // save for next time
+                b->lastShadowFade = thisBulletShadownLevel;
+                
                                 
                 float fade = getBulletFade( b );
                 
@@ -6046,7 +6057,6 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
             
             delete [] onScreenBulletArray;
             
-                }
             
             
                      
@@ -7293,7 +7303,8 @@ void Level::addBullet( doublePair inPosition,
                      !cornerDir,
                      stickySteps,
                      explode,
-                     inPlayerBullet, size, inEnemyBulletMarker, false, false };
+                     inPlayerBullet, size, inEnemyBulletMarker, 
+                     false, false, 0 };
         mBullets.push_back( b );
 
 
@@ -7320,7 +7331,8 @@ void Level::addBullet( doublePair inPosition,
                       cornerDir,
                       stickySteps,
                       explode,
-                      inPlayerBullet, size, inEnemyBulletMarker };
+                      inPlayerBullet, size, inEnemyBulletMarker, 
+                      false, false, 0 };
         mBullets.push_back( br );
 
 
@@ -7359,7 +7371,8 @@ void Level::addBullet( doublePair inPosition,
                              !cornerDir,
                              stickySteps,
                              explode,
-                             inPlayerBullet, size, inEnemyBulletMarker };
+                             inPlayerBullet, size, inEnemyBulletMarker, 
+                             false, false, 0 };
                 mBullets.push_back( b );
 
 
@@ -7386,7 +7399,8 @@ void Level::addBullet( doublePair inPosition,
                               cornerDir,
                               stickySteps,
                               explode,
-                              inPlayerBullet, size, inEnemyBulletMarker };
+                              inPlayerBullet, size, inEnemyBulletMarker, 
+                              false, false, 0 };
                 mBullets.push_back( br );
                 }
             
@@ -7409,7 +7423,8 @@ void Level::addBullet( doublePair inPosition,
                  inCorneringDir,
                  stickySteps,
                  explode,
-                 inPlayerBullet, size, inEnemyBulletMarker };
+                 inPlayerBullet, size, inEnemyBulletMarker, 
+                 false, false, 0 };
     mBullets.push_back( b );
     
 

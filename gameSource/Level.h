@@ -60,6 +60,10 @@ typedef struct Bullet {
         // bullet should have no effect at the end of it's life when
         // it is barely visible
         char halfFadedOut;
+
+        // used to smooth out shadown pop-in (when bullets are near each other
+        // and casting overlapping shadows)
+        float lastShadowFade;
     } Bullet;
 
 
