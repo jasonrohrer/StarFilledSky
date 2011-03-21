@@ -1551,6 +1551,28 @@ static void drawFlagEditor() {
         cellPos.y -= 1;
         }
     
+    
+
+    doublePair potPos = lastScreenViewCenter;
+    
+    potPos.y += 3.5;
+    potPos.x -= 4.21875;
+    
+
+    for( int c=0; c<16; c++ ) {
+        setDrawColor( 
+            flagColorMap[c][0] / 255.0f,
+            flagColorMap[c][1] / 255.0f,
+            flagColorMap[c][2] / 255.0f,
+            pauseScreenFade );
+        
+        drawSprite( flagEditColorPot, potPos );
+        
+        potPos.x += 0.5625;
+        }
+    
+
+
 
 
 

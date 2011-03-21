@@ -70,6 +70,7 @@ graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
 graphics/flagMouse.tga \
 graphics/flagEditCell.tga \
+graphics/flagEditColorPot.tga \
 graphics/powerUpSlot.tga \
 graphics/powerUpSlotLeft.tga \
 graphics/powerUpSlotRight.tga \

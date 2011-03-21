@@ -40,6 +40,7 @@ void freeSpriteBank();
     F(enterCrosshair), \
     F(flagMouse), \
     F(flagEditCell), \
+    F(flagEditColorPot), \
     F(powerUpSlot), \
     F(powerUpSlotLeft), \
     F(powerUpSlotRight), \
