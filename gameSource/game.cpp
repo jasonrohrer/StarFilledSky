@@ -434,7 +434,7 @@ int getStartingLevelNumber() {
 
 
 static const char *customDataFormatString = 
-    "version%d_level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_%s";
+    "version%d_level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_flag%9s_%s";
 
 
 char *getCustomRecordedGameData() {
@@ -474,6 +474,20 @@ char *getCustomRecordedGameData() {
     
     float mouseSpeedSetting = 
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
+    
+
+    char *playerFlagSetting = 
+        SettingsManager::getStringSetting( "flag" );
+    
+    if( playerFlagSetting == NULL ) {
+        playerFlagSetting = stringDuplicate( "232232232" );
+        }
+    else {
+        char *oldFlag = playerFlagSetting;
+        playerFlagSetting = stringToUpperCase( playerFlagSetting );
+        
+        delete [] oldFlag;
+        }
 
 
 
@@ -512,8 +526,10 @@ char *getCustomRecordedGameData() {
         versionNumber, 
         levelNumber, tutorialOn,
         tutorialBookmark, mouseSpeedSetting,
+        playerFlagSetting,
         partialBookmarkString );
-    
+
+    delete [] playerFlagSetting;
     delete [] partialBookmarkString;
 
     return result;
@@ -621,18 +637,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     
 
 
-    playerFlag = 
-        SettingsManager::getStringSetting( "flag" );
-    
-    if( playerFlag == NULL ) {
-        playerFlag = stringDuplicate( "000333222" );
-        }
-    else {
-        char *oldFlag = playerFlag;
-        playerFlag = stringToUpperCase( playerFlag );
-        
-        delete [] oldFlag;
-        }
     
 
     flagServerURL = SettingsManager::getStringSetting( "flagServerURL" );
@@ -697,6 +701,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int tutorialBookmark = 0;
     float mouseSpeedSetting = 1.0f;
+    playerFlag = stringDuplicate( "232232232" );
     char *partialBookmarkString = 
         new char[ strlen( inCustomRecordedGameData ) + 1 ];
     
@@ -709,6 +714,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           &readVersionNumber,
                           &levelNumber,
                           &tutorialOn, &tutorialBookmark, &mouseSpeedSetting,
+                          playerFlag,
                           partialBookmarkString );
     
     PowerUpSet *startingPowers = NULL;
@@ -724,7 +730,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                     
 
 
-    if( numRead != 6 ) {
+    if( numRead != 7 ) {
         // no recorded game?
 
         // don't force player back through boring level 0, even if
@@ -1554,8 +1560,12 @@ static void drawFlagEditor() {
                 // update string
                 playerFlag[ cellIndex ] = sixteenToHex( cellColorIndex );
                 
-                SettingsManager::setSetting( "flag", playerFlag );
-
+                // don't save flag to disk if we're playing
+                // back a recorded game
+                if( !isGamePlayingBack() ) {    
+                    SettingsManager::setSetting( "flag", playerFlag );
+                    }
+                
                 NoteSequence playerFlagAnthemA = 
                     generateFlagNoteSequence( PARTS-6, playerFlag );
             
