@@ -604,12 +604,20 @@ function fs_showData() {
     
     if( $search != "" ) {
         
-
+        /*
         $keywordClause = "WHERE ( level_number LIKE '%$search%' " .
             "OR level_seed LIKE '%$search%' ".
             "OR change_ip_address LIKE '%$search%' ".
             "OR flag_a LIKE '%$search%' ".
             "OR flag_b LIKE '%$search%' ) ";
+        */
+        // switch to exact matches to avoid surprising cross-matches
+        // (searching for level 27 was matching IP address 127.0.0.1)
+        $keywordClause = "WHERE ( level_number LIKE '$search' " .
+            "OR level_seed LIKE '$search' ".
+            "OR change_ip_address LIKE '$search' ".
+            "OR flag_a LIKE '$search' ".
+            "OR flag_b LIKE '$search' ) ";
 
         $searchDisplay = " matching <b>$search</b>";
         }
@@ -639,6 +647,11 @@ function fs_showData() {
     if( $endSkip > $totalFlags ) {
         $endSkip = $totalFlags;
         }
+    $showingDisplay = " (showing $startSkip - $endSkip)";
+    if( $totalFlags <= 1 ) {
+        $showingDisplay = "";
+        }
+    
 
 
 
@@ -655,9 +668,14 @@ function fs_showData() {
         <hr>
 <?php
 
+    $recordWord = "records";
+
+    if( $totalFlags == 1 ) {
+        $recordWord = "record";
+        }
     
-    echo "$totalFlags flag records" .$searchDisplay .
-        " (showing $startSkip - $endSkip):<br>\n";
+    echo "$totalFlags flag $recordWord" .$searchDisplay .
+        "$showingDisplay:<br>\n";
 
     
     $nextSkip = $skip + $flagsPerPage;
@@ -666,11 +684,13 @@ function fs_showData() {
     
     if( $prevSkip >= 0 ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "&skip=$prevSkip&search=$search\">Previous Page</a>] ";
+            "&skip=$prevSkip&search=$search".
+            "&order_by=$order_by\">Previous Page</a>] ";
         }
     if( $nextSkip < $totalFlags ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "&skip=$nextSkip&search=$search\">Next Page</a>]";
+            "&skip=$nextSkip&search=$search".
+            "&order_by=$order_by\">Next Page</a>]";
         }
 
     /*
