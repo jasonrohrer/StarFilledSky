@@ -565,6 +565,11 @@ http://localhost/jcr13/game10_flag/server.php?action=get_flags&level_number=5&le
 
 
 function fs_showData() {
+    // call several of these global so they can be accessed properly
+    // inside the sub-functions we define below
+    global $password, $skip, $search, $order_by;
+    
+    
     $password = fs_checkPassword( "show_data" );
 
     global $tableNamePrefix, $remoteIP;
@@ -579,6 +584,11 @@ function fs_showData() {
     $skip = 0;
     if( isset( $_REQUEST[ "skip" ] ) ) {
         $skip = $_REQUEST[ "skip" ];
+        }
+
+    $order_by = "change_date";
+    if( isset( $_REQUEST[ "order_by" ] ) ) {
+        $order_by = $_REQUEST[ "order_by" ];
         }
 
     global $flagsPerPage;    
@@ -616,7 +626,7 @@ function fs_showData() {
     
              
     $query = "SELECT * FROM $tableNamePrefix"."flags $keywordClause".
-        "ORDER BY change_date DESC ".
+        "ORDER BY $order_by DESC ".
         "LIMIT $skip, $flagsPerPage;";
     $result = fs_queryDatabase( $query );
     
@@ -683,17 +693,33 @@ function fs_showData() {
     
     echo "<table border=1 cellpadding=5>\n";
 
-    echo "<tr><td>Level Number</td>\n";
+
+    function orderLink( $inOrderBy, $inLinkText ) {
+        global $password, $skip, $search, $order_by;
+        if( $inOrderBy == $order_by ) {
+            // already displaying this order, don't show link
+            return "<b>$inLinkText</b>";
+            }
+
+        // else show a link to switch to this order
+        return "<a href=\"server.php?action=show_data&password=$password" .
+            "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
+        }
+
+    echo "<tr>\n";
+    echo "<td>".orderLink( "level_number", "Level Number" )."</td>\n";
     echo "<td>Level seed</td>\n";
     echo "<td>Temporary flag</td>\n";
     echo "<td>Permanent flag</td>\n";
-    echo "<td>Created</td>\n";
-    echo "<td>Changed</td>\n";
+    echo "<td>".orderLink( "creation_date", "Created" )."</td>\n";
+    echo "<td>".orderLink( "change_date", "Changed" )."</td>\n";
     echo "<td>Changed by</td>\n";
-    echo "<td># Changes</td></tr>\n";
+    echo "<td>".orderLink( "change_count", "Changes" )."</td>\n";
+    echo "</tr>\n";
+    
 
-
-    function searchLink( $password, $inString, $inLinkText ) {
+    function searchLink( $inString, $inLinkText ) {
+        global $password;
         return "<a href=\"server.php?action=show_data&password=$password" .
             "&search=$inString\">$inLinkText</a>";
         }
@@ -764,23 +790,18 @@ function fs_showData() {
 
         
         echo "<tr>\n";
-        echo "<td>".searchLink( $password,
-                                    $level_number, $level_number )."</td>\n";
-        echo "<td>".searchLink( $password,
-                                    $level_seed, $level_seed )."</td>\n";
+        echo "<td>".searchLink( $level_number, $level_number )."</td>\n";
+        echo "<td>".searchLink( $level_seed, $level_seed )."</td>\n";
         echo "<td align=center>".
-            searchLink( $password,
-                        $flags[1], $flagHTML[1] )."</td>\n";
+            searchLink( $flags[1], $flagHTML[1] )."</td>\n";
         echo "<td align=center>".
-            searchLink( $password,
-                        $flags[0], $flagHTML[0] )."</td>\n";
+            searchLink( $flags[0], $flagHTML[0] )."</td>\n";
         echo "<td>$creation_date</td>\n";
         echo "<td>$change_date</td>\n";
         echo "<td>".
-            searchLink( $password,
-                        $change_ip_address, $change_ip_address )."</td>\n";
+            searchLink( $change_ip_address, $change_ip_address )."</td>\n";
         
-        echo "<td>$change_count changes</td>\n";
+        echo "<td align=right>$change_count</td>\n";
         echo "</tr>\n";
         
         }
