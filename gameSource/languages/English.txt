@@ -58,6 +58,15 @@ flagEditMessage1 "Edit your Flag and Anthem:"
 flagEditMessage2 "Press ENTER when done"
 flagEditMessage3 "Press F to show this editor later"
 
+flagEditMessage4 "Cross anchors to place your flag" 
+flagEditMessage5 "Others will find your mark" 
+
+flagAnchorLabelA1 "Permanent"
+flagAnchorLabelA2 "anchor"
+
+flagAnchorLabelB1 "Temporary"
+flagAnchorLabelB2 "anchor"
+
 
 
 difficultyTag "DIFFICULTY"

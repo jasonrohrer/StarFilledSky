@@ -1529,6 +1529,9 @@ static void drawFlagEditor() {
         
 
     doublePair cellPos = lastScreenViewCenter;
+
+    cellPos.y += 1.375;
+
     cellPos.x -= 1;
     cellPos.y += 1;
     
@@ -1587,7 +1590,7 @@ static void drawFlagEditor() {
 
     doublePair potPos = lastScreenViewCenter;
     
-    potPos.y += 3.5;
+    potPos.y += 3.625;
     potPos.x -= 4.21875;
     
 
@@ -1618,12 +1621,77 @@ static void drawFlagEditor() {
 
     messagePos = lastScreenViewCenter;
 
+    messagePos.y += 2.875;
+
     messagePos.y -= 3.75 * ( viewHeight / 15 );
     mainFont2->drawString( translate( "flagEditMessage2" ), 
                            messagePos, alignCenter );
 
     messagePos.y -= 0.625 * (viewHeight / 15);
     mainFont2->drawString( translate( "flagEditMessage3" ), 
+                           messagePos, alignCenter );
+
+
+              
+
+
+    doublePair anchorPos = lastScreenViewCenter;
+    
+    anchorPos.y -= 2.75;
+    
+    anchorPos.x -= 0.875 * viewHeight / 3;
+    
+
+    // darker panel behind anchor tips
+    setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
+        
+    drawRect( lastScreenViewCenter.x - viewHeight / 3,
+              anchorPos.y + 0.625,
+              lastScreenViewCenter.x + viewHeight / 3,
+              anchorPos.y - 0.625 );
+    
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    drawSprite( flagSpotB, anchorPos );
+
+    doublePair anchorLabelPos = anchorPos;
+    
+    anchorLabelPos.x += 0.75;
+    anchorLabelPos.y += 0.25;
+    mainFont2->drawString( translate( "flagAnchorLabelB1" ), 
+                           anchorLabelPos, alignLeft );
+    anchorLabelPos.y -= 0.625;
+    mainFont2->drawString( translate( "flagAnchorLabelB2" ), 
+                           anchorLabelPos, alignLeft );
+
+
+    anchorPos.x = lastScreenViewCenter.x + 0.875 * viewHeight / 3;
+    
+
+    drawSprite( flagSpotA, anchorPos );
+    
+    anchorLabelPos = anchorPos;
+    
+    anchorLabelPos.x -= 0.75;
+    anchorLabelPos.y += 0.25;
+    mainFont2->drawString( translate( "flagAnchorLabelA1" ), 
+                           anchorLabelPos, alignRight );
+    anchorLabelPos.y -= 0.625;
+    mainFont2->drawString( translate( "flagAnchorLabelA2" ), 
+                           anchorLabelPos, alignRight );
+
+
+
+
+    messagePos.y -= 1.75;
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage4" ), 
+                           messagePos, alignCenter );
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage5" ), 
                            messagePos, alignCenter );
     
 
