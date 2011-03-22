@@ -262,6 +262,9 @@ function fs_setupDatabase() {
 function fs_showLog() {
     $password = fs_checkPassword( "show_log" );
 
+    echo "[<a href=\"server.php?action=show_data&password=$password" .
+         "\">Main</a>]<br><br><br>";
+    
     global $tableNamePrefix;
     
     $query = "SELECT * FROM $tableNamePrefix"."log;";
@@ -580,17 +583,39 @@ function fs_showData() {
 
     global $flagsPerPage;    
 
+
+    $search = "";
+    if( isset( $_REQUEST[ "search" ] ) ) {
+        $search = $_REQUEST[ "search" ];
+        }
+
+    $keywordClause = "";
+    $searchDisplay = "";
+    
+    if( $search != "" ) {
+        
+
+        $keywordClause = "WHERE ( level_number LIKE '%$search%' " .
+            "OR level_seed LIKE '%$search%' ".
+            "OR change_ip_address LIKE '%$search%' ".
+            "OR flag_a LIKE '%$search%' ".
+            "OR flag_b LIKE '%$search%' ) ";
+
+        $searchDisplay = " matching <b>$search</b>";
+        }
+
+
     
 
     // first, count results
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."flags;";
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."flags $keywordClause;";
 
     $result = fs_queryDatabase( $query );
     $totalFlags = mysql_result( $result, 0, 0 );
 
     
              
-    $query = "SELECT * FROM $tableNamePrefix"."flags ".
+    $query = "SELECT * FROM $tableNamePrefix"."flags $keywordClause".
         "ORDER BY change_date DESC ".
         "LIMIT $skip, $flagsPerPage;";
     $result = fs_queryDatabase( $query );
@@ -604,10 +629,24 @@ function fs_showData() {
     if( $endSkip > $totalFlags ) {
         $endSkip = $totalFlags;
         }
-    
+
+
+
+    // form for searching flags
+?>
+        <hr>
+            <FORM ACTION="server.php" METHOD="post">
+    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
+    <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
+    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
+             VALUE="<?php echo $search;?>">
+    <INPUT TYPE="Submit" VALUE="Search">
+    </FORM>
+        <hr>
+<?php
 
     
-    echo "$totalFlags flag records" .
+    echo "$totalFlags flag records" .$searchDisplay .
         " (showing $startSkip - $endSkip):<br>\n";
 
     
@@ -653,6 +692,11 @@ function fs_showData() {
     echo "<td>Changed by</td>\n";
     echo "<td># Changes</td></tr>\n";
 
+
+    function searchLink( $password, $inString, $inLinkText ) {
+        return "<a href=\"server.php?action=show_data&password=$password" .
+            "&search=$inString\">$inLinkText</a>";
+        }
 
     for( $i=0; $i<$numRows; $i++ ) {
         $level_number = mysql_result( $result, $i, "level_number" );
@@ -716,16 +760,29 @@ function fs_showData() {
         
         
         
-        
 
-        echo "<tr><td>$level_number</td>\n";
-        echo "<td>$level_seed</td>\n";
-        echo "<td align=center>$flagHTML[1]</td>\n";
-        echo "<td align=center>$flagHTML[0]</td>\n";
+
+        
+        echo "<tr>\n";
+        echo "<td>".searchLink( $password,
+                                    $level_number, $level_number )."</td>\n";
+        echo "<td>".searchLink( $password,
+                                    $level_seed, $level_seed )."</td>\n";
+        echo "<td align=center>".
+            searchLink( $password,
+                        $flags[1], $flagHTML[1] )."</td>\n";
+        echo "<td align=center>".
+            searchLink( $password,
+                        $flags[0], $flagHTML[0] )."</td>\n";
         echo "<td>$creation_date</td>\n";
         echo "<td>$change_date</td>\n";
-        echo "<td>$change_ip_address</td>\n";
-        echo "<td>$change_count changes</td></tr>\n";
+        echo "<td>".
+            searchLink( $password,
+                        $change_ip_address, $change_ip_address )."</td>\n";
+        
+        echo "<td>$change_count changes</td>\n";
+        echo "</tr>\n";
+        
         }
     echo "</table>";
 
