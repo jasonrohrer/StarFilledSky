@@ -32,14 +32,17 @@ $tableNamePrefix = "flagServer_";
 
 $enableLog = 1;
 
-// for log view/clear operations
-$logAccessPassword = "secret";
+// for web-based admin access
+$accessPassword = "secret";
 
 
 
 // secret shared with game code for signatures
 $sharedSecret = "secret 2";
 
+
+// number of flags shown per page in the browse view
+$flagsPerPage = 50;
 
 
 ?>

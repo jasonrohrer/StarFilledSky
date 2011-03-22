@@ -106,6 +106,9 @@ else if( $action == "show_log" ) {
 else if( $action == "clear_log" ) {
     fs_clearLog();
     }
+else if( $action == "show_data" ) {
+    fs_showData();
+    }
 else if( $action == "place_flag" ) {
     fs_placeFlag();
     }
@@ -257,61 +260,50 @@ function fs_setupDatabase() {
 
 
 function fs_showLog() {
-    $password = "";
-    if( isset( $_REQUEST[ "password" ] ) ) {
-        $password = $_REQUEST[ "password" ];
-        }
+    $password = fs_checkPassword( "show_log" );
 
-    global $logAccessPassword, $tableNamePrefix;
+    global $tableNamePrefix;
     
-    if( $password != $logAccessPassword ) {
-        echo "Incorrect password.";
+    $query = "SELECT * FROM $tableNamePrefix"."log;";
+    $result = fs_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
 
-        fs_log( "Failed show_log access with password:  $password" );
-        }
-    else {
-        $query = "SELECT * FROM $tableNamePrefix"."log;";
-        $result = fs_queryDatabase( $query );
-
-        $numRows = mysql_numrows( $result );
-
-        echo "$numRows log entries:<br><br><br>\n";
+    echo "<a href=\"server.php?action=clear_log&password=$password\">".
+        "Clear log</a>";
         
-
-        for( $i=0; $i<$numRows; $i++ ) {
-            $time = mysql_result( $result, $i, "entry_time" );
-            $entry = mysql_result( $result, $i, "entry" );
-
-            echo "<b>$time</b>:<br>$entry<hr>\n";
-            }
+    echo "<hr>";
+    
+    echo "$numRows log entries:<br><br><br>\n";
+    
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $time = mysql_result( $result, $i, "entry_time" );
+        $entry = mysql_result( $result, $i, "entry" );
+        
+        echo "<b>$time</b>:<br>$entry<hr>\n";
         }
     }
 
 
 
 function fs_clearLog() {
-    $password = "";
-    if( isset( $_REQUEST[ "password" ] ) ) {
-        $password = $_REQUEST[ "password" ];
-        }
 
-    global $logAccessPassword, $tableNamePrefix;
+    $password = fs_checkPassword( "clear_log" );
+
+    echo "[<a href=\"server.php?action=show_data&password=$password" .
+         "\">Main</a>]<br><br><br>";
     
-    if( $password != $logAccessPassword ) {
-        echo "Incorrect password.";
+    global $tableNamePrefix;
 
-        fs_log( "Failed clear_log access with password:  $password" );
+    $query = "DELETE FROM $tableNamePrefix"."log;";
+    $result = fs_queryDatabase( $query );
+    
+    if( $result ) {
+        echo "Log cleared.";
         }
     else {
-        $query = "DELETE FROM $tableNamePrefix"."log;";
-        $result = fs_queryDatabase( $query );
-
-        if( $result ) {
-            echo "Log cleared.";
-            }
-        else {
-            echo "DELETE operation failed?";
-            }
+        echo "DELETE operation failed?";
         }
     }
 
@@ -561,6 +553,192 @@ http://localhost/jcr13/game10_flag/server.php?action=get_flags&level_number=5&le
     
     fs_queryDatabase( "SET AUTOCOMMIT = 1;" );
     }
+
+
+
+
+
+
+
+
+function fs_showData() {
+    $password = fs_checkPassword( "show_data" );
+
+    global $tableNamePrefix, $remoteIP;
+    
+
+    echo "[<a href=\"server.php?action=show_data&password=$password" .
+            "\">Main</a>]<br><br><br>";
+
+
+
+
+    $skip = 0;
+    if( isset( $_REQUEST[ "skip" ] ) ) {
+        $skip = $_REQUEST[ "skip" ];
+        }
+
+    global $flagsPerPage;    
+
+    
+
+    // first, count results
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."flags;";
+
+    $result = fs_queryDatabase( $query );
+    $totalFlags = mysql_result( $result, 0, 0 );
+
+    
+             
+    $query = "SELECT * FROM $tableNamePrefix"."flags ".
+        "ORDER BY change_date DESC ".
+        "LIMIT $skip, $flagsPerPage;";
+    $result = fs_queryDatabase( $query );
+    
+    $numRows = mysql_numrows( $result );
+
+    $startSkip = $skip + 1;
+    
+    $endSkip = $startSkip + $flagsPerPage - 1;
+
+    if( $endSkip > $totalFlags ) {
+        $endSkip = $totalFlags;
+        }
+    
+
+    
+    echo "$totalFlags flag records" .
+        " (showing $startSkip - $endSkip):<br>\n";
+
+    
+    $nextSkip = $skip + $flagsPerPage;
+
+    $prevSkip = $skip - $flagsPerPage;
+    
+    if( $prevSkip >= 0 ) {
+        echo "[<a href=\"server.php?action=show_data&password=$password" .
+            "&skip=$prevSkip&search=$search\">Previous Page</a>] ";
+        }
+    if( $nextSkip < $totalFlags ) {
+        echo "[<a href=\"server.php?action=show_data&password=$password" .
+            "&skip=$nextSkip&search=$search\">Next Page</a>]";
+        }
+
+    /*
+            "CREATE TABLE $tableName(" .
+            "level_number INT NOT NULL," .
+            "level_seed INT UNSIGNED NOT NULL," .
+            "creation_date DATETIME NOT NULL," .
+            "change_date DATETIME NOT NULL," .
+            "change_ip_address CHAR(15) NOT NULL," .
+            "change_count INT UNSIGNED NOT NULL," .
+            "view_date DATETIME NOT NULL," .
+            "view_count INT UNSIGNED NOT NULL," .
+            "flag_a CHAR(9) NOT NULL," .
+            "flag_b CHAR(9) NOT NULL," .
+            "PRIMARY KEY( level_number, level_seed ) ) ENGINE = INNODB;";
+    */
+
+    
+    echo "<br><br>";
+    
+    echo "<table border=1 cellpadding=5>\n";
+
+    echo "<tr><td>Level Number</td>\n";
+    echo "<td>Level seed</td>\n";
+    echo "<td>Temporary flag</td>\n";
+    echo "<td>Permanent flag</td>\n";
+    echo "<td>Created</td>\n";
+    echo "<td>Changed</td>\n";
+    echo "<td>Changed by</td>\n";
+    echo "<td># Changes</td></tr>\n";
+
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $level_number = mysql_result( $result, $i, "level_number" );
+        $level_seed = mysql_result( $result, $i, "level_seed" );
+        $creation_date = mysql_result( $result, $i, "creation_date" );
+        $change_date = mysql_result( $result, $i, "change_date" );
+        $change_ip_address = mysql_result( $result, $i, "change_ip_address" );
+        $change_count = mysql_result( $result, $i, "change_count" );
+
+        $flag_a = mysql_result( $result, $i, "flag_a" );
+        $flag_b = mysql_result( $result, $i, "flag_b" );
+
+        $colorMap = array( "0" => "#DF2D00",
+                           "1" => "#31DD09",
+                           "2" => "#3838BB",
+                           "3" => "#FFF5DA",
+                           "4" => "#363636",
+                           "5" => "#FFDD00",
+                           "6" => "#4CD0D0",
+                           "7" => "#D400D3",
+                           "8" => "#E68700",
+                           "9" => "#7B19B1",
+                           "A" => "#5AFF8B",
+                           "B" => "#808080",
+                           "C" => "#7F4F00",
+                           "D" => "#1F7301",
+                           "E" => "#71001B",
+                           "F" => "#FF9FDA" );
+        
+
+        $flags[0] = $flag_a;
+        $flags[1] = $flag_b;
+
+        $flagHTML[0] = "";
+        $flagHTML[1] = "";
+        
+        for( $f=0; $f<2; $f++ ) {
+            
+            $flagHTML[$f] = "(blank)";
+
+            if( $flags[$f] != "BLANKFLAG" ) {
+                $flag_chars = str_split( $flags[$f] );
+                
+                $flagHTML[$f] =
+                 "<table border=2 bgcolor=black cellspacing=2 cellpadding=5>";
+                
+                for( $y=0; $y<3; $y++ ) {
+                    $flagHTML[$f] = $flagHTML[$f] . "<tr>";
+                    for( $x=0; $x<3; $x++ ) {
+                        $color = $colorMap[ $flag_chars[ $y * 3 + $x ] ];
+                        
+                        $flagHTML[$f] =
+                            $flagHTML[$f] . "<td bgcolor=$color></td>";
+                        }
+                    $flagHTML[$f] = $flagHTML[$f] . "</tr>";
+                    }
+                $flagHTML[$f] = $flagHTML[$f] . "</table>";
+                
+                }
+            }
+        
+        
+        
+        
+
+        echo "<tr><td>$level_number</td>\n";
+        echo "<td>$level_seed</td>\n";
+        echo "<td align=center>$flagHTML[1]</td>\n";
+        echo "<td align=center>$flagHTML[0]</td>\n";
+        echo "<td>$creation_date</td>\n";
+        echo "<td>$change_date</td>\n";
+        echo "<td>$change_ip_address</td>\n";
+        echo "<td>$change_count changes</td></tr>\n";
+        }
+    echo "</table>";
+
+
+    echo "<hr>";
+    
+    echo "<a href=\"server.php?action=show_log&password=$password\">".
+        "Show log</a>";
+    echo "<hr>";
+    echo "Generated for $remoteIP\n";
+
+    }
+
 
 
 
@@ -853,6 +1031,27 @@ function fs_stripslashes_deep( $inValue ) {
         ( is_array( $inValue )
           ? array_map( 'sb_stripslashes_deep', $inValue )
           : stripslashes( $inValue ) );
+    }
+
+
+
+function fs_checkPassword( $inFunctionName ) {
+    $password = "";
+    if( isset( $_REQUEST[ "password" ] ) ) {
+        $password = $_REQUEST[ "password" ];
+        }
+
+    global $accessPassword;
+    
+    if( $password != $accessPassword ) {
+        echo "Incorrect password.";
+
+        fs_log( "Failed $inFunctionName access with password:  $password" );
+
+        die();
+        }
+
+    return $password;
     }
 
 ?>
