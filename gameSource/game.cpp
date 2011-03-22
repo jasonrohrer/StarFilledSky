@@ -1821,6 +1821,24 @@ void drawFrame( char inUpdate ) {
             setMusicLoudness( oldLoudness );
             }
         
+        
+        if( editingFlag ) {    
+            // fade music in
+            
+            double oldLoudness = getMusicLoudness();
+            
+            if( oldLoudness < 1 ) {
+            
+                oldLoudness += ( 1.0 / 60 ) * frameRateFactor;
+
+                if( oldLoudness > 1 ) {
+                    oldLoudness = 1;
+                    }
+                setMusicLoudness( oldLoudness );
+                }
+            }
+        
+
 
         // fade in pause screen
         if( pauseScreenFade < 1 ) {
