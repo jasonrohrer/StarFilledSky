@@ -3622,17 +3622,16 @@ void keyDown( unsigned char inASCII ) {
 
 void keyUp( unsigned char inASCII ) {
     if( isPaused() ) {
-        // block general keyboard control during pause
-        
         if( inASCII == 127 || inASCII == 8 ) {
             // delete no longer held
             holdDeleteKeySteps = -1;
             }
-    
-        return;
         }
     
 
+    // allow key releases always, even during pause
+        
+        
 
 
     switch( inASCII ) {

@@ -13,7 +13,10 @@ Version 16
 
 --Improved accuracy of shadow drawing for objects. 
 
+--Added player Flags and Anthems with a global server to track them.
 
+--Movement keys are now released properly if they were held down when pause 
+  invoked.
 
 
 
