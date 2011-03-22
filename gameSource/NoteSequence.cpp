@@ -175,44 +175,49 @@ NoteSequence generateFlagNoteSequence( int inPartIndex,
     
     // else generate a pattern from the string
 
-    // keep a note sum
-    int noteSum = 0;
 
-    // if sum is even, skip a column
-    // if odd, do not skip a column
-
-
-    // This is bad, and doesn't produce most of the interesting combinations
-    // check this article:
-    // http://en.wikipedia.org/wiki/Combinatorial_number_system
-
-    int c = 0;
+    // map note values into a an (N choose 9) combination index
+    // i.e., we pick one of the possible note spacings of 9 notes in N slots
+    unsigned int combinationSeed = 0;
     
-    int x = 0;
-    
-    while( c < N && x < 9) {
+    for( int c=0; c<8; c++ ) {
         
-        int noteHeight = hexTo16( inFlagString[x] );
-        x++;
-        
-        s.noteYIndex[c] = noteHeight;
-        
-        noteSum += noteHeight;
-        
-        if( noteSum % 2 == 0 ) {
-            c += 2;
-            }
-        else {
-            c += 1;
-            }
+        combinationSeed += hexTo16( inFlagString[c] ) << ( 4 * c );
         }
+    // add in last 4-bit digit... might overflow, but that's okay
+    combinationSeed += hexTo16( inFlagString[8] );
     
+    CustomRandomSource combinationPicker( combinationSeed );
+
+
+    int numComb = choose( N, 9 );
+    
+
+    int combinationIndex = 
+        combinationPicker.getRandomBoundedInt( 0, numComb - 1 );
+    
+    int comb[9];
+    
+    combIndex( combinationIndex, 9, comb );
+    
+
+    // comb now contains column assignments for each of our notes
+
+    for( int i=0; i<9; i++ ) {
+        int noteHeight = hexTo16( inFlagString[i] );
+
+        int noteColumn = comb[i];
+        
+        s.noteYIndex[noteColumn] = noteHeight;
+        }
+             
+    /*
     printf( "Note sequence: " );
     for( int i=0; i<N; i++ ) {
         printf( "%d, ", s.noteYIndex[i] );
         }
     printf( "\n" );
-    
+    */
 
     return s;
     }
