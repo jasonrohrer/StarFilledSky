@@ -3452,6 +3452,13 @@ extern int testBulletValue;
 
 
 void keyDown( unsigned char inASCII ) {
+
+    // taking screen shot is ALWAYS possible
+    if( inASCII == '=' ) {    
+        saveScreenShot( "screen" );
+        }
+    
+
     
     if( isPaused() ) {
         // block general keyboard control during pause
@@ -3599,9 +3606,6 @@ void keyDown( unsigned char inASCII ) {
 
             pauseGame();
             }
-            break;
-        case '=':
-            saveScreenShot( "screen" );
             break;
         case '2':
             testBulletValue ++;
