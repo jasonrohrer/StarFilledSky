@@ -59,11 +59,45 @@ NoteSequence generateFlagNoteSequence( int inPartIndex,
     
     // else generate a pattern from the string
 
-    // for now, just fill first 9 notes
-    for( int x=0; x<9; x++ ) {
-        s.noteYIndex[x] = hexTo16( inFlagString[x] );
+    // keep a note sum
+    int noteSum = 0;
+
+    // if sum is even, skip a column
+    // if odd, do not skip a column
+
+
+    // This is bad, and doesn't produce most of the interesting combinations
+    // check this article:
+    // http://msdn.microsoft.com/en-us/library/aa289166(v=vs.71).aspx
+
+    int c = 0;
+    
+    int x = 0;
+    
+    while( c < N && x < 9) {
+        
+        int noteHeight = hexTo16( inFlagString[x] );
+        x++;
+        
+        s.noteYIndex[c] = noteHeight;
+        
+        noteSum += noteHeight;
+        
+        if( noteSum % 2 == 0 ) {
+            c += 2;
+            }
+        else {
+            c += 1;
+            }
         }
     
+    printf( "Note sequence: " );
+    for( int i=0; i<N; i++ ) {
+        printf( "%d, ", s.noteYIndex[i] );
+        }
+    printf( "\n" );
+    
+
     return s;
     }
 
