@@ -54,8 +54,7 @@ pauseMessage4 "(saves a level number bookmark)"
 
 
 
-flagEditMessage1 "Edit your flag:"
-
+flagEditMessage1 "Edit your Flag and Anthem:"
 flagEditMessage2 "Press ENTER when done"
 flagEditMessage3 "Press F to show this editor later"
 
