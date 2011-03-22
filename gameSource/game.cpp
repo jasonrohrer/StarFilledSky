@@ -681,7 +681,6 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     setCursorVisible( false );
     grabInput( true );
-    grabInput( false );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -3390,7 +3389,7 @@ void drawFrameNoUpdate( char inUpdate ) {
                 viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
 
 
-    drawTutorial( lastScreenViewCenter );
+    drawTutorial( lastScreenViewCenter, inUpdate );
 
     drawTipDisplay( lastScreenViewCenter );
     drawSetTipDisplay( lastScreenViewCenter );

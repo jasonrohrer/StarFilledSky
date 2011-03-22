@@ -22,7 +22,7 @@ void initTutorial();
 void freeTutorial();
 
 
-void drawTutorial( doublePair inScreenCenter );
+void drawTutorial( doublePair inScreenCenter, char inUpdate );
 
 
 // true if we're still teaching about power-ups, where they are revealed

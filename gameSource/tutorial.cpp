@@ -386,7 +386,7 @@ static void drawMessage( const char *inMessage, doublePair inPosition,
 
 
 
-void drawTutorial( doublePair inScreenCenter ) {
+void drawTutorial( doublePair inScreenCenter, char inUpdate ) {
 
 
     if( currentTut != -1 && tutorialsReady[ currentTut ] ) {
@@ -495,17 +495,20 @@ void drawTutorial( doublePair inScreenCenter ) {
                 triggerCurrentPlayerSetTip();
                 }
 
-
-            tutorialFade += 0.01 * frameRateFactor;
-    
+            if( inUpdate ) {
+                tutorialFade += 0.01 * frameRateFactor;
+                }
+            
             if( tutorialFade > 1 ) {
                 tutorialFade = 1;
                 }
             }
         else if( tutorialsDone[ currentTut ] ) {
             
-            tutorialFade -= 0.01 * frameRateFactor;
-        
+            if( inUpdate ) {
+                tutorialFade -= 0.01 * frameRateFactor;
+                }
+            
             if( tutorialFade < 0 ) {
                 tutorialFade = 0;
 
@@ -579,9 +582,10 @@ void drawTutorial( doublePair inScreenCenter ) {
                 saveTutorialBookmark();
                 }
             
-        
-            tutorialOffset += 0.0125 * frameRateFactor;
-        
+            if( inUpdate ) {
+                tutorialOffset += 0.0125 * frameRateFactor;
+                }
+            
             if( tutorialOffset > 1 ) {
                 tutorialOffset = 1;
                 }
