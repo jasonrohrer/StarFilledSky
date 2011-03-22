@@ -240,12 +240,18 @@ static int stepsBetweenDeleteRepeat;
 char *tutorialMoveKeys;
 
 
+#define DEFAULT_FLAG "232232232"
 
 char *playerFlag;
+
+char firstFlagEditorShown = false;
 
 char *flagServerURL;
 
 char useFlagServer;
+
+void showFlagEditor();
+
 
 
 
@@ -480,7 +486,7 @@ char *getCustomRecordedGameData() {
         SettingsManager::getStringSetting( "flag" );
     
     if( playerFlagSetting == NULL ) {
-        playerFlagSetting = stringDuplicate( "232232232" );
+        playerFlagSetting = stringDuplicate( DEFAULT_FLAG );
         }
     else {
         char *oldFlag = playerFlagSetting;
@@ -675,6 +681,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     setCursorVisible( false );
     grabInput( true );
+    grabInput( false );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -701,7 +708,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int tutorialBookmark = 0;
     float mouseSpeedSetting = 1.0f;
-    playerFlag = stringDuplicate( "232232232" );
+    playerFlag = stringDuplicate( DEFAULT_FLAG );
     char *partialBookmarkString = 
         new char[ strlen( inCustomRecordedGameData ) + 1 ];
     
@@ -1947,6 +1954,20 @@ void drawFrame( char inUpdate ) {
         initTutorial();
         
         firstDrawFrameCalled = true;
+
+
+        if( strcmp( playerFlag, DEFAULT_FLAG ) == 0 &&
+            ! firstFlagEditorShown ) {
+            
+            showFlagEditor();
+            
+            firstFlagEditorShown = true;
+
+            // game has become paused
+            // don't do any more updating
+            return;
+            }
+        
         }
     
 
@@ -3676,31 +3697,7 @@ void keyDown( unsigned char inASCII ) {
             break;
         case 'f':
         case 'F': {
-            
-            editingFlag = true;
-
-            lockAudio();
-            
-            // raise both flag parts to full volume
-            
-            partLoudness[ PARTS-6] = 1;
-            partLoudness[ PARTS-5] = 1;
-            partStereo[ PARTS-6] = 0.6;
-            partStereo[ PARTS-5] = 0.4;
-            
-            // stick player's anthem in place
-            NoteSequence playerFlagAnthemA = 
-                generateFlagNoteSequence( PARTS-6, playerFlag );
-            
-            NoteSequence playerFlagAnthemB =
-                generateFlagNoteSequence( PARTS-5, playerFlag );
-
-            setNoteSequence( playerFlagAnthemA );
-            setNoteSequence( playerFlagAnthemB );
-
-            unlockAudio();
-
-            pauseGame();
+            showFlagEditor();
             }
             break;
         case '2':
@@ -3914,6 +3911,36 @@ void playerHeartsKnockedCallback( int inNumKnockedOff ) {
 
     // keep player health updated
     nextAbove->frozenUpdate();
+    }
+
+
+
+void showFlagEditor() {
+    
+    editingFlag = true;
+
+    lockAudio();
+            
+    // raise both flag parts to full volume
+            
+    partLoudness[ PARTS-6] = 1;
+    partLoudness[ PARTS-5] = 1;
+    partStereo[ PARTS-6] = 0.6;
+    partStereo[ PARTS-5] = 0.4;
+            
+    // stick player's anthem in place
+    NoteSequence playerFlagAnthemA = 
+        generateFlagNoteSequence( PARTS-6, playerFlag );
+            
+    NoteSequence playerFlagAnthemB =
+        generateFlagNoteSequence( PARTS-5, playerFlag );
+
+    setNoteSequence( playerFlagAnthemA );
+    setNoteSequence( playerFlagAnthemB );
+
+    unlockAudio();
+
+    pauseGame();
     }
 
 
