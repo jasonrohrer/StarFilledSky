@@ -62,6 +62,28 @@ char sixteenToHex( int inNumber ) {
 
 
 SpriteHandle generateFlagSprite( const char *inFlagString ) {
+    
+    /*
+    // for sharing these colors with PHP server
+    for( int i=0; i<16; i++ ) {
+        printf( "\"%c\" => \"#", sixteenToHex( i ) );
+        
+        for( int c=0; c<3; c++ ) {
+            int comp = flagColorMap[i][c];
+        
+            printf( "%c%c", 
+                    sixteenToHex( comp >> 4 ),
+                    sixteenToHex( comp & 0x0F ) );    
+            }
+        
+            
+
+        printf( "\",\n" );
+        }
+    printf( "\n" );
+    */
+
+
 
     int w = 16;
     int h = 16;
