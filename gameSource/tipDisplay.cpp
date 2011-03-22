@@ -78,6 +78,19 @@ void initTipDisplay() {
             maxTipStringWidth = width;
             }
         }
+
+    // measure flag spot tips too
+    for( int p=flagSpotA; p<=flagSpotB; p++ ) {
+        
+        const char *tipString = 
+            translate( spriteIDTipTranslateKeys[ p ] );
+
+        double width = tinyFont->measureString( tipString );
+        
+        if( width > maxTipStringWidth ) {
+            maxTipStringWidth = width;
+            }
+        }
     }
 
 

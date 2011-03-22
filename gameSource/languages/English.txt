@@ -92,6 +92,9 @@ powerUpCornering_tip      "BULLET CORNERING"
 powerUpSticky_tip         "STICKY"
 powerUpExplode_tip        "BURST"
 
+flagSpotA_tip             "PERMANENT FLAG"
+flagSpotB_tip             "TEMPORARY FLAG"
+
 powerUpHeartSetCombo_tipPart1  "SURVIVE"
 powerUpHeartSetCombo_tipPart2  "HITS"
 powerUpHeartSetCombo_tipPart2_singular  "HIT"

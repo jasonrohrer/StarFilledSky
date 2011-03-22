@@ -346,6 +346,9 @@ class Level {
 
         char isRiseSpot( doublePair inPos );
 
+        // returns 0 for no spot
+        // 1 for spot A
+        // 2 for spot B
         char isFlagSpot( doublePair inPos );
         
         void placeFlag( doublePair inPos, const char *inFlagString );

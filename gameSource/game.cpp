@@ -2344,6 +2344,20 @@ void drawFrame( char inUpdate ) {
         triggerTip( hitPowerUp.powerType, true, 0.5, difficultyModifier );
         }
     
+    // trigger tips when mousing over flag spot
+    char flagSpot = currentLevel->isFlagSpot( mousePos );
+    if( flagSpot ) {
+        spriteID tipID = flagSpotA;
+        
+        if( flagSpot == 2 ) {
+            tipID = flagSpotB;
+            }
+        
+        triggerTip( tipID, true, 0.5 );
+        }
+
+
+
 
     if( currentLevel->isFlagSpot( playerPos ) ) {
         currentLevel->placeFlag( playerPos, playerFlag );
@@ -2577,7 +2591,17 @@ void drawFrame( char inUpdate ) {
         
         }
     
-
+    flagSpot = currentLevel->isFlagSpot( playerPos );
+    if( flagSpot ) {
+        spriteID tipID = flagSpotA;
+        
+        if( flagSpot == 2 ) {
+            tipID = flagSpotB;
+            }
+        
+        triggerTip( tipID, false, 0.25 );
+        }
+    
     
     
     

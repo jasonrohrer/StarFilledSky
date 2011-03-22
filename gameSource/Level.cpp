@@ -6522,14 +6522,14 @@ char Level::isRiseSpot( doublePair inPos ) {
 char Level::isFlagSpot( doublePair inPos ) {
 
     if( distance( mFlagWorldPos, inPos ) < 1 ) {
-        return true;
+        return 1;
         }
     else if( mDoubleRisePositions ) {
         if( distance( mFlagWorldPos2, inPos ) < 1 ) {
-            return true;
+            return 2;
             }
         }
-    return false;
+    return 0;
     }
 
 
