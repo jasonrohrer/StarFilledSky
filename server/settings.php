@@ -33,7 +33,7 @@ $tableNamePrefix = "flagServer_";
 $enableLog = 1;
 
 // for web-based admin access
-$accessPassword = "secret";
+$accessPasswords = array( "secret", "letmein" );
 
 
 

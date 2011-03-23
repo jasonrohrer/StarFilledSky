@@ -1143,9 +1143,9 @@ function fs_checkPassword( $inFunctionName ) {
         $password = $_REQUEST[ "password" ];
         }
 
-    global $accessPassword;
+    global $accessPasswords;
     
-    if( $password != $accessPassword ) {
+    if( ! in_array( $password, $accessPasswords ) ) {
         echo "Incorrect password.";
 
         fs_log( "Failed $inFunctionName access with password:  $password" );
