@@ -781,13 +781,14 @@ function fs_showData() {
         
         for( $f=0; $f<2; $f++ ) {
             
-            $flagHTML[$f] = "(blank)";
+            $flagHTML[$f] = searchLink( $flags[$f],
+                                        "(blank)" );
 
             if( $flags[$f] != "BLANKFLAG" ) {
                 $flag_chars = str_split( $flags[$f] );
                 
                 $flagHTML[$f] =
-                 "<table border=2 bgcolor=black cellspacing=2 cellpadding=5>";
+                 "<table border=0 bgcolor=black cellspacing=0 cellpadding=0>";
                 
                 for( $y=0; $y<3; $y++ ) {
                     $flagHTML[$f] = $flagHTML[$f] . "<tr>";
@@ -795,7 +796,12 @@ function fs_showData() {
                         $color = $colorMap[ $flag_chars[ $y * 3 + $x ] ];
                         
                         $flagHTML[$f] =
-                            $flagHTML[$f] . "<td bgcolor=$color></td>";
+                            $flagHTML[$f] .
+                            "<td bgcolor=$color>" .
+                            searchLink(
+                                $flags[$f],
+                                "<img border=0 src=\"flagBlank.png\">" ) .
+                            "</td>";
                         }
                     $flagHTML[$f] = $flagHTML[$f] . "</tr>";
                     }
@@ -812,10 +818,8 @@ function fs_showData() {
         echo "<tr>\n";
         echo "<td>".searchLink( $level_number, $level_number )."</td>\n";
         echo "<td>".searchLink( $level_seed, $level_seed )."</td>\n";
-        echo "<td align=center>".
-            searchLink( $flags[1], $flagHTML[1] )."</td>\n";
-        echo "<td align=center>".
-            searchLink( $flags[0], $flagHTML[0] )."</td>\n";
+        echo "<td align=center>$flagHTML[1]</td>\n";
+        echo "<td align=center>$flagHTML[0]</td>\n";
         echo "<td>$creation_date</td>\n";
         echo "<td>$change_date</td>\n";
         echo "<td>".
