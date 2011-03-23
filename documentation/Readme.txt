@@ -16,6 +16,8 @@ This game has interactive music.  Please use speakers or headphones.
 
 Press P or ESC to pause the game and view a menu screen.
 
+Press F to edit your flag.
+
 Keyboard and mouse controls for the game are quite simple, and brief
 instructions are included in the game.  To view the instructions again
 at any time, hit the "T" key.

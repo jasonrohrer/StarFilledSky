@@ -1,0 +1,27 @@
+== Upgrading Instructions ==
+
+To carry on where you left off from a previous version of Inside a Star-filled
+Sky, simply copy all of the files from of your old "settings" folder into your
+new "settings" folder.  When asked whether to replace files, say "Yes" to all.
+
+Note that you SHOULD NOT just delete the new "settings" folder and replace
+it with your old folder, because later versions of the game have new settings 
+that your old folder will not contain.  You need to copy your old settings
+across, but keep the new settings files that you didn't have before.
+
+
+
+== Note about Version 16 ==
+
+Version 16 involves the big---yet subtle---change to a common world.  You are 
+no longer exploring your own personal level tree, but instead THE level tree
+that everyone else in the world is exploring.
+
+You are also able to plant flags in the levels, that other players will see via
+a global server, to mark your progress and discoveries.
+
+You can carry on with your v15 bookmark and simply jump to that spot in the new
+level tree.  However, you won't get a chance to plant flags on the lower levels
+if you do that.  It's up to you.  If you want to start v16 fresh from level
+1, which will let you plant flags on the lower levels, simply delete your
+"settings/bookmark.ini" file.

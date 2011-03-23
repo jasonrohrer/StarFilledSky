@@ -32,6 +32,7 @@ cp ../gameSource/settings/*.ini mac/StarFilledSky_$1/settings
 cp ../gameSource/languages/*.txt mac/StarFilledSky_$1/languages
 cp ../gameSource/language.txt mac/StarFilledSky_$1
 cp ../documentation/Readme.txt mac/StarFilledSky_$1
+cp ../documentation/Upgrading.txt mac/StarFilledSky_$1
 
 
 
