@@ -2143,7 +2143,7 @@ Level::Level( unsigned int inSeed,
 
         mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
         
-        printf( "Starting web request with URL %s\n", fullRequestURL );
+        //printf( "Starting web request with URL %s\n", fullRequestURL );
 
         delete [] fullRequestURL;
         }
@@ -7871,7 +7871,7 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
 
         mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
         
-        printf( "Starting web request with URL %s\n", fullRequestURL );
+        //printf( "Starting web request with URL %s\n", fullRequestURL );
         
         delete [] fullRequestURL;
 
