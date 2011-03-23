@@ -1,4 +1,4 @@
-Version 16
+Version 16   2011-March-22
 
 --Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
 
@@ -17,6 +17,7 @@ Version 16
 
 --Movement keys are now released properly if they were held down when pause 
   invoked.
+
 
 
 
