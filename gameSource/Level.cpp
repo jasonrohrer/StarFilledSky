@@ -67,7 +67,7 @@ static int shadowBlowUpFactor = 4;
 
 
 
-static const char *sharedFlagServerSecret = "secret 2";
+static const char *sharedFlagServerSecret = "fluttering colors";
 
 
 
