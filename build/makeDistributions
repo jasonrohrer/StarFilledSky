@@ -68,6 +68,7 @@ done
 
 
 ./unix2dosScript "StarFilledSky_$1/Readme.txt"
+./unix2dosScript "StarFilledSky_$1/Upgrading.txt"
 
 
 zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky_$1
