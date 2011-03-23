@@ -34,6 +34,10 @@ char shouldEnterBeBlocked();
 char shouldSetTipsBeShown();
 
 
+// a bracket is being drawn under score
+char isScoreBracketShowing();
+
+
 // false if running in brief mode
 char isFullTutorialRunning();
 

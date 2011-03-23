@@ -89,6 +89,13 @@ static char forceBookmark = false;
 static int forcedBookmarkValue = 0;
 
 
+static char scoreBracketShowing = false;
+
+char isScoreBracketShowing() {
+    return scoreBracketShowing;
+    }
+
+
 
 static char tutorialBriefMode = false;
 
@@ -483,7 +490,12 @@ void drawTutorial( doublePair inScreenCenter, char inUpdate ) {
 
                 drawBracket( bracketPos, tutorialFade, 
                              "tutorial_scoreMarker" );
+                scoreBracketShowing = true;
                 }
+            else {
+                scoreBracketShowing = false;
+                }
+            
             
             }
 
