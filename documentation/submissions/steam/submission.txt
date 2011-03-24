@@ -96,7 +96,7 @@ Key features:
 
 --Dynamic soundtrack is procedurally generated based on moment-to-moment gameplay
 
---Plant your flag througout an infinite level space to mark your discoveries, and see flags planted by others via a global flag server
+--Plant your flag throughout an infinite level space to mark your discoveries, and see flags planted by others via a global flag server
 
 
 
