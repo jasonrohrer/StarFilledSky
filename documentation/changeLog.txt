@@ -1,3 +1,10 @@
+Version 17
+
+--Fixed bug causing screen shots files to be unnecessarily doubled in size.
+
+
+
+
 Version 16   2011-March-22
 
 --Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
