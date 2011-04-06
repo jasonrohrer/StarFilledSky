@@ -209,6 +209,13 @@ an infinite, recursive, tactical shooter for one player by
     <br>
 <br>
 
+
+<font size=4>
+"Eloquently translates the incomprehensible concept of infinity into game form"</font><br>
+<font size=5>"Alternately maddening and sublime"</font> --<a href="http://www.gamepro.com/article/reviews/218679/indie-of-the-week-inside-a-star-filled-sky-review/">GamePro Review</a>
+<br>
+<br>
+    
 <font size=5>
 "It really opens up at the higher levels into something amazing."</font><br>
 --Frank Lantz [<a href="lantzQuote.php">read full quote</a>]
