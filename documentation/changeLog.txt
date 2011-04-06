@@ -2,6 +2,8 @@ Version 17
 
 --Fixed bug causing screen shots files to be unnecessarily doubled in size.
 
+--Improved correctness and efficiency of color conversion for sprites.
+
 
 
 
