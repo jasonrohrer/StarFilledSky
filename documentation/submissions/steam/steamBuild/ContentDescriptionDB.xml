@@ -70,9 +70,9 @@
 				<NoServers>1</NoServers>
 				<developer></developer>
 				<validoslist>windows,macos</validoslist>
-				<primarycache>20001</primarycache>
+				<!--<primarycache>20001</primarycache>-->
 				<serverbrowsername></serverbrowsername>
-				<primarycache_macos>20002</primarycache_macos>
+				<!--<primarycache_macos>20002</primarycache_macos>-->
 				<installscript_macos>StarFilledSky.app/installscript_osx.vdf</installscript_macos>
 			</AppUserDefinedRecord>
 			<BetaVersionPassword>foo</BetaVersionPassword>
