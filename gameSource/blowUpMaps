@@ -1,0 +1,1 @@
+mogrify -filter point -resize 512x512 -format png map00*.tga
