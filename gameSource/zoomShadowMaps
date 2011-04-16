@@ -9,13 +9,16 @@ for f in *.png
 do
 	let "zoomPercent = 2 * frame + 14"
 
+    # zoom image
 	convert $f -resize $zoomPercent% zoom_$f
 
 	echo "processing $f"
-
+	
+    # make a 75% blur shadow of image
 	convert zoom_$f  -channel A  -blur 0x6 -evaluate Multiply 0.75 +channel \
           -fill black  -colorize 100%    temp_shadow.png
 
+    # overlay image on top of shadow with an x,y offset
 	convert zoom_$f -background none -gravity SouthEast -splice 12x12+0+0 \
           temp_shadow.png   -compose Dst_Over -composite  shadow_zoom_$f
 
