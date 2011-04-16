@@ -54,6 +54,8 @@ int main( int inNumArgs, char **inArgs ) {
                     inArgs[i] );
             break;
             }
+        
+        printf( "Adding in image %s\n", inArgs[i] );
 
         for( int c=0; c<numChannels; c++ ) {
             double *sumChannel = sumImage->getChannel( c );
