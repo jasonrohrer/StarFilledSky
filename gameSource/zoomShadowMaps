@@ -19,5 +19,7 @@ do
 	convert zoom_$f -background none -gravity SouthEast -splice 12x12+0+0 \
           temp_shadow.png   -compose Dst_Over -composite  shadow_zoom_$f
 
+	rm temp_shadow.png
+
     let "frame += 1"
 done
