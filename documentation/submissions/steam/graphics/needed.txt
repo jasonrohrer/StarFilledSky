@@ -23,3 +23,10 @@ To get the game page set up on the Steam store, we'll need a number of art asset
  
 
 4)      Video/trailer in 1280x720 resolution, 30 or 29.97 fps, and in .mov or .wmv format.  4:3 aspect ratio is also acceptable if the game doesn't support widescreen natively, but please be forewarned that our Steam client and store page is optimized for widescreen format.  Audio can be in either stereo or 5.1 sound.  It will be filtered down to 2 channels when we 'Steamify' the videos for our Store page.
+
+
+
+Also:
+
+
+Finally, where does the big "bg_generated" image come from?  It's 1004x570 and looks somewhat darkened.
