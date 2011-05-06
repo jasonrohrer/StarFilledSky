@@ -459,6 +459,58 @@ void Level::generateReproducibleData() {
 
     char done = false;
 
+
+    // replace map with infinity symbol (or another image, might be useful
+    // later
+    if( false ) {
+        Image *infinityImage = readTGAFile( "InfinitySymbol_mapPattern.tga" );
+        
+        if( infinityImage != NULL ) {
+            
+            if( MAX_LEVEL_H == infinityImage->getHeight() &&
+                MAX_LEVEL_W == infinityImage->getWidth() ) {
+                
+                double *red = infinityImage->getChannel( 0 );
+                
+                for( int y=0; y<MAX_LEVEL_H; y++ ) {
+                    for( int x=0; x<MAX_LEVEL_W/2; x++ ) {
+                        
+                        if( red[ y * MAX_LEVEL_W + x ] == 0 ) {
+                            mNumFloorSquares++;
+                            
+                            
+                            mSquareIndices[y][x] = mNumUsedSquares;
+                            mIndexToGridMap[mNumUsedSquares].x = x;
+                            mIndexToGridMap[mNumUsedSquares].y = y;
+                        
+                            mNumUsedSquares++;
+                            
+                            gridColorsWorking.push_back(
+                                mColors.secondary.elements[floorColorIndex] );
+                            
+                            floorColorIndex = (floorColorIndex + 1) % 3;
+                            
+                            mWallFlags[y][x] = 1;
+                            }
+                        }
+                    }
+
+                done = true;        
+                }
+            else {
+                printf( "Infinity map image size mismatch\n" );
+                }
+            
+
+            delete infinityImage;
+            }
+        
+        
+        }
+    
+    printf( "Done!\n" );
+    
+
     for( int i=0; 
          i<stepLimit && 
              mNumFloorSquares < numFloorSquaresMax &&
@@ -593,6 +645,11 @@ void Level::generateReproducibleData() {
             }
         }
     
+
+    
+    
+
+
 
     // keep a list of grid positions that are on boundary between
     // walls and floor
