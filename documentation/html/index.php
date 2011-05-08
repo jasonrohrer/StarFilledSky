@@ -100,7 +100,6 @@ function showDownloadForm() {
     ?>
       Access your download:<br>
             <FORM ACTION="ticketServer/server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_downloads">
       Enter Code:   
     <INPUT TYPE="text" NAME="ticket_id" MAXLENGTH=10 SIZE=10>
