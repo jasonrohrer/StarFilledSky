@@ -561,13 +561,73 @@ http://localhost/jcr13/game10_flag/server.php?action=get_flags&level_number=5&le
 
 
 
+function fs_generateFlagHTML( $inLink, $inFlagString ) {
+    $colorMap = array( "0" => "#DF2D00",
+                       "1" => "#31DD09",
+                       "2" => "#3838BB",
+                       "3" => "#FFF5DA",
+                       "4" => "#363636",
+                       "5" => "#FFDD00",
+                       "6" => "#4CD0D0",
+                       "7" => "#D400D3",
+                       "8" => "#E68700",
+                       "9" => "#7B19B1",
+                       "A" => "#5AFF8B",
+                       "B" => "#808080",
+                       "C" => "#7F4F00",
+                       "D" => "#1F7301",
+                       "E" => "#71001B",
+                       "F" => "#FF9FDA" );
+    
+    $flag_chars = str_split( $inFlagString );
+                
+    $flagHTML =
+        "<table border=0 ".
+        "bgcolor=black cellspacing=0 cellpadding=0>";
+                
+    for( $y=0; $y<3; $y++ ) {
+        $flagHTML = $flagHTML . "<tr>";
+        for( $x=0; $x<3; $x++ ) {
+            $cellChar = $flag_chars[ $y * 3 + $x ];
+            
+            if( array_key_exists( $cellChar, $colorMap ) ) {
+                
+                $color = $colorMap[ $cellChar ];
+            
+                $flagHTML =
+                    $flagHTML .
+                    "<td bgcolor=$color>";
+
+                if( $inLink != "" ) {
+                    $flagHTML = $flagHTML . "<a href=\"$inLink\">";
+                    }
+            
+                $flagHTML = $flagHTML .
+                    "<img border=0 width=12 height=12 src=\"flagBlank.png\">";
+
+                if( $inLink != "" ) {
+                    $flagHTML = $flagHTML . "</a>";
+                    }
+            
+                $flagHTML = $flagHTML . "</td>";
+                }
+            }
+        $flagHTML = $flagHTML . "</tr>";
+        }
+    $flagHTML = $flagHTML . "</table>";
+
+    return $flagHTML;
+    }
+
+
+
 
 
 
 function fs_showData() {
     // call several of these global so they can be accessed properly
     // inside the sub-functions we define below
-    global $password, $skip, $search, $order_by;
+    global $password, $skip, $search, $order_by, $graph_interval;
     
     
     $password = fs_checkPassword( "show_data" );
@@ -578,6 +638,12 @@ function fs_showData() {
     echo "[<a href=\"server.php?action=show_data&password=$password" .
             "\">Main</a>]<br><br><br>";
 
+
+    $graph_interval = 30;
+
+    if( isset( $_REQUEST[ "graph_interval" ] ) ) {
+        $graph_interval = $_REQUEST[ "graph_interval" ];
+        }
 
 
 
@@ -599,7 +665,8 @@ function fs_showData() {
         $search = $_REQUEST[ "search" ];
         }
 
-    $keywordClause = "";
+    $keywordWhereClause = "";
+    $keywordAndClause = "";
     $searchDisplay = "";
     
     if( $search != "" ) {
@@ -611,29 +678,50 @@ function fs_showData() {
             "OR flag_a LIKE '%$search%' ".
             "OR flag_b LIKE '%$search%' ) ";
         */
+
+        // watch for flag_ prefix, which indicates flag display should be
+        // used, but this should not be passed into LIKE clause
+        $flagCount = 0;
+        
+        $searchString = preg_replace( "/flag_/", "", $search, -1, $flagCount );
+        
+        
         // switch to exact matches to avoid surprising cross-matches
         // (searching for level 27 was matching IP address 127.0.0.1)
-        $keywordClause = "WHERE ( level_number LIKE '$search' " .
-            "OR level_seed LIKE '$search' ".
-            "OR change_ip_address LIKE '$search' ".
-            "OR flag_a LIKE '$search' ".
-            "OR flag_b LIKE '$search' ) ";
+        $keywordWhereClause = "WHERE ( level_number LIKE '$searchString' " .
+            "OR level_seed LIKE '$searchString' ".
+            "OR change_ip_address LIKE '$searchString' ".
+            "OR flag_a LIKE '$searchString' ".
+            "OR flag_b LIKE '$searchString' ) ";
 
-        $searchDisplay = " matching <b>$search</b>";
+        
+        $keywordAndClause =
+            preg_replace( "/WHERE/", "AND", $keywordWhereClause );
+
+
+        if( $flagCount == 1 ) {
+            $searchDisplay = " matching " .
+                fs_generateFlagHTML( "", $searchString );
+            }
+        else {
+            $searchDisplay = " matching <b>$search</b>";
+            }
+        
         }
 
 
     
 
     // first, count results
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."flags $keywordClause;";
+    $query = "SELECT COUNT(*) FROM $tableNamePrefix".
+        "flags $keywordWhereClause;";
 
     $result = fs_queryDatabase( $query );
     $totalFlags = mysql_result( $result, 0, 0 );
 
     
              
-    $query = "SELECT * FROM $tableNamePrefix"."flags $keywordClause".
+    $query = "SELECT * FROM $tableNamePrefix"."flags $keywordWhereClause".
         "ORDER BY $order_by DESC ".
         "LIMIT $skip, $flagsPerPage;";
     $result = fs_queryDatabase( $query );
@@ -685,12 +773,14 @@ function fs_showData() {
     if( $prevSkip >= 0 ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
             "&skip=$prevSkip&search=$search".
-            "&order_by=$order_by\">Previous Page</a>] ";
+            "&order_by=$order_by".
+            "&graph_interval=$graph_interval\">Previous Page</a>] ";
         }
     if( $nextSkip < $totalFlags ) {
         echo "[<a href=\"server.php?action=show_data&password=$password" .
             "&skip=$nextSkip&search=$search".
-            "&order_by=$order_by\">Next Page</a>]";
+            "&order_by=$order_by".
+            "&graph_interval=$graph_interval\">Next Page</a>]";
         }
 
     /*
@@ -755,22 +845,6 @@ function fs_showData() {
         $flag_a = mysql_result( $result, $i, "flag_a" );
         $flag_b = mysql_result( $result, $i, "flag_b" );
 
-        $colorMap = array( "0" => "#DF2D00",
-                           "1" => "#31DD09",
-                           "2" => "#3838BB",
-                           "3" => "#FFF5DA",
-                           "4" => "#363636",
-                           "5" => "#FFDD00",
-                           "6" => "#4CD0D0",
-                           "7" => "#D400D3",
-                           "8" => "#E68700",
-                           "9" => "#7B19B1",
-                           "A" => "#5AFF8B",
-                           "B" => "#808080",
-                           "C" => "#7F4F00",
-                           "D" => "#1F7301",
-                           "E" => "#71001B",
-                           "F" => "#FF9FDA" );
         
 
         $flags[0] = $flag_a;
@@ -781,32 +855,15 @@ function fs_showData() {
         
         for( $f=0; $f<2; $f++ ) {
             
-            $flagHTML[$f] = searchLink( $flags[$f],
+            $flagHTML[$f] = searchLink( "$flags[$f]",
                                         "(blank)" );
 
             if( $flags[$f] != "BLANKFLAG" ) {
-                $flag_chars = str_split( $flags[$f] );
-                
-                $flagHTML[$f] =
-                 "<table border=0 bgcolor=black cellspacing=0 cellpadding=0>";
-                
-                for( $y=0; $y<3; $y++ ) {
-                    $flagHTML[$f] = $flagHTML[$f] . "<tr>";
-                    for( $x=0; $x<3; $x++ ) {
-                        $color = $colorMap[ $flag_chars[ $y * 3 + $x ] ];
-                        
-                        $flagHTML[$f] =
-                            $flagHTML[$f] .
-                            "<td bgcolor=$color>" .
-                            searchLink(
-                                $flags[$f],
-                                "<img border=0 src=\"flagBlank.png\">" ) .
-                            "</td>";
-                        }
-                    $flagHTML[$f] = $flagHTML[$f] . "</tr>";
-                    }
-                $flagHTML[$f] = $flagHTML[$f] . "</table>";
-                
+
+                $flagHTML[$f] = fs_generateFlagHTML(
+                    "server.php?action=show_data&password=$password" .
+                    "&search=flag_$flags[$f]",
+                    $flags[$f] );
                 }
             }
         
@@ -833,6 +890,94 @@ function fs_showData() {
 
 
     echo "<hr>";
+
+    // links for showing more of graph
+    $intervalMap = array( "30" => "30 days",
+                          "60" => "2 months",
+                          "90" => "3 months",
+                          "365" => "1 year",
+                          "730" => "2 years",
+                          "1825" => "5 years",
+                          "36500" => "100 years",
+                          "365000" => "1000 years",
+                          "730000" => "2000 years" );
+
+    $currentIntervalName = $intervalMap[ $graph_interval ];
+    
+    
+    echo "<a name=\"graph\"></a>".
+        "Changes $searchDisplay over the last $currentIntervalName:<br><br>";
+
+    echo "<table border=1><tr><td><table border=0 cellpadding=10>";
+
+    
+    $query =
+        "select DATE_FORMAT( change_date, '%Y-%M-%e' ), count(change_date) ".
+        "from $tableNamePrefix"."flags ".
+        "WHERE change_date > ".
+        "DATE_SUB( CURDATE(), INTERVAL $graph_interval day ) ".
+        "$keywordAndClause ".
+        "GROUP BY DATE_FORMAT( change_date, 'Y-%M-%e' ) ".
+        "ORDER BY change_date;";
+    $result = fs_queryDatabase( $query );
+        
+    $numRows = mysql_numrows( $result );
+
+    $maxCount = 0;
+
+    for( $i=0; $i<$numRows; $i++ ) {
+        $count = mysql_result( $result, $i, 1 );
+        if( $maxCount < $count ) {
+            $maxCount = $count;
+            }
+        }
+    
+
+    // find an appropriate bin size, given data span
+    $binFactor = 1;
+    
+    while( $maxCount / $binFactor > 50 ) {
+        $binFactor ++;
+        }
+    
+        
+    
+    for( $i=0; $i<$numRows; $i++ ) {
+        $formattedDate = mysql_result( $result, $i, 0 );
+        $count = mysql_result( $result, $i, 1 );
+
+        // bin the data
+        $countBins = $count / $binFactor;
+        
+        
+        echo "<tr><td>$formattedDate</td>".
+            "<td bgcolor=\"#DDDDDD\" align=right>$count</td><td>|";
+        for( $j=0; $j<$countBins; $j++ ) {
+            echo "o";
+            }
+        echo "|</td></tr>\n";
+        }
+    if( $numRows == 0 ) {
+        echo "<tr><td>none</td></tr>\n";
+        }
+    
+    echo "</table></td></tr></table>\n";
+
+    foreach( $intervalMap as $interval => $name ) {
+
+        // hide link for current display
+        if( $interval != $graph_interval ) {
+            
+            echo "[<a href=\"server.php?action=show_data&password=$password" .
+                "&skip=$skip&search=$search".
+                "&order_by=$order_by".
+                "&graph_interval=$interval#graph\">$name</a>] ";
+            }
+        }
+        
+    
+    echo "<hr>";
+    
     
     echo "<a href=\"server.php?action=show_log&password=$password\">".
         "Show log</a>";
