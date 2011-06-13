@@ -3250,10 +3250,13 @@ void drawFrameNoUpdate( char inUpdate ) {
     playerPowers->drawSet( setPos, fade );
     playerSprite->draw( spritePos, fade );
     
+
+    Color enteringPointColor = enteringPointSprite->getColors().special;
+    Color weAreInsideColor = weAreInsideSprite->getColors().special;
     
     Color *riseIconColor = Color::linearSum( 
-        &( enteringPointSprite->getColors().special ),
-        &( weAreInsideSprite->getColors().special ),
+        &enteringPointColor,
+        &weAreInsideColor,
         zoomProgress );
     
     setDrawColor( riseIconColor->r, riseIconColor->g, riseIconColor->b, 1 );
