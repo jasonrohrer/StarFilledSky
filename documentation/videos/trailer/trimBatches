@@ -1,0 +1,49 @@
+scene 0:
+batch_0  350 .. 499
+
+
+#scene 1:
+#composed of batches 1 through 5
+
+mkdir scene1
+
+cd batch_1
+sh ../reNumber.sh 70 129 1 renumed 
+mv renumed/* ../scene1
+
+cd ../batch_2
+sh ../reNumber.sh 30 89 61 renumed 
+mv renumed/* ../scene1
+
+
+cd ../batch_3
+sh ../reNumber.sh 45 104 121 renumed 
+mv renumed/* ../scene1
+
+
+cd ../batch_4/
+sh ../reNumber.sh 40 160 181 renumed 
+mv renumed/* ../scene1
+
+
+cd ../batch_5/
+sh ../reNumber.sh 175 234 302 renumed 
+mv renumed/* ../scene1
+
+
+
+
+# remaining scenes all come from batch 6
+
+cd ../batch_6/
+
+sh ../reNumber.sh 180 329 1 scene2 
+sh ../reNumber.sh 425 574 1 scene3 
+sh ../reNumber.sh 1150 1299 1 scene4 
+sh ../reNumber.sh 1590 1740 1 scene5 
+sh ../reNumber.sh 2495 2644 1 scene6 
+sh ../reNumber.sh 2950 3039 1 scene7
+sh ../reNumber.sh 3225 3975 1 scene8
+sh ../reNumber.sh 4170 4319 1 scene9
+
+cd ..
