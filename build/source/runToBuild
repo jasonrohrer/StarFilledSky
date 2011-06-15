@@ -41,6 +41,7 @@ mkdir -p languages
 
 cp game10/gameSource/StarFilledSky ./StarFilledSkyApp
 cp game10/documentation/Readme.txt .
+cp game10/documentation/Upgrading.txt .
 cp game10/gameSource/graphics/* ./graphics
 cp game10/gameSource/settings/* ./settings
 cp game10/gameSource/languages/* ./languages

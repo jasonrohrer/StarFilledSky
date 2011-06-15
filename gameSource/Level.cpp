@@ -11,15 +11,21 @@
 #include "DiagRandomWalker.h"
 #include "tutorial.h"
 #include "musicPlayer.h"
-
+#include "flagSprite.h"
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/game.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
+#include "minorGems/util/SettingsManager.h"
 #include "minorGems/system/Time.h"
 #include "minorGems/io/file/File.h"
 #include "minorGems/graphics/filters/FastBlurFilter.h"
+
+#include "minorGems/util/log/AppLog.h"
+
+#include "minorGems/crypto/hashes/sha1.h"
+
 
 #include "minorGems/math/probability/ProbabilityMassFunction.h"
 
@@ -35,6 +41,11 @@ doublePair Level::sGridWorldSpots[MAX_LEVEL_H][MAX_LEVEL_W];
 extern CustomRandomSource randSource;
 
 extern double frameRateFactor;
+
+
+extern char *flagServerURL;
+extern char useFlagServer;
+
 
 
 // track as both a full array, for fast lookup, and as
@@ -53,6 +64,10 @@ static double trailJitter = 0.25;
 
 
 static int shadowBlowUpFactor = 4;
+
+
+
+static const char *sharedFlagServerSecret = "fluttering colors";
 
 
 
@@ -132,9 +147,7 @@ class FastBoxBlurFilter {
 		void applySubRegion( unsigned char *inChannel,
                              int *inTouchPixelIndices,
                              int inNumTouchPixels,
-                             int inWidth, int inHeight,
-                             int inXStart, int inYStart, 
-                             int inXEnd, int inYEnd );
+                             int inWidth, int inHeight );
 
 	};
 	
@@ -151,9 +164,7 @@ FastBoxBlurFilter::FastBoxBlurFilter() {
 void FastBoxBlurFilter::applySubRegion( unsigned char *inChannel, 
                                         int *inTouchPixelIndices,
                                         int inNumTouchPixels,
-                                        int inWidth, int inHeight,
-                                        int inXStart, int inYStart, 
-                                        int inXEnd, int inYEnd ) {
+                                        int inWidth, int inHeight ) {
 
     
 
@@ -448,6 +459,58 @@ void Level::generateReproducibleData() {
 
     char done = false;
 
+
+    // replace map with infinity symbol (or another image, might be useful
+    // later
+    if( false ) {
+        Image *infinityImage = readTGAFile( "InfinitySymbol_mapPattern.tga" );
+        
+        if( infinityImage != NULL ) {
+            
+            if( MAX_LEVEL_H == infinityImage->getHeight() &&
+                MAX_LEVEL_W == infinityImage->getWidth() ) {
+                
+                double *red = infinityImage->getChannel( 0 );
+                
+                for( int y=0; y<MAX_LEVEL_H; y++ ) {
+                    for( int x=0; x<MAX_LEVEL_W/2; x++ ) {
+                        
+                        if( red[ y * MAX_LEVEL_W + x ] == 0 ) {
+                            mNumFloorSquares++;
+                            
+                            
+                            mSquareIndices[y][x] = mNumUsedSquares;
+                            mIndexToGridMap[mNumUsedSquares].x = x;
+                            mIndexToGridMap[mNumUsedSquares].y = y;
+                        
+                            mNumUsedSquares++;
+                            
+                            gridColorsWorking.push_back(
+                                mColors.secondary.elements[floorColorIndex] );
+                            
+                            floorColorIndex = (floorColorIndex + 1) % 3;
+                            
+                            mWallFlags[y][x] = 1;
+                            }
+                        }
+                    }
+
+                done = true;        
+                }
+            else {
+                printf( "Infinity map image size mismatch\n" );
+                }
+            
+
+            delete infinityImage;
+            }
+        
+        
+        }
+    
+    printf( "Done!\n" );
+    
+
     for( int i=0; 
          i<stepLimit && 
              mNumFloorSquares < numFloorSquaresMax &&
@@ -582,6 +645,11 @@ void Level::generateReproducibleData() {
             }
         }
     
+
+    
+    
+
+
 
     // keep a list of grid positions that are on boundary between
     // walls and floor
@@ -827,16 +895,142 @@ void Level::generateReproducibleData() {
 
 
 
+    // compute distances from start square
+
+    mManhattanDistanceFromStart = new int[ mNumFloorSquares ];
+
+    char *frontier = new char[ mNumFloorSquares ];
+    char *nextFrontier = new char[ mNumFloorSquares ];
+    
+    memset( frontier, false, mNumFloorSquares );
+    
+
+    mManhattanDistanceFromStart[0] = 0;
+    frontier[0] = true;
+
+    for( int i=1; i<mNumFloorSquares; i++ ) {
+        mManhattanDistanceFromStart[i] = -1;
+        }
+
+    char frontierRemaining = true;
+    
+
+    int currentDistance = 1;
+
+    while( frontierRemaining ) {
+        frontierRemaining = false;
+
+        memset( nextFrontier, false, mNumFloorSquares );
+
+        // look at all new neighbors of frontier squares, mark their
+        // distance, and add them as new frontier
+
+        for( int i=0; i<mNumFloorSquares; i++ ) {
+            if( frontier[i] ) {
+                
+                GridPos currentPos = mIndexToGridMap[ i ];
+
+                GridPos neighbors[4] = { currentPos, currentPos, 
+                                         currentPos, currentPos };
+    
+                neighbors[0].x -= 1;
+                neighbors[1].x += 1;
+                neighbors[2].y -= 1;
+                neighbors[3].y += 1;
+                
+                for( int n=0; n<4; n++ ) {
+                
+                    GridPos np = neighbors[n];
+
+                    if( mWallFlags[ np.y ][ np.x ] == 1 ) {
+                        int ni = mSquareIndices[ np.y ][ np.x ];
+                        
+                        if( mManhattanDistanceFromStart[ ni ] == -1 ) {
+                        
+                            mManhattanDistanceFromStart[ ni ] = 
+                                currentDistance;
+                            
+                            nextFrontier[ ni ] = true;
+                            frontierRemaining = true;
+                            }
+                        }
+                    }
+                }
+            }
+        
+        // next frontier becomes current
+        memcpy( frontier, nextFrontier, mNumFloorSquares );
+
+        currentDistance ++; 
+        }
+    
+    delete [] frontier;
+    delete [] nextFrontier;
+
+
+
+    
+
+
 
     // place rise marker in random floor spot
     // also away from player
     char placed = false;
 
     while( !placed ) {
+        doublePair playerSpot = {0,0};
+
+        
         // place first rise marker on right side, if symmetrical, since
         // we only compute cut points on right side
-        int x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
-        int y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+        
+        
+        int x;
+        int y;
+
+        if( ! mKnockDown ) {    
+            // rise markers can be anywhere
+            x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+            y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+            }
+        else {
+            // simply find the closest satisfying non-cut-point
+
+            int closestDistance = INT_MAX;
+            
+            int closestFloorIndex = -1;
+
+            for( int f=0; f<mNumFloorSquares; f++ ) {
+                if( ! mCutVertexFloorFlags[ f ] 
+                    && 
+                    // respects symm placement requirement
+                    mIndexToGridMap[ f ].x >= xLimit ) {
+                    
+                    
+                    int thisDistance = mManhattanDistanceFromStart[ f ];
+                    
+
+                    if( thisDistance > 5 && thisDistance < closestDistance ) {
+                        closestDistance = thisDistance;
+                        closestFloorIndex = f;
+                        }
+                    }
+                }
+            
+            if( closestFloorIndex >= 0 ) {
+                x = mIndexToGridMap[ closestFloorIndex ].x;
+                y = mIndexToGridMap[ closestFloorIndex ].y;
+                }
+            else {
+                printf( "WARNING: good rise spot on knock-down not found!\n" );
+                
+                // stick anywhere
+                // rise markers can be anywhere
+                x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+                y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+                }
+            }
+        
 
         if( mWallFlags[y][x] == 1 &&
             // never place rise markers on cut points.
@@ -844,9 +1038,12 @@ void Level::generateReproducibleData() {
         
             doublePair spot = sGridWorldSpots[y][x];
             
-            doublePair playerSpot = {0,0};
             
-            if( distance( spot, playerSpot ) > 10 ) {
+            if( ! mKnockDown && distance( spot, playerSpot ) > 10
+                || 
+                // in case of knock-down, best position already chosen
+                // above
+                mKnockDown ) {
 
                 placed = true;
                 mRisePosition.x = x;
@@ -865,6 +1062,57 @@ void Level::generateReproducibleData() {
 
     mDoubleRisePositions = mSymmetrical;
 
+
+
+
+
+
+
+
+    // place flag holder in random floor spot
+    // also away from player
+    placed = false;
+
+    while( !placed ) {
+        doublePair playerSpot = {0,0};
+
+        
+        // place first rise marker on right side, if symmetrical, since
+        // we only compute cut points on right side
+        
+        
+        int x;
+        int y;
+
+        // flags can be anywhere
+        x = randSource.getRandomBoundedInt( xLimit, MAX_LEVEL_H - 1 );
+        y = randSource.getRandomBoundedInt( 0, MAX_LEVEL_W - 1 );
+        
+        if( mWallFlags[y][x] == 1 &&
+            // never place flags on cut points.
+            ! mCutVertexFloorFlags[ mSquareIndices[y][x] ] &&
+            // avoid rise marker
+            mRisePosition.x != x && mRisePosition.y != y ) {
+        
+            doublePair spot = sGridWorldSpots[y][x];
+            
+            
+            if( distance( spot, playerSpot ) > 10 ) {
+
+                placed = true;
+                mFlagPosition.x = x;
+                mFlagPosition.y = y;
+
+                mFlagWorldPos.x = mFlagPosition.x - MAX_LEVEL_W/2;
+                mFlagWorldPos.y = mFlagPosition.y - MAX_LEVEL_H/2;
+
+                mFlagWorldPos2 = mFlagWorldPos;
+                mFlagWorldPos2.x = - mFlagWorldPos2.x - 1;
+
+                mFlagPosition2 = getGridPos( mFlagWorldPos2 );
+                }
+            }
+        }
 
 
 
@@ -1118,11 +1366,6 @@ void Level::generateReproducibleData() {
 
     // only process used sub-region of blown up image
     // don't waste time on blank areas outside walls
-    int blowUpStartX = imageXOffset * blowUpFactor;
-    int blowUpStartY = imageYOffset * blowUpFactor;
-    int blowUpEndX = ( imageXOffset + MAX_LEVEL_W ) * blowUpFactor;
-    int blowUpEndY = ( imageYOffset + MAX_LEVEL_H ) * blowUpFactor;
-
 
 
     int nunBlowUpPixelsPerSquare = blowUpFactor * blowUpFactor;
@@ -1181,9 +1424,7 @@ void Level::generateReproducibleData() {
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels,
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
     
     
     // add a bit of noise
@@ -1220,16 +1461,12 @@ void Level::generateReproducibleData() {
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
     
     filter2.applySubRegion( fullGridChannelsBlownUpAlpha, 
                             boundaryBlowUpPixelIndices,
                             numBoundaryBlowUpPixels, 
-                            blownUpSize, blownUpSize,
-                            blowUpStartX, blowUpStartY,
-                            blowUpEndX, blowUpEndY );
+                            blownUpSize, blownUpSize );
 
     mFullMapWallShadowSprite = 
         fillSpriteAlphaOnly( fullGridChannelsBlownUpAlpha, 
@@ -1269,6 +1506,92 @@ void Level::generateReproducibleData() {
         }
     
 
+    // flag dirt overlays
+    for( int i=0; i<2; i++ ) {
+        
+        int w=16;
+        int h=16;
+
+        int numPixels = w*h;
+        
+        unsigned char *flagDirt = new unsigned char[ numPixels ];
+
+        for( int p=0; p<numPixels; p++ ) {
+            flagDirt[p] = randSource.getRandomBoundedInt( 96, 255 );
+            }
+        
+        // modulate based on distance from center
+        for( int y=0; y<h; y++ ) {
+            for( int x=0; x<w; x++ ) {
+        
+                int p = y*w + x;
+
+                double distanceFromCenter = 
+                    sqrt( (y-7.5)*(y-7.5) + (x-7.5)*(x-7.5) );
+                
+                double distanceFactor = ( distanceFromCenter / 9 );
+
+                if( distanceFactor > 1 ) {
+                    distanceFactor = 1;
+                    }
+
+                flagDirt[p] = 
+                    (unsigned char)( flagDirt[p] * distanceFactor );
+                
+                }
+            }
+        
+
+
+        // must pass this in to use fast filter (specifies sub-region,
+        // since filter cannot handle edge cases)
+        int numPixelsToBlur = (w-4) * (h-4);
+        int *pixelIndices = new int[ numPixelsToBlur ];
+        int index = 0;
+        for( int y=2; y<h-2; y++ ){ 
+            for( int x=2; x<w-2; x++ ) {
+            
+                // prepare to pass into blur call below
+                pixelIndices[index] = y * w + x;
+                index++;
+                }
+            }
+        
+
+        filter2.applySubRegion( flagDirt, 
+                                pixelIndices,
+                                numPixelsToBlur, 
+                                w, h );
+        
+        delete [] pixelIndices;
+
+        // fully trans edges
+        // extend past edge of flag a bit (to prevent trans from bleeding
+        // into flag through linear blending)
+        for( int y=0; y<h; y++ ) {
+            for( int x=0; x<w; x++ ) {
+                
+                if( y < 1 || y >= w - 1 
+                    ||
+                    x < 1 || x >= h - 1 ) {
+                    
+                    flagDirt[ y * w + x ] = 0;
+                    }
+                }
+            }
+        
+
+        
+        mFlagDirtOverlays[i] = 
+            fillSpriteAlphaOnly( flagDirt, w, h );
+        
+
+        delete [] flagDirt;        
+        }
+    
+
+
+
     
     mDataGenerated = true;
     }
@@ -1299,6 +1622,7 @@ void Level::freeReproducibleData() {
         delete [] mGridWorldSpots;
 
         delete [] mCutVertexFloorFlags;
+        delete [] mManhattanDistanceFromStart;
         
 
         for( int i=0; i<mEnemies.size(); i++ ) {
@@ -1314,6 +1638,9 @@ void Level::freeReproducibleData() {
 
         freeSprite( mFullMapSprite );
         freeSprite( mFullMapWallShadowSprite );
+
+        freeSprite( mFlagDirtOverlays[0] );
+        freeSprite( mFlagDirtOverlays[1] );
         }
     
     }
@@ -1599,6 +1926,15 @@ int Level::computeDifficultyLevel( int inLevelNumber,
 
 
 
+// dummy function used to init rand seed before member init of Level
+static char setFirstSeed( unsigned int inSeed ) {
+    randSource.restoreFromSavedState( inSeed );
+    return true;
+    }
+
+
+
+
 Level::Level( unsigned int inSeed,
               ColorScheme *inPlayerColors, NoteSequence *inPlayerMusicNotes,
               ColorScheme *inColors, 
@@ -1616,7 +1952,10 @@ Level::Level( unsigned int inSeed,
               int inParentTokenLevel,
               int inParentFloorTokenLevel,
               int inParentLevelDifficulty ) 
-        : mLevelNumber( inLevelNumber ),
+        : // trick:  init this dummy variable before anything else
+          // to ensure that seed is set before anything is inited 
+          mFirstSeedSet( setFirstSeed( inSeed ) ),
+          mLevelNumber( inLevelNumber ),
           mTokenRecursionDepth( inTokenRecursionDepth ),
           // invert player colors on level 0 or lower
           mPlayerSprite( inPlayerColors, ( inLevelNumber <= 0 ) ) {
@@ -1804,18 +2143,76 @@ Level::Level( unsigned int inSeed,
         (int)( stepsBetweenGlowTrails / frameRateFactor );
     
     mEnteringMouse = false;
+
+
+    mPlayerEnteredCount = 0;
+
+
+    
+    
     
 
 
-    // apply/save seed AFTER the random generation stuff above that is
+    // apply/save seed *again* AFTER the random generation stuff above that is
     // not gameplay-related
     
     // this ensures that same seed generates same level, gamplay-wise,
     // regardless of what other parameters above (like known music note
     // patterns, etc) are passed in
+    // (we don't know how many times randSource will be called based on 
+    //   inSeed above---may vary depending on how this level is related to
+    //   others around it, even for same level generated with same seed later).
     randSource.restoreFromSavedState( inSeed );
     randSource.saveState();
     mRandSeedState = randSource.getSavedState();
+
+
+
+
+
+    mFlagStrings[0] = stringDuplicate( "BLANKFLAG" );
+    mFlagStrings[1] = stringDuplicate( "BLANKFLAG" );
+    
+    mFlagSprites[0] = NULL;
+    mFlagSprites[1] = NULL;
+    
+    mFlagDirtOverlays[0] = NULL;
+    mFlagDirtOverlays[1] = NULL;
+    
+
+    mFlagsLoading = false;
+    mFlagsSending = false;
+    
+    mFlagBlinkLevel[0] = 0;
+    mFlagBlinkLevel[1] = 0;
+
+    mFlagBlinkDelta[0] = 0.05 * frameRateFactor;
+    mFlagBlinkDelta[1] = 0.05 * frameRateFactor;
+
+    mFlagWebRequest = NULL;
+    
+    if( useFlagServer ) {
+        mFlagsLoading = true;
+
+        char *fullRequestURL = autoSprintf( 
+            "%s?action=get_flags&level_number=%d&level_seed=%u",
+            flagServerURL, mLevelNumber, mRandSeedState );
+
+        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        
+        //printf( "Starting web request with URL %s\n", fullRequestURL );
+
+        delete [] fullRequestURL;
+        }
+
+    
+    mFlagMusicNotes[0] = generateFlagNoteSequence( PARTS-6, mFlagStrings[0] );
+    mFlagMusicNotes[1] = generateFlagNoteSequence( PARTS-5, mFlagStrings[1] );
+    
+
+
+    
+    mPlayerSubLevelSeed = randSource.getRandomInt();
 
     mDataGenerated = false;
 
@@ -1887,6 +2284,9 @@ Level::Level( unsigned int inSeed,
         maxNumEnemies = 0;
         }
     
+    // for testing
+    //maxNumEnemies = 0;
+    
 
     // count number of enemies that have follow behavior
     int followCount = 0;
@@ -1930,7 +2330,11 @@ Level::Level( unsigned int inSeed,
             char fixedSpot = false;
             
 
-            if( i == 0 || ( mSymmetrical && i == 1 ) ) {
+            // place first 2 enemies guarding rise markers, but NOT
+            // in case of knock-down (because rise markers are close to 
+            // player in that case)
+            if( ! mKnockDown &&
+                ( i == 0 || ( mSymmetrical && i == 1 ) ) ) {
                 
                 fixedSpot = true;
                 
@@ -2026,7 +2430,11 @@ Level::Level( unsigned int inSeed,
                             // use enemy's initial index as its bullet marker
                             i,
                             // not dead
-                            false };
+                            false,
+                            // sub-level seed
+                            randSource.getRandomInt(),
+                            // not entered yet
+                            0 };
                 
                 musicPartIndex ++;
                 
@@ -2276,6 +2684,13 @@ Level::Level( unsigned int inSeed,
                 &&
                 mRisePosition.y != pickPos.y 
                 &&
+                mFlagPosition.x != pickPos.x
+                &&
+                // in case of double flag spot
+                mFlagPosition.x != - pickPos.x
+                &&
+                mFlagPosition.y != pickPos.y 
+                &&
                 // not too close to player staring spot
                 distance( worldPos, playerSpot ) > 5 ) {
                 
@@ -2399,7 +2814,11 @@ Level::Level( unsigned int inSeed,
                                        thisPartIndex ),
                                    (int)( stepsBetweenGlowTrails / 
                                           frameRateFactor ),
-                                   false };
+                                   false,
+                                   // sub-level seed
+                                   randSource.getRandomInt(),
+                                   // not entered yet
+                                   0 };
 
                 mPowerUpTokens.push_back( t );
                 }
@@ -2440,6 +2859,19 @@ Level::~Level() {
 
     delete mPlayerPowers;
     delete mStartingPlayerPowers;
+
+    for( int i=0; i<2; i++ ) {    
+        if( mFlagSprites[i] != NULL ) {
+            freeSprite( mFlagSprites[i] );
+            mFlagSprites[i] = NULL;
+            }
+        delete [] mFlagStrings[i];
+        }
+
+    if( mFlagWebRequest != NULL ) {    
+        delete mFlagWebRequest;
+        }
+    mFlagWebRequest = NULL;
     }
 
 
@@ -3255,6 +3687,26 @@ void Level::setLoudnessForAllParts() {
         }
 
 
+
+    // normal stereo computation for flag part
+    setPartLoudnessAndStereo( mFlagWorldPos,
+                              mPlayerPos,
+                              PARTS-6,
+                              loudnessFalloffFactor,
+                              stereoSpread );
+    if( mDoubleRisePositions ) {
+        setPartLoudnessAndStereo( mFlagWorldPos2,
+                                  mPlayerPos,
+                                  PARTS-5,
+                                  loudnessFalloffFactor,
+                                  stereoSpread );
+        }
+    else {
+        partLoudness[PARTS-5] = 0;
+        }
+    
+        
+
     
 
     // keep normal stereo computation
@@ -3410,7 +3862,154 @@ static doublePair computeAim( Enemy *inE, doublePair inPlayerPos,
 
 
 void Level::step( doublePair inViewCenter, double inViewSize ) {
+
+
+
+    if( mFlagWebRequest != NULL ) {
+        switch( mFlagWebRequest->step() ) {
+            case 0:
+                // still processing
+                break;
+            case 1:
+                // done, result ready
+                if( mFlagsLoading ) {
+                    char *result = mFlagWebRequest->getResult();
+                    
+                    SimpleVector<char *> *tokens =
+                        tokenizeString( result );
+                    
+                    delete [] result;
+                    
+                    char correct = false;
+                    
+                    if( tokens->size() == 2 ) {
+                        
+                        char *tokenA = *( tokens->getElement( 0 ) );
+                        char *tokenB = *( tokens->getElement( 1 ) );
+                        
+                        if( strlen( tokenA ) == 9 && strlen( tokenB ) == 9 ) {
+                            correct = true;
+                            
+                            delete [] mFlagStrings[0];
+                            delete [] mFlagStrings[1];
+
+                            mFlagStrings[0] = stringDuplicate( tokenA );
+                            mFlagStrings[1] = stringDuplicate( tokenB );
+
+                            for( int i=0; i<2; i++ ) {
+
+                                if( mFlagSprites[i] != NULL ) {
+                                    freeSprite( mFlagSprites[i] );
+                                    }
+                                mFlagSprites[i] = NULL;
+                                
+                                if( strcmp( mFlagStrings[i], "BLANKFLAG" )
+                                    != 0 ) {
+                                    // not blank
+                                    mFlagSprites[i] = 
+                                        generateFlagSprite( mFlagStrings[i] );
+                                    
+                                    mFlagMusicNotes[i] = 
+                                        generateFlagNoteSequence( 
+                                            PARTS-6 + i, 
+                                            mFlagStrings[i] );
+
+                                    lockAudio();
+                                    setNoteSequence( mFlagMusicNotes[i] );
+                                    unlockAudio();
+                                    }
+                                }
+                            }
+                        }
+                    
+                    for( int i=0; i< tokens->size(); i++ ) {
+                        delete [] *( tokens->getElement(i) );
+                        }
+                    delete tokens;
+                    }
+                delete mFlagWebRequest;
+                mFlagWebRequest = NULL;
+
+
+                if( mFlagsLoading ) {
+                    // fade loaded flags in
+                    for( int f=0; f<2; f++ ) {
+                        
+                        mFlagBlinkLevel[f] = 0;
+                        mFlagBlinkLevel[f] = 0;
+                    
+                        if( mFlagBlinkDelta[f] < 0 ) {
+                            mFlagBlinkDelta[f] *= -1;
+                            }
+                        }
+                    
+                    }
+                
+                mFlagsLoading = false;
+
+                // if sending, don't need to read result
+                mFlagsSending = false;
+                
+                break;
+            case -1:
+                // error
+                AppLog::error( "Flag server web request failed" );
+                delete mFlagWebRequest;
+                mFlagWebRequest = NULL;
+                mFlagsLoading = false;
+                mFlagsSending = false;
+                break;
+            }
+
+        
+        for( int f=0; f<2; f++ ) {
+
+            if( mFlagsLoading ) {
+                
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+            
+                if( mFlagBlinkLevel[f] > 1 || mFlagBlinkLevel[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+                    }
+                }
+            else if( mFlagBlinkDelta[f] < 1 ) {
+
+                // bring gradually up to 1, then stop
+                
+                if( mFlagBlinkDelta[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    }
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+
+                if( mFlagBlinkLevel[f] > 1 ) {
+                    mFlagBlinkLevel[f] = 1;
+                    }
+                }
+            }
+        }
+    else {
+        for( int f=0; f<2; f++ ) {
+            if( mFlagBlinkDelta[f] < 1 ) {
+
+                // bring gradually up to 1, then stop
+                
+                if( mFlagBlinkDelta[f] < 0 ) {
+                    mFlagBlinkDelta[f] *= -1;
+                    }
+                mFlagBlinkLevel[f] += mFlagBlinkDelta[f];
+        
+                if( mFlagBlinkLevel[f] > 1 ) {
+                    mFlagBlinkLevel[f] = 1;
+                    }
+                }
+            }
+        }
     
+
+
+
+
     // call rand at least once per step to ensure some mixing between
     // saves and restores when rising and falling (compacting and decompacting
     //  levels in stack)
@@ -4099,6 +4698,9 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 // no sub-explosions
                 explosionTemplate.explode = 0;
                 
+                // reset shadow averaging
+                explosionTemplate.lastShadowFade = 0;
+
                 // keep bullet velocity unchanged
 
 
@@ -4454,8 +5056,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                 }
         
             if( e->justStoppedDodging ) {
-                printf( "Enemy %d stopped dodging\n", i );
-
+                
                 e->justStoppedDodging = false;
                 
                 if( !random && !follow ) {
@@ -5472,6 +6073,62 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
         if( mDoubleRisePositions ) {
             drawSprite( riseMarker, mRiseWorldPos2 );
             }
+
+
+
+
+        // draw flags *under* shadows
+
+        setDrawColor( 1,
+                      1,
+                      1, mFlagBlinkLevel[0] );
+        
+        if( mFlagSprites[0] != NULL ) {
+            
+            drawSprite( mFlagSprites[0], mFlagWorldPos, 1.0/16 );
+            
+            toggleLinearMagFilter( true );
+            drawSprite( mFlagDirtOverlays[0], mFlagWorldPos, 1.0/16 );
+            toggleLinearMagFilter( false );
+            }
+        else if( mFlagsLoading ) {
+            drawSprite( flagWaiting, mFlagWorldPos );
+            }
+
+        
+
+        if( mDoubleRisePositions ) {
+            setDrawColor( 1,
+                          1,
+                          1, mFlagBlinkLevel[1] );
+            
+            if( mFlagSprites[1] != NULL ) {
+                
+                drawSprite( mFlagSprites[1], mFlagWorldPos2, 1.0/16 );
+                
+                toggleLinearMagFilter( true );
+                drawSprite( mFlagDirtOverlays[1], mFlagWorldPos2, 1.0/16 );
+                toggleLinearMagFilter( false );
+                }
+            else if( mFlagsLoading ) {
+                drawSprite( flagWaiting, mFlagWorldPos2 );
+                }
+
+            }
+
+        
+        // draw flag holders *under* shadows
+        c = &( mColors.special );
+        setDrawColor( c->r,
+                      c->g,
+                      c->b, 1 );
+        drawSprite( flagSpotA, mFlagWorldPos );
+        
+        if( mDoubleRisePositions ) {
+            drawSprite( flagSpotB, mFlagWorldPos2 );
+            }
+
+
         
         // draw blood stains under shadows too
         
@@ -5531,6 +6188,17 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                         1.0 / shadowBlowUpFactor );
         
 
+            // non-wall shadows look too dark
+            float nonWallShadowLevel = shadowLevel * 0.65;
+
+            // bullets need even more of an adjustment
+            float bulletShadowLevel = shadowLevel * 0.45;
+
+
+
+
+
+
             // bullet shadows under walls too
 
             // skip shadows if too many are already drawn over a given
@@ -5550,14 +6218,50 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     
                     GridPos gridPos = getGridPos( pos );
                     
+                    float thisBulletShadowLevel = 0;
+                    
                     if( shadowHitCounts[ gridPos.y ][ gridPos.x ] < 2 ) {
-                        
+
                         shadowHitCounts[ gridPos.y ][ gridPos.x ]++;
+                        thisBulletShadowLevel = 1;
+                        }
+                    
+                    float lastShadowFade = b->lastShadowFade;
+                
+                    if( lastShadowFade != thisBulletShadowLevel ) {
+                    
+                        // step toward it
                         
+                        float step = frameRateFactor * 0.2;
+                        //float step = frameRateFactor * 0.1;
+                        
+                        if( thisBulletShadowLevel < lastShadowFade ) {
+                            step *= -1;
+                            }
+                        
+                        float target = thisBulletShadowLevel;
+                    
+
+                        thisBulletShadowLevel = lastShadowFade + step;
+                        
+                        if( step > 0 && thisBulletShadowLevel > target ) {
+                            thisBulletShadowLevel = target;
+                            }
+                        else if( step < 0 && thisBulletShadowLevel < target ) {
+                            thisBulletShadowLevel = target;
+                            }
+                        }
+                    
+                    // save for next time
+                    b->lastShadowFade = thisBulletShadowLevel;
+
+                    if( thisBulletShadowLevel > 0 ) {
 
                         float fade = getBulletFade( b );
                                         
-                        setDrawColor( 1, 1, 1, fade * shadowLevel );
+                        setDrawColor( 1, 1, 1, 
+                                      fade * bulletShadowLevel *
+                                      thisBulletShadowLevel );
                         
                         drawBulletShadow( b->size, b->position );
                         }
@@ -5565,14 +6269,21 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                     }
                 }                             
 
+
+
+
+            
+            
+            
+                     
         
             // player shadow cut off by walls, too
-            mPlayerSprite.drawShadow( mPlayerPos, shadowLevel );
+            mPlayerSprite.drawShadow( mPlayerPos, nonWallShadowLevel );
 
 
             // same with crosshair shadow, but only if we're not
             // entering a power-up, so we don't draw it twice
-            setDrawColor( 1, 1, 1, shadowLevel );
+            setDrawColor( 1, 1, 1, nonWallShadowLevel );
             drawCrosshairShadow( mEnteringMouse, mMousePos );
                 
 
@@ -5589,12 +6300,12 @@ void Level::drawLevel( doublePair inViewCenter, double inViewSize ) {
                 if( pos.x >= visStart.x && pos.y >= visStart.y &&
                     pos.x <= visEnd.x && pos.y <= visEnd.y ) {
                     
-                    e->sprite->drawShadow( pos, shadowLevel );
+                    e->sprite->drawShadow( pos, nonWallShadowLevel );
                     }
                 }
             
             // same with power-up shadows
-            setDrawColor( 1, 1, 1, shadowLevel );
+            setDrawColor( 1, 1, 1, nonWallShadowLevel );
             for( int i=0; i<mPowerUpTokens.size(); i++ ) {
                 PowerUpToken *p = mPowerUpTokens.getElement( i );
                 
@@ -5861,26 +6572,21 @@ char Level::isRiseSpot( doublePair inPos ) {
             }
         }
     return false;
+    }
 
 
-    int x = (int)( rint( inPos.x ) );
-    int y = (int)( rint( inPos.y ) );
-    
-    int x2 = (int)( rint( -inPos.x - 1 ) );
 
-    x += MAX_LEVEL_W/2;
-    y += MAX_LEVEL_H/2;
-    x2 += MAX_LEVEL_W/2;
-    
-    // no need to check if in-bounds, since we're not indexing with x and y
-        
-    if( !mDoubleRisePositions ) {
-        return ( mRisePosition.x == x && mRisePosition.y == y );
+char Level::isFlagSpot( doublePair inPos ) {
+
+    if( distance( mFlagWorldPos, inPos ) < 1 ) {
+        return 1;
         }
-    else {
-        return ( ( mRisePosition.x == x || mRisePosition.x == x2 )
-                 && mRisePosition.y == y );
+    else if( mDoubleRisePositions ) {
+        if( distance( mFlagWorldPos2, inPos ) < 1 ) {
+            return 2;
+            }
         }
+    return 0;
     }
 
 
@@ -6214,6 +6920,45 @@ NoteSequence Level::getEnteringPointNoteSequence( doublePair inPosition,
     // default
     return generateRandomNoteSequence( 0 );
     }
+
+
+
+unsigned int Level::getEnteringPointSubLevelSeed( doublePair inPosition,
+                                                  itemType inType ) {
+    unsigned int returnValue = 0;
+    switch( inType ) {
+        case player: {
+            returnValue = mPlayerSubLevelSeed + mPlayerEnteredCount;
+            mPlayerEnteredCount++;
+            }
+            break;
+        case enemy: {
+            int i;
+    
+            if( isEnemy( inPosition, &i ) ) {
+                Enemy *e = mEnemies.getElement( i );
+                
+                returnValue = e->subLevelSeed + e->enteredCount;
+                e->enteredCount ++;
+                }
+            }
+            break;
+        case power: {
+            int i;
+    
+            if( isPowerUp( inPosition, &i ) ) {
+                PowerUpToken *t = mPowerUpTokens.getElement( i );
+
+                returnValue = t->subLevelSeed + t->enteredCount;
+                t->enteredCount ++;
+                }
+            }
+            break;            
+        }
+    
+    return returnValue;
+    }
+
 
 
 
@@ -6774,7 +7519,8 @@ void Level::addBullet( doublePair inPosition,
                      !cornerDir,
                      stickySteps,
                      explode,
-                     inPlayerBullet, size, inEnemyBulletMarker, false, false };
+                     inPlayerBullet, size, inEnemyBulletMarker, 
+                     false, false, 0 };
         mBullets.push_back( b );
 
 
@@ -6801,7 +7547,8 @@ void Level::addBullet( doublePair inPosition,
                       cornerDir,
                       stickySteps,
                       explode,
-                      inPlayerBullet, size, inEnemyBulletMarker };
+                      inPlayerBullet, size, inEnemyBulletMarker, 
+                      false, false, 0 };
         mBullets.push_back( br );
 
 
@@ -6840,7 +7587,8 @@ void Level::addBullet( doublePair inPosition,
                              !cornerDir,
                              stickySteps,
                              explode,
-                             inPlayerBullet, size, inEnemyBulletMarker };
+                             inPlayerBullet, size, inEnemyBulletMarker, 
+                             false, false, 0 };
                 mBullets.push_back( b );
 
 
@@ -6867,7 +7615,8 @@ void Level::addBullet( doublePair inPosition,
                               cornerDir,
                               stickySteps,
                               explode,
-                              inPlayerBullet, size, inEnemyBulletMarker };
+                              inPlayerBullet, size, inEnemyBulletMarker, 
+                              false, false, 0 };
                 mBullets.push_back( br );
                 }
             
@@ -6890,7 +7639,8 @@ void Level::addBullet( doublePair inPosition,
                  inCorneringDir,
                  stickySteps,
                  explode,
-                 inPlayerBullet, size, inEnemyBulletMarker };
+                 inPlayerBullet, size, inEnemyBulletMarker, 
+                 false, false, 0 };
     mBullets.push_back( b );
     
 
@@ -6914,6 +7664,9 @@ void Level::pushAllMusicIntoPlayer() {
         
         setNoteSequence( t->musicNotes );
         }
+
+    setNoteSequence( mFlagMusicNotes[0] );
+    setNoteSequence( mFlagMusicNotes[1] );
 
 
     setNoteSequence( mPlayerMusicNotes );
@@ -7089,5 +7842,111 @@ void Level::rewindLevel() {
     }
 
 
+
+
+void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
     
+    if( mFlagsLoading || mFlagsSending ) {
+        return;
+        }
+    
+    int holderNumber = -1;
+
+    if( distance( mFlagWorldPos, inPos ) < 1 ) {
+        holderNumber = 0;
+        }
+    else if( mDoubleRisePositions ) {
+        if( distance( mFlagWorldPos2, inPos ) < 1 ) {
+            holderNumber = 1;
+            }
+        }
+
+    if( holderNumber == -1 ) {
+        return;
+        }
+    
+
+    if( holderNumber == 0 &&
+        strcmp( mFlagStrings[0], "BLANKFLAG" ) != 0 ) {
+        
+        // already full, do nothing
+        return;
+        }
+    else if( strcmp( mFlagStrings[holderNumber], inFlagString ) == 0 ) {
+        // already contains our flag, do nothing
+
+        return;
+        }
+    
+
+
+    // else replace
+
+    delete [] mFlagStrings[ holderNumber ];
+    mFlagStrings[ holderNumber ] = stringDuplicate( inFlagString );
+    
+
+    if( mFlagSprites[ holderNumber ] != NULL ) {
+        freeSprite( mFlagSprites[ holderNumber ] );
+        }
+
+    mFlagSprites[ holderNumber ] = generateFlagSprite( inFlagString );    
+    
+    mFlagMusicNotes[holderNumber] = 
+        generateFlagNoteSequence( PARTS-6 + holderNumber, 
+                                  inFlagString );
+
+    lockAudio();
+    setNoteSequence( mFlagMusicNotes[holderNumber] );
+    unlockAudio();
+    
+    // post to server
+
+    if( useFlagServer ) {
+
+        const char *spots[2] = { "A", "B" };
+        
+        char *stringToHash = autoSprintf( 
+            "%d%u%s%s%s",
+            mLevelNumber, mRandSeedState,
+            spots[ holderNumber ], inFlagString,
+            sharedFlagServerSecret );
+        
+        
+        char *sig = computeSHA1Digest( stringToHash );
+
+        delete [] stringToHash;
+
+        char *fullRequestURL = autoSprintf( 
+            "%s?action=place_flag&level_number=%d&level_seed=%u"
+            "&spot=%s&flag=%s&sig=%s",
+            flagServerURL, mLevelNumber, mRandSeedState,
+            spots[ holderNumber ], inFlagString, sig );
+
+        delete [] sig;
+        
+
+        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        
+        //printf( "Starting web request with URL %s\n", fullRequestURL );
+        
+        delete [] fullRequestURL;
+
+        
+        mFlagsSending = true;
+
+        // DON'T blink when sending flags.
+        // if player leaves level before send is done, so be it!
+
+        // but fade flag in nicely after player places it
+        mFlagBlinkLevel[holderNumber] = 0;
+        
+        if( mFlagBlinkDelta[holderNumber] < 0 ) {
+            mFlagBlinkDelta[holderNumber] *= -1;
+            }
+        }
+
+
+    }
+
 

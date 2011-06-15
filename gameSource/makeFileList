@@ -6,7 +6,7 @@
 PROFILE_FLAG = ${PROFILE_OFF_FLAG}
 
 LINK_AGAINST_LIBJPEG = no
-LINK_AGAINST_LIBPNG = yes
+LINK_AGAINST_LIBPNG = no
 
 APP_NAME = StarFilledSky
 
@@ -43,6 +43,7 @@ musicPlayer.cpp \
 Timbre.cpp \
 Envelope.cpp \
 NoteSequence.cpp \
+flagSprite.cpp \
 
 
 
@@ -67,6 +68,9 @@ graphics/eyesTogether.tga \
 graphics/eyesTogetherSquint.tga \
 graphics/crosshair.tga \
 graphics/enterCrosshair.tga \
+graphics/flagMouse.tga \
+graphics/flagEditCell.tga \
+graphics/flagEditColorPot.tga \
 graphics/powerUpSlot.tga \
 graphics/powerUpSlotLeft.tga \
 graphics/powerUpSlotRight.tga \
@@ -99,6 +103,9 @@ graphics/enemyBehaviorFast.tga \
 graphics/enemyBehaviorRandom.tga \
 graphics/enemyBehaviorCircle.tga \
 graphics/bracket.tga \
+graphics/flagSpotA.tga \
+graphics/flagSpotB.tga \
+graphics/flagWaiting.tga \
 
 
 

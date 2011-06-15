@@ -34,6 +34,7 @@ cp ../gameSource/settings/*.ini unix/StarFilledSky_$1/settings
 cp ../gameSource/languages/*.txt unix/StarFilledSky_$1/languages
 cp ../gameSource/language.txt unix/StarFilledSky_$1
 cp ../documentation/Readme.txt unix/StarFilledSky_$1
+cp ../documentation/Upgrading.txt unix/StarFilledSky_$1
 
 
 
@@ -67,6 +68,7 @@ done
 
 
 ./unix2dosScript "StarFilledSky_$1/Readme.txt"
+./unix2dosScript "StarFilledSky_$1/Upgrading.txt"
 
 
 zip -r "StarFilledSky_$1_Windows.zip" StarFilledSky_$1

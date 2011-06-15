@@ -1,5 +1,6 @@
 #include "NoteSequence.h"
 #include "musicPlayer.h"
+#include "flagSprite.h"
 
 #include <string.h>
 
@@ -36,6 +37,192 @@ NoteSequence generateRandomNoteSequence( int inPartIndex,
 
     return s;
     }
+
+
+
+/*
+static int fact( int inN ) {
+    // fact(0) defined as 1
+    int value = 1;
+    
+    for( int i=1; i<=inN; i++ ) {
+        value *= i;
+        }
+    return value;
+    }
+
+
+// factorial-based formula overflows for large N (N>12)
+static int choose( int inN, int inK ) {
+
+    if( inN < inK ) {
+        return 0;
+        }
+    
+    // works in case of K = N
+    return 
+        fact( inN ) / 
+        ( fact( inK ) * fact( inN - inK ) );
+    }
+*/
+
+// recursive formula does not overflow unless answer itself overflows
+static int choose( int inN, int inK ) {
+    
+    if( inK == 0 ) {
+        return 1;
+        }
+    if( inN < inK ) {
+        return 0;
+        }
+
+    // recurse
+    return choose( inN - 1, inK - 1 ) + choose( inN - 1, inK );
+    }
+
+
+
+
+
+
+
+
+// indexes K-combinations on natural numbers in lexographical order 
+// See:
+// http://en.wikipedia.org/wiki/Combinatorial_number_system
+// outCombination must have K spots in it for subet of natural numbers to
+// be returned
+static void combIndex( int inIndex, int inK, int *outCombination ) {
+
+    int remainder = inIndex;
+    
+
+    while( inK > 0 ) {
+    
+        // find N choose K that consumes largest (but not larger) portion
+        // of remainder
+
+        int c = inK - 1;
+        
+        while( choose( c, inK ) <= remainder ) {
+            c++;
+            }
+        
+        // passed remainder, take last c
+        c--;
+        
+        outCombination[ inK - 1 ] = c;
+
+        remainder -= choose( c, inK );
+        
+        inK --;
+        }
+    }
+
+
+
+
+NoteSequence generateFlagNoteSequence( int inPartIndex,
+                                       const char *inFlagString ) {
+    /*
+    // test code
+    int comb[9];
+
+
+    int n = 16;
+    int k = 9;
+
+
+    int numComb = choose( n, k );
+    
+    printf( "All %d (%d choose %d) combinations:\n", numComb, n, k );
+    
+    
+
+    for( int i=0; i<numComb; i++ ) {
+        combIndex( i, k, comb );
+        
+        printf( "%d:  { ", i );
+        
+        for( int j=0; j<k; j++ ) {
+            printf( "%d", comb[j] );
+            if( j<k-1 ) {
+                printf( ", " );
+                }
+            }
+        printf( " }\n" );
+        }
+    
+
+    exit( 0 );
+    */
+
+
+
+    NoteSequence s;
+    s.partIndex = inPartIndex;
+    
+    s.partLength = N;
+    
+    // clear
+    memset( s.noteYIndex, -1, N );
+    
+
+    if( strcmp( inFlagString, "BLANKFLAG" ) == 0 ) {
+        // leave blank pattern in place
+        return s;
+        }
+    
+    // else generate a pattern from the string
+
+
+    // map note values into a an (N choose 9) combination index
+    // i.e., we pick one of the possible note spacings of 9 notes in N slots
+    unsigned int combinationSeed = 0;
+    
+    for( int c=0; c<8; c++ ) {
+        
+        combinationSeed += hexTo16( inFlagString[c] ) << ( 4 * c );
+        }
+    // add in last 4-bit digit... might overflow, but that's okay
+    combinationSeed += hexTo16( inFlagString[8] );
+    
+    CustomRandomSource combinationPicker( combinationSeed );
+
+
+    int numComb = choose( N, 9 );
+    
+
+    int combinationIndex = 
+        combinationPicker.getRandomBoundedInt( 0, numComb - 1 );
+    
+    int comb[9];
+    
+    combIndex( combinationIndex, 9, comb );
+    
+
+    // comb now contains column assignments for each of our notes
+
+    for( int i=0; i<9; i++ ) {
+        int noteHeight = hexTo16( inFlagString[i] );
+
+        int noteColumn = comb[i];
+        
+        s.noteYIndex[noteColumn] = noteHeight;
+        }
+             
+    /*
+    printf( "Note sequence: " );
+    for( int i=0; i<N; i++ ) {
+        printf( "%d, ", s.noteYIndex[i] );
+        }
+    printf( "\n" );
+    */
+
+    return s;
+    }
+
+
 
 
 DrumSequence generateRandomDrumSequence( int inPartLength ) {

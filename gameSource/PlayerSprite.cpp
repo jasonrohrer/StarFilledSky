@@ -187,7 +187,9 @@ void PlayerSprite::generateReproducibleData() {
             if( channels[3][ y*16+x ] != 0 ) {
                 
                 // fill in shadow
-                shadowAlpha[ ((y-8) / 4 + 8) * 16 + ((x-8) / 4 + 8) ] = 1;
+                int fx = x / 4 + 8 - 2;
+                int fy = y / 4 + 8 - 2;
+                shadowAlpha[ fy * 16 + fx ] = 1;
                 
 
                 // fill empty neighbors in border image with opaque pixels
@@ -218,7 +220,9 @@ void PlayerSprite::generateReproducibleData() {
         for( int x=0; x<16; x++ ) {
             if( borderChannels[3][ y*16+x ] != 0 ) {
                 // fill in shadow
-                shadowAlpha[ ((y-8) / 4 + 8) * 16 + ((x-8) / 4 + 8) ] = 1;
+                int fx = x / 4 + 8 - 2;
+                int fy = y / 4 + 8 - 2;
+                shadowAlpha[ fy * 16 + fx ] = 1;
                 }
             }
         

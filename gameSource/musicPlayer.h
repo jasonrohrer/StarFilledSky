@@ -6,10 +6,11 @@
 
 // instrument parts
 // one for each enemy (10), one for each power-up token (10),
-// two for rise marker, 
+// two for placed flags
+// two for rise marker,
 // one for player, and one for whatever we're inside
 
-#define PARTS 24
+#define PARTS 26
 
 // last part (PARTS-1) doesn't have its own timbre/envelope, but instead
 // uses pointers to one of other part's timber/envelope

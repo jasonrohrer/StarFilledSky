@@ -1,3 +1,41 @@
+Version 17
+
+--Fixed bug causing screen shots files to be unnecessarily doubled in size.
+
+--Improved correctness and efficiency of color conversion for sprites.
+
+--Fixed a new GCC warning about taking the address of a temporary variable 
+  (thanks Jookia).
+
+--Fixed flickering colors of dashboard rise icon when inside a power token.
+
+
+
+
+
+Version 16   2011-March-22
+
+--Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
+
+--Changed so that all players in the world are climbing through exactly the 
+  same deterministic (yet still procedurally generated and infinite) level 
+  structure, making progress comparable.  Your level 53 is my level 53.
+
+--Changed to eliminate the risk of recursive-knock-downs by placing rise marker
+  near player starting position after knock-down.  Exploring knock-down level 
+  to find power-ups is optional, but tempting (thanks Gregory Weir and Frank 
+  Lantz).
+
+--Improved accuracy of shadow drawing for objects. 
+
+--Added player Flags and Anthems with a global server to track them.
+
+--Movement keys are now released properly if they were held down when pause 
+  invoked.
+
+
+
+
 Version 15   2011-March-8
 
 --Default player powers in tutorial stages now include extended range (thanks 

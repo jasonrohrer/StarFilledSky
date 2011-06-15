@@ -1,0 +1,37 @@
+Version 16 of the game has just been posted.  It includes a subtle overhaul of how the world structure is generated and a new flag system for keeping track exploration on a global server.  Chart out this infinite space along with everyone else in the world---and leave your mark for others to see.  The frustration of the knock-down mechanic has also been dealt with.  A full change log has been posted below.
+
+All updates can be downloaded by following your original download link:
+
+#DOWNLOAD_LINK#
+
+
+Enjoy!
+
+Jason
+
+
+
+>>>>>>>>>>>>>>>
+
+Version 16   2011-March-22
+
+--Fixed to release mouse when Alt-Tabbing on GNU/Linux (thanks Matt).
+
+--Changed so that all players in the world are climbing through exactly the 
+  same deterministic (yet still procedurally generated and infinite) level 
+  structure, making progress comparable.  Your level 53 is my level 53.
+
+--Changed to eliminate the risk of recursive-knock-downs by placing rise marker
+  near player starting position after knock-down.  Exploring knock-down level 
+  to find power-ups is optional, but tempting (thanks Gregory Weir and Frank 
+  Lantz).
+
+--Improved accuracy of shadow drawing for objects. 
+
+--Added player Flags and Anthems with a global server to track them.
+
+--Movement keys are now released properly if they were held down when pause 
+  invoked.
+
+>>>>>>>>>>>>>>>
+

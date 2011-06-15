@@ -4,6 +4,7 @@
 #include "minorGems/util/stringUtils.h"
 #include "Font.h"
 #include "drawUtils.h"
+#include "tutorial.h"
 
 
 #include <limits.h>
@@ -45,6 +46,8 @@ int delaySteps;
 
 double maxTipStringWidth = 0;
 
+char avoidingScoreBracket = false;
+
 
 
 // use fixedSpriteBank's macro 
@@ -68,6 +71,19 @@ void initTipDisplay() {
 
 
     for( int p=powerUpHeart; p<=powerUpExplode; p++ ) {
+        
+        const char *tipString = 
+            translate( spriteIDTipTranslateKeys[ p ] );
+
+        double width = tinyFont->measureString( tipString );
+        
+        if( width > maxTipStringWidth ) {
+            maxTipStringWidth = width;
+            }
+        }
+
+    // measure flag spot tips too
+    for( int p=flagSpotA; p<=flagSpotB; p++ ) {
         
         const char *tipString = 
             translate( spriteIDTipTranslateKeys[ p ] );
@@ -139,6 +155,15 @@ void drawTipDisplay( doublePair inScreenCenter ) {
         
         tipPos.y -= 0.4375;
         
+        if( isScoreBracketShowing() ) {
+            avoidingScoreBracket = true;
+            }
+
+        if( avoidingScoreBracket ) {
+            // don't overlap with tutorial score bracket
+            // avoid jerky tip placement change when bracket disappears
+            tipPos.y -= 1.0625;
+            }
         
         drawTip( currentTipString, tipPos, fade );
 
@@ -180,6 +205,10 @@ void drawTipDisplay( doublePair inScreenCenter ) {
 
             currentTipSpriteID = endSpriteID;
             currentTipString = NULL;
+
+            // reset, now that tip is hidden
+            // (hides jerky tip position change)
+            avoidingScoreBracket = false;
             }
         }
     }

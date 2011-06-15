@@ -30,7 +30,7 @@ $12
 
 Current Sales Data on Released Platform(s):
 
-Direct sales through personal website:  3000 units
+Direct sales through personal website:  3100 units
 
 
 If not released, proposed pricing:
@@ -66,11 +66,17 @@ http://daxgamer.com/2011/02/star-filled-sky-review/
 
 Link to Game Play Trailer (please include 2 minutes of game play):
 
+http://www.youtube.com/watch?v=c6zjwPiOHtg
+
+
 Link to Promotional Trailer:
 
 http://www.youtube.com/watch?v=pQaIAhHJvAw
 
+
 Link to Demo Build:
+
+http://insideastarfilledsky.net/ticketServer/server.php?action=show_downloads&ticket_id=YFDXNKAPMM
 
 
 Product description:
@@ -89,6 +95,8 @@ Key features:
 --Dozens of ways to approach each challenge---reflex your way through, blast your way through, or think your way through
 
 --Dynamic soundtrack is procedurally generated based on moment-to-moment gameplay
+
+--Plant your flag throughout an infinite level space to mark your discoveries, and see flags planted by others via a global flag server
 
 
 

@@ -1,0 +1,1 @@
+--Fix wasd mapping so that it doesn't affect keyboard input for Pause screen (maybe a function to toggle key mapping while pause screen is shown).

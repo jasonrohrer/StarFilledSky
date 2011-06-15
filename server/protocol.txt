@@ -1,0 +1,34 @@
+All returns are whitespace-delimited.
+
+
+
+
+
+=== Call:
+server.php?action=place_flag&level_number=[number]
+                            &level_seed=[seed]
+                            &spot=['A' or 'B']
+                            &flag=[ASCII encoding of flag pixels]
+                            &sig=[signature of all data values]
+
+Returns:
+'OK' or 'REJECTED'
+
+
+
+
+
+=== Call:
+server.php?action=get_flags&level_number=[number]
+                            &level_seed=[seed]
+
+Returns:
+aFlag
+bFlag
+
+
+Where:
+aFlag = ASCII encoding of flag pixels
+bFlag = ASCII encoding of flag pixels
+
+Either value can be 'BLANKFLAG' as well.

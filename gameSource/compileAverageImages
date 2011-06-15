@@ -1,0 +1,1 @@
+g++ -o averageImages -I../.. averageImages.cpp ../../minorGems/io/file/linux/PathLinux.cpp

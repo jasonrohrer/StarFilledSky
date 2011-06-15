@@ -4,6 +4,7 @@
 
 #include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
+#include "minorGems/network/web/WebRequest.h"
 
 
 #include "PlayerSprite.h"
@@ -59,6 +60,10 @@ typedef struct Bullet {
         // bullet should have no effect at the end of it's life when
         // it is barely visible
         char halfFadedOut;
+
+        // used to smooth out shadown pop-in (when bullets are near each other
+        // and casting overlapping shadows)
+        float lastShadowFade;
     } Bullet;
 
 
@@ -132,7 +137,12 @@ typedef struct Enemy {
 
         // flag enemies as dead instead of deleting them
         // this allows full level rewind when player knocked down
-        char dead;        
+        char dead;
+
+        // sub-levels inside are generated deterministically
+        // even after multiple enterings of same enemy
+        unsigned int subLevelSeed;
+        unsigned int enteredCount;
     } Enemy;
 
 
@@ -166,6 +176,11 @@ typedef struct PowerUpToken {
         int stepsUntilNextGlowTrail;
 
         char pickedUp;
+
+        // sub-levels inside are generated deterministically
+        // even after multiple enterings of same enemy
+        unsigned int subLevelSeed;
+        unsigned int enteredCount;
     };
 
 
@@ -284,6 +299,9 @@ class Level {
         NoteSequence getEnteringPointNoteSequence( doublePair inPosition,
                                                    itemType inType );
 
+        unsigned int getEnteringPointSubLevelSeed( doublePair inPosition,
+                                                   itemType inType );
+
         // level number of subLevel if entered here
         int getEnteringPointSubLevel( doublePair inPosition,
                                       itemType inType );
@@ -327,7 +345,15 @@ class Level {
 
 
         char isRiseSpot( doublePair inPos );
+
+        // returns 0 for no spot
+        // 1 for spot A
+        // 2 for spot B
+        char isFlagSpot( doublePair inPos );
         
+        void placeFlag( doublePair inPos, const char *inFlagString );
+        
+
 
         doublePair getEnemyCenter( int inEnemyIndex );
         doublePair getPowerUpCenter( int inPowerUpIndex );
@@ -469,6 +495,14 @@ class Level {
         
         // free up memory consumed by reproducible data
         void freeReproducibleData();
+
+
+        // TRICK:
+        // init this variable before all other member variables
+        // using a dummy function call that ensures the random generator
+        // gets its seed set before anything else is initialized
+        char mFirstSeedSet;
+        
         
         char mDataGenerated;
         
@@ -543,6 +577,9 @@ class Level {
         // spot is a cut vertex that disconnects two parts of the graph
         char *mCutVertexFloorFlags;
         
+
+        // maps floor indices to manhattan distances from player start point
+        int *mManhattanDistanceFromStart;
         
         
         // to speed-up drawing of zoom-in,
@@ -589,6 +626,30 @@ class Level {
         GridPos mRisePosition, mRisePosition2;
         doublePair mRiseWorldPos, mRiseWorldPos2;
         char mDoubleRisePositions;
+
+        GridPos mFlagPosition, mFlagPosition2;
+        doublePair mFlagWorldPos, mFlagWorldPos2;
+
+        const char *mFlagStrings[2];
+        SpriteHandle mFlagSprites[2];
+
+        SpriteHandle mFlagDirtOverlays[2];
+        
+
+        char mFlagsLoading;
+        char mFlagsSending;
+        
+
+        float mFlagBlinkLevel[2];
+        float mFlagBlinkDelta[2];
+
+        WebRequest *mFlagWebRequest;
+        
+
+        NoteSequence mFlagMusicNotes[2];
+
+
+
         
         char mFrozen;
         
@@ -636,6 +697,10 @@ class Level {
         RandomWalkerSet mPlayerWalkerSet;
         NoteSequence mPlayerMusicNotes;
         
+        unsigned int mPlayerSubLevelSeed;
+        unsigned int mPlayerEnteredCount;
+
+
         int mPlayerHealthMax;
         int mPlayerHealth;
         

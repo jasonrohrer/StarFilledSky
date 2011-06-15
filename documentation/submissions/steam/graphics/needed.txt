@@ -1,0 +1,32 @@
+To get the game page set up on the Steam store, we'll need a number of art assets as well as details about your game.  It would be helpful if you can provide the following assets for the game (templates attached):
+
+ 
+
+1)      Completed Steam Asset sheet (attached).
+
+ 
+
+2)      Marketing assets for the game pages.  Attached is a file with all the templates for the necessary assets with descriptions below.
+
+-         "capsule_main_616x353" (616X353p) - This is the front-page banner size for the Steam store.
+
+-         "capsule_lg" (467X181p) - This is the banner size for use on publisher and genre pages.
+
+-         "capsule_sm" (231X87p) - The smaller banner used everywhere else: lists, search results, New Release listing.
+
+-         "header"(460X215p) - this is the branding image used at the top of each game page
+
+ 
+
+3)      Screenshots.  It would be nice to have between 5 to 10 images showcasing your game and its features.  Preferable resolution of 1280x720 or 1920x1080 since our screenshot viewer is optimized for 16:9 aspect ratio.  We can still use non-wide screen images, but there will be empty margins.
+
+ 
+
+4)      Video/trailer in 1280x720 resolution, 30 or 29.97 fps, and in .mov or .wmv format.  4:3 aspect ratio is also acceptable if the game doesn't support widescreen natively, but please be forewarned that our Steam client and store page is optimized for widescreen format.  Audio can be in either stereo or 5.1 sound.  It will be filtered down to 2 channels when we 'Steamify' the videos for our Store page.
+
+
+
+Also:
+
+
+Finally, where does the big "bg_generated" image come from?  It's 1004x570 and looks somewhat darkened.
