@@ -15,6 +15,12 @@ NoteSequence generateRandomNoteSequence( int inPartIndex,
                                          int inPartLength = 16 );
 
 
+
+NoteSequence generateFlagNoteSequence( int inPartIndex,
+                                       const char *inFlagString );
+
+
+
 // two part drum beat
 typedef struct DrumSequence {
         NoteSequence parts[2];

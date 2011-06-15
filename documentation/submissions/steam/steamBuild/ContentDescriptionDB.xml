@@ -1,0 +1,207 @@
+<?xml version="1.0" ?>
+<ContentDescriptionRecord>
+	<VersionNum>10</VersionNum>
+	<AllAppsRecord>
+		<AppRecord AppId="104100" >
+			<AppId>104100</AppId>
+			<Name>Inside a Star-filled Sky</Name>
+			<InstallDirName>Inside a Star-filled Sky</InstallDirName>
+			<MinCacheFileSizeMB>0</MinCacheFileSizeMB>
+			<MaxCacheFileSizeMB>0</MaxCacheFileSizeMB>
+			<AppLaunchOptionsRecord>
+				<AppLaunchOptionRecord LaunchOptionIdx="0" >
+				    <ValidOSList>windows</ValidOSList>
+					<Description>Default</Description>
+					<CommandLine>StarFilledSky.exe</CommandLine>
+					<AppIconIdx>0</AppIconIdx>
+					<bNoDesktopShortcut>0</bNoDesktopShortcut>
+					<bNoStartMenuShortcut>0</bNoStartMenuShortcut>
+					<bLongRunningUnattended>0</bLongRunningUnattended>
+				</AppLaunchOptionRecord>
+				<AppLaunchOptionRecord LaunchOptionIdx="1" >
+				    <ValidOSList>macos</ValidOSList>
+					<Description>Default</Description>
+					<CommandLine>StarFilledSky.app</CommandLine>
+					<AppIconIdx>0</AppIconIdx>
+					<bNoDesktopShortcut>0</bNoDesktopShortcut>
+					<bNoStartMenuShortcut>0</bNoStartMenuShortcut>
+					<bLongRunningUnattended>0</bLongRunningUnattended>
+				</AppLaunchOptionRecord>
+			</AppLaunchOptionsRecord>
+			<AppIconsRecord>
+			</AppIconsRecord>
+			<OnFirstLaunch>4294967295</OnFirstLaunch>
+			<IsBandwidthGreedy>1</IsBandwidthGreedy>
+			<AppVersionsRecord>
+				<AppVersionRecord VersionId="0" >
+					<Description>0.0.0.1</Description>
+					<VersionId>0</VersionId>
+					<bIsNotAvailable>0</bIsNotAvailable>
+					<LaunchOptionIdsRecord>
+						<LaunchOptionId>0</LaunchOptionId>
+					</LaunchOptionIdsRecord>
+					<DepotEncryptionKey></DepotEncryptionKey>
+					<bIsEncryptionKeyAvailable>0</bIsEncryptionKeyAvailable>
+					<bIsRebased>0</bIsRebased>
+				</AppVersionRecord>
+			</AppVersionsRecord>
+			<CurrentVersionId>0</CurrentVersionId>
+			<FilesystemsRecord>
+				<FilesystemRecord FilesystemIdx="0" >
+				    <ValidOSList>windows</ValidOSList>
+					<AppId>104101</AppId>
+					<MountName></MountName>
+					<IsOptional>0</IsOptional>
+				</FilesystemRecord>
+				<FilesystemRecord FilesystemIdx="1" >
+				    <ValidOSList>macos</ValidOSList>
+					<AppId>104102</AppId>
+					<MountName></MountName>
+					<IsOptional>0</IsOptional>
+				</FilesystemRecord>
+			</FilesystemsRecord>
+			<TrickleVersionId>4294967295</TrickleVersionId>
+			<AppUserDefinedRecord>
+				<icon></icon>
+				<order>1</order>
+				<state>eStateAvailable</state>
+				<gamedir>Inside a Star-filled Sky</gamedir>
+				<homepage></homepage>
+				<NoServers>1</NoServers>
+				<developer></developer>
+				<serverbrowsername></serverbrowsername>
+				<validoslist>windows,macos</validoslist>
+				<installscript_macos>StarFilledSky.app/installscript_osx.vdf</installscript_macos>
+			</AppUserDefinedRecord>
+			<BetaVersionPassword>foo</BetaVersionPassword>
+			<BetaVersionId>4294967295</BetaVersionId>
+			<ManifestOnlyApp>1</ManifestOnlyApp>
+		</AppRecord>
+		<AppRecord AppId="104101" >
+			<AppId>104101</AppId>
+			<Name>StarFilledSky_windows</Name>
+			<InstallDirName>StarFilledSky_windows</InstallDirName>
+			<MinCacheFileSizeMB>6</MinCacheFileSizeMB>
+			<MaxCacheFileSizeMB>6</MaxCacheFileSizeMB>
+			<AppLaunchOptionsRecord>
+				<AppLaunchOptionRecord LaunchOptionIdx="0" >
+					<Description>Default</Description>
+					<CommandLine>StarFilledSky_windows</CommandLine>
+					<AppIconIdx>0</AppIconIdx>
+					<bNoDesktopShortcut>0</bNoDesktopShortcut>
+					<bNoStartMenuShortcut>0</bNoStartMenuShortcut>
+					<bLongRunningUnattended>0</bLongRunningUnattended>
+				</AppLaunchOptionRecord>
+			</AppLaunchOptionsRecord>
+			<AppIconsRecord>
+			</AppIconsRecord>
+			<OnFirstLaunch>4294967295</OnFirstLaunch>
+			<IsBandwidthGreedy>1</IsBandwidthGreedy>
+			<AppVersionsRecord>
+				<AppVersionRecord VersionId="0" >
+					<Description>0</Description>
+					<VersionId>0</VersionId>
+					<bIsNotAvailable>0</bIsNotAvailable>
+					<LaunchOptionIdsRecord>
+						<LaunchOptionId>0</LaunchOptionId>
+					</LaunchOptionIdsRecord>
+					<DepotEncryptionKey>135D062408BB625ADA59B72B7F316E1D</DepotEncryptionKey>
+					<bIsEncryptionKeyAvailable>0</bIsEncryptionKeyAvailable>
+					<bIsRebased>0</bIsRebased>
+				</AppVersionRecord>
+			</AppVersionsRecord>
+			<CurrentVersionId>0</CurrentVersionId>
+			<FilesystemsRecord>
+			</FilesystemsRecord>
+			<TrickleVersionId>4294967295</TrickleVersionId>
+			<BetaVersionPassword>foo</BetaVersionPassword>
+			<BetaVersionId>4294967295</BetaVersionId>
+			<AppOfManifestOnlyCache>104100</AppOfManifestOnlyCache>
+		</AppRecord>
+		<AppRecord AppId="104102" >
+			<AppId>104102</AppId>
+			<Name>StarFilledSky_mac</Name>
+			<InstallDirName>StarFilledSky_mac</InstallDirName>
+			<MinCacheFileSizeMB>9</MinCacheFileSizeMB>
+			<MaxCacheFileSizeMB>9</MaxCacheFileSizeMB>
+			<AppLaunchOptionsRecord>
+				<AppLaunchOptionRecord LaunchOptionIdx="0" >
+					<Description>Default</Description>
+					<CommandLine>StarFilledSky_mac</CommandLine>
+					<AppIconIdx>0</AppIconIdx>
+					<bNoDesktopShortcut>0</bNoDesktopShortcut>
+					<bNoStartMenuShortcut>0</bNoStartMenuShortcut>
+					<bLongRunningUnattended>0</bLongRunningUnattended>
+				</AppLaunchOptionRecord>
+			</AppLaunchOptionsRecord>
+			<AppIconsRecord>
+			</AppIconsRecord>
+			<OnFirstLaunch>4294967295</OnFirstLaunch>
+			<IsBandwidthGreedy>1</IsBandwidthGreedy>
+			<AppVersionsRecord>
+				<AppVersionRecord VersionId="0" >
+					<Description>0</Description>
+					<VersionId>0</VersionId>
+					<bIsNotAvailable>0</bIsNotAvailable>
+					<LaunchOptionIdsRecord>
+						<LaunchOptionId>0</LaunchOptionId>
+					</LaunchOptionIdsRecord>
+					<DepotEncryptionKey>A9CF602CFDC59E669904E0F3DF017217</DepotEncryptionKey>
+					<bIsEncryptionKeyAvailable>0</bIsEncryptionKeyAvailable>
+					<bIsRebased>0</bIsRebased>
+				</AppVersionRecord>
+			</AppVersionsRecord>
+			<CurrentVersionId>0</CurrentVersionId>
+			<FilesystemsRecord>
+			</FilesystemsRecord>
+			<TrickleVersionId>4294967295</TrickleVersionId>
+			<BetaVersionPassword>foo</BetaVersionPassword>
+			<BetaVersionId>4294967295</BetaVersionId>
+			<AppOfManifestOnlyCache>104100</AppOfManifestOnlyCache>
+		</AppRecord>
+	</AllAppsRecord>
+	<AllSubscriptionsRecord>
+		<SubscriptionRecord SubscriptionId="0" >
+			<SubscriptionId>0</SubscriptionId>
+			<Name>Inside a Star-filled Sky</Name>
+			<BillingType>NoCost</BillingType>
+			<CostInCents>0</CostInCents>
+			<SubscriptionAppIdsRecord>
+				<AppId>104100</AppId>
+			</SubscriptionAppIdsRecord>
+			<OnSubscribeRunAppId>4294967295</OnSubscribeRunAppId>
+			<OnSubscribeRunLaunchOptionIdx>4294967295</OnSubscribeRunLaunchOptionIdx>
+		</SubscriptionRecord>
+		<SubscriptionRecord SubscriptionId="1" >
+			<SubscriptionId>1</SubscriptionId>
+			<Name>StarFilledSky_windows</Name>
+			<BillingType>NoCost</BillingType>
+			<CostInCents>0</CostInCents>
+			<SubscriptionAppIdsRecord>
+				<AppId>104101</AppId>
+			</SubscriptionAppIdsRecord>
+			<OnSubscribeRunAppId>4294967295</OnSubscribeRunAppId>
+			<OnSubscribeRunLaunchOptionIdx>4294967295</OnSubscribeRunLaunchOptionIdx>
+		</SubscriptionRecord>
+		<SubscriptionRecord SubscriptionId="2" >
+			<SubscriptionId>2</SubscriptionId>
+			<Name>StarFilledSky_mac</Name>
+			<BillingType>NoCost</BillingType>
+			<CostInCents>0</CostInCents>
+			<SubscriptionAppIdsRecord>
+				<AppId>104102</AppId>
+			</SubscriptionAppIdsRecord>
+			<OnSubscribeRunAppId>4294967295</OnSubscribeRunAppId>
+			<OnSubscribeRunLaunchOptionIdx>4294967295</OnSubscribeRunLaunchOptionIdx>
+		</SubscriptionRecord>
+	</AllSubscriptionsRecord>
+	<LastChangedExistingAppOrSubscriptionTime>2011-04-13T23:42:33.353000Z</LastChangedExistingAppOrSubscriptionTime>
+	<AllAppsPublicKeysRecord>
+		<AppPublicKeyData KeyIdx="104101" >0x30819d300d06092a864886f70d010101050003818b0030818702818100ad8d3ecf49d73e2d81e9e89693d168070c4c38b127087ba8e8f7dbcc64d97f972f4cd9289279425bff4284ae75b961ef3843fc541efed8201c05c2487c801d3e61b3a0f205684aca208cadeb85e9614f2b40c53fa78c754c57ed59308f772b9a94657f0ea9cdb32229caa209ace9d3af3cc17227327ceddc418062a8acfcb5a9020111</AppPublicKeyData>
+		<AppPublicKeyData KeyIdx="104102" >0x30819d300d06092a864886f70d010101050003818b0030818702818100a8398c413bc0aaf1d7b54d39e6be464c2c8a72406ef4ce52a05cdb9c1e1b359ad477e7a609ada9052b608be70d322157ac7eddbb30ce6e22306d812b5e306786046cde615a0ff12e1ed4667068bf13d7714cad1bab036ed13ec6b956dcad4b55480e902f5e4c5c024b477adce0fadbe6675f42ac561d422916224e7eca70deb7020111</AppPublicKeyData>
+	</AllAppsPublicKeysRecord>
+	<AllAppsEncryptedPrivateKeysRecord>
+		<AppPrivateKeyData KeyIdx="104101" >0xd3e7b95c5fc4493f3527aa71c430e0f2dc3fcc0df46d5112a8fe03b661e89b524922a4dd1c2d037e37802f8e087d18f8bbb453edca6ead47b255f99b2000f9bdfc570c01b4475e09c992d30f34f13c0334bec680d63fa2da5265302534e523722937a216af6ad23aa2d6cd4b387e350635fdd5fbac904cc31726a590f29f15ee32c6d8ae5209229e6673989312a19904e9f97e732fbf5e2eb0635e31de7249ea5c7f23032ac3d18d792f88270ac1a83e71368d24254d455a50ead94f5cbe49bbcdbee0a29020d7e75c3fe0d64dbbb76f303fcba9410c2341ae0596bf33046a2f8423ea84bca9a27af0cf513c9b2ec1a6e996a94e429ddac38f429e9a8b56b10d0404d68cac5fd503c6addcb07d29ab8e464433b59b82d071db5edc43b429173550fb49703cee1e2153f7ec601f4923d7896780e49197e617666f165d6605565ec3aac91c268689e3a9b2ff3f5499aa25dff47e581a8ce4667de1fcb12d0a6061f58f42327777ccf87e0c57b88c10216976788b2a81a6636206c841a1d578569f82fa042409a02ec037cc00b6b54c0b48e466caf719bf5f53bcf89ceec273059019712c543d3f7972eec38feccdf42a43f6ab63ad42046fed3a814c1476d9bc43d194ed35b5aca54c930e01385d0e45f5267dfa2903ee313c7ac634eff904628d7756e8edbe2f2835a07c100f8ffb71acdb03039818db9f7bfa41416cef4c8df619341dc966cd460eb373315c621a257ad9c62a7c6de9fbb9144f9a9e6b546760377b5283408f5771b67cd9d42c92108c5dfd83f9d6fd4da5845ee651d176b0be8dee2305f8569e0063aad9a2980b7f2fbaffe3b8e7fa1b7f2c821d3f54222037aaafc7dd723f8fe1f5f31e80e7b7613019f5abbc57a1211ae07317437077f410691108bd6b971bd4ae1f872cab3961b42e2d505d4f</AppPrivateKeyData>
+		<AppPrivateKeyData KeyIdx="104102" >0x50844f80fad9562fddc074a30e21317cde9d339f23b8b97576453f5fcdb44dc6c5f1d6d832f8b6a053d229f406635bad752d3146939945ee9d03d0fa651521de89b766916d9cd93e60e5afd32a832ba2a08b678e643b2f6014c8e17a50356e17fa45628025f4270f42ffe6d815b7354664ccf961baa6ed49aa442a2063b47d191e34b5d0aea1ddb38eb70281bdd96cc001f71bfbf3c8ab66342b4f890a8ec0d36d6eb7a55c3e4d900e19b4c37d7a53ca229d3dbfb6dda479cab523b70082a892225968bc82e3a87e8c4dc7370ef47493b9aae5567fdd6c17b6e31b4c607d260499820e148d9f6a5825f43a5bd565605a700a0d3baaa767634fe7466b60ab49fa7f50aa4d5cca50c430859964fe36e0e82778b9bccbd3f3f5a1adb016392e08cfec71d6662fa55378537e1101e2028fc3b90eeda67934f0310e3543822cfd6e331ec81e3afcc883bd8a94711056d9e02a2af31f85115138e21a7178b923658678b6b6e1efcb52da6ff83ab2f27ca8219bc33ff28f36e00b3987cf20a615ea448150e256a7c90bddea38f89befe3b93150d9267cfc0c576a9aceb5b93fc8638aad3a6fe57010a947a74b44350057e623892cc33af7d4973f8fc210dbda3df1f56e0f0fcc25369f738419988d348274e88df645368b73f3b19f0a0f6ebf1f5e9864bfef62ef9eab793a02326b76a70a3bae18fb15de4b492534fa8ca6242e8ec3e817555a05b1e17037c46216308d6c2f672b406cbeca47f51aaacfaebbab52a4f09eb213f9ea1e57f14009de1071ff640dc511b326b20e32887b7ad26dac090b8d2ab71cb74371107f4a1e7d83b447cfbc7b7ac92a98c7dee21486648d80634e9ddd7cf1ea316907e949e820562d164c828ac3470ff9da747c75ce8503fd3118b3467a357e98fd194158bf224ab9ec171385f26e5fc44180d85ada6534fcd475e30ce7178c</AppPrivateKeyData>
+	</AllAppsEncryptedPrivateKeysRecord>
+</ContentDescriptionRecord>

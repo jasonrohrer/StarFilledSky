@@ -60,6 +60,7 @@ void initSpriteBank() {
         }
     // special case, no transparency
     transparentLowerLeftCorner[ riseMarker ] = false;
+    transparentLowerLeftCorner[ flagEditCell ] = false;
 
 
     for( int i = riseMarker; i < endSpriteID; i++ ) {
@@ -203,8 +204,9 @@ SpriteHandle generateShadowSprite( const char *inSourceTGAFile ) {
             if( !pixelColor.equals( &transColor ) ) {
                     
                 // fill in shadow
-                shadowAlpha[ ((y-halfH) / 4 + halfH) * w + 
-                             ((x-halfW) / 4 + halfW) ] = 1;
+                int fx = x / 4 + halfW - halfW / 4;
+                int fy = y / 4 + halfH - halfH / 4;
+                shadowAlpha[ fy * w + fx ] = 1;
                 }
             }  
         }

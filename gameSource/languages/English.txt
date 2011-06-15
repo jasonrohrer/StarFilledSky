@@ -53,6 +53,22 @@ pauseMessage3 "Press '%' to quit"
 pauseMessage4 "(saves a level number bookmark)"
 
 
+
+flagEditMessage1 "Edit your Flag and Anthem:"
+flagEditMessage2 "Press ENTER when done"
+flagEditMessage3 "Press F to show this editor later"
+
+flagEditMessage4 "Cross anchors to place your flag" 
+flagEditMessage5 "Others will find your mark" 
+
+flagAnchorLabelA1 "Permanent"
+flagAnchorLabelA2 "anchor"
+
+flagAnchorLabelB1 "Temporary"
+flagAnchorLabelB2 "anchor"
+
+
+
 difficultyTag "DIFFICULTY"
 
 innerTag "INNER"
@@ -75,6 +91,9 @@ powerUpBounce_tip         "BOUNCE"
 powerUpCornering_tip      "BULLET CORNERING"
 powerUpSticky_tip         "STICKY"
 powerUpExplode_tip        "BURST"
+
+flagSpotA_tip             "PERMANENT FLAG"
+flagSpotB_tip             "TEMPORARY FLAG"
 
 powerUpHeartSetCombo_tipPart1  "SURVIVE"
 powerUpHeartSetCombo_tipPart2  "HITS"

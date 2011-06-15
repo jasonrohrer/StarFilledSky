@@ -1,0 +1,90 @@
+Game Title
+
+Inside a Star-filled Sky
+
+
+
+
+File Size
+
+Windows:  1.3 MiB
+MacOSX:   2.7 MiB      
+
+
+
+
+System Requirements
+
+General req:
+Processor:  900 MHz
+Memory:  40MB
+Hard Drive:  10MB
+Video:  onboard graphics or better
+Sound:  Standard audio
+
+PC req:
+OS:  Windows XP
+
+Mac req:
+OS:  OSX version Leopard 10.5 or later
+Processor:  Intel
+
+
+
+
+Development Team Members
+
+Jason Rohrer
+
+
+Creator voice
+
+call-out:
+
+What if a game kept going, all the way down, and all the way up?
+
+Body:
+
+With Inside a Star-filled Sky, I was trying to explore the concepts of recursion and infinity.  Recursion involves performing a self-similar sub-task before being able to complete a main task, and that sub-task may require yet another sub-task.  Recursion is an important concept in computing and mathematics, but we also encounter something like it in everyday life:  we must often interrupt a given task to complete a necessary sub-task, and that sub-task may require yet another sub-task.  "Before I can mail this letter, I need to go to the post office and buy a stamp.  But before I go to the post office, I need to buy fuel for my car.  But before I buy fuel, I need to stop by the bank and withdraw some money."
+
+The subjective experience of recursion, in either mathematics or everyday life, can involve forgetting what the main task was as we delve deeper into this nested chain of necessary sub-tasks.  When we rise back out as we complete each sub-task, we often have to remind ourselves of what we were trying to accomplish in the first place.  "Why did I need to buy fuel?  Oh, that's right:  so I could make a trip to the post office.  Buy why did I need to go to the post office?"
+
+This experience is also connected to our subjective experience of infinity, because in both cases, we feel lost.  Furthermore, in mathematics, recursion and infinity are intimately connected, because a broken recursive algorithm can lead to infinite regress.
+
+I wanted to make a game about all of these concepts.  A game that throws you into an infinite system and lets you take on sub-tasks and sub-sub-tasks in that system.  A game that tricks you into getting lost in your own recursive pursuits and later rewards you with a profound "Aha" moment as you rise back out and remember what it was that you were trying to accomplish in the first place.
+
+
+
+ 
+
+
+"How to Play"
+
+call-out:
+
+What if you could enter anything and change it from the inside?
+
+
+body:
+
+Inside a Star-filled Sky is an infinite, recursive, tactical shooter by award-winning designer Jason Rohrer (Passage, Between).  What if you could enter an object in a level and find a level inside of it?  What if you could enter an object in that level and find another level inside of that?  
+
+What if you could change an enemy or a power-up from the inside?  What if you could enter and change yourself?  What if these levels inside levels inside levels went all the way down---and all the way up?  
+
+Inside a Star-filled Sky is a hard, procedurally-generated shmup built around this core concept.
+
+
+
+
+
+Creator/Developer Profile
+
+Jason Rohrer has developed and released 15 games since 2004, including award-winning games like Gravitation and Between, and critically acclaimed pieces like Passage, Primrose, and Sleep is Death.  He does everything---from programming to graphics to music---by himself.
+
+
+
+Contact links:
+
+http://hcsoftware.sf.net/jason-rohrer
+
+http://insideastarfilledsky.net

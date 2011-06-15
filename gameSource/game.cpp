@@ -6,7 +6,7 @@
  */
 
 
-int versionNumber = 13;
+int versionNumber = 16;
 
 
 
@@ -59,6 +59,7 @@ int versionNumber = 13;
 #include "musicPlayer.h"
 #include "numerals.h"
 #include "beatTracker.h"
+#include "flagSprite.h"
 
 
 // should we output level maps as images?
@@ -119,7 +120,7 @@ double accelY = 0;
 double frameRateFactor = 1;
 
 
-char forceRepeatRandSeed = false;
+char forceRepeatRandSeed = true;
 unsigned int randSeed = 1285702442;
 CustomRandomSource randSource(randSeed);
 
@@ -223,6 +224,11 @@ Font *tinyFont;
 
 static float pauseScreenFade = 0;
 
+static char editingFlag = false;
+static char flagEditorPressed = false;
+
+static int flagEditorCurrentColorIndex = 0;
+
 static char *currentUserTypedMessage = NULL;
 
 // for delete key repeat during message typing
@@ -234,38 +240,132 @@ static int stepsBetweenDeleteRepeat;
 char *tutorialMoveKeys;
 
 
+#define DEFAULT_FLAG "232232232"
+
+char *playerFlag;
+
+char firstFlagEditorShown = false;
+
+char *flagServerURL;
+
+char useFlagServer;
+
+void showFlagEditor();
+
+
+
+
+static CustomRandomSource trunkRandSource;
+
+static unsigned int getTrunkLevelSeed( int inLevelNumber ) {
+    // level number can be negative
+
+    // map each level number to a random value
+
+    // mix with value received from Random.org
+    
+    // original:  0x14DA4E29U  (level 1 too maze-like)
+    // better:    0x14DA4E27U  (too many open areas)
+    // 0x14DA4E23U  (first token level has tokens that could be missed)
+    // 0x14DA4E73U  Level 1 is BORING
+    // 0x14DA4E53U  Level 1 is BORING
+    // 0x14DA4E57U  Level 1 is BORING
+    // 0x14DA3E57U  Level 1 too maze-like
+    // 0x14DA3E55U  Level 5 too hard
+    // 0x14DA3E73U  Level 5 not passable with spread only
+    trunkRandSource.reseed( (unsigned int)inLevelNumber * 0x14DA3E73U );
+    
+    return trunkRandSource.getRandomInt();
+    }
+
+
+
+static ColorScheme getTrunkLevelColors( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+    
+    // generate random using seed
+    ColorScheme levelColors;
+
+    return levelColors;
+    }
+
+
+
+static RandomWalkerSet getTrunkLevelWalkerSet( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+
+    // generate random using seed
+    RandomWalkerSet levelWalkerSet;
+
+    return levelWalkerSet;
+    }
+
+
+
+static NoteSequence getTrunkLevelMusicNotes( int inLevelNumber ) {
+    randSource.reseed( getTrunkLevelSeed( inLevelNumber ) );
+
+    // part length alternates so that player part always makes phase
+    // pattern with level part
+    int partLength = 12;
+    if( inLevelNumber % 2 == 0 ) {
+        partLength = 16;
+        }
+
+    // generate random using seed
+    NoteSequence levelNotes = generateRandomNoteSequence( PARTS - 2,
+                                                          partLength );
+    
+    return levelNotes;
+    }
+
+    
+
+
+
+
 static PowerUpSet defaultSet;
 
 
-static void addFreshLevelToStack( unsigned int inSeed ) {
+static void addFreshLevelToStack() {
     Level *levelRightBelow = currentLevel;
     
     if( levelRiseStack.size() > 0 ) {
 
         levelRightBelow = *( levelRiseStack.getElement( 0 ) );
         }
+
+
+    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
+
+
+    unsigned int newSeed = getTrunkLevelSeed( freshLevelNumber );
+
+
+    // ensure that colors and music generation is deterministic as well
+    randSource.reseed( newSeed );
+
+
     
     ColorScheme c = levelRightBelow->getLevelColors();
     NoteSequence s = levelRightBelow->getLevelNoteSequence();
 
     RandomWalkerSet ourPlayerWalkerSet = levelRightBelow->getLevelWalkerSet();
 
-    ColorScheme freshColors;
-    // copy player part's timbre/envelope
-    // alternate part length with player part for phase patterns
-    int partLength = 16;
-    if( s.partLength == partLength ) {
-        partLength -= 4;
-        }
-    NoteSequence freshNotes = generateRandomNoteSequence( PARTS - 2,
-                                                          partLength );
-        
-    int freshLevelNumber = levelRightBelow->getLevelNumber() + 1;
+
+    ColorScheme freshColors = getTrunkLevelColors( freshLevelNumber );
+
+    RandomWalkerSet freshWalkerSet = 
+        getTrunkLevelWalkerSet( freshLevelNumber );
+    
+    NoteSequence freshNotes = getTrunkLevelMusicNotes( freshLevelNumber );
+    
+    
     
 
-    levelRiseStack.push_front( new Level( inSeed, 
+    levelRiseStack.push_front( new Level( newSeed, 
                                           &c, &s, &freshColors,
-                                          NULL,
+                                          &freshWalkerSet,
                                           &ourPlayerWalkerSet,
                                           &freshNotes,
                                           NULL,
@@ -280,54 +380,21 @@ static void addFreshLevelToStack( unsigned int inSeed ) {
 
 
 
-// non-null seed vector to override default behavior
-static void populateLevelRiseStack( 
-    SimpleVector<unsigned int> *inSeeds = NULL ) {
-    
-    if( inSeeds != NULL ) {
-        
-        int numSeeds = inSeeds->size();
-        
-        for( int i=0; i<numSeeds; i++ ) {
-            addFreshLevelToStack( *( inSeeds->getElement( i ) ) );
-            }        
 
-        return;
-        }
-    
-
+static void populateLevelRiseStack() {
 
     // else default behavior, make sure stack has at least two levels in it
 
     if( levelRiseStack.size() == 0 ) {
         // push one on to rise into
-        
-        // base pre-seed on level below's seed
-        
-        unsigned int belowSeed = currentLevel->getSeed();
 
-        randSource.restoreFromSavedState( belowSeed );
-        
-        // draw seed
-        int newSeed = randSource.getRandomInt();
-
-        addFreshLevelToStack( newSeed );
+        addFreshLevelToStack();
         }
 
     if( levelRiseStack.size() == 1 ) {
         // always have two to rise into
-        Level *nextBelow = *( levelRiseStack.getElement( 0 ) );
-        
-        // base pre-seed on level below's seed
-        
-        unsigned int belowSeed = nextBelow->getSeed();
-        
-        randSource.restoreFromSavedState( belowSeed );
-                
-        // draw seed
-        int newSeed = randSource.getRandomInt();
 
-        addFreshLevelToStack( newSeed );
+        addFreshLevelToStack();
         }        
     }
 
@@ -373,7 +440,7 @@ int getStartingLevelNumber() {
 
 
 static const char *customDataFormatString = 
-    "version%d_level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_%s";
+    "version%d_level%d_tutorial%d_tutorialBookmark%d_mouseSpeed%f_flag%9s_%s";
 
 
 char *getCustomRecordedGameData() {
@@ -413,6 +480,20 @@ char *getCustomRecordedGameData() {
     
     float mouseSpeedSetting = 
         SettingsManager::getFloatSetting( "mouseSpeed", 1.0f );
+    
+
+    char *playerFlagSetting = 
+        SettingsManager::getStringSetting( "flag" );
+    
+    if( playerFlagSetting == NULL ) {
+        playerFlagSetting = stringDuplicate( DEFAULT_FLAG );
+        }
+    else {
+        char *oldFlag = playerFlagSetting;
+        playerFlagSetting = stringToUpperCase( playerFlagSetting );
+        
+        delete [] oldFlag;
+        }
 
 
 
@@ -451,8 +532,10 @@ char *getCustomRecordedGameData() {
         versionNumber, 
         levelNumber, tutorialOn,
         tutorialBookmark, mouseSpeedSetting,
+        playerFlagSetting,
         partialBookmarkString );
-    
+
+    delete [] playerFlagSetting;
     delete [] partialBookmarkString;
 
     return result;
@@ -466,32 +549,38 @@ char *getHashSalt() {
 
 
 
-// pass in NULL to init with default
-static void initStartingLevels( SimpleVector<unsigned int> *inSeeds = NULL ) {
+static void initStartingLevels() {
 
-    if( inSeeds == NULL ) {
-        
-        // random seed
-        currentLevel = new Level( randSource.getRandomInt(),
-                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
-                                  levelNumber );
-    
-        populateLevelRiseStack();
-        }
-    else {
-        // first seed for current level
-        unsigned int firstSeed = *( inSeeds->getElement( 0 ) );
+    // deterministic trunk of level tree    
 
-        currentLevel = new Level( firstSeed, 
-                                  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-                                  levelNumber );
+
+    // CANNOT leave randomly-generated defaults in place here,
+    // because then a load from this level won't match a rise-up into
+    // this level
+    ColorScheme freshColors = getTrunkLevelColors( levelNumber );
+
+    RandomWalkerSet freshWalkerSet = 
+        getTrunkLevelWalkerSet( levelNumber );
     
-        // rest of seeds into rise stack
-        inSeeds->deleteElement( 0 );
-        
-        populateLevelRiseStack( inSeeds );
-        }
+    NoteSequence freshNotes = getTrunkLevelMusicNotes( levelNumber );
+
+
+    // levels are LINKED based on attributes of player
+    ColorScheme playerColors = getTrunkLevelColors( levelNumber - 1 );
+
+    RandomWalkerSet playerWalkerSet = 
+        getTrunkLevelWalkerSet( levelNumber - 1);
     
+    NoteSequence playerNotes = getTrunkLevelMusicNotes( levelNumber - 1 );
+    
+
+    currentLevel = new Level( getTrunkLevelSeed( levelNumber ),
+                              &playerColors, &playerNotes, &freshColors, 
+                              &freshWalkerSet, &playerWalkerSet, 
+                              &freshNotes, NULL, 
+                              levelNumber );
+    
+    populateLevelRiseStack();
     }
 
 
@@ -556,6 +645,20 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     
 
+    flagServerURL = SettingsManager::getStringSetting( "flagServerURL" );
+
+    if( flagServerURL == NULL ) {
+        flagServerURL = 
+            stringDuplicate( "http://localhost/jcr13/game10_flag/server.php" );
+        }
+    
+    int useFlagServerSetting = 
+        SettingsManager::getIntSetting( "useFlagServer", 0 );
+    
+    if( useFlagServerSetting == 1 ) {
+        useFlagServer = true;
+        }
+
 
     setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
 
@@ -604,6 +707,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     int tutorialOn = 0;
     int tutorialBookmark = 0;
     float mouseSpeedSetting = 1.0f;
+    playerFlag = stringDuplicate( DEFAULT_FLAG );
     char *partialBookmarkString = 
         new char[ strlen( inCustomRecordedGameData ) + 1 ];
     
@@ -616,10 +720,15 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                           &readVersionNumber,
                           &levelNumber,
                           &tutorialOn, &tutorialBookmark, &mouseSpeedSetting,
+                          playerFlag,
                           partialBookmarkString );
     
     PowerUpSet *startingPowers = NULL;
 
+
+    // NOTE:
+    // still reading this from bookmark file as legacy
+    // not actually using them anymore (always use deterministic level trunk)
     
     // default to empty (default level generation)
     // unless overridden by bookmark or recorded game
@@ -627,7 +736,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
                     
 
 
-    if( numRead != 6 ) {
+    if( numRead != 7 ) {
         // no recorded game?
 
         // don't force player back through boring level 0, even if
@@ -726,16 +835,12 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     initTipDisplay();
     
 
-    if( levelStackSeeds.size() > 2 ) {
-        // pre-defined seeds from bookmark or recorded game
-        // (must have at least 3, current level and 2 in stack, to be valid)
-        initStartingLevels( &levelStackSeeds );
-        }
-    else {
-        // default
-        initStartingLevels();
-        }
-           
+    // ignore stack of levels read from bookmark
+    // always init using deterministic trunk of level tree
+
+
+    initStartingLevels();
+               
         
     if( startingPowers != NULL ) {
         currentLevel->setPlayerPowers( startingPowers );
@@ -820,6 +925,9 @@ void freeFrameDrawer() {
     
 
     delete [] tutorialMoveKeys;
+
+    delete [] playerFlag;
+    delete [] flagServerURL;
     
 
     freeSpriteBank();
@@ -1406,6 +1514,217 @@ static void drawPauseScreen() {
 
 
 
+
+
+static void drawFlagEditor() {
+
+    double viewHeight = viewHeightFraction * viewWidth;
+
+    setDrawColor( 1, 1, 1, 0.5 * pauseScreenFade );
+        
+    drawSquare( lastScreenViewCenter, 1.05 * ( viewHeight / 3 ) );
+        
+
+    setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
+        
+    drawSquare( lastScreenViewCenter, viewHeight / 3 );
+        
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    doublePair messagePos = lastScreenViewCenter;
+
+    messagePos.y += 4.5;
+
+    mainFont2->drawString( translate( "flagEditMessage1" ), 
+                           messagePos, alignCenter );        
+        
+
+    doublePair cellPos = lastScreenViewCenter;
+
+    cellPos.y += 1.375;
+
+    cellPos.x -= 1;
+    cellPos.y += 1;
+    
+    int cellIndex = 0;
+
+    for( int y=0; y<3; y++ ) {
+        cellPos.x = lastScreenViewCenter.x - 1;
+        for( int x=0; x<3; x++ ) {
+
+            int cellColorIndex = hexTo16( playerFlag[cellIndex] );
+
+            if( flagEditorPressed && distance( mousePos, cellPos ) < 0.5 
+                && 
+                // only if color in cell is changing
+                cellColorIndex != flagEditorCurrentColorIndex ) {
+
+                
+                cellColorIndex = flagEditorCurrentColorIndex;
+                
+                // update string
+                playerFlag[ cellIndex ] = sixteenToHex( cellColorIndex );
+                
+                // don't save flag to disk if we're playing
+                // back a recorded game
+                if( !isGamePlayingBack() ) {    
+                    SettingsManager::setSetting( "flag", playerFlag );
+                    }
+                
+                NoteSequence playerFlagAnthemA = 
+                    generateFlagNoteSequence( PARTS-6, playerFlag );
+            
+                NoteSequence playerFlagAnthemB =
+                    generateFlagNoteSequence( PARTS-5, playerFlag );
+            
+                lockAudio();
+                setNoteSequence( playerFlagAnthemA );
+                setNoteSequence( playerFlagAnthemB );
+                unlockAudio();
+                
+                flagEditorPressed = false;
+                }
+
+            
+
+            setDrawColor( 
+                flagColorMap[cellColorIndex][0] / 255.0f,
+                flagColorMap[cellColorIndex][1] / 255.0f,
+                flagColorMap[cellColorIndex][2] / 255.0f,
+                pauseScreenFade );
+                
+            drawSprite( flagEditCell, cellPos );
+
+            cellPos.x += 1;
+            cellIndex++;
+            }
+        cellPos.y -= 1;
+        }
+    
+    
+
+    doublePair potPos = lastScreenViewCenter;
+    
+    potPos.y += 3.625;
+    potPos.x -= 4.21875;
+    
+
+    for( int c=0; c<16; c++ ) {
+        setDrawColor( 
+            flagColorMap[c][0] / 255.0f,
+            flagColorMap[c][1] / 255.0f,
+            flagColorMap[c][2] / 255.0f,
+            pauseScreenFade );
+        
+        drawSprite( flagEditColorPot, potPos );
+        
+        if( flagEditorPressed && distance( mousePos, potPos ) < 0.25 ) {
+            flagEditorCurrentColorIndex = c;
+            flagEditorPressed = false;
+            }
+        
+
+        potPos.x += 0.5625;
+        }
+    
+
+
+
+
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    messagePos = lastScreenViewCenter;
+
+    messagePos.y += 2.875;
+
+    messagePos.y -= 3.75 * ( viewHeight / 15 );
+    mainFont2->drawString( translate( "flagEditMessage2" ), 
+                           messagePos, alignCenter );
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage3" ), 
+                           messagePos, alignCenter );
+
+
+              
+
+
+    doublePair anchorPos = lastScreenViewCenter;
+    
+    anchorPos.y -= 2.75;
+    
+    anchorPos.x -= 0.875 * viewHeight / 3;
+    
+
+    // darker panel behind anchor tips
+    setDrawColor( 0, 0, 0, 0.5 * pauseScreenFade  );
+        
+    drawRect( lastScreenViewCenter.x - viewHeight / 3,
+              anchorPos.y + 0.625,
+              lastScreenViewCenter.x + viewHeight / 3,
+              anchorPos.y - 0.625 );
+    
+
+    setDrawColor( 1, 1, 1, pauseScreenFade );
+
+    drawSprite( flagSpotB, anchorPos );
+
+    doublePair anchorLabelPos = anchorPos;
+    
+    anchorLabelPos.x += 0.75;
+    anchorLabelPos.y += 0.25;
+    mainFont2->drawString( translate( "flagAnchorLabelB1" ), 
+                           anchorLabelPos, alignLeft );
+    anchorLabelPos.y -= 0.625;
+    mainFont2->drawString( translate( "flagAnchorLabelB2" ), 
+                           anchorLabelPos, alignLeft );
+
+
+    anchorPos.x = lastScreenViewCenter.x + 0.875 * viewHeight / 3;
+    
+
+    drawSprite( flagSpotA, anchorPos );
+    
+    anchorLabelPos = anchorPos;
+    
+    anchorLabelPos.x -= 0.75;
+    anchorLabelPos.y += 0.25;
+    mainFont2->drawString( translate( "flagAnchorLabelA1" ), 
+                           anchorLabelPos, alignRight );
+    anchorLabelPos.y -= 0.625;
+    mainFont2->drawString( translate( "flagAnchorLabelA2" ), 
+                           anchorLabelPos, alignRight );
+
+
+
+
+    messagePos.y -= 1.75;
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage4" ), 
+                           messagePos, alignCenter );
+
+    messagePos.y -= 0.625 * (viewHeight / 15);
+    mainFont2->drawString( translate( "flagEditMessage5" ), 
+                           messagePos, alignCenter );
+    
+
+    int c = flagEditorCurrentColorIndex;
+    setDrawColor( 
+        flagColorMap[c][0] / 255.0f,
+        flagColorMap[c][1] / 255.0f,
+        flagColorMap[c][2] / 255.0f,
+        pauseScreenFade );
+
+    drawSprite( flagMouse, mousePos );
+
+    flagEditorPressed = false;
+    }
+
+
+
 void deleteCharFromUserTypedMessage() {
     if( currentUserTypedMessage != NULL ) {
                     
@@ -1461,8 +1780,13 @@ void drawFrame( char inUpdate ) {
         
         
         
-        drawPauseScreen();
-        
+        if( !editingFlag ) {
+            
+            drawPauseScreen();
+            }
+        else {
+            drawFlagEditor();
+            }
         
 
         // handle delete key repeat
@@ -1489,11 +1813,11 @@ void drawFrame( char inUpdate ) {
                 }
             }
         
-        // fade out music during pause
+        // fade out music during pause, but NOT during flag editing
         
         double oldLoudness = getMusicLoudness();
         
-        if( oldLoudness > 0 ) {
+        if( oldLoudness > 0 && !editingFlag ) {
             
             oldLoudness -= ( 1.0 / 60 ) * frameRateFactor;
 
@@ -1503,6 +1827,24 @@ void drawFrame( char inUpdate ) {
             setMusicLoudness( oldLoudness );
             }
         
+        
+        if( editingFlag ) {    
+            // fade music in
+            
+            double oldLoudness = getMusicLoudness();
+            
+            if( oldLoudness < 1 ) {
+            
+                oldLoudness += ( 1.0 / 60 ) * frameRateFactor;
+
+                if( oldLoudness > 1 ) {
+                    oldLoudness = 1;
+                    }
+                setMusicLoudness( oldLoudness );
+                }
+            }
+        
+
 
         // fade in pause screen
         if( pauseScreenFade < 1 ) {
@@ -1545,6 +1887,9 @@ void drawFrame( char inUpdate ) {
         
         if( pauseScreenFade < 0 ) {
             pauseScreenFade = 0;
+
+            editingFlag = false;
+            
             if( currentUserTypedMessage != NULL ) {
 
                 // make sure it doesn't already end with a file separator
@@ -1608,6 +1953,20 @@ void drawFrame( char inUpdate ) {
         initTutorial();
         
         firstDrawFrameCalled = true;
+
+
+        if( strcmp( playerFlag, DEFAULT_FLAG ) == 0 &&
+            ! firstFlagEditorShown ) {
+            
+            showFlagEditor();
+            
+            firstFlagEditorShown = true;
+
+            // game has become paused
+            // don't do any more updating
+            return;
+            }
+        
         }
     
 
@@ -1791,6 +2150,10 @@ void drawFrame( char inUpdate ) {
             printf( "Entering sub-level that should have music part %d\n",
                     musicNotes.partIndex );
             
+            unsigned int newLevelSeed =
+                currentLevel->getEnteringPointSubLevelSeed( mousePos,
+                                                            enteringType );
+            
             int subLevelNumber =
                 currentLevel->getEnteringPointSubLevel( mousePos, 
                                                         enteringType );
@@ -1810,8 +2173,15 @@ void drawFrame( char inUpdate ) {
             PowerUpSet *setPlayerPowers = NULL;
             
             
-
-            currentLevel = new Level( randSource.getRandomInt(),
+            // going DOWN, out of trunk into a branch
+            // so player sub-level attributes (colors, walker set, etc)
+            // can be left up to the whim of the random number generator
+            // using newLevelSeed
+            // (We'll never LOAD from this branch level later, so
+            //  level attributes don't need to be reproducible, unless
+            //  another player discovers level using exactly this same
+            //  path.)
+            currentLevel = new Level( newLevelSeed,
                                       NULL, NULL, &c, &walkerSet, NULL,
                                       &musicNotes,
                                       setPlayerPowers,
@@ -1974,6 +2344,26 @@ void drawFrame( char inUpdate ) {
         triggerTip( hitPowerUp.powerType, true, 0.5, difficultyModifier );
         }
     
+    // trigger tips when mousing over flag spot
+    char flagSpot = currentLevel->isFlagSpot( mousePos );
+    if( flagSpot ) {
+        spriteID tipID = flagSpotA;
+        
+        if( flagSpot == 2 ) {
+            tipID = flagSpotB;
+            }
+        
+        triggerTip( tipID, true, 0.5 );
+        }
+
+
+
+
+    if( currentLevel->isFlagSpot( playerPos ) ) {
+        currentLevel->placeFlag( playerPos, playerFlag );
+        }
+    
+
 
 
 
@@ -2201,7 +2591,17 @@ void drawFrame( char inUpdate ) {
         
         }
     
-
+    flagSpot = currentLevel->isFlagSpot( playerPos );
+    if( flagSpot ) {
+        spriteID tipID = flagSpotA;
+        
+        if( flagSpot == 2 ) {
+            tipID = flagSpotB;
+            }
+        
+        triggerTip( tipID, false, 0.25 );
+        }
+    
     
     
     
@@ -2451,7 +2851,12 @@ void drawFrame( char inUpdate ) {
 
     // draw tail end of pause screen, if it is still visible
     if( pauseScreenFade > 0 ) {
-        drawPauseScreen();
+        if( !editingFlag ) {
+            drawPauseScreen();
+            }
+        else {
+            drawFlagEditor();
+            }
         }
     }
 
@@ -2845,10 +3250,13 @@ void drawFrameNoUpdate( char inUpdate ) {
     playerPowers->drawSet( setPos, fade );
     playerSprite->draw( spritePos, fade );
     
+
+    Color enteringPointColor = enteringPointSprite->getColors().special;
+    Color weAreInsideColor = weAreInsideSprite->getColors().special;
     
     Color *riseIconColor = Color::linearSum( 
-        &( enteringPointSprite->getColors().special ),
-        &( weAreInsideSprite->getColors().special ),
+        &enteringPointColor,
+        &weAreInsideColor,
         zoomProgress );
     
     setDrawColor( riseIconColor->r, riseIconColor->g, riseIconColor->b, 1 );
@@ -3008,7 +3416,7 @@ void drawFrameNoUpdate( char inUpdate ) {
                 viewHeightFraction * viewWidth /2 - dashHeight - 0.0625 );
 
 
-    drawTutorial( lastScreenViewCenter );
+    drawTutorial( lastScreenViewCenter, inUpdate );
 
     drawTipDisplay( lastScreenViewCenter );
     drawSetTipDisplay( lastScreenViewCenter );
@@ -3018,6 +3426,14 @@ void drawFrameNoUpdate( char inUpdate ) {
 
 
 static void mouseMove( float inX, float inY ) {
+
+    if( editingFlag ) {
+        // wake up pause CPU usage on mouse motion
+        // (keyboard not used for flag editor)
+        wakeUpPauseFrameRate();
+        }
+    
+
     if( ! haveFirstScreenMouse ) {
         lastScreenMouseX = inX;
         lastScreenMouseY = inY;
@@ -3061,11 +3477,20 @@ void pointerMove( float inX, float inY ) {
 void pointerDown( float inX, float inY ) {
     mouseMove( inX, inY );
     shooting = true;
+
+    if( editingFlag ) {
+        flagEditorPressed = true;
+        }
     }
 
 
 void pointerDrag( float inX, float inY ) {
     mouseMove( inX, inY );
+
+    // report on drag, too
+    if( editingFlag ) {
+        flagEditorPressed = true;
+        }
     }
 
 void pointerUp( float inX, float inY ) {
@@ -3170,17 +3595,45 @@ extern int testBulletValue;
 
 
 void keyDown( unsigned char inASCII ) {
+
+    // taking screen shot is ALWAYS possible
+    if( inASCII == '=' ) {    
+        saveScreenShot( "screen" );
+        }
+    
+
     
     if( isPaused() ) {
         // block general keyboard control during pause
+
+        char unpausing = false;
 
         switch( inASCII ) {
             case 13:  // enter
                 // unpause
                 pauseGame();
+                unpausing = true;
                 break;
             }
         
+        if( editingFlag ) {
+            // unpause on F again
+            
+            switch( inASCII ) {
+                case 'f':
+                case 'F':
+                    // unpause
+                    pauseGame();
+                    unpausing = true;
+                    break;
+                }
+
+            // back to level's music
+            currentLevel->pushAllMusicIntoPlayer();
+
+            // ignore other key input
+            return;
+            }
         
         
         if( inASCII == 127 || inASCII == 8 ) {
@@ -3265,10 +3718,13 @@ void keyDown( unsigned char inASCII ) {
             break;   
         case 'p':
         case 'P':
+            editingFlag = false;
             pauseGame();
             break;
-        case '=':
-            saveScreenShot( "screen" );
+        case 'f':
+        case 'F': {
+            showFlagEditor();
+            }
             break;
         case '2':
             testBulletValue ++;
@@ -3285,17 +3741,16 @@ void keyDown( unsigned char inASCII ) {
 
 void keyUp( unsigned char inASCII ) {
     if( isPaused() ) {
-        // block general keyboard control during pause
-        
         if( inASCII == 127 || inASCII == 8 ) {
             // delete no longer held
             holdDeleteKeySteps = -1;
             }
-    
-        return;
         }
     
 
+    // allow key releases always, even during pause
+        
+        
 
 
     switch( inASCII ) {
@@ -3482,6 +3937,36 @@ void playerHeartsKnockedCallback( int inNumKnockedOff ) {
 
     // keep player health updated
     nextAbove->frozenUpdate();
+    }
+
+
+
+void showFlagEditor() {
+    
+    editingFlag = true;
+
+    lockAudio();
+            
+    // raise both flag parts to full volume
+            
+    partLoudness[ PARTS-6] = 1;
+    partLoudness[ PARTS-5] = 1;
+    partStereo[ PARTS-6] = 0.6;
+    partStereo[ PARTS-5] = 0.4;
+            
+    // stick player's anthem in place
+    NoteSequence playerFlagAnthemA = 
+        generateFlagNoteSequence( PARTS-6, playerFlag );
+            
+    NoteSequence playerFlagAnthemB =
+        generateFlagNoteSequence( PARTS-5, playerFlag );
+
+    setNoteSequence( playerFlagAnthemA );
+    setNoteSequence( playerFlagAnthemB );
+
+    unlockAudio();
+
+    pauseGame();
     }
 
 

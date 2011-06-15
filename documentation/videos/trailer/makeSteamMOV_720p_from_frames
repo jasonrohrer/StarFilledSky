@@ -1,0 +1,1 @@
+ffmpeg -r 30 -i frames/frame_%d.png -i music.aiff -f mov -vcodec mpeg4 -r 30 -b 8000k -acodec libfaac -ab 128k trailer_1280_720.mov
