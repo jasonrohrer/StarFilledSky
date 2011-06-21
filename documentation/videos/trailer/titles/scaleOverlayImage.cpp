@@ -178,7 +178,10 @@ int main( int inNumArgs, char **inArgs ) {
     sscanf( inArgs[3], "%lf", &scale );
     
 
-    JPEGImageConverter jpeg( 90 );
+	// read ENTIRE stream to read whole file
+	// Noticed that the Japanese JPG translation images have multiple
+	// JPEG blocks, so we can't stop at the first FFD9 sequence
+    JPEGImageConverter jpeg( 90, true );
 
 
     File backFile( NULL, inArgs[1] );
