@@ -81,6 +81,8 @@ powerUpHeartSetCombo_tipPart2  "HITS"
 powerUpHeartSetCombo_tipPart2_singular  "HIT"
 
 
+powerUpLevel_tip   "LEVEL"
+
 
 
 enterDemoCode  "Enter a demo code:"

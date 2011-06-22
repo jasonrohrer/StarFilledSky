@@ -99,6 +99,8 @@ powerUpHeartSetCombo_tipPart2  "Ë¯Ä"
 powerUpHeartSetCombo_tipPart2_singular  "Ë¯Ä"
 
 
+powerUpLevel_tip   "LEVEL"
+
 
 
 enterDemoCode  "ÃÞÓº°ÄÞ¦ Æ­³Ø®¸:"
