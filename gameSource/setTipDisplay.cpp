@@ -205,8 +205,10 @@ void triggerSetTip( PowerUpSet *inSet, char inUnderMiddleBracket,
             
             currentTipStrings[ numFilledStrings ] =
                 autoSprintf( 
-                    "%s LEVEL %d",
-                    translate( spriteIDTipTranslateKeys[ p ] ), level );
+                    "%s %s %d",
+                    translate( spriteIDTipTranslateKeys[ p ] ),
+                    translate( "powerUpLevel_tip" ),
+                    level );
             
             numFilledStrings++;
             }
