@@ -1,4 +1,4 @@
-Version 17
+Version 17   2011-June-22
 
 --Fixed bug causing screen shots files to be unnecessarily doubled in size.
 
@@ -9,6 +9,8 @@ Version 17
 
 --Fixed flickering colors of dashboard rise icon when inside a power token.
 
+--The word LEVEL in the power-up tips was not being handled by the translation
+  engine.  Fixed.
 
 
 
