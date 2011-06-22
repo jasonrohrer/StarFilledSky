@@ -1,0 +1,110 @@
+writeFailed "´×°: ¹Þ°ÑÌ«ÙÀÞÊ ÖÐÄØ¾ÝÖ³ÃÞ½
+
+
+
+"tutorial_move "W A S D (I J K L) ·°ÃÞ ²ÄÞ³"
+
+tutorial_shoot "¶°¿ÙÃÞ È×¯Ã ¸Ø¯¸ ¶ Space ·°ÃÞ ¼®¯Ä"
+
+tutorial_structure "[±¯Á] Ê ²Ï ±ÅÀ¶Þ Å¶Æ Ê²¯Ã²Ù ±²Ã ÃÞ½¡[º¯Á] Ê ±ÅÀ ÃÞ½##³´Æ ±¶ÞÙÎÄÞ ÚÍÞÙ¶Þ ±¯Ìß ¼Ï½"
+
+tutorial_insideMarker "[±¯Á]"
+
+tutorial_youMarker "[º¯Á]"
+
+tutorial_scoreMarker "[½º±]"
+
+tutorial_tokens       "Å¶ÃÞ ±ÂÒÀ ±²ÃÑÃÞ ÎÝÀ²Ê ÍÝ¶¼Ï½"
+
+tutorial_useTokens    "ºÚÃÞ Å¶ÃÞ ±ÂÒÀ ±²ÃÑ¶Þ Â¶´Ï½"
+
+tutorial_enter1 "Shift ·° ¦ µ¼Å¶Þ× Ï³½¦ ³ºÞ¶¼Ã Å¶Æ Ê²ØÏ½"
+
+tutorial_enter2 "ÄÞÝÅ ÓÉÃÞÓ Å¶Æ Ê²ÚÏ½"
+
+tutorial_enter2_self "¼ÞÌÞÝÉ Å¶ÆÓ Ê²ÚÏ½"
+tutorial_enter2_enemy "Ã·É Å¶ÆÓ Ê²ÚÏ½"
+tutorial_enter2_token "±²ÃÑÉ Å¶ÆÓ Ê²ÚÏ½"
+
+tutorial_gather "±ÂÒÀ ±²ÃÑ..."
+
+
+tutorial_gather_self  "Å¶ÃÞ ±²ÃÑ¦ ±ÂÒÙÄ ÎÝÀ²Ê ÍÝ¶¼Ï½"
+
+tutorial_gather_enemy "Å¶ÃÞ ±²ÃÑ¦ ±ÂÒÙÄ Ã·Ê ÍÝ¶¼Ï½"
+
+tutorial_gather_token "Å¶ÃÞ ±²ÃÑ¦ ±ÂÒÙÄ ±²ÃÑÊ ²ÁÊÞÝµµ² ±²ÃÑÆ ÍÝ¶ ¼Ï½##»×Æ ±²ÃÑÉ Å¶É ±²ÃÑÆ Ê²¯Ã ±²ÃÑÉ ÊßÜ°¦ ±¹ÞÚÏ½¶Þ ÅÝ²ÄÞÓ ±¶ÞØÏ½"
+
+tutorial_done "ºÚÃÞ ¾ÂÒ²Ê µÜØÃÞ½"
+
+
+tutorial_bug_flag  "Á­°ÄØ±ÙÃÞ ÌÒ²Å ÊÞ¸Þ¶Þ Ê¯¾² ¼Ï¼À##Jason Æ ÚÎß°Ä¦ ¿³¼Ý ¼Ã¸ÀÞ»²"
+
+
+
+
+pauseMessage1 "Enter ·° ÃÞ »²¶²¼Ï½"
+
+pauseMessage2 "Ó¼Þ¦ Æ­³Ø®¸ ½ÙºÄÓ ÃÞ·Ï½"
+
+pauseMessage3 "% ÃÞ ¼­³Ø®³ ¼Ï½"
+
+pauseMessage4 "(ÚÍÞÙÊ ÌÞ¯¸Ï°¸ »ÚÏ½)"
+
+
+
+flagEditMessage1 "Ì×¯¸Þ¦ ÃÞ»Þ²Ý ¼Ã¸ÀÞ»²"
+flagEditMessage2 "Enter ·°ÃÞ ¹¯Ã²¼Ï½"
+flagEditMessage3 "ºÉ¶ÞÒÝÊ F ·°ÃÞ Ë®³¼Þ ÃÞ·Ï½"
+
+flagEditMessage4 "Ì×¯¸ÞÃÞ ±Ý¶°¦ Ï°¸ ÃÞ·Ï½"
+flagEditMessage5 "Î¶É ÌßÚ²Ô°Æ ±Ëß°Ù ¼Ï¼®³"
+
+flagAnchorLabelA1 "Êß°ÏÈÝÄ"
+flagAnchorLabelA2 "±Ý¶°"
+
+flagAnchorLabelB1 "ÃÝÎß×Ø°"
+flagAnchorLabelB2 "±Ý¶°"
+
+
+
+difficultyTag "ÅÝ²ÄÞ"
+
+innerTag "Å¶É "
+
+
+
+playbackTag           "ÌßÚ²ÊÞ¯¸ %:"
+playbackToggleMessage "(% ÃÞ ¶¸½)"
+playbackEndMessage    "(Esc ·° ÃÞ ¼­³Ø®³)"
+
+
+powerUpHeart_tip          "×²Ì"
+powerUpBulletSize_tip     "¼®¯Ä»²½Þ"
+powerUpRapidFire_tip      "×Ëß¯ÄÞ¼®¯Ä"
+powerUpBulletSpeed_tip    "¼®¯Ä½Ëß°ÄÞ"
+powerUpSpread_tip         "½ÌßÚ¯ÄÞ¼®¯Ä"
+powerUpHeatSeek_tip       "Î°ÐÝ¸Þ¼®¯Ä"
+powerUpBulletDistance_tip "¼®¯ÄÚÝ¼Þ"
+powerUpBounce_tip         "ÊÞ³ÝÄÞ¼®¯Ä"
+powerUpCornering_tip      "¶°ÌÞ¼®¯Ä"
+powerUpSticky_tip         "½Ä¯Ìß¼®¯Ä"
+powerUpExplode_tip        "ÊÞ°½Ä¼®¯Ä"
+
+flagSpotA_tip             "Êß°ÏÈÝÄÌ×¯¸Þ"
+flagSpotB_tip             "ÃÝÎß×Ø°Ì×¯¸Þ"
+
+powerUpHeartSetCombo_tipPart1  "»ÊÞ²ÌÞ"
+powerUpHeartSetCombo_tipPart2  "Ë¯Ä"
+powerUpHeartSetCombo_tipPart2_singular  "Ë¯Ä"
+
+
+
+
+enterDemoCode  "ÃÞÓº°ÄÞ¦ Æ­³Ø®¸:"
+checkingCode  "»°ÊÞ°ÃÞ ÃÞÓÉ ·®¶¦ ¶¸ÆÝÁ­³..."
+
+
+err_webRequest   "´×°: ³ªÌÞØ¸´½Ä ´×°"
+err_codeFailed  "ºÉ ÃÞÓº°ÄÞÊ »°ÊÞ°Æ ·®Ë»ÚÏ¼À"
+err_serverVerifyFailed  "»°ÊÞ°¶×É ¶²Ä³¶Þ ¶¸ÆÝ ÃÞ·Ï¾Ý"
