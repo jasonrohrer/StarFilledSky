@@ -6,7 +6,7 @@ writeFailed "´×°: ¹Þ°ÑÌ«ÙÀÞÊ ÖÐÄØ¾ÝÖ³ÃÞ½
 
 tutorial_shoot "¶°¿ÙÃÞ È×¯Ã ¸Ø¯¸ ¶ Space ·°ÃÞ ¼®¯Ä"
 
-tutorial_structure "[±¯Á] Ê ²Ï ±ÅÀ¶Þ Å¶Æ Ê²¯Ã²Ù ±²Ã ÃÞ½¡[º¯Á] Ê ±ÅÀ ÃÞ½##³´Æ ±¶ÞÙÎÄÞ ÚÍÞÙ¶Þ ±¯Ìß ¼Ï½"
+tutorial_structure "[±¯Á] Ê ²Ï ±ÅÀ¶Þ Å¶Æ Ê²¯Ã²Ù ±²Ã ÃÞ½¡ [º¯Á] Ê ±ÅÀ ÃÞ½##³´Æ ±¶ÞÙÎÄÞ ÚÍÞÙ¶Þ ±¯Ìß ¼Ï½"
 
 tutorial_insideMarker "[±¯Á]"
 
@@ -43,7 +43,7 @@ tutorial_bug_flag  "Á­°ÄØ±ÙÃÞ ÌÒ²Å ÊÞ¸Þ¶Þ Ê¯¾² ¼Ï¼À##Jason Æ ÚÎß°Ä¦ ¿³¼Ý ¼Ã¸ÀÞ»²
 
 
 
-pauseMessage1 "Enter ·° ÃÞ »²¶²¼Ï½"
+pauseMessage1 "Enter ·°ÃÞ »²¶²¼Ï½"
 
 pauseMessage2 "Ó¼Þ¦ Æ­³Ø®¸ ½ÙºÄÓ ÃÞ·Ï½"
 
@@ -76,7 +76,7 @@ innerTag "Å¶É "
 
 playbackTag           "ÌßÚ²ÊÞ¯¸ %:"
 playbackToggleMessage "(% ÃÞ ¶¸½)"
-playbackEndMessage    "(Esc ·° ÃÞ ¼­³Ø®³)"
+playbackEndMessage    "(Esc ·°ÃÞ ¼­³Ø®³)"
 
 
 powerUpHeart_tip          "×²Ì"
@@ -99,7 +99,7 @@ powerUpHeartSetCombo_tipPart2  "Ë¯Ä"
 powerUpHeartSetCombo_tipPart2_singular  "Ë¯Ä"
 
 
-powerUpLevel_tip   "LEVEL"
+powerUpLevel_tip   "ÚÍÞÙ"
 
 
 
