@@ -7782,6 +7782,8 @@ void Level::rewindLevel() {
     
         Enemy *startState = mEnemiesStart.getElement( i );
 
+        int oldEnteredCount = e->enteredCount;
+
         *e = *startState;
         
         // this copies enemy's CURRENT power set, which is correct
@@ -7817,6 +7819,11 @@ void Level::rewindLevel() {
 
         e->health = maxHealth;
         e->lastMaxHealth = maxHealth;
+
+        // preserve the accumulated entered count, so by entering an enemy,
+        // we never revisit the same internal level twice, even after dying
+        // and returning
+        e->enteredCount = oldEnteredCount;
         }
 
     // restore all floor tokens
