@@ -11,6 +11,10 @@ Version 18
   Fixed so that enemy enter counts (which are used to update seeds) are 
   preserved across player death.
 
+--Fixed so that power-up placement and selection is consistent with v16.
+  A fix in v17 (flickering rise icon colors) involved extra calls to the
+  random generator, thus unexpectedly changing the outcome of the power-up
+  placement process.
 
 
 

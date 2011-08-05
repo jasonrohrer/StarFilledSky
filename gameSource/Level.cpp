@@ -2804,11 +2804,22 @@ Level::Level( unsigned int inSeed,
                 
                 musicPartsUsed[ thisPartIndex ] = true;
 
+                // from v17 on, generating a PowerUpSprite invokes the
+                // random generator (to set the internal ColorScheme)
+                // This causes power-up placement randomization to be
+                // different on a given level in v17 vs v16.
+                // To correct for this, rewind rand state after generating
+                // the sprite.  Now power-up placement matches v16 placement.
+                randSource.saveState();
+                PowerUpSprite *tSprite = new PowerUpSprite( mainPower, 
+                                                            subPowers );
+                randSource.rewindState();
+                
+
                 PowerUpToken t = { mainPower,
                                    pickPos,
                                    worldPos,
-                                   new PowerUpSprite( mainPower, 
-                                                      subPowers ),
+                                   tSprite,
                                    subPowers,
                                    generateRandomNoteSequence( 
                                        thisPartIndex ),
