@@ -16,6 +16,9 @@ Version 18
   random generator, thus unexpectedly changing the outcome of the power-up
   placement process.
 
+--Added recording and playback of web server responses (so that flag data is
+  replayed correctly during the playback of a recorded game).
+
 
 
 Version 17   2011-June-22

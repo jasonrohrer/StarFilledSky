@@ -2189,7 +2189,7 @@ Level::Level( unsigned int inSeed,
     mFlagBlinkDelta[0] = 0.05 * frameRateFactor;
     mFlagBlinkDelta[1] = 0.05 * frameRateFactor;
 
-    mFlagWebRequest = NULL;
+    mFlagWebRequest = -1;
     
     if( useFlagServer ) {
         mFlagsLoading = true;
@@ -2198,7 +2198,7 @@ Level::Level( unsigned int inSeed,
             "%s?action=get_flags&level_number=%d&level_seed=%u",
             flagServerURL, mLevelNumber, mRandSeedState );
 
-        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        mFlagWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
         
         //printf( "Starting web request with URL %s\n", fullRequestURL );
 
@@ -2879,10 +2879,10 @@ Level::~Level() {
         delete [] mFlagStrings[i];
         }
 
-    if( mFlagWebRequest != NULL ) {    
-        delete mFlagWebRequest;
+    if( mFlagWebRequest != -1 ) {    
+        clearWebRequest( mFlagWebRequest );
         }
-    mFlagWebRequest = NULL;
+    mFlagWebRequest = -1;
     }
 
 
@@ -3876,15 +3876,15 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
 
 
 
-    if( mFlagWebRequest != NULL ) {
-        switch( mFlagWebRequest->step() ) {
+    if( mFlagWebRequest != -1 ) {
+        switch( stepWebRequest( mFlagWebRequest ) ) {
             case 0:
                 // still processing
                 break;
             case 1:
                 // done, result ready
                 if( mFlagsLoading ) {
-                    char *result = mFlagWebRequest->getResult();
+                    char *result = getWebResult( mFlagWebRequest );
                     
                     SimpleVector<char *> *tokens =
                         tokenizeString( result );
@@ -3938,8 +3938,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         }
                     delete tokens;
                     }
-                delete mFlagWebRequest;
-                mFlagWebRequest = NULL;
+                clearWebRequest( mFlagWebRequest );
+                mFlagWebRequest = -1;
 
 
                 if( mFlagsLoading ) {
@@ -3965,8 +3965,8 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
             case -1:
                 // error
                 AppLog::error( "Flag server web request failed" );
-                delete mFlagWebRequest;
-                mFlagWebRequest = NULL;
+                clearWebRequest( mFlagWebRequest );
+                mFlagWebRequest = -1;
                 mFlagsLoading = false;
                 mFlagsSending = false;
                 break;
@@ -7944,7 +7944,7 @@ void Level::placeFlag( doublePair inPos, const char *inFlagString ) {
         delete [] sig;
         
 
-        mFlagWebRequest = new WebRequest( "GET", fullRequestURL, NULL );
+        mFlagWebRequest = startWebRequest( "GET", fullRequestURL, NULL );
         
         //printf( "Starting web request with URL %s\n", fullRequestURL );
         

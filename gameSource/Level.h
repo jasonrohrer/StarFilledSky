@@ -4,7 +4,6 @@
 
 #include "minorGems/game/doublePair.h"
 #include "minorGems/util/SimpleVector.h"
-#include "minorGems/network/web/WebRequest.h"
 
 
 #include "PlayerSprite.h"
@@ -643,7 +642,7 @@ class Level {
         float mFlagBlinkLevel[2];
         float mFlagBlinkDelta[2];
 
-        WebRequest *mFlagWebRequest;
+        int mFlagWebRequest;
         
 
         NoteSequence mFlagMusicNotes[2];
