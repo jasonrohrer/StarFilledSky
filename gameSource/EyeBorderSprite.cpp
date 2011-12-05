@@ -89,7 +89,6 @@ void EyeBorderSprite::drawShadow( doublePair inPosition, double inFade ) {
 #define eyeHigh 9
 
 void EyeBorderSprite::setLookVector( doublePair inLookDir ) {
-    doublePair oldEyeOffset = mEyeOffset;
     
     // half-pixel steps to avoid jerkiness caused by round-off errors
     // as we step

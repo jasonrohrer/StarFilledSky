@@ -19,6 +19,8 @@ Version 18
 --Added recording and playback of web server responses (so that flag data is
   replayed correctly during the playback of a recorded game).
 
+--Fixed GCC 4.6.2 warnings found by Jukka Lankinen.
+
 
 
 Version 17   2011-June-22

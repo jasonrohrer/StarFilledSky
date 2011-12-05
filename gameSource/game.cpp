@@ -3606,13 +3606,11 @@ void keyDown( unsigned char inASCII ) {
     if( isPaused() ) {
         // block general keyboard control during pause
 
-        char unpausing = false;
 
         switch( inASCII ) {
             case 13:  // enter
                 // unpause
                 pauseGame();
-                unpausing = true;
                 break;
             }
         
@@ -3624,7 +3622,6 @@ void keyDown( unsigned char inASCII ) {
                 case 'F':
                     // unpause
                     pauseGame();
-                    unpausing = true;
                     break;
                 }
 

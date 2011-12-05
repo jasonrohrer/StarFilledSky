@@ -1039,7 +1039,7 @@ void Level::generateReproducibleData() {
             doublePair spot = sGridWorldSpots[y][x];
             
             
-            if( ! mKnockDown && distance( spot, playerSpot ) > 10
+            if( ! mKnockDown && ( distance( spot, playerSpot ) > 10 )
                 || 
                 // in case of knock-down, best position already chosen
                 // above
@@ -3891,7 +3891,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     
                     delete [] result;
                     
-                    char correct = false;
                     
                     if( tokens->size() == 2 ) {
                         
@@ -3899,7 +3898,6 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                         char *tokenB = *( tokens->getElement( 1 ) );
                         
                         if( strlen( tokenA ) == 9 && strlen( tokenB ) == 9 ) {
-                            correct = true;
                             
                             delete [] mFlagStrings[0];
                             delete [] mFlagStrings[1];
@@ -7348,7 +7346,6 @@ static doublePair getBulletVelocity( doublePair inPosition,
         bulletVelocity.y = 1;
         }            
             
-    doublePair aimDirection = bulletVelocity;
     
 
     bulletVelocity.x *= inSpeed;

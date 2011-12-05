@@ -929,7 +929,6 @@ void PowerUpSet::drawSet( doublePair inPosition, float inFade,
     if( mDropping ) {
         // draw dropped stuff on top, dropping down and fading out
         
-        doublePair dropPosition = inPosition;
         
         inPosition.y -= mDropProgress;
         

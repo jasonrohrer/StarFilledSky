@@ -180,7 +180,7 @@ typedef struct PowerUpToken {
         // even after multiple enterings of same enemy
         unsigned int subLevelSeed;
         unsigned int enteredCount;
-    };
+    } PowerUpToken;
 
 
 
