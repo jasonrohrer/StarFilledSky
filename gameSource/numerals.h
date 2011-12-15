@@ -2,7 +2,7 @@
 #define NUMERALS_INCLUDED
 
 
-#include "Font.h"
+#include "minorGems/game/Font.h"
 
 
 void initNumerals( const char *inTGAFileName );

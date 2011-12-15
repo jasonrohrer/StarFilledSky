@@ -41,13 +41,12 @@ int versionNumber = 18;
 
 #include "minorGems/game/game.h"
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/game/Font.h"
+#include "minorGems/game/drawUtils.h"
 
 
-
-#include "drawUtils.h"
 #include "Level.h"
 #include "fixedSpriteBank.h"
-#include "Font.h"
 #include "PowerUpSet.h"
 #include "numerals.h"
 #include "bulletSizeSet.h"

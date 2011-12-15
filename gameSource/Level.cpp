@@ -1,5 +1,4 @@
 #include "Level.h"
-#include "drawUtils.h"
 #include "fixedSpriteBank.h"
 #include "powerUpProperties.h"
 #include "bulletSizeSet.h"
@@ -15,6 +14,7 @@
 
 #include "minorGems/game/gameGraphics.h"
 #include "minorGems/game/game.h"
+#include "minorGems/game/drawUtils.h"
 #include "minorGems/util/random/CustomRandomSource.h"
 #include "minorGems/util/stringUtils.h"
 #include "minorGems/util/SettingsManager.h"

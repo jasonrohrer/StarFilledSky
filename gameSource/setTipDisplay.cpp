@@ -2,7 +2,7 @@
 
 #include "minorGems/game/game.h"
 #include "minorGems/util/stringUtils.h"
-#include "Font.h"
+#include "minorGems/game/Font.h"
 
 #include "tipDisplay.h"
 #include "powerUpProperties.h"

@@ -1,8 +1,8 @@
 #include "PowerUpSet.h"
 #include "numerals.h"
 #include "minorGems/game/gameGraphics.h"
+#include "minorGems/game/drawUtils.h"
 
-#include "drawUtils.h"
 #include "setTipDisplay.h"
 #include "tutorial.h"
 

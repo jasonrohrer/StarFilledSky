@@ -5,8 +5,8 @@
 #include "minorGems/util/SettingsManager.h"
 #include "minorGems/util/stringUtils.h"
 
-#include "Font.h"
-#include "drawUtils.h"
+#include "minorGems/game/Font.h"
+#include "minorGems/game/drawUtils.h"
 #include "setTipDisplay.h"
 
 

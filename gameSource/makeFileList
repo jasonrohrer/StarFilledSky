@@ -13,7 +13,6 @@ APP_NAME = StarFilledSky
 
 LAYER_SOURCE = \
 game.cpp \
-drawUtils.cpp \
 GridPos.cpp \
 Level.cpp \
 fixedSpriteBank.cpp \
@@ -22,7 +21,6 @@ EyeBorderSprite.cpp \
 PlayerSprite.cpp \
 ColorScheme.cpp \
 EnemySprite.cpp \
-Font.cpp \
 PowerUpSet.cpp \
 numerals.cpp \
 PowerUpSprite.cpp \
@@ -142,5 +140,7 @@ NEEDED_MINOR_GEMS_OBJECTS = \
  ${GAME_GRAPHICS_GL_O} \
  ${SPRITE_GL_O} \
  ${DOUBLE_PAIR_O} \
+ ${FONT_O} \
+ ${DRAW_UTILS_O} \
  ${DEMO_CODE_CHECKER_O} \
  ${AIFF_O}
