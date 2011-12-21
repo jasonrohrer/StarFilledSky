@@ -1808,7 +1808,8 @@ void drawFrame( char inUpdate ) {
                             
 
                 // shorter delay for subsequent repeats
-                stepsBetweenDeleteRepeat = (int)( 10 / frameRateFactor );
+                stepsBetweenDeleteRepeat = (int)( 2 / frameRateFactor );
+                holdDeleteKeySteps = 0;
                 }
             }
         

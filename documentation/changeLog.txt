@@ -21,6 +21,9 @@ Version 18
 
 --Fixed GCC 4.6.2 warnings found by Jukka Lankinen.
 
+--Fixed bug in delete key repeat speed for pause screen text.
+
+
 
 
 Version 17   2011-June-22
