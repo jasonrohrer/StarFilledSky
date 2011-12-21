@@ -3737,11 +3737,10 @@ void keyDown( unsigned char inASCII ) {
 
 
 void keyUp( unsigned char inASCII ) {
-    if( isPaused() ) {
-        if( inASCII == 127 || inASCII == 8 ) {
-            // delete no longer held
-            holdDeleteKeySteps = -1;
-            }
+    // track delete release even if pause screen no longer up
+    if( inASCII == 127 || inASCII == 8 ) {
+        // delete no longer held
+        holdDeleteKeySteps = -1;
         }
     
 

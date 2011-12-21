@@ -25,6 +25,8 @@ Version 18
 
 --Centralized font drawing code and fixed sub-pixel positioning error.
 
+--Fixed pause-screen delete hold-down across multiple invocations of pause 
+  screen."
 
 
 
