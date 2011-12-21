@@ -122,8 +122,6 @@ void drawTip( const char *inMessage, doublePair inPos, float inFade,
         setDrawColor( 1, 1, 1, inFade );
         }
     
-    // shift by one sub-pixel, font drawing code is currently a bit off
-    inPos.x += 0.03125;
     tinyFont->drawString( inMessage, 
                           inPos, alignCenter );
     }

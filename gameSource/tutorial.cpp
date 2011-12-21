@@ -349,9 +349,6 @@ static void drawBracket( doublePair inPos, float inFade,
         doublePair markerPos = inPos;
         markerPos.y -= 0.625;
         
-        // one sub-pixel tweak
-        markerPos.x += 0.03125;
-        
 
         doublePair markerShadowPos = markerPos;
     

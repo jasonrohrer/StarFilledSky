@@ -23,6 +23,8 @@ Version 18
 
 --Fixed bug in delete key repeat speed for pause screen text.
 
+--Centralized font drawing code and fixed sub-pixel positioning error.
+
 
 
 
