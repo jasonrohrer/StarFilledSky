@@ -542,6 +542,17 @@ char *getCustomRecordedGameData() {
 
 
 
+char showMouseDuringPlayback() {
+    // we already draw a custom cursor on the screen, so we don't need to
+    // see the recorded mouse data
+
+    // (though seeing it might be useful if we are debugging mouse position 
+    //  warping issues)
+    return false;
+    }
+
+
+
 char *getHashSalt() {
     return stringDuplicate( SETTINGS_HASH_SALT );
     }
