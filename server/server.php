@@ -115,6 +115,9 @@ else if( $action == "place_flag" ) {
 else if( $action == "get_flags" ) {
     fs_getFlags();
     }
+else if( $action == "logout" ) {
+    fs_logout();
+    }
 else if( $action == "fs_setup" ) {
     global $setup_header, $setup_footer;
     echo $setup_header; 
@@ -260,19 +263,19 @@ function fs_setupDatabase() {
 
 
 function fs_showLog() {
-    $password = fs_checkPassword( "show_log" );
+    fs_checkPassword( "show_log" );
 
-    echo "[<a href=\"server.php?action=show_data&password=$password" .
+    echo "[<a href=\"server.php?action=show_data" .
          "\">Main</a>]<br><br><br>";
     
     global $tableNamePrefix;
     
-    $query = "SELECT * FROM $tableNamePrefix"."log;";
+    $query = "SELECT * FROM $tableNamePrefix"."log ORDER BY entry_time DESC;";
     $result = fs_queryDatabase( $query );
     
     $numRows = mysql_numrows( $result );
 
-    echo "<a href=\"server.php?action=clear_log&password=$password\">".
+    echo "<a href=\"server.php?action=clear_log\">".
         "Clear log</a>";
         
     echo "<hr>";
@@ -292,9 +295,9 @@ function fs_showLog() {
 
 function fs_clearLog() {
 
-    $password = fs_checkPassword( "clear_log" );
+    fs_checkPassword( "clear_log" );
 
-    echo "[<a href=\"server.php?action=show_data&password=$password" .
+    echo "[<a href=\"server.php?action=show_data" .
          "\">Main</a>]<br><br><br>";
     
     global $tableNamePrefix;
@@ -621,22 +624,34 @@ function fs_generateFlagHTML( $inLink, $inFlagString ) {
 
 
 
+function fs_logout() {
+
+    fs_clearPasswordCookie();
+
+    echo "Logged out";
+    }
+
+
 
 
 
 function fs_showData() {
     // call several of these global so they can be accessed properly
     // inside the sub-functions we define below
-    global $password, $skip, $search, $order_by, $graph_interval;
+    global $skip, $search, $order_by, $graph_interval;
     
     
-    $password = fs_checkPassword( "show_data" );
+    fs_checkPassword( "show_data" );
 
     global $tableNamePrefix, $remoteIP;
     
 
-    echo "[<a href=\"server.php?action=show_data&password=$password" .
-            "\">Main</a>]<br><br><br>";
+    echo "<table width='100%' border=0><tr>".
+        "<td>[<a href=\"server.php?action=show_data" .
+            "\">Main</a>]</td>".
+        "<td align=right>[<a href=\"server.php?action=logout" .
+            "\">Logout</a>]</td>".
+        "</tr></table><br><br><br>";
 
 
     $graph_interval = 30;
@@ -747,7 +762,6 @@ function fs_showData() {
 ?>
         <hr>
             <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="password" VALUE="<?php echo $password;?>">
     <INPUT TYPE="hidden" NAME="action" VALUE="show_data">
     <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="search"
              VALUE="<?php echo $search;?>">
@@ -771,13 +785,13 @@ function fs_showData() {
     $prevSkip = $skip - $flagsPerPage;
     
     if( $prevSkip >= 0 ) {
-        echo "[<a href=\"server.php?action=show_data&password=$password" .
+        echo "[<a href=\"server.php?action=show_data" .
             "&skip=$prevSkip&search=$search".
             "&order_by=$order_by".
             "&graph_interval=$graph_interval\">Previous Page</a>] ";
         }
     if( $nextSkip < $totalFlags ) {
-        echo "[<a href=\"server.php?action=show_data&password=$password" .
+        echo "[<a href=\"server.php?action=show_data" .
             "&skip=$nextSkip&search=$search".
             "&order_by=$order_by".
             "&graph_interval=$graph_interval\">Next Page</a>]";
@@ -805,14 +819,14 @@ function fs_showData() {
 
 
     function orderLink( $inOrderBy, $inLinkText ) {
-        global $password, $skip, $search, $order_by;
+        global $skip, $search, $order_by;
         if( $inOrderBy == $order_by ) {
             // already displaying this order, don't show link
             return "<b>$inLinkText</b>";
             }
 
         // else show a link to switch to this order
-        return "<a href=\"server.php?action=show_data&password=$password" .
+        return "<a href=\"server.php?action=show_data" .
             "&search=$search&skip=$skip&order_by=$inOrderBy\">$inLinkText</a>";
         }
 
@@ -829,8 +843,7 @@ function fs_showData() {
     
 
     function searchLink( $inString, $inLinkText ) {
-        global $password;
-        return "<a href=\"server.php?action=show_data&password=$password" .
+        return "<a href=\"server.php?action=show_data" .
             "&search=$inString\">$inLinkText</a>";
         }
 
@@ -861,7 +874,7 @@ function fs_showData() {
             if( $flags[$f] != "BLANKFLAG" ) {
 
                 $flagHTML[$f] = fs_generateFlagHTML(
-                    "server.php?action=show_data&password=$password" .
+                    "server.php?action=show_data" .
                     "&search=flag_$flags[$f]",
                     $flags[$f] );
                 }
@@ -968,7 +981,7 @@ function fs_showData() {
         // hide link for current display
         if( $interval != $graph_interval ) {
             
-            echo "[<a href=\"server.php?action=show_data&password=$password" .
+            echo "[<a href=\"server.php?action=show_data" .
                 "&skip=$skip&search=$search".
                 "&order_by=$order_by".
                 "&graph_interval=$interval#graph\">$name</a>] ";
@@ -979,7 +992,7 @@ function fs_showData() {
     echo "<hr>";
     
     
-    echo "<a href=\"server.php?action=show_log&password=$password\">".
+    echo "<a href=\"server.php?action=show_log\">".
         "Show log</a>";
     echo "<hr>";
     echo "Generated for $remoteIP\n";
@@ -1282,23 +1295,112 @@ function fs_stripslashes_deep( $inValue ) {
 
 
 
+// this function checks the password directly from a request variable
+// or via hash from a cookie.
+//
+// It then sets a new cookie for the next request.
+//
+// This avoids storing the password itself in the cookie, so a stale cookie
+// (cached by a browser) can't be used to figure out the cookie and log in
+// later. 
 function fs_checkPassword( $inFunctionName ) {
     $password = "";
+    $password_hash = "";
+
+    $badCookie = false;
+    
+    
+    global $accessPasswords, $tableNamePrefix, $remoteIP;
+
+    $cookieName = $tableNamePrefix . "cookie_password_hash";
+
+    
     if( isset( $_REQUEST[ "password" ] ) ) {
         $password = $_REQUEST[ "password" ];
-        }
 
-    global $accessPasswords;
+        // generate a new hash cookie from this password
+        $newSalt = time();
+        $newHash = md5( $newSalt . $password );
+        
+        $password_hash = $newSalt . "_" . $newHash;
+        }
+    else if( isset( $_COOKIE[ $cookieName ] ) ) {
+        $password_hash = $_COOKIE[ $cookieName ];
+        
+        // check that it's a good hash
+        
+        $hashParts = preg_split( "/_/", $password_hash );
+
+        // default, to show in log message on failure
+        // gets replaced if cookie contains a good hash
+        $password = "(bad cookie:  $password_hash)";
+
+        $badCookie = true;
+        
+        if( count( $hashParts ) == 2 ) {
+            
+            $salt = $hashParts[0];
+            $hash = $hashParts[1];
+
+            foreach( $accessPasswords as $truePassword ) {    
+                $trueHash = md5( $salt . $truePassword );
+            
+                if( $trueHash == $hash ) {
+                    $password = $truePassword;
+                    $badCookie = false;
+                    }
+                }
+            
+            }
+        }
+    else {
+        // no request variable, no cookie
+        // cookie probably expired
+        $badCookie = true;
+        $password_hash = "(no cookie.  expired?)";
+        }
+    
+        
     
     if( ! in_array( $password, $accessPasswords ) ) {
-        echo "Incorrect password.";
 
-        fs_log( "Failed $inFunctionName access with password:  $password" );
+        if( ! $badCookie ) {
+            
+            echo "Incorrect password.";
 
+            fs_log( "Failed $inFunctionName access with password:  ".
+                    "$password" );
+            }
+        else {
+            echo "Session expired.";
+                
+            fs_log( "Failed $inFunctionName access with bad cookie:  ".
+                    "$password_hash" );
+            }
+        
         die();
         }
-
-    return $password;
+    else {
+        // set cookie again, renewing it, expires in 24 hours
+        $expireTime = time() + 60 * 60 * 24;
+    
+        setcookie( $cookieName, $password_hash, $expireTime, "/" );
+        }
     }
+ 
+
+
+
+function fs_clearPasswordCookie() {
+    global $tableNamePrefix;
+
+    $cookieName = $tableNamePrefix . "cookie_password_hash";
+
+    // expire 24 hours ago (to avoid timezone issues)
+    $expireTime = time() - 60 * 60 * 24;
+
+    setcookie( $cookieName, "", $expireTime, "/" );
+    }
+
 
 ?>
