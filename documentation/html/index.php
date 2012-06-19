@@ -112,22 +112,13 @@ function showDownloadForm() {
 
 
 function showPayLinks( $inSimple ) {
-    $referring_page = "";
+    $referrer = "";
     
     if( isset( $_SERVER['HTTP_REFERER'] ) ) {
-
-        $numMatches = preg_match(
-            "#(http|https)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?#",
-            $_SERVER['HTTP_REFERER'], $matches );
-
-        $url = "";
-        
-        if( $numMatches == 1 ) {
-            $url = $matches[0];
-            }
-            
-        
-        $referring_page = urlencode( $url );
+        // pass it through without a regex filter
+        // because we can't control its safety in the end anyway
+        // (user can just edit URL sent to FastSpring).
+        $referrer = urlencode( $_SERVER['HTTP_REFERER'] );
         }
     
     
@@ -145,7 +136,7 @@ function showPayLinks( $inSimple ) {
 
       <font size=5>Available now for $12</font><br><br>
       
-      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket?referrer=<?php echo $referring_page;?>">
+      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket?referrer=<?php echo $referrer;?>">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
       if( !$inSimple ) {
 
