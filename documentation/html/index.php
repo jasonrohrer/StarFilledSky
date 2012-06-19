@@ -112,6 +112,26 @@ function showDownloadForm() {
 
 
 function showPayLinks( $inSimple ) {
+    $referring_page = "";
+    
+    if( isset( $_SERVER['HTTP_REFERER'] ) ) {
+
+        $numMatches = preg_match(
+            "#(http|https)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?#",
+            $_SERVER['HTTP_REFERER'], $matches );
+
+        $url = "";
+        
+        if( $numMatches == 1 ) {
+            $url = $matches[0];
+            }
+            
+        
+        $referring_page = urlencode( $url );
+        }
+    
+    
+
     ?>
  <center>
       <center><table border=0><tr><td> 
@@ -125,7 +145,7 @@ function showPayLinks( $inSimple ) {
 
       <font size=5>Available now for $12</font><br><br>
       
-      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket">
+      <a href="https://sites.fastspring.com/jasonrohrer/instant/starfilledskyticket?referrer=<?php echo $referring_page;?>">
       <img src="fs_cards.png" width=280 height=45 border=0><?php
       if( !$inSimple ) {
 
