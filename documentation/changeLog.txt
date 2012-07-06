@@ -26,7 +26,9 @@ Version 18
 --Centralized font drawing code and fixed sub-pixel positioning error.
 
 --Fixed pause-screen delete hold-down across multiple invocations of pause 
-  screen."
+  screen.
+
+--Fixed WASD mapping so that keys are not mapped for typing on pause screen.
 
 
 

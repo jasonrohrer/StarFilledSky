@@ -1777,7 +1777,11 @@ void drawFrame( char inUpdate ) {
             }
         }
     
-
+    // turn key mapping off whenever paused
+    // turn it back on whenever not paused
+    toggleKeyMapping( ! isPaused() );
+    
+    
 
     if( !inUpdate ) {
         char oldFrozen = currentLevel->isFrozen();
