@@ -88,6 +88,8 @@ double viewHeightFraction;
 
 int screenW, screenH;
 
+char initDone = false;
+
 float mouseSpeed;
 
 
@@ -689,8 +691,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
 
     
 
-    setCursorVisible( false );
-    grabInput( true );
+    setCursorVisible( gamePlayingBack );
+    grabInput( !gamePlayingBack );
     
     // raw screen coordinates
     setMouseReportingMode( false );
@@ -706,7 +708,7 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     levelNumberReducedFont = 
         new Font( getFontTGAFileName(), -2, 4, true, 1.0 );
 
-    mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
+    // already inited mainFont2 in initDrawString
     
     tinyFont = new Font( "font_4_8.tga", 1, 2, false );
 
@@ -919,6 +921,8 @@ void initFrameDrawer( int inWidth, int inHeight, int inTargetFrameRate,
     currentLevel->pushAllMusicIntoPlayer();
 
     setSoundPlaying( true );
+    
+    initDone = true;
     }
 
 
@@ -953,7 +957,6 @@ void freeFrameDrawer() {
 
     delete levelNumberFont;
     delete levelNumberReducedFont;
-    delete mainFont2;
     delete tinyFont;
     
     if( currentUserTypedMessage != NULL ) {
@@ -1781,6 +1784,15 @@ void drawFrame( char inUpdate ) {
     // turn it back on whenever not paused
     toggleKeyMapping( ! isPaused() );
     
+    if( isPaused() ) {
+        
+        setCursorVisible( true );
+        grabInput( false );
+        }
+    else {
+        setCursorVisible( gamePlayingBack );
+        grabInput( !gamePlayingBack );
+        }
     
 
     if( !inUpdate ) {
@@ -3474,11 +3486,14 @@ static void mouseMove( float inX, float inY ) {
         lastScreenMouseY < 1 || lastScreenMouseY > screenH - 2 ) {
     
         // hit edge
-        int x, y;
-        warpMouseToCenter( &x, &y );
-        
-        lastScreenMouseX = x;
-        lastScreenMouseY = y;
+
+        if( !isPaused() ) {
+            int x, y;
+            warpMouseToCenter( &x, &y );
+            
+            lastScreenMouseX = x;
+            lastScreenMouseY = y;
+            }
         }
     
     }
@@ -3882,30 +3897,75 @@ void triggerCurrentPlayerSetTip() {
 
 
 
+
+void initDrawString( int inWidth, int inHeight ) {
+    mainFont2 = new Font( getFontTGAFileName(), 1, 4, false );
+
+    setViewCenterPosition( lastScreenViewCenter.x, lastScreenViewCenter.y );
+
+    viewHeightFraction = inHeight / (double)inWidth;
+
+    // monitors vary in width relative to height
+    // keep visible vertical view span constant (15)
+    // which is what it would be for a view width of 20 at a 4:3 aspect
+    // ratio
+    viewWidth = 15 * 1.0 / viewHeightFraction;
+    
+    
+    setViewSize( viewWidth );
+    }
+
+
+
+void freeDrawString() {
+    delete mainFont2;
+    }
+
+
+
 void drawString( const char *inString ) {
     
     setDrawColor( 1, 1, 1, 0.75 );
 
     doublePair messagePos = lastScreenViewCenter;
 
-    messagePos.x -= viewWidth / 2;
+
+    
+    TextAlignment align = alignCenter;
+    
+    if( initDone ) {
+        // transparent message
+        setDrawColor( 1, 1, 1, 0.75 );
+
+        // stick messages in corner
+        messagePos.x -= viewWidth / 2;
         
-    messagePos.x +=  0.25;
+        messagePos.x +=  0.25;
     
 
     
-    messagePos.y += (viewWidth * viewHeightFraction) /  2;
-    
-    messagePos.y -= dashHeight;
+        messagePos.y += (viewWidth * viewHeightFraction) /  2;
+        
+        messagePos.y -= dashHeight;
+        
+        // avoid tutorial bracket
+        messagePos.y -= 0.375;
+        
+        // avoid 4 set tip messages
+        messagePos.y -= 2.5;
+        
+        messagePos.y -= 0.4375;
+        messagePos.y -= 0.5;
 
-    // avoid tutorial bracket
-    messagePos.y -= 0.375;
+        align = alignLeft;
+        }
+    else {
+        // fully opaque message
+        setDrawColor( 1, 1, 1, 1 );
 
-    // avoid 4 set tip messages
-    messagePos.y -= 2.5;
-    
-    messagePos.y -= 0.4375;
-    messagePos.y -= 0.5;
+        // leave centered
+        }
+
     
 
     int numLines;
@@ -3915,7 +3975,7 @@ void drawString( const char *inString ) {
     for( int i=0; i<numLines; i++ ) {
         
 
-        mainFont2->drawString( lines[i], messagePos, alignLeft );
+        mainFont2->drawString( lines[i], messagePos, align );
         messagePos.y -= 0.75;
         
         delete [] lines[i];
