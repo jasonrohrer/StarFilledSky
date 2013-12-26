@@ -34,6 +34,8 @@ Version 18
   recorded-game-playback mode.  In windowed mode, this allows user to move the
   window while paused (thanks Shaun Froude).
 
+--Fixed c++-11 narrowing warnings.
+
 
 
 

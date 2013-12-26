@@ -2428,7 +2428,7 @@ Level::Level( unsigned int inSeed,
                                    frameRateFactor ),
                             enemyDifficultyLevel,
                             // use enemy's initial index as its bullet marker
-                            i,
+                            (char)i,
                             // not dead
                             false,
                             // sub-level seed
@@ -4654,7 +4654,7 @@ void Level::step( doublePair inViewCenter, double inViewSize ) {
                     progress = 0.125 * frameRateFactor;
                     }
 
-                HitSmoke s = { b->position, progress, 0.5, type, c };
+                HitSmoke s = { b->position, (float)progress, 0.5, type, c };
                 
                 mSmokeClouds.push_back( s );
 
