@@ -30,6 +30,11 @@ Version 18
 
 --Fixed WASD mapping so that keys are not mapped for typing on pause screen.
 
+--Fixed so that we stop grabbing mouse when the game is paused or in
+  recorded-game-playback mode.  In windowed mode, this allows user to move the
+  window while paused (thanks Shaun Froude).
+
+
 
 
 Version 17   2011-June-22
