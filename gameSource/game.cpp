@@ -1784,7 +1784,7 @@ void drawFrame( char inUpdate ) {
     // turn it back on whenever not paused
     toggleKeyMapping( ! isPaused() );
     
-    if( isPaused() ) {
+    if( isPaused() && !editingFlag ) {
         
         setCursorVisible( true );
         grabInput( false );
@@ -3487,7 +3487,7 @@ static void mouseMove( float inX, float inY ) {
     
         // hit edge
 
-        if( !isPaused() ) {
+        if( !isPaused() || editingFlag ) {
             int x, y;
             warpMouseToCenter( &x, &y );
             
