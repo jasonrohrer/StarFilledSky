@@ -151,6 +151,9 @@ const char *getWindowTitle() {
     return "Game 10";
     }
 
+const char *getAppName() {
+    return "StarFilledSky";
+    }
 
 const char *getFontTGAFileName() {
     return "font_8_16.tga";
@@ -3923,7 +3926,7 @@ void freeDrawString() {
 
 
 
-void drawString( const char *inString ) {
+void drawString( const char *inString, char inForceCenter ) {
     
     setDrawColor( 1, 1, 1, 0.75 );
 
@@ -3933,7 +3936,7 @@ void drawString( const char *inString ) {
     
     TextAlignment align = alignCenter;
     
-    if( initDone ) {
+    if( initDone && !inForceCenter ) {
         // transparent message
         setDrawColor( 1, 1, 1, 0.75 );
 

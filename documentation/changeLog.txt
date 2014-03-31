@@ -1,15 +1,15 @@
-Version 18
+Version 18    2014-March-31
 
 --Fixed a bug in resetting enemy internal level seeds after player dies.  
   In v17, after dying and returning to a level, an enemy's power configuration
-  was preserved (no need to re-do work of changing an enemy's powers---correct),
+  was preserved (no need to re-do work of changing an enemy's powers, correct),
   but the updated internal level seed for that enemy (so that re-entering
-  an enemy always produces a different sub-level) was not preserved (incorrect).
-  Re-entering the same enemy after dying returned you to an already-visited
-  sub-level in that enemy.  This was also inconsistent with what happened when
-  you re-enter a power-up after dying (always see a new internal level).
-  Fixed so that enemy enter counts (which are used to update seeds) are 
-  preserved across player death.
+  an enemy always produces a different sub-level) was not preserved
+  (incorrect).  Re-entering the same enemy after dying returned you to an 
+  already-visited sub-level in that enemy.  This was also inconsistent with 
+  what happened when you re-enter a power-up after dying (always see a new 
+  internal level).  Fixed so that enemy enter counts (which are used to update
+  seeds) are preserved across player death.
 
 --Fixed so that power-up placement and selection is consistent with v16.
   A fix in v17 (flickering rise icon colors) involved extra calls to the
@@ -35,6 +35,9 @@ Version 18
   window while paused (thanks Shaun Froude).
 
 --Fixed c++-11 narrowing warnings.
+
+--Built against latest minorGems code to fix bug in app bundle name that
+  affected certain modern MacOS versions.
 
 
 
