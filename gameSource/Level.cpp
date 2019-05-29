@@ -2241,6 +2241,8 @@ Level::Level( unsigned int inSeed,
     generateReproducibleData();
 
 
+    mLastCloseStepsToRiseMarker = INT_MAX;
+
     mStartStepsToRiseMarker = getStepsToRiseMarker( mPlayerStartPos );
     mLastComputedStepsToRiseMarker = mStartStepsToRiseMarker;
     
