@@ -19,7 +19,7 @@ cd $bundleDir
 cp ../runToBuild .
 
 # fix date stamping so that tga files aren't rebuilt by accident
-cd game10/gameSource/graphics
+cd StarFilledSky/gameSource/graphics
 touch *.tga
 
 cd ../../../..

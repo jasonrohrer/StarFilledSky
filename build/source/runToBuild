@@ -14,7 +14,7 @@
 #
 
 
-cd game10
+cd StarFilledSky
 chmod u+x ./configure
 ./configure $@ || exit 1
 
@@ -39,13 +39,13 @@ mkdir -p languages
 
 
 
-cp game10/gameSource/StarFilledSky ./StarFilledSkyApp
-cp game10/documentation/Readme.txt .
-cp game10/documentation/Upgrading.txt .
-cp game10/gameSource/graphics/* ./graphics
-cp game10/gameSource/settings/* ./settings
-cp game10/gameSource/languages/* ./languages
-cp game10/gameSource/language.txt ./
+cp StarFilledSky/gameSource/StarFilledSky ./StarFilledSkyApp
+cp StarFilledSky/documentation/Readme.txt .
+cp StarFilledSky/documentation/Upgrading.txt .
+cp StarFilledSky/gameSource/graphics/* ./graphics
+cp StarFilledSky/gameSource/settings/* ./settings
+cp StarFilledSky/gameSource/languages/* ./languages
+cp StarFilledSky/gameSource/language.txt ./
 
 
 
