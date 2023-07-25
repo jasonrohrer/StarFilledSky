@@ -313,7 +313,7 @@ function fs_clearLog() {
 
 
 function fs_placeFlag() {
-    $level_number = fs_requestFilter( "level_number", "/[0-9]+/", "" );
+    $level_number = fs_requestFilter( "level_number", "/[0-9\-]+/", "" );
 
     $level_seed = fs_requestFilter( "level_seed", "/[0-9]+/", "" );
 
@@ -472,7 +472,7 @@ http://localhost/jcr13/game10_flag/server.php?action=place_flag&level_number=5&l
 
 
 function fs_getFlags() {
-    $level_number = fs_requestFilter( "level_number", "/[0-9]+/", "" );
+    $level_number = fs_requestFilter( "level_number", "/[0-9\-]+/", "" );
 
     $level_seed = fs_requestFilter( "level_seed", "/[0-9]+/", "" );
 
