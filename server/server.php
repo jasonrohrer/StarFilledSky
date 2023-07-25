@@ -660,7 +660,7 @@ function fs_showData() {
     global $flagsPerPage;    
 
 
-    $search = pn_requestFilter( "search", "/[A-Z0-9_@. \-]+/i", "" );
+    $search = fs_requestFilter( "search", "/[A-Z0-9_@. \-]+/i", "" );
 
     
     $keywordWhereClause = "";
