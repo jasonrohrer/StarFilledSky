@@ -1,3 +1,10 @@
+Server Fixes
+
+--Fixed flag server to pass all user-submitted data through a regexp to prevent
+  SQL injection attacks.
+
+
+
 Version 18    2014-March-31
 
 --Fixed a bug in resetting enemy internal level seeds after player dies.  

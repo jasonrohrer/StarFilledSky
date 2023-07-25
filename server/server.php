@@ -45,14 +45,14 @@ $setup_footer = "
 
 
 
-// ensure that magic quotes are on (adding slashes before quotes
-// so that user-submitted data can be safely submitted in DB queries)
-if( !get_magic_quotes_gpc() ) {
+// ensure that magic quotes are OFF
+// we hand-filter all _REQUEST data with regexs before submitting it to the DB
+if( get_magic_quotes_gpc() ) {
     // force magic quotes to be added
-    $_GET     = array_map( 'fs_addslashes_deep', $_GET );
-    $_POST    = array_map( 'fs_addslashes_deep', $_POST );
-    $_REQUEST = array_map( 'fs_addslashes_deep', $_REQUEST );
-    $_COOKIE  = array_map( 'fs_addslashes_deep', $_COOKIE );
+    $_GET     = array_map( 'fs_stripslashes_deep', $_GET );
+    $_POST    = array_map( 'fs_stripslashes_deep', $_POST );
+    $_REQUEST = array_map( 'fs_stripslashes_deep', $_REQUEST );
+    $_COOKIE  = array_map( 'fs_stripslashes_deep', $_COOKIE );
     }
     
 
@@ -78,15 +78,9 @@ fs_checkForFlush();
 
 
 // grab POST/GET variables
-$action = "";
-if( isset( $_REQUEST[ "action" ] ) ) {
-    $action = $_REQUEST[ "action" ];
-    }
+$action = fs_requestFilter( "action", "/[A-Z_]+/i" );
 
-$debug = "";
-if( isset( $_REQUEST[ "debug" ] ) ) {
-    $debug = $_REQUEST[ "debug" ];
-    }
+$debug = fs_requestFilter( "debug", "/[01]/" );
 
 
 $remoteIP = "";
@@ -319,31 +313,28 @@ function fs_clearLog() {
 
 
 function fs_placeFlag() {
-    $level_number = "";
-    if( isset( $_REQUEST[ "level_number" ] ) ) {
-        $level_number = $_REQUEST[ "level_number" ];
-        }
-    $level_seed = "";
-    if( isset( $_REQUEST[ "level_seed" ] ) ) {
-        $level_seed = $_REQUEST[ "level_seed" ];
-        }
-    $spot = "";
-    if( isset( $_REQUEST[ "spot" ] ) ) {
-        $spot = $_REQUEST[ "spot" ];
-        }
-    $flag = "";
-    if( isset( $_REQUEST[ "flag" ] ) ) {
-        $flag = $_REQUEST[ "flag" ];
-        }
-    $sig = "";
-    if( isset( $_REQUEST[ "sig" ] ) ) {
-        $sig = $_REQUEST[ "sig" ];
-        }
+    $level_number = fs_requestFilter( "level_number", "/[0-9]+/", "" );
+
+    $level_seed = fs_requestFilter( "level_seed", "/[0-9]+/", "" );
+
+    $spot = fs_requestFilter( "spot", "/[AB]/", "" );
+
+    
+    $flag = fs_requestFilter( "flag", "/[A-F0-9]+/i", "" );
+
+    $flag = strtoupper( $flag );
+
+    
+    $sig = fs_requestFilter( "sig", "/[A-F0-9]+/i", "" );    
 
     $sig = strtoupper( $sig );
 
 
-    if( strlen( $flag ) != 9 ) {
+    if( $level_number == "" ||
+        $level_seed == "" ||
+        $spot == "" ||
+        strlen( $flag ) != 9 ) {
+
         echo "REJECTED";
         return;
         }
@@ -481,13 +472,15 @@ http://localhost/jcr13/game10_flag/server.php?action=place_flag&level_number=5&l
 
 
 function fs_getFlags() {
-    $level_number = "";
-    if( isset( $_REQUEST[ "level_number" ] ) ) {
-        $level_number = $_REQUEST[ "level_number" ];
-        }
-    $level_seed = "";
-    if( isset( $_REQUEST[ "level_seed" ] ) ) {
-        $level_seed = $_REQUEST[ "level_seed" ];
+    $level_number = fs_requestFilter( "level_number", "/[0-9]+/", "" );
+
+    $level_seed = fs_requestFilter( "level_seed", "/[0-9]+/", "" );
+
+    if( $level_number == "" ||
+        $level_seed == "" ) {
+
+        echo "REJECTED";
+        return;
         }
 
     
@@ -654,32 +647,22 @@ function fs_showData() {
         "</tr></table><br><br><br>";
 
 
-    $graph_interval = 30;
-
-    if( isset( $_REQUEST[ "graph_interval" ] ) ) {
-        $graph_interval = $_REQUEST[ "graph_interval" ];
-        }
+    $graph_interval = fs_requestFilter( "graph_interval", "/[0-9]+/", "30" );
 
 
+    $skip = fs_requestFilter( "skip", "/[0-9]+/", "0" );
 
-    $skip = 0;
-    if( isset( $_REQUEST[ "skip" ] ) ) {
-        $skip = $_REQUEST[ "skip" ];
-        }
 
-    $order_by = "change_date";
-    if( isset( $_REQUEST[ "order_by" ] ) ) {
-        $order_by = $_REQUEST[ "order_by" ];
-        }
 
+    $order_by = fs_requestFilter( "order_by", "/[A-Z_]+/i", "change_date" );
+
+    
     global $flagsPerPage;    
 
 
-    $search = "";
-    if( isset( $_REQUEST[ "search" ] ) ) {
-        $search = $_REQUEST[ "search" ];
-        }
+    $search = pn_requestFilter( "search", "/[A-Z0-9_@. \-]+/i", "" );
 
+    
     $keywordWhereClause = "";
     $keywordAndClause = "";
     $searchDisplay = "";
@@ -1400,6 +1383,41 @@ function fs_clearPasswordCookie() {
     $expireTime = time() - 60 * 60 * 24;
 
     setcookie( $cookieName, "", $expireTime, "/" );
+    }
+
+
+
+
+
+/**
+ * Filters a $_REQUEST variable using a regex match.
+ *
+ * Returns "" (or specified default value) if there is no match.
+ */
+function fs_requestFilter( $inRequestVariable, $inRegex, $inDefault = "" ) {
+    if( ! isset( $_REQUEST[ $inRequestVariable ] ) ) {
+        return $inDefault;
+        }
+
+    return fs_filter( $_REQUEST[ $inRequestVariable ], $inRegex, $inDefault );
+    }
+
+
+/**
+ * Filters a value  using a regex match.
+ *
+ * Returns "" (or specified default value) if there is no match.
+ */
+function fs_filter( $inValue, $inRegex, $inDefault = "" ) {
+    
+    $numMatches = preg_match( $inRegex,
+                              $inValue, $matches );
+
+    if( $numMatches != 1 ) {
+        return $inDefault;
+        }
+        
+    return $matches[0];
     }
 
 
