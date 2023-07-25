@@ -1351,8 +1351,7 @@ function fs_checkPassword( $inFunctionName ) {
             
             echo "Incorrect password.";
 
-            fs_log( "Failed $inFunctionName access with password:  ".
-                    "$password" );
+            fs_log( "Failed $inFunctionName access with bad password" );
             }
         else {
             echo "Session expired.";
