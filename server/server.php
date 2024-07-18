@@ -267,7 +267,7 @@ function fs_showLog() {
     $query = "SELECT * FROM $tableNamePrefix"."log ORDER BY entry_time DESC;";
     $result = fs_queryDatabase( $query );
     
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
     echo "<a href=\"server.php?action=clear_log\">".
         "Clear log</a>";
@@ -278,8 +278,8 @@ function fs_showLog() {
     
     
     for( $i=0; $i<$numRows; $i++ ) {
-        $time = mysql_result( $result, $i, "entry_time" );
-        $entry = mysql_result( $result, $i, "entry" );
+        $time = fs_mysqli_result( $result, $i, "entry_time" );
+        $entry = fs_mysqli_result( $result, $i, "entry" );
         
         echo "<b>$time</b>:<br>$entry<hr>\n";
         }
@@ -385,10 +385,10 @@ function fs_placeFlag() {
         "FOR UPDATE;";
     $result = fs_queryDatabase( $query );
 
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
     if( $numRows == 1 ) {
-        $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+        $row = mysqli_fetch_array( $result, MYSQL_ASSOC );
         
         $old_flag_a = $row[ "flag_a" ];
 
@@ -512,10 +512,10 @@ function fs_getFlags() {
         "FOR UPDATE;";
     $result = fs_queryDatabase( $query );
 
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
     if( $numRows == 1 ) {
-        $row = mysql_fetch_array( $result, MYSQL_ASSOC );
+        $row = mysqli_fetch_array( $result, MYSQL_ASSOC );
         
         $flag_a = $row[ "flag_a" ];
         $flag_b = $row[ "flag_b" ];
@@ -715,7 +715,7 @@ function fs_showData() {
         "flags $keywordWhereClause;";
 
     $result = fs_queryDatabase( $query );
-    $totalFlags = mysql_result( $result, 0, 0 );
+    $totalFlags = fs_mysqli_result( $result, 0, 0 );
 
     
              
@@ -724,7 +724,7 @@ function fs_showData() {
         "LIMIT $skip, $flagsPerPage;";
     $result = fs_queryDatabase( $query );
     
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
     $startSkip = $skip + 1;
     
@@ -831,15 +831,15 @@ function fs_showData() {
         }
 
     for( $i=0; $i<$numRows; $i++ ) {
-        $level_number = mysql_result( $result, $i, "level_number" );
-        $level_seed = mysql_result( $result, $i, "level_seed" );
-        $creation_date = mysql_result( $result, $i, "creation_date" );
-        $change_date = mysql_result( $result, $i, "change_date" );
-        $change_ip_address = mysql_result( $result, $i, "change_ip_address" );
-        $change_count = mysql_result( $result, $i, "change_count" );
+        $level_number = fs_mysqli_result( $result, $i, "level_number" );
+        $level_seed = fs_mysqli_result( $result, $i, "level_seed" );
+        $creation_date = fs_mysqli_result( $result, $i, "creation_date" );
+        $change_date = fs_mysqli_result( $result, $i, "change_date" );
+        $change_ip_address = fs_mysqli_result( $result, $i, "change_ip_address" );
+        $change_count = fs_mysqli_result( $result, $i, "change_count" );
 
-        $flag_a = mysql_result( $result, $i, "flag_a" );
-        $flag_b = mysql_result( $result, $i, "flag_b" );
+        $flag_a = fs_mysqli_result( $result, $i, "flag_a" );
+        $flag_b = fs_mysqli_result( $result, $i, "flag_b" );
 
         
 
@@ -917,12 +917,12 @@ function fs_showData() {
         "ORDER BY change_date;";
     $result = fs_queryDatabase( $query );
         
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
     $maxCount = 0;
 
     for( $i=0; $i<$numRows; $i++ ) {
-        $count = mysql_result( $result, $i, 1 );
+        $count = fs_mysqli_result( $result, $i, 1 );
         if( $maxCount < $count ) {
             $maxCount = $count;
             }
@@ -939,8 +939,8 @@ function fs_showData() {
         
     
     for( $i=0; $i<$numRows; $i++ ) {
-        $formattedDate = mysql_result( $result, $i, 0 );
-        $count = mysql_result( $result, $i, 1 );
+        $formattedDate = fs_mysqli_result( $result, $i, 0 );
+        $count = fs_mysqli_result( $result, $i, 1 );
 
         // bin the data
         $countBins = $count / $binFactor;
@@ -1018,7 +1018,7 @@ function fs_checkForFlush() {
 
     $result = fs_queryDatabase( $query );
 
-    if( mysql_numrows( $result ) > 0 ) {
+    if( mysqli_num_rows( $result ) > 0 ) {
 
         // last flush time is old
 
@@ -1050,7 +1050,7 @@ function fs_checkForFlush() {
 
         $result = fs_queryDatabase( $query );
 
-        $numRowsRemoved = mysql_affected_rows();
+        $numRowsRemoved = mysqli_affected_rows();
 
         fs_log( "Flush operation on unstarted games removed $numRowsRemoved".
                 " rows." );
@@ -1075,7 +1075,7 @@ function fs_checkForFlush() {
         $result = fs_queryDatabase( $query );
 
 
-        $numRowsRemoved = mysql_affected_rows();
+        $numRowsRemoved = mysqli_affected_rows();
 
         fs_log( "Flush operation on started games removed $numRowsRemoved".
                 " rows." );
@@ -1088,7 +1088,7 @@ function fs_checkForFlush() {
 
             $result = fs_queryDatabase( $query );
 
-            $count = mysql_result( $result, 0, 0 );
+            $count = fs_mysqli_result( $result, 0, 0 );
 
             fs_log( "After flush, $count games left." );
                         }
@@ -1111,6 +1111,7 @@ function fs_checkForFlush() {
 
 
 
+$fs_mysqlLink;
 
 
 // general-purpose functions down here, many copied from seedBlogs
@@ -1120,16 +1121,17 @@ function fs_checkForFlush() {
  */  
 function fs_connectToDatabase() {
     global $databaseServer,
-        $databaseUsername, $databasePassword, $databaseName;
+        $databaseUsername, $databasePassword, $databaseName,
+        $fs_mysqlLink;
     
-    
-    mysql_connect( $databaseServer, $databaseUsername, $databasePassword )
+    $fs_mysqlLink = 
+        mysqli_connect( $databaseServer, $databaseUsername, $databasePassword )
         or fs_fatalError( "Could not connect to database server: " .
-                       mysql_error() );
+                       mysqli_error( $fs_mysqlLink ) );
     
-	mysql_select_db( $databaseName )
+	mysqli_select_db( $fs_mysqlLink, $databaseName )
         or fs_fatalError( "Could not select $databaseName database: " .
-                       mysql_error() );
+                       mysqli_error( $fs_mysqlLink ) );
     }
 
 
@@ -1138,7 +1140,9 @@ function fs_connectToDatabase() {
  * Closes the database connection.
  */
 function fs_closeDatabase() {
-    mysql_close();
+    global $fs_mysqlLink;
+    
+    mysqli_close( $fs_mysqlLink );
     }
 
 
@@ -1151,14 +1155,29 @@ function fs_closeDatabase() {
  * @return a result handle that can be passed to other mysql functions.
  */
 function fs_queryDatabase( $inQueryString ) {
-
-    $result = mysql_query( $inQueryString )
+    global $fs_mysqlLink;
+    
+    if( gettype( $fs_mysqlLink ) != "resource" ) {
+        // not a valid mysql link?
+        fs_connectToDatabase();
+        }
+    
+    $result = mysqli_query( $fs_mysqlLink, $inQueryString )
         or fs_fatalError( "Database query failed:<BR>$inQueryString<BR><BR>" .
-                       mysql_error() );
+                       mysqli_error( $fs_mysqlLink ) );
 
     return $result;
     }
 
+
+/**
+ * Replacement for the old mysql_result function.
+ */
+function fs_mysqli_result( $result, $number, $field=0 ) {
+    mysqli_data_seek( $result, $number );
+    $row = mysqli_fetch_array( $result );
+    return $row[ $field ];
+    }
 
 
 /**
@@ -1175,12 +1194,12 @@ function fs_doesTableExist( $inTableName ) {
     $query = "SHOW TABLES";
     $result = fs_queryDatabase( $query );
 
-    $numRows = mysql_numrows( $result );
+    $numRows = mysqli_num_rows( $result );
 
 
     for( $i=0; $i<$numRows && ! $tableExists; $i++ ) {
 
-        $tableName = mysql_result( $result, $i, 0 );
+        $tableName = fs_mysqli_result( $result, $i, 0 );
         
         if( $tableName == $inTableName ) {
             $tableExists = 1;
