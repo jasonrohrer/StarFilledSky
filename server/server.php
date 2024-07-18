@@ -388,7 +388,7 @@ function fs_placeFlag() {
     $numRows = mysqli_num_rows( $result );
 
     if( $numRows == 1 ) {
-        $row = mysqli_fetch_array( $result, MYSQL_ASSOC );
+        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
         
         $old_flag_a = $row[ "flag_a" ];
 
@@ -515,7 +515,7 @@ function fs_getFlags() {
     $numRows = mysqli_num_rows( $result );
 
     if( $numRows == 1 ) {
-        $row = mysqli_fetch_array( $result, MYSQL_ASSOC );
+        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
         
         $flag_a = $row[ "flag_a" ];
         $flag_b = $row[ "flag_b" ];
